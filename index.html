@@ -1786,6 +1786,7 @@ details.more[open]>summary{margin-bottom:var(--sp-1)}
   .card-index .seal{width:80px;height:80px}
 }
 @media (max-width:1180px){ body.staside #main .studio .writegrid,body.staside.sidefold #main .studio .writegrid.hasbinder{grid-template-columns:minmax(0,1fr)!important} }   /* 좁은 화면: 곁 칸은 종이 아래로 */   /* 휴대폰: 곁 칸은 종이 아래로 */
+.mancards{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px;margin:10px 0} .mancard{display:grid;gap:6px;padding:12px 14px;border:1px solid var(--edge);border-radius:12px;background:color-mix(in srgb,var(--paper) 70%,#fff)} .mancard b{font:700 15px var(--ui-head,serif)} .mancard span{font:13px/1.5 var(--ui-font,sans-serif);color:var(--ink-soft)}
 </style>
 </head>
 <body>
@@ -2283,7 +2284,7 @@ async function pushSave(){
 // ───────── 새 버전 자동 새로 고침 ─────────
 // 올릴 때마다 version.json 의 번호가 바뀝니다. 앱이 열릴 때·다시 화면에 올라올 때·5분마다 확인해서,
 // 쓰는 중인 글이 없고 저장이 끝났을 때 새 버전으로 새로 고칩니다.
-const APP_BUILD="d988a9b5f0";
+const APP_BUILD="eaa09dd104";
 let NEW_BUILD=null, UPDATE_NOTICED=false;
 async function checkUpdate(){
   if(APP_BUILD.startsWith("__")) return;                 // 원본 파일로 열었을 때(고치는 중)는 건너뜁니다
@@ -2737,6 +2738,8 @@ function setGroups(){ const R=S.reminder||{}, rOn=!!(R.on&&R.clock!==false), p=S
   let theme="light"; try{ theme=localStorage.getItem("seojae-open.theme")||"light"; }catch(_){} const fs=+(()=>{ try{ return JSON.parse(localStorage.getItem("seojae-open.look")||"{}").fs; }catch(_){ return 0; } })()||0;
   const cm=(cmtLoad()?.files||[]).filter(f=>!f.hidden).length, sf=S.settings.streakFrom;
   return [
+   {id:"help",t:"도움",ic:"?",acc:"var(--sepia)",rows:[
+     {k:"manual",ic:"❧",t:"사용 설명서",st:"",sum:"간단 매뉴얼 · 상세 매뉴얼(책) — 웹으로 보기 · PDF 받기",body:manualSection()}]},
    {id:"morning",t:"아침",ic:"☀︎",acc:"var(--bible)",rows:[
      {k:"plan",ic:"✚",t:"성경 통독",st:"",sum:`${esc(cur.name)} · ${p.mode==="date"?"달력대로":"이어 읽기"} · ${(p.day||0)+1}일째`,body:planSettings()},
      {k:"devo",ic:"❦",t:"오늘의 묵상 자료",st:"",sum:`${esc(devoSrc().name)} · 갈아 끼울 수 있음`,body:devoSection()},
@@ -2760,6 +2763,12 @@ function setGroups(){ const R=S.reminder||{}, rOn=!!(R.on&&R.clock!==false), p=S
      {k:"nl",ic:"☰",t:"목차·쪽수 (국립중앙도서관)",st:CONF.nl?"ok":"off",pill:CONF.nl?"설정됨":"선택",sum:CONF.nl?"인증키 들어 있음 · 목차·쪽수 자동":"인증키 없음",body:nlSection()}]}]),
    {id:"keep",t:"기록 지키기",ic:"☁︎",acc:"var(--book)",rows:[
      {k:"backup",ic:"☁",t:"자동 백업 · 간직된 곳",st:GAS||SERVER?"ok":"need",pill:"켜짐",sum:bkSum(),body:backupSection()}]}]; }
+// 사용 설명서 두 권 (매뉴얼 원고 → 매뉴얼/build.py 가 웹·PDF로 만들어 manual/ 폴더에 둠). 새 창으로 열어 쓰던 화면은 그대로
+const MANUALS=[["quick","간단 매뉴얼","읽자마자 바로 써 보는 한 장 — 시작하기·하루 한 바퀴·메뉴 한눈에·단축키"],["book","상세 매뉴얼","책 한 권 — 사용법과 함께 묵상·일기·독서·글쓰기를 배우는 교과서 (갈래별 전문가 수업·AI와 함께 쓰기)"]];
+function manualSection(){ return `<section class="sheet tape c compact"><p class="label">사용 설명서</p>
+  <p class="sub">처음이라면 간단 매뉴얼부터, 더 깊이 알고 싶을 때 상세 매뉴얼을 펴 보세요. 둘 다 새 창으로 열립니다.</p>
+  <div class="mancards">${MANUALS.map(([k,n,d])=>`<div class="mancard"><b>${n}</b><span>${d}</span><div class="row" style="gap:6px;flex-wrap:wrap"><a class="btn small ink" href="manual/${k}.html" target="_blank" rel="noopener" title="${n}을 웹 페이지로 엽니다 (차례·검색·밝게/어둡게)">웹으로 보기 ↗</a><a class="btn small" href="manual/${k}.pdf" target="_blank" rel="noopener" download title="${n}을 PDF 책으로 받습니다 (인쇄용)">PDF 받기</a></div></div>`).join("")}</div>
+  <p class="hint">프로그램이 바뀌면 설명서도 함께 고쳐집니다. 단추 위에 마우스를 올리면 뜨는 도움말(설정 → 화면·기기 → 화면 꾸미기 → 도움말 모드)도 함께 쓰세요.</p></section>`; }
 // ───────── 자동 백업: 구글 드라이브 「아침 서재/백업」(모든 기기, 서버가 날마다) + 이 PC 폴더(설정한 PC만, 휴대폰은 구글만) ─────────
 // PC 백업은 크롬·엣지의 「폴더 고르기」로 고른 폴더에 아침서재-백업-날짜.json 을 씁니다. 같은 날은 30분마다 그날 파일을 새로 고치고, 최근 30일 + 달마다 첫 파일을 남깁니다.
 // 고른 폴더(손잡이)는 이 기기 큰 저장소(IndexedDB lbDir)에만, 켜기·마지막 시각은 seojae.localBackup 에만 — 기록 파일(구글)에는 넣지 않음
@@ -4305,7 +4314,7 @@ drawer(){
   <section class="sheet" style="margin-bottom:26px">
     <div class="row"><input id="q" placeholder="낱말로 찾기 (제목, 본문, 성경 본문…)" style="flex:1" oninput="clearTimeout(window._aq);window._aq=setTimeout(renderArchive,150)"></div>
     ${filterBar()}
-    ${live().some(w=>w.syncError)?`<div class="row" style="margin-top:12px"><span class="muted">노션에 아직 못 간 글이 있습니다.</span><button class="btn small" onclick="resyncAll()">모두 다시 보내기</button></div>`:""}
+    ${live().some(w=>w.syncError)&&!DRV?`<div class="row" style="margin-top:12px"><span class="muted">노션에 아직 못 간 글이 있습니다.</span><button class="btn small" onclick="resyncAll()">모두 다시 보내기</button></div>`:""}
   </section>
   <section class="sheet" id="results"></section>`;
 },
@@ -5564,13 +5573,13 @@ function pulpitPara(w){ const d=w.slides&&SLIDES[w.slides.deck], imgs=d?.imgs||[
 // ───────── 보내기 센터: 글방 글은 구글에만 간직되고, 여기서 노션·PDF·워드·마크다운·텍스트로 보냅니다 ─────────
 // 보낸 기록 S.sends=[{id,at,to,scope,ms,ids,name,n,chars,u}] (목록 병합·묘비 대상)
 let TMP_MS=null;
-const SEND_TO=[["notion","노션"],["pdf","PDF"],["docx","워드 (.docx)"],["md","마크다운"],["txt","텍스트"]];
+const SEND_TO=[...(DRV?[]:[["notion","노션"]]),["pdf","PDF"],["docx","워드 (.docx)"],["md","마크다운"],["txt","텍스트"]];
 const SEND_IC={notion:["N","노션 페이지로"],pdf:["▤","책·원고지·노트 모양"],docx:["W",".docx · 각주·쪽 번호"],md:["#",".md 파일"],txt:["¶",".txt 글자만"]};
 function sendList(kind,mid,o){ if(kind==="w"){ const w=S.writings.find(x=>x.id===editId); return w?[w]:[]; }
   const m=S.manuscripts.find(x=>x.id===mid); let ws=m?msList(m):[]; if(o?.done) ws=ws.filter(w=>w.status==="완성"); if(o?.ids) ws=ws.filter(w=>o.ids.includes(w.id)); return ws; }
 function sendOpen(kind,mid){
   if(kind==="w"){ const w=editId&&S.writings.find(x=>x.id===editId); if(!w) return toast("먼저 「간직」으로 글을 간직해 주세요"); if($("#wbody")&&writingUnsaved()) keepWriting(true); mid=wMs(w)?.id||null; }
-  let to="pdf"; try{ to=localStorage.getItem("seojae-open.sendTo")||"pdf"; }catch(_){}
+  let to="pdf"; try{ to=localStorage.getItem("seojae-open.sendTo")||"pdf"; }catch(_){} if(!SEND_TO.some(x=>x[0]===to)) to="pdf";
   const m=mid&&S.manuscripts.find(x=>x.id===mid), w=kind==="w"?S.writings.find(x=>x.id===editId):null;
   const ov=document.createElement("div"); ov.className="bookview sendview"; const P=expPrefs(m);
   const draw=()=>{ const scope=ov.dataset.scope||(kind==="w"?"one":"all"), ws=scope==="one"?[w]:sendList("ms",mid,{done:scope==="done"}), sel=ov.dataset.sel?JSON.parse(ov.dataset.sel):null, list=scope==="pick"&&sel?ws.filter(x=>sel.includes(x.id)):ws, chs=list.reduce((a,x)=>a+charsAll(x.body||""),0);

@@ -1,0 +1,476 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>아침 서재 간단 매뉴얼</title>
+<meta name="description" content="아침 서재 앱을 처음 쓰는 분을 위한 한 장 안내">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&amp;family=Nanum+Gothic:wght@400;700&amp;family=Nanum+Myeongjo:wght@700;800&amp;family=Nanum+Pen+Script&amp;display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+Symbols+2&amp;family=Noto+Sans+Symbols&amp;family=Noto+Sans+Math&amp;family=Noto+Emoji&amp;family=Noto+Serif+KR&amp;text=%C2%A7%C2%B2%C2%B7%C2%B9%C3%97%E2%80%94%E2%80%9C%E2%80%9D%E2%80%A6%E2%80%B9%E2%80%BA%E2%85%A0%E2%85%A2%E2%86%90%E2%86%91%E2%86%92%E2%86%93%E2%86%94%E2%86%97%E2%86%B6%E2%86%B7%E2%86%BA%E2%86%BB%E2%87%A7%E2%88%92%E2%88%98%E2%8A%95%E2%8B%AE%E2%8B%AF%E2%8B%B0%E2%8C%82%E2%8C%95%E2%8C%98%E2%8C%A5%E2%8F%AD%E2%8F%AE%E2%91%A0%E2%91%A1%E2%91%A2%E2%91%A3%E2%91%A4%E2%91%A5%E2%91%A6%E2%96%A0%E2%96%A1%E2%96%A3%E2%96%B2%E2%96%BE%E2%97%86%E2%97%8B%E2%97%8E%E2%97%8F%E2%98%85%E2%99%AA%E2%9A%A0%E2%9B%B6%E2%9C%82%E2%9C%8E%E2%9C%92%E2%9C%93%E2%9C%95%E2%9C%97%E2%9C%9D%E2%9C%A6%E2%9C%BA%E2%A4%A2%E2%A7%89%E2%AC%86%E3%80%8C%E3%80%8D%E3%80%8E%E3%80%8F%E3%80%94%E3%80%95%E4%BD%9C%E5%95%86%E5%A4%9A%E6%8A%84%E6%8E%A8%E6%95%B2%E6%9B%B8%E8%A9%9E%E8%AE%80%E9%87%8F%E9%A1%8C%EF%BC%8B%F0%9F%93%8C%F0%9F%94%92&amp;display=swap">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48dGl0bGU+7JWE7LmoIOyEnOyerDwvdGl0bGU+PHJlY3Qgd2lkdGg9IjUxMiIgaGVpZ2h0PSI1MTIiIHJ4PSIxMTIiIGZpbGw9IiNmNGVjZGMiLz48ZyB0cmFuc2Zvcm09InRyYW5zbGF0ZSgwIC0zOCkiPjxjaXJjbGUgY3g9IjI1NiIgY3k9IjI5NCIgcj0iMTM4IiBmaWxsPSIjYjIzYTJlIi8+PHBhdGggZD0iTTI1NiAzMDBDMjAwIDI2MiAxMjAgMjU0IDQ4IDI3MlY0MjRDMTIwIDQwNiAyMDAgNDE0IDI1NiA0NTJDMzEyIDQxNCAzOTIgNDA2IDQ2NCA0MjRWMjcyQzM5MiAyNTQgMzEyIDI2MiAyNTYgMzAwWiIgZmlsbD0iIzJlMjcyMSIvPjxwYXRoIGQ9Ik0yNTYgMzIwVjQzMCIgc3Ryb2tlPSIjZjRlY2RjIiBzdHJva2Utd2lkdGg9IjIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48L2c+PC9zdmc+Cg==">
+<style>
+:root{--paper:#fbf7ee;--desk:#e8dfcf;--paper-2:#f3ead9;--ink:#2e2721;--ink-soft:#6d6157;--sepia:#8a5a2b;--ai:#34425e;--ai-wash:rgba(52,66,94,.055);--ai-wash2:rgba(52,66,94,.10);--warn:#7a2e3a;--line:rgba(80,60,40,.22);--tape-a:rgba(214,170,120,.55);--use:#2c5b60;--use-wash:rgba(44,91,96,.06);--eye-wash:rgba(138,90,43,.06);--les:#5a3e69;--les-wash:rgba(90,62,105,.045);--les-fold:rgba(90,62,105,.28);--grow:#3b6a33;--why:#76591a;--memo:#fbf0bf;--memo-line:#b8952a;--memo-ink:#5f4a0e;--shade:rgba(0,0,0,.08);--scrim:rgba(30,22,15,.38);--serif:"Gowun Batang","Noto Sans Symbols 2","Noto Sans Symbols","Noto Sans Math","Noto Emoji","Noto Serif KR",serif;--title:"Nanum Myeongjo","Noto Sans Symbols 2","Noto Sans Symbols","Noto Sans Math","Noto Emoji","Noto Serif KR",serif;--sans:"Nanum Gothic","Noto Sans Symbols 2","Noto Sans Symbols","Noto Sans Math","Noto Emoji","Noto Serif KR",sans-serif;--hand:"Nanum Pen Script","Noto Sans Symbols 2","Noto Sans Symbols","Noto Sans Math","Noto Emoji","Noto Serif KR",cursive;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--paper:#29231d;--desk:#1a1612;--paper-2:#231e19;--ink:#ece2d2;--ink-soft:#b7a993;--sepia:#d9a466;--ai:#a9b8d6;--ai-wash:rgba(169,184,214,.07);--ai-wash2:rgba(169,184,214,.13);--warn:#e09aa6;--line:rgba(236,226,210,.14);--tape-a:rgba(190,150,100,.35);--use:#8cc6ca;--use-wash:rgba(140,198,202,.07);--eye-wash:rgba(217,164,102,.07);--les:#cbb0dc;--les-wash:rgba(203,176,220,.05);--les-fold:rgba(203,176,220,.3);--grow:#a3d394;--why:#e2c47a;--memo:rgba(232,200,90,.13);--memo-line:#a88a3a;--memo-ink:#ecd48c;--shade:rgba(0,0,0,.4);--scrim:rgba(0,0,0,.55);color-scheme:dark}}
+:root[data-theme="dark"]{--paper:#29231d;--desk:#1a1612;--paper-2:#231e19;--ink:#ece2d2;--ink-soft:#b7a993;--sepia:#d9a466;--ai:#a9b8d6;--ai-wash:rgba(169,184,214,.07);--ai-wash2:rgba(169,184,214,.13);--warn:#e09aa6;--line:rgba(236,226,210,.14);--tape-a:rgba(190,150,100,.35);--use:#8cc6ca;--use-wash:rgba(140,198,202,.07);--eye-wash:rgba(217,164,102,.07);--les:#cbb0dc;--les-wash:rgba(203,176,220,.05);--les-fold:rgba(203,176,220,.3);--grow:#a3d394;--why:#e2c47a;--memo:rgba(232,200,90,.13);--memo-line:#a88a3a;--memo-ink:#ecd48c;--shade:rgba(0,0,0,.4);--scrim:rgba(0,0,0,.55);color-scheme:dark}
+
+.sr{position:absolute!important;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.ico{display:inline-block;width:1.2em;height:1.2em;vertical-align:-.24em;flex:none}
+.ico svg{width:100%;height:100%;display:block}
+kbd{font-family:var(--sans);font-weight:700;font-size:.85em;border:1px solid var(--ink-soft);border-radius:3px;padding:0 .3em;white-space:nowrap;line-height:1.3}
+code{font-family:var(--sans);font-size:.86em;overflow-wrap:anywhere}
+.arr{margin:0 .15em}
+.lbl-in{font-family:var(--sans);font-weight:700;font-size:.8em;color:var(--sepia);margin-right:.45em;letter-spacing:.03em}
+p.summary{font-size:1.02em}
+p.minihead{font-family:var(--title);font-weight:700;margin:1.6em 0 .5em;break-after:avoid}
+.sp-head{display:flex;flex-wrap:wrap;align-items:center;gap:.25em .45em;margin:0 0 .55em}
+.sp-tag{display:inline-flex;align-items:center;gap:.35em;font-family:var(--sans);font-weight:700;font-size:.74em;letter-spacing:.05em;line-height:1.25;padding:.3em .7em .3em .55em;border-radius:3px;border:1px solid currentColor;white-space:nowrap}
+.sp-by{font-family:var(--sans);font-size:.78em;color:var(--ink-soft);letter-spacing:.02em}
+.sp-label,.sp-h{display:flex;align-items:center;gap:.4em;font-family:var(--sans);font-weight:700;font-size:.9em;letter-spacing:.04em;line-height:1.5;margin:0 0 .55em}
+
+/* 1 사용법 */
+.usage{margin:1.9em 0;padding:.85em 1.1em .45em;border-top:3px solid var(--use);background:var(--use-wash);border-radius:0 0 6px 6px;font-family:var(--sans);font-size:.9em;line-height:1.78}
+.usage .use-tag{background:var(--use);color:var(--paper);border-color:var(--use)}
+.usage h4{font-family:var(--sans);font-weight:700;font-size:1.06em;line-height:1.5;margin:.15em 0 .55em;color:var(--ink)}
+.usage .sp-h{color:var(--use);font-size:1em}
+.usage p{margin-bottom:.6em}
+ol.steps{list-style:none;padding:0;margin:.5em 0 1em;counter-reset:st}
+ol.steps>li{position:relative;padding-left:2.2em;margin:0 0 .35em;counter-increment:st}
+ol.steps>li::before{content:counter(st);position:absolute;left:0;top:.2em;width:1.99em;height:1.99em;display:flex;align-items:center;justify-content:center;border:1px solid var(--sepia);border-radius:50%;font-family:var(--sans);font-weight:700;font-size:.78em;line-height:1;color:var(--sepia);font-variant-numeric:tabular-nums}
+ol.steps>li>p{margin:0 0 .3em}
+.usage ol.steps>li{padding-left:2.7em;margin-bottom:.6em}
+.usage ol.steps>li::before{width:2.25em;height:2.25em;font-size:.82em;top:.02em;background:var(--use);border-color:var(--use);color:var(--paper)}
+.usage ol.steps>li:not(:last-child)::after{content:"";position:absolute;left:.92em;top:1.9em;bottom:-.6em;border-left:1.5px solid var(--use)}
+
+/* 2 전문가의 눈 */
+.eye{position:relative;margin:2.1em 0;padding:.85em 1.1em .35em 1.2em;border-left:4px solid var(--sepia);background:var(--eye-wash);border-radius:0 4px 4px 0}
+.eye .eye-tag{color:var(--sepia)}
+.eye h4{margin:.1em 0 .5em}
+.eye p,.eye li{font-size:.97em;line-height:1.9}
+.eye p.first::before{content:"\201C";float:left;font-family:var(--title);font-weight:800;font-size:2.7em;line-height:.85;color:var(--sepia);opacity:.4;margin:.02em .12em 0 -.04em}
+
+/* 3 AI 상자 */
+.ai{position:relative;margin:2.1em 0 1.6em;padding:1.4em 1.2em .85em;border:1px solid var(--ai);border-radius:6px;background:var(--ai-wash);font-family:var(--sans);font-size:.88em;line-height:1.75;color:var(--ink);text-align:left;box-decoration-break:clone;-webkit-box-decoration-break:clone}
+.ai-head{position:absolute;top:0;left:.8em;transform:translateY(-52%);display:flex;align-items:center;background:var(--paper);padding:0 .4em 0 .3em;line-height:1.3}
+.ai-tag{font-weight:700;font-size:.74em;letter-spacing:.12em;border:1px solid var(--ai);background:var(--ai);color:var(--paper);padding:.18em .55em .15em .65em;border-radius:2px}
+.ai-title{font-weight:700;color:var(--ai);padding-left:.5em;font-size:.95em}
+.ai dl{margin:0}
+.ai-row{position:relative;padding-left:7em;margin:0 0 .45em}
+.ai-row dt{position:absolute;left:0;top:0;width:6.2em;font-weight:700;color:var(--ai)}
+.ai-row dd{margin:0}
+.ai-row.no{background:var(--ai-wash2);border-left:3px solid var(--ai);margin:.25em -.6em .6em;padding:.35em .6em .35em 7.4em;border-radius:0 3px 3px 0}
+.ai-row.no dt{left:.6em;top:.35em;text-decoration:underline;text-decoration-thickness:1.5px;text-underline-offset:.28em}
+.ai p{margin:0 0 .4em}
+.ai.rest{display:flex;align-items:baseline;gap:.7em;padding:.45em .6em;margin:1.5em 0;border:none;border-top:1px dotted var(--ai);border-bottom:1px dotted var(--ai);border-radius:0;background:none;font-size:.82em;line-height:1.65}
+.ai.rest .ai-head{position:static;transform:none;background:none;padding:0;flex:none}
+.ai.rest .ai-tag{background:none;color:var(--ai);border-style:dotted}
+.ai.rest .ai-title{white-space:nowrap}
+.ai.rest .ai-body{flex:1;min-width:0;color:var(--ink-soft)}
+.ai.rest .ai-body p{margin:0}
+
+/* 4 글쓰기 수업 */
+.lesson{position:relative;margin:2.4em 0;padding:1.05em 1.3em .5em;border:3px double var(--les);border-radius:2px;background:var(--les-wash)}
+.lesson::after{content:"";position:absolute;top:-3px;right:-3px;width:0;height:0;border-style:solid;border-width:0 1.5em 1.5em 0;border-color:transparent var(--paper) var(--les-fold) transparent}
+.lesson .sp-h{color:var(--les);font-size:.95em;margin-bottom:.15em}
+.lesson>p.sp-by{margin:0 0 .9em;font-size:.8em}
+.lesson .chk-list,.lesson ul,.lesson ol.steps{list-style:none;padding-left:.1em}
+.lesson .chk-list>li,.lesson ul>li,.lesson ol.steps>li{position:relative;padding-left:1.75em;margin:0 0 .35em}
+.lesson .chk-list>li::before,.lesson ul>li::before,.lesson ol.steps>li::before,.lesson p.chk::before{content:"";position:absolute;left:.12em;top:.48em;width:.82em;height:.82em;border:1.4px solid var(--les);border-radius:2px;background:none;font-size:1em;display:block}
+.lesson p.chk{position:relative;padding-left:1.75em}
+.chap-tag{display:flex;align-items:center;gap:.35em;width:max-content;font-family:var(--sans);font-weight:700;font-size:.5em;letter-spacing:.06em;color:var(--les);border:3px double var(--les);padding:.25em .7em;margin:0 0 .7em}
+
+/* 5 고치기 전 → 고친 뒤 */
+figure.ba{margin:1.6em 0;padding:0}
+.ba-row{padding:.55em .95em .6em;border-radius:3px}
+.ba-row.before{border:1.5px dotted var(--ink-soft);color:var(--ink-soft)}
+.ba-row.after{border:1.5px solid var(--ink);color:var(--ink)}
+.ba-row.after2{border-width:2.5px}
+.ba-lbl{display:block;font-family:var(--sans);font-weight:700;font-size:.72em;letter-spacing:.08em;margin-bottom:.1em}
+.ba-row.after .ba-lbl{color:var(--sepia)}
+.ba-note{font-weight:400;letter-spacing:0;margin-left:.35em}
+.ba-txt p{margin:0 0 .4em}
+.ba-txt p:last-child{margin:0}
+.ba-arrow{display:block;padding:.1em 0 .1em 1em;color:var(--sepia);font-family:var(--sans);font-weight:700;line-height:1.3}
+
+/* 6 오늘의 연습 */
+.practice{position:relative;margin:2.3em 0 1.6em;padding:16px 20px 14px;background-color:var(--paper-2);background-image:repeating-linear-gradient(to bottom,transparent 0,transparent calc(var(--lh) - 1px),var(--line) calc(var(--lh) - 1px),var(--line) var(--lh));background-position:0 calc(16px + var(--lh) * 1.25);border-radius:4px;border:1px solid var(--line);border-top:none;line-height:var(--lh)}
+.practice-h{font-family:var(--hand);font-weight:400;font-size:1.53em;line-height:calc(var(--lh) * 1.25);color:var(--sepia);margin:0;letter-spacing:0}
+.practice p,.practice li{margin:0;line-height:var(--lh)}
+.practice ul,.practice ol{margin:0}
+.practice ul{list-style:disc;padding-left:1.3em}
+.practice ul>li{padding-left:0}
+.practice ul>li::before{display:none}
+.practice .tbl{background:var(--paper-2);margin:.3em 0}
+.practice-lines{display:none}
+
+/* 7 기대 효과 */
+.effect{margin:1.9em 0;padding:.1em 0}
+.effect .sp-label,.effect .sp-h{color:var(--grow)}
+.effect ul,.effect ol{list-style:none;padding-left:0;margin:0 0 .6em}
+.effect li,.effect>p{position:relative;padding-left:1.75em;margin:0 0 .35em}
+.effect li::before,.effect>p::before{content:"";position:absolute;left:.45em;top:.32em;width:.4em;height:.78em;border:solid var(--grow);border-width:0 .17em .17em 0;transform:rotate(40deg);border-radius:0;background:none}
+.effect>p.sp-label{padding-left:0}
+.effect>p.sp-label::before{display:none}
+
+/* 8 팁·주의 */
+.note{margin:1.5em 0;padding:.7em 1em .65em;font-size:.95em}
+.note>p:last-child,.note>ul:last-child,.note>ol:last-child{margin-bottom:0}
+.note ul,.note ol{padding-left:1.25em;margin:.2em 0}
+.note.tip{background:var(--memo);border:1px dashed var(--memo-line);border-radius:2px;box-shadow:0 1px 3px var(--shade)}
+.note.warn{border:1.5px solid var(--warn);border-left-width:5px}
+.lbl{display:inline-flex;align-items:center;gap:.3em;font-family:var(--sans);font-weight:700;font-size:.82em;letter-spacing:.04em;margin-right:.5em;vertical-align:.05em}
+.tip .lbl,.note-h{color:var(--memo-ink)}
+.warn .lbl{color:var(--warn)}
+.note-h{display:flex;align-items:center;gap:.35em;font-family:var(--sans);font-weight:700;font-size:.82em;margin:0 0 .3em}
+.bang{display:inline-flex;justify-content:center;align-items:center;width:1.4em;height:1.4em;border-radius:50%;background:var(--warn);color:var(--paper);font-weight:700;font-size:.92em;line-height:1}
+
+/* 9 작가에게 왜 필요한가 */
+.why{margin:2.1em 0}
+.why .sp-h{color:var(--why);border-top:1px solid var(--why);border-bottom:1px solid var(--why);padding:.4em .2em;font-size:.85em;letter-spacing:.07em;margin-bottom:.8em}
+
+/* 표 */
+.tbl{margin:1.4em 0;max-width:100%;overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-family:var(--sans);font-size:.853em;line-height:1.6;text-align:left}
+th,td{padding:7px 10px;text-align:left;vertical-align:top;border-bottom:.5px solid var(--line)}
+thead th{background:var(--paper-2);border-bottom:1.2px solid var(--ink);font-weight:700}
+tbody tr:last-child td{border-bottom:1px solid var(--ink)}
+tbody td:first-child{font-weight:700}
+
+/* 그림 */
+figure.fig{margin:1.7em 0}
+.fig-media{background:#fff;border:1px solid var(--line);border-radius:4px;padding:6px;text-align:center}
+.fig-media img,.fig-media svg{max-width:100%;height:auto;display:block;margin:0 auto}
+.fig-media.svg{background:none;border:none;padding:0;border-radius:0}
+.fig-media.svg svg{width:100%}
+.fig-media .sd,.fig-media .sd .g,.fig-media .sd text{font-family:var(--sans)!important}
+.fig-media .sd .m{font-family:var(--title)!important}
+.fig-missing{border:1px dashed var(--line);padding:2em 1em;color:var(--ink-soft);font-family:var(--sans);font-size:.8em;text-align:center}
+figure.fig figcaption{font-family:var(--sans);font-size:.765em;line-height:1.5;color:var(--ink-soft);margin-top:.55em;letter-spacing:.02em}
+.fig-no{font-weight:700;color:var(--ink);margin-right:.2em}
+blockquote{margin:1.2em 0;padding:.1em 0 .1em 1em;border-left:1px solid var(--line);color:var(--ink-soft)}
+hr{border:0;border-top:1px solid var(--line);width:3em;margin:3em 0}
+
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;scroll-behavior:smooth;scroll-padding-top:60px;font-size:17px}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--serif);font-size:17px;line-height:1.85;letter-spacing:-.005em;word-break:keep-all;overflow-wrap:anywhere;line-break:strict;text-align:left;--lh:31.45px}
+@media (max-width:599px){html{font-size:16px}body{font-size:16px;line-height:1.8;--lh:28.8px}}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{transition:none!important;animation:none!important}}
+p{margin:0 0 .9em}
+ul,ol{padding-left:1.3em;margin:0 0 1em}
+li{margin:.15em 0}
+a{color:inherit;text-decoration-color:var(--line);text-underline-offset:.2em}
+a:hover{text-decoration-color:var(--sepia)}
+:focus-visible{outline:2px solid var(--sepia);outline-offset:2px;border-radius:2px}
+img,svg{max-width:100%}
+h1,h2,h3,h4{font-family:var(--title);color:var(--ink);text-wrap:pretty}
+h4{font-weight:700;font-size:20px;line-height:1.5;margin:2.2em 0 .6em}
+code{background:var(--paper-2);padding:.05em .35em;border-radius:3px}
+.practice::before{content:"";position:absolute;top:-8px;left:28px;width:58px;height:16px;background:var(--tape-a);transform:rotate(-3deg)}
+.sr{position:absolute!important;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.skip{position:absolute;left:-9999px;top:0}
+.skip:focus{left:8px;top:8px;z-index:100;background:var(--paper);padding:6px 10px;border:1px solid var(--sepia)}
+.btn{font:inherit;color:var(--ink);background:transparent;border:1px solid var(--line);border-radius:4px;padding:3px 10px;cursor:pointer;min-height:30px;line-height:1.4}
+.btn:hover{border-color:var(--sepia)}
+.theme{display:flex;flex:none}
+.theme .btn{border-radius:0;margin-left:-1px;padding:3px 8px}
+.theme .btn:first-child{border-radius:4px 0 0 4px;margin-left:0}
+.theme .btn:last-child{border-radius:0 4px 4px 0}
+.theme .btn[aria-pressed="true"]{background:var(--paper-2);border-color:var(--sepia);font-weight:700;position:relative}
+.back{font-family:var(--sans);font-size:13px;line-height:1.4;text-decoration:none;color:var(--ink-soft);white-space:nowrap;padding:4px 6px;border-radius:4px;flex:none}
+.back:hover{color:var(--ink);background:var(--paper-2)}
+.pdf-dl{margin:1.2em 0 0}
+.pdf-dl a.btn{font-family:var(--sans);font-size:13px;text-decoration:none;display:inline-block;padding:5px 12px}
+@media (max-width:420px){body.deploy.detail .top-logo{display:none}}
+.fig-media[role="button"]{cursor:zoom-in}
+#lightbox{position:fixed;inset:0;z-index:90;background:rgba(0,0,0,.82);display:none;align-items:center;justify-content:center;padding:16px;cursor:zoom-out}
+#lightbox.show{display:flex}
+#lightbox .lb-in{max-width:min(1400px,100%);max-height:100%;overflow:auto;background:#fff;border-radius:4px;padding:8px}
+#lightbox img,#lightbox svg{display:block;max-width:100%;max-height:calc(100vh - 56px);width:auto;height:auto}
+#lightbox svg{width:min(1300px,92vw)}
+@media (max-width:599px){.usage,.eye,.lesson,.note{padding-left:14px;padding-right:14px}.ai{padding:1.4em 14px .8em}.practice{padding:14px 14px 12px}}
+@media (max-width:479px){.ai-row{padding-left:0}.ai-row dt{position:static;width:auto}.ai-row.no{margin:.25em -.4em .6em;padding:.35em .6em}.ai-row.no dt{display:inline-block}.ai.rest{display:block}.ai.rest .ai-head{margin-bottom:.15em}}
+@media (max-width:599px){
+ .tbl.cards{overflow:visible}
+ table.cards thead{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+ table.cards,table.cards tbody,table.cards tr,table.cards td{display:block;width:100%}
+ table.cards tr{border-top:1.2px solid var(--ink);padding:6px 0 8px}
+ table.cards tbody tr:last-child{border-bottom:1px solid var(--ink)}
+ table.cards td{border:none;padding:2px 4px}
+ table.cards td::before{content:attr(data-label);display:block;font-weight:700;font-size:.8em;color:var(--ink-soft);letter-spacing:.02em}
+ table.cards tbody td:first-child{font-size:1.05em}
+ table.cards tbody td:first-child::before{display:none}
+}
+
+.top-logo{display:flex;align-items:center}
+.top-logo .logo{height:26px;width:auto;display:block}
+.top-left{display:flex;align-items:center;gap:8px;min-width:0}
+.s-top{position:sticky;top:0;z-index:20;display:flex;justify-content:space-between;align-items:center;padding:8px 16px;background:var(--paper);border-bottom:1px solid var(--line);font-family:var(--sans);font-size:13px}
+.sheet{max-width:1080px;margin:0 auto;padding:40px 40px 80px}
+@media (min-width:1280px){body{background:var(--desk)}.sheet{background:var(--paper);box-shadow:0 2px 14px var(--shade);margin:32px auto 64px}}
+.s-head{margin:0 0 2.2em}
+.s-head h1{margin:0;font-weight:400;line-height:1.1}
+.s-head .hand{display:block;font-family:var(--hand);font-size:44px;color:var(--sepia);line-height:1.1}
+.s-head .s-sub{display:block;font-family:var(--title);font-weight:800;font-size:24px;letter-spacing:-.01em;margin-top:.2em}
+.s-head .s-lead{margin:.7em 0 0;color:var(--ink-soft);max-width:36em}
+.grid{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:12px 44px;align-items:start}
+.grid>section{min-width:0}
+.c7{grid-column:span 7}.c5{grid-column:span 5}.c12{grid-column:span 12}.c6{grid-column:span 6}.c4{grid-column:span 4}.c8{grid-column:span 8}
+@media (max-width:959px){.grid{grid-template-columns:minmax(0,1fr);column-gap:0}.grid>section{grid-column:1/-1}}
+h2.s-h{font-weight:800;font-size:22px;line-height:1.4;margin:1.2em 0 .7em;padding-top:.6em;border-top:1.5px solid var(--ink)}
+.s-first .usage ol.steps>li{font-size:1.06em}
+@media (max-width:599px){.sheet{padding:24px 16px 56px}.s-head .hand{font-size:40px}}
+:root[data-theme="dark"] .logo .lg-text{fill:#ece2d2}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .logo .lg-text{fill:#ece2d2}}
+
+</style>
+</head>
+<body class="simple deploy">
+<div class="s-top"><span class="top-left"><a class="back" href="../">← 아침 서재로</a><span class="top-logo"><svg class="logo " role="img" aria-label="아침 서재" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1228 360"><g transform="scale(0.703125)"><rect width="512" height="512" rx="112" fill="#f4ecdc"/><g transform="translate(0 -11)"><path d="M256 152V116M322 170l18-31M368 216l31-18M190 170l-18-31M144 216l-31-18" stroke="#8a5a2b" stroke-width="20" stroke-linecap="round" fill="none"/><circle cx="256" cy="288" r="102" fill="#b23a2e"/><path d="M256 294C206 258 140 250 80 266V394C140 378 206 386 256 420C306 386 372 378 432 394V266C372 250 306 258 256 294Z" fill="#2e2721"/><path d="M256 310V404" stroke="#f4ecdc" stroke-width="11" stroke-linecap="round"/></g></g><path class="lg-text" d="M485.7 128Q494.3 129.5 501.4 133.1Q508.6 136.6 513.7 141.8Q518.7 147.1 521.5 153.7Q524.2 160.2 524.2 167.6Q524.2 176.4 520.5 183.9Q516.8 191.5 510.2 196.9Q503.7 202.4 494.6 205.5Q485.5 208.6 475 208.6Q464.4 208.6 455.6 205.5Q446.7 202.4 440.2 196.9Q433.8 191.5 430.1 183.9Q426.4 176.4 426.4 167.6Q426.4 159.8 429.4 153Q432.4 146.1 437.8 140.9Q443.1 135.6 450.7 132.1Q458.2 128.6 467.2 127.6Q467.4 124.5 465.8 122.7Q464.2 120.9 459.2 119.4L463.5 112Q465.4 112.5 468.7 113.3Q472.1 114.1 475.7 114.9Q479.3 115.7 482.8 116.4Q486.3 117 488.7 117.6Q487.1 121.3 485.7 128ZM501.4 167Q501.4 161 499.2 155.8Q497.1 150.6 493.5 146.8Q490 143 485.3 140.8Q480.6 138.5 475.4 138.5Q470.1 138.5 465.5 140.8Q460.9 143 457.5 146.8Q454.1 150.6 452 155.8Q450 161 450 167Q450 173.3 452 178.4Q454.1 183.4 457.5 187.1Q460.9 190.7 465.5 192.7Q470.1 194.8 475.4 194.8Q480.6 194.8 485.3 192.7Q490 190.7 493.6 187.1Q497.2 183.4 499.3 178.4Q501.4 173.3 501.4 167ZM569.3 218.2Q569.3 224.3 569 232.2Q568.7 240.1 568.2 248.1Q567.8 256.1 567.3 263.3Q566.8 270.6 566.2 274.9L549 277.2Q548.6 274.1 548.3 268.7Q548 263.3 547.7 257.1Q547.4 250.8 547.3 244.4Q547.2 237.9 547.2 232.3V110.2Q547.2 104.5 541.8 100.9Q536.3 97.3 523.4 94L527.3 85.4Q532.2 86 538.4 87Q544.5 87.9 550.8 89.1Q557 90.3 562.6 91.3Q568.1 92.2 571.9 92.8Q571.3 94.6 570.9 97.5Q570.5 100.4 570.1 103.4Q569.7 106.3 569.5 108.5Q569.3 110.8 569.3 111V163.3Q573.6 162.9 578.9 162.4Q584.2 162 589.3 161.4Q594.5 160.8 599.3 160.1Q604.1 159.4 607.6 158.6L605.6 176.8Q602.7 176.6 598.3 176.6Q593.9 176.6 588.9 176.6Q584 176.6 578.9 176.6Q573.8 176.6 569.3 176.6Z M761.8 250.6Q764 250.2 765.8 250.1Q767.7 250 769.2 249.9L765.1 266.5Q758.5 265.9 749.2 265.7Q739.9 265.5 729.8 265.4Q719.6 265.3 709.5 265.5Q699.3 265.7 690.9 266.1Q690.5 267.2 690.1 268.9Q689.7 270.6 689.3 272.7L673.5 275.4Q672.4 271.1 671.8 268.2Q671.2 265.3 671 262.9Q670.8 260.6 670.8 258.6Q670.8 256.7 670.8 254.1L668.6 224.7Q668.2 221.1 667.9 219Q667.5 216.8 666.1 215.5Q664.7 214.1 662.1 213.1Q659.5 212.2 654.8 211L658.9 202.6Q671.6 204.1 685.2 204.7Q698.9 205.3 712.8 205.1Q726.6 204.9 740.5 204.1Q754.4 203.4 767.3 202.2Q766.5 206.9 765.7 213Q764.9 219.2 764.2 225.6Q763.6 232.1 763 238.6Q762.4 245.2 761.8 250.6ZM692.3 160Q703.4 168.2 714.1 174.1Q724.7 179.9 736.4 184.8L720.8 199.5Q711.4 192.6 701.8 184.3Q692.3 176 682.9 168.4Q668.6 180.7 652.8 189.5Q637 198.3 620.4 205.3L614.5 197.9Q626.1 192.4 636.8 185.3Q647.5 178.2 656.9 170Q666.3 161.8 674.2 152.6Q682.1 143.4 688.2 134Q682.5 134.2 676 134.6Q669.4 135 663.8 135.2Q661.8 135.2 658.2 135.6Q654.6 136 650.3 136.4Q646 136.8 641.8 137.4Q637.6 137.9 634.5 138.3L622.5 120.9Q624.9 121.3 629.2 121.8Q633.5 122.3 638.4 122.7Q643.2 123.1 647.9 123.4Q652.6 123.7 655.9 123.7Q663 123.7 670.5 123.4Q678 123.1 685.1 122.4Q692.3 121.7 698.9 120.8Q705.6 119.8 711.2 118.6L718.8 125.8Q713.2 135.6 706.5 144.1Q699.9 152.6 692.3 160ZM723.9 85.4Q728.4 86 734.5 87Q740.5 87.9 746.8 89.1Q753 90.3 758.8 91.3Q764.5 92.2 768.2 92.8Q767.9 94.6 767.6 97.5Q767.3 100.4 766.9 103.4Q766.5 106.3 766.3 108.5Q766.1 110.8 766.1 111V164.7Q766.1 168 765.7 172.7Q765.3 177.4 764.7 182.3Q764.1 187.2 763.6 191.4Q763 195.6 762.4 198.1L745.8 200.6Q745.4 198.5 745 195.3Q744.6 192 744.3 188.3Q744 184.6 743.9 181.1Q743.8 177.6 743.8 174.9V110.2Q743.8 104.5 738.1 100.9Q732.3 97.3 719.4 94ZM742.5 216.8Q736.4 216.6 729.6 216.6Q722.7 216.5 715.8 216.6Q708.9 216.8 702.4 217.1Q696 217.4 690.7 217.8L691.5 250.2V253.6Q703.2 253.4 716.5 252.9Q729.8 252.4 741.9 252ZM701.3 111.2Q698.1 111.2 694.1 111.2Q690.1 111.2 686.2 111.3Q682.3 111.4 678.7 111.5Q675.1 111.6 672.7 111.6Q671.4 111.6 668.6 111.8Q665.9 112 662.6 112.3Q659.3 112.5 655.9 112.8Q652.6 113.1 650.3 113.3L640.7 96.9Q643.1 97.5 647.2 98Q651.3 98.5 655.7 99Q660 99.5 664.1 99.7Q668.1 99.9 670.2 99.9Q672.4 99.9 676.6 99.6Q680.8 99.3 685.7 98.8Q690.7 98.3 695.9 97.6Q701.1 96.9 705.4 96.3Z M919.8 161.6Q930 171.9 943 183.1Q956 194.2 968.6 203.6L952.2 219.8Q943.5 209.2 933 196.7Q922.6 184.2 912.4 172.3Q902.4 186 889.4 198.7Q876.3 211.4 859.3 223.1L852.4 216.8Q863.8 207.9 873.2 197Q882.7 186.2 890.1 174.6Q897.6 162.9 902.8 151.2Q908.1 139.5 911 129Q911.6 127.2 911.6 126.2Q911.6 125.2 911.4 124.7Q911.2 124.1 911 123.7Q910.8 123.3 910.8 122.7Q909.9 120.8 906.2 118.6Q902.6 116.5 898.3 114.9L902.4 107.7Q906.3 108.6 911.3 110.1Q916.3 111.6 921.5 113.1Q926.7 114.7 931.5 116.2Q936.4 117.6 940.3 118.6Q932.5 141.8 919.8 161.6ZM985.2 165.5Q979.2 165.9 973 166.3Q966.9 166.6 961.2 167.2Q955.6 167.8 950.9 168.4Q946.2 169 943.1 169.6L934.3 152.2Q936.2 152.4 939.8 152.8Q943.5 153.2 947.6 153.5Q951.7 153.8 955.8 153.9Q959.9 154 962.8 154Q967.1 153.8 972.8 153.8Q978.6 153.8 985.2 153.4V110.2Q985.2 104.5 979.5 100.9Q973.7 97.3 960.8 94L965.3 85.4Q969.8 86 975.9 87Q981.9 87.9 988.2 89.1Q994.4 90.3 1000.2 91.3Q1006 92.2 1009.7 92.8Q1009.3 94.6 1008.9 97.5Q1008.5 100.4 1008.2 103.4Q1007.9 106.3 1007.6 108.5Q1007.3 110.8 1007.3 111V218.2Q1007.3 224.3 1007 232.2Q1006.7 240.1 1006.2 248.1Q1005.8 256.1 1005.1 263.3Q1004.4 270.6 1003.6 274.9L987 277.2Q986.6 274.1 986.3 268.7Q986 263.3 985.7 257.1Q985.4 250.8 985.3 244.4Q985.2 237.9 985.2 232.3Z M1161.7 167.4Q1164.8 167 1169.7 166.7Q1174.6 166.5 1177.5 166.3V110.2Q1177.5 107.3 1176.7 105Q1175.8 102.8 1173.4 100.8Q1171.1 98.9 1167 97.2Q1162.9 95.6 1156.4 94L1160.2 85.4Q1164.8 86 1170.6 87.1Q1176.4 88.1 1182 89.2Q1187.7 90.3 1193 91.4Q1198.2 92.4 1201.8 93.2Q1201.4 95 1201.1 97.9Q1200.8 100.8 1200.5 103.6Q1200.2 106.3 1200 108.5Q1199.8 110.8 1199.8 111V218.2Q1199.8 224.3 1199.5 232Q1199.2 239.7 1198.8 247.6Q1198.4 255.5 1197.9 262.7Q1197.3 270 1196.5 274.9L1179.5 277.2Q1179.1 273.5 1178.8 268.1Q1178.5 262.7 1178.2 256.6Q1177.9 250.4 1177.7 244.2Q1177.5 237.9 1177.5 232.3V179.1Q1174.4 179.3 1169.5 179.3Q1164.6 179.3 1161.7 179.5V211.2Q1161.7 217.2 1161.4 225Q1161.1 232.9 1160.6 240.8Q1160.2 248.7 1159.6 255.9Q1159 263.1 1158.2 268L1141.8 270.2Q1141.4 266.5 1141.1 261.1Q1140.8 255.7 1140.5 249.7Q1140.2 243.6 1140 237.4Q1139.8 231.1 1139.8 225.4V212.2L1127.1 223.5Q1120.9 214.7 1112.9 204.1Q1104.9 193.6 1097.1 184.4Q1086.1 197.3 1073.1 208.6Q1060.2 220 1044.9 230.5L1038.1 224.1Q1049.8 215.1 1060.1 204.1Q1070.3 193 1078.4 181.3Q1086.5 169.6 1092.3 157.8Q1098 145.9 1100.8 135.2Q1095.7 135.4 1091.2 135.5Q1086.7 135.6 1081.6 136Q1079.5 136.2 1075.9 136.6Q1072.3 137 1068.3 137.4Q1064.3 137.9 1060.4 138.5Q1056.4 139.1 1053.5 139.7L1042.2 120.9Q1044.9 121.5 1048.8 122.2Q1052.7 122.9 1057 123.4Q1061.3 123.9 1065.5 124.3Q1069.7 124.7 1073 124.7Q1080.1 124.7 1085.9 124.6Q1091.8 124.5 1097.4 123.9Q1102.9 123.3 1108.6 122.3Q1114.3 121.3 1121.1 119.6L1128.5 126.6Q1119.9 152.8 1104.5 174.1Q1108.6 178.2 1113.2 182.8Q1117.8 187.4 1122.5 191.6Q1127.1 195.9 1131.6 199.9Q1136.1 203.8 1139.8 206.7V117.6Q1139.8 114.9 1139.2 112.7Q1138.5 110.6 1136.4 108.7Q1134.4 106.9 1130.5 105.3Q1126.6 103.8 1120.3 102.2L1124.2 93.8Q1129.1 94.4 1134.6 95.3Q1140 96.1 1145.4 97.2Q1150.8 98.3 1155.6 99.4Q1160.4 100.4 1163.9 101.4Q1163.5 103.2 1163.1 106Q1162.7 108.8 1162.4 111.7Q1162.1 114.5 1161.9 116.6Q1161.7 118.8 1161.7 119V167.4Z" fill="#2e2721"/></svg></span></span><div class="theme" role="group" aria-label="화면 밝기"><button class="btn" type="button" data-t="light">밝게</button><button class="btn" type="button" data-t="dark">어둡게</button><button class="btn" type="button" data-t="auto">자동</button></div></div>
+<main class="sheet"><header class="s-head"><h1><span class="hand">아침 서재</span><span class="s-sub">간단 매뉴얼</span></h1><p class="s-lead">말씀과 책을 읽고 쓰는 아침의 다이어리입니다. 이 한 장만 읽으면 오늘 아침부터 바로 쓸 수 있습니다.</p>
+<p class="pdf-dl"><a class="btn" href="quick.pdf" download>PDF 받기</a></p></header><div class="grid"><section class="s-sec c7 s-first"><h2 class="s-h">5분 만에 시작하기</h2>
+<div class="usage">
+<div class="sp-head"><span class="sp-tag use-tag"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 3l13 7.5-5.6 1.6L10 18z"/><path d="M12.6 12.2l4.4 5.6"/></svg></span>사용법</span></div>
+<ol class="steps">
+<li>인터넷 창에서 <code>https://4gospel.github.io/seojae-open/</code>를 엽니다.</li>
+<li>「구글로 시작하기」를 누르고 내 구글 계정으로 로그인합니다. 허락 화면에서 「Google Drive 파일」 칸에 체크한 뒤 「계속」을 누릅니다.</li>
+<li>내 구글 드라이브에 「아침 서재」 폴더가 저절로 생기고, 바로 「오늘」 화면이 열립니다.</li>
+<li>「설정 <span class="arr">→</span> 화면·기기 <span class="arr">→</span> 앱으로 쓰기」에서 홈 화면이나 Dock에 앱으로 설치합니다.</li>
+<li>「설정 <span class="arr">→</span> 쓰기 <span class="arr">→</span> 나를 부르는 호칭」에서 불리고 싶은 이름을 정합니다(기본 「작가님」).</li>
+<li>AI를 쓰려면 「설정 <span class="arr">→</span> 쓰기 <span class="arr">→</span> AI 열쇠」에 내 제미나이 열쇠(무료, 받는 길이 그 칸에 있음)를 넣고 「AI를 씁니다」에 체크합니다. 쓰지 않으면 건너뜁니다.</li>
+<li>위 메뉴 「묵상」이나 「일기」를 눌러 첫 글을 씁니다. 손을 3초 쉬면 저절로 간직됩니다.</li>
+</ol>
+</div>
+<p>휴대폰이나 다른 컴퓨터에서도 같은 주소를 열고 같은 구글 계정으로 「구글로 시작하기」를 누르면 같은 기록이 보입니다.</p>
+</section>
+<section class="s-sec c5"><h2 class="s-h">하루 한 바퀴</h2>
+<ul>
+<li><strong>오늘</strong>: 날짜 옆 「성경 읽기」·「묵상」·「책 읽기」·「일기」 줄로 오늘 할 일을 봅니다. 누르면 그 자리로 가고, 한 일에는 표시가 붙습니다.</li>
+<li><strong>묵상</strong>: 매일성경 본문을 읽고 마음에 닿는 구절에 형광펜을 칩니다. 받은 것을 묵상으로 쓰고 「봉인」을 누르면 내 구글 드라이브에 간직됩니다.</li>
+<li><strong>일기</strong>: 책장을 넘기듯 오늘 쪽을 펴고 한 줄을 적습니다. 지난날은 책 가장자리를 눌러 넘겨 봅니다.</li>
+<li><strong>책장</strong>: 책 이름과 지은이를 적어 꽂습니다. 「오늘」 화면의 읽는 책 칸에서 「여기까지 읽음」을 남깁니다.</li>
+<li><strong>글방</strong>: 「＋ 새 원고」로 에세이·소설·시집 같은 책 원고를 만들고, 글 한 편씩 채워 갑니다. 쓴 묵상은 「서랍」에서 모아 원고로 엮을 수도 있습니다.</li>
+</ul>
+</section>
+<section class="s-sec c12"><h2 class="s-h">메뉴 한눈에</h2>
+<div class="tbl keep">
+<table>
+<thead>
+<tr>
+<th scope="col">메뉴</th>
+<th scope="col">하는 일</th>
+<th scope="col">첫 한 걸음</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="메뉴">「오늘」</td>
+<td data-label="하는 일">오늘 할 일, 오늘 말씀, 읽는 책</td>
+<td data-label="첫 한 걸음">날짜 옆 할 일 줄 누르기</td>
+</tr>
+<tr>
+<td data-label="메뉴">「묵상」</td>
+<td data-label="하는 일">매일성경 읽기, 묵상·설교초안 쓰기</td>
+<td data-label="첫 한 걸음">본문을 읽고 묵상 쓰기</td>
+</tr>
+<tr>
+<td data-label="메뉴">「일기」</td>
+<td data-label="하는 일">하루 한 쪽 일기장</td>
+<td data-label="첫 한 걸음">오늘 쪽에 한 줄 적기</td>
+</tr>
+<tr>
+<td data-label="메뉴">「서랍」</td>
+<td data-label="하는 일">쓴 글 모두 찾기, 원고 엮기, 휴지통</td>
+<td data-label="첫 한 걸음">「낱말로 찾기」 칸에 낱말 넣기</td>
+</tr>
+<tr>
+<td data-label="메뉴">「책장」</td>
+<td data-label="하는 일">읽는 책·다 읽은 책, 밑줄·독후감</td>
+<td data-label="첫 한 걸음">책 이름 적어 꽂기</td>
+</tr>
+<tr>
+<td data-label="메뉴">「글방」</td>
+<td data-label="하는 일">책 원고 작업실</td>
+<td data-label="첫 한 걸음">「＋ 새 원고」</td>
+</tr>
+<tr>
+<td data-label="메뉴">「✦ AI」</td>
+<td data-label="하는 일">AI 조사 도우미(오른쪽 창)</td>
+<td data-label="첫 한 걸음">묻고 싶은 것 적기</td>
+</tr>
+<tr>
+<td data-label="메뉴">톱니</td>
+<td data-label="하는 일">설정</td>
+<td data-label="첫 한 걸음">「설정 필요 N곳 <span class="arr">→</span>」 따라가기</td>
+</tr>
+</tbody>
+</table>
+</div>
+<ul>
+<li>톱니를 한 번 더 누르면 설정에 오기 전 화면과 자리로 돌아갑니다.</li>
+<li>목록의 글·원고·책에서 오른쪽 버튼을 누르면 메뉴가 나옵니다. 휴대폰에서는 길게 누릅니다.</li>
+<li>설정 맨 앞 「도움 <span class="arr">→</span> 사용 설명서」에서 이 매뉴얼과 상세 매뉴얼(책)을 언제든 다시 엽니다.</li>
+</ul>
+</section>
+<section class="s-sec c7"><h2 class="s-h">꼭 알아 둘 것</h2>
+<ul>
+<li><strong>저절로 간직</strong>: 손을 3초 쉬면 간직되고 「✓ 간직됨」이 보입니다. 직접 하려면 「봉인」이나 <kbd>⌘S</kbd>를 누릅니다.</li>
+<li><strong>원본은 내 구글 드라이브</strong>: 모든 글은 내 구글 드라이브 「아침 서재」 폴더의 기록 파일(data.json)에 담깁니다. 이 기기 사본은 보조입니다. 아침 서재를 만든 사람의 서버를 지나지 않습니다.</li>
+<li><strong>이 앱이 만든 파일만</strong>: 아침 서재는 드라이브의 다른 파일을 보지도 고치지도 못합니다.</li>
+<li><strong>한 시간쯤 지나면 「구글 드라이브에 잇기」</strong>: 로그인은 한 시간쯤 이어집니다. 그 뒤 화면 위에 안내가 뜨면 단추를 한 번 누릅니다. 그사이 쓴 글은 이 기기에 남아 있다가 합쳐서 드라이브로 갑니다.</li>
+<li><strong>휴지통 30일</strong>: 지운 글과 원고는 「서랍 <span class="arr">→</span> 휴지통」에 30일 남습니다. 「되살리기」로 돌아옵니다.</li>
+<li><strong>날마다 사본</strong>: 그날 처음 간직할 때 기록 전체의 사본이 드라이브 「아침 서재/백업」에 남습니다. PC에서는 「설정 <span class="arr">→</span> 기록 지키기」에서 PC 폴더에도 한 벌 더 남길 수 있습니다.</li>
+<li><strong>두 기기에서 같은 글을 고치면</strong>: 덮어쓰지 않고 합칩니다. 다른 기기 판은 「이전 판」에 남습니다.</li>
+<li><strong>인터넷이 끊겨도</strong>: 앱은 열리고 글은 이 기기에 담깁니다. 다시 이어지면 저절로 드라이브로 갑니다.</li>
+</ul>
+</section>
+<section class="s-sec c5"><h2 class="s-h sr">이 부분에서 AI는</h2>
+<aside aria-label="이 부분에서 AI는" class="ai">
+<div class="ai-head"><span class="ai-tag">AI</span><span class="ai-title">이 부분에서 AI는</span></div>
+<dl>
+<div class="ai-row">
+<dt>하는 일</dt>
+<dd>묵상에서는 질문만 던져 생각을 돕습니다. 글방에서는 조사(출처와 함께), 고른 곳 다듬기(「✦ 다듬기」), 다른 표현 후보, 「✦ 피드백·첨삭」을 제안 카드로 보여 줍니다. 위 메뉴 「✦ AI」는 조사 도우미, 쓰기 화면의 「✦ AI」는 글쓰기 도우미입니다.</dd>
+</div>
+<div class="ai-row no">
+<dt>하지 않는 일</dt>
+<dd>여러분이 「적용」이나 「넣기」를 누르기 전에는 한 글자도 바꾸지 않습니다. 묵상 글을 대신 쓰지 않고, 시는 짚기만 합니다. 도입 첫 문단·1인칭 고백·결론 마지막 문단·기도문은 사람의 몫으로 남깁니다. 일기는 AI로 보내지 않습니다.</dd>
+</div>
+<div class="ai-row">
+<dt>잘 쓰는 법</dt>
+<dd>「설정 <span class="arr">→</span> 쓰기 <span class="arr">→</span> AI 열쇠」에 내 제미나이 열쇠(무료)나 클로드 열쇠를 넣고 「AI를 씁니다」에 체크합니다. 먼저 본문을 읽고 「내가 받은 것」 세 줄을 적은 뒤 묻습니다.</dd>
+</div>
+<div class="ai-row">
+<dt>한계</dt>
+<dd>열쇠는 이 기기에만 있어, 기기마다 한 번씩 넣습니다. 제미나이 무료 등급에 보낸 글은 구글이 서비스 개선에 쓸 수 있습니다. AI의 조사는 원문 확인이 필요합니다.</dd>
+</div>
+</dl>
+</aside>
+</section>
+<section class="s-sec c7"><h2 class="s-h">막힐 때</h2>
+<ol class="steps">
+<li><strong>「구글로 시작하기」를 눌러도 창이 안 떠요.</strong> 브라우저가 팝업을 막았을 수 있습니다. 주소창 오른쪽의 팝업 차단 표시를 눌러 「항상 허용」으로 바꾼 뒤 다시 누릅니다.</li>
+<li><strong>「구글 허락 화면에서 Google Drive 파일 칸에 체크해야…」가 떠요.</strong> 다시 「구글로 시작하기」를 누르고, 허락 화면의 드라이브 칸에 체크합니다.</li>
+<li><strong>화면 위에 「구글 드라이브에 잇기」가 떠요.</strong> 로그인이 끝난 것입니다. 단추를 한 번 누르면 이어지고, 그사이 쓴 글도 함께 갑니다.</li>
+<li><strong>다른 기기 글이 안 보여요.</strong> 두 기기가 같은 구글 계정으로 시작했는지 「설정 <span class="arr">→</span> 화면·기기 <span class="arr">→</span> 다른 기기 연결」에서 봅니다. 앱을 내렸다 다시 열면 최신 기록을 받아 옵니다.</li>
+<li><strong>AI가 「AI를 쓰려면… AI 열쇠」라고 해요.</strong> 「설정 <span class="arr">→</span> 쓰기 <span class="arr">→</span> AI 열쇠」에서 열쇠를 넣고 「AI를 씁니다」에 체크한 뒤 「저장」을 누릅니다. 다른 기기에서는 그 기기에도 넣어야 합니다.</li>
+<li><strong>지운 글을 찾고 싶어요.</strong> 「서랍 <span class="arr">→</span> 휴지통」에서 「되살리기」를 누릅니다. 오래된 것은 드라이브 「아침 서재/백업」의 날짜별 사본에 남아 있습니다.</li>
+</ol>
+<p><strong>도움말 모드 켜는 길</strong>: 「톱니 <span class="arr">→</span> 화면·기기 <span class="arr">→</span> 화면 꾸미기 <span class="arr">→</span> 도움말 모드」의 「단추 설명 보기」를 「켬」으로 둡니다. 그러면 PC에서 단추에 마우스를 올릴 때 쓰임새 카드가 뜹니다. 키보드 안내는 글 칸 밖에서 <code>?</code>를 누르면 뜹니다.</p>
+</section>
+<section class="s-sec c5"><h2 class="s-h">단축키</h2>
+<p>맥은 ⌘, 윈도는 Ctrl입니다.</p>
+<div class="tbl keep">
+<table>
+<thead>
+<tr>
+<th scope="col">키</th>
+<th scope="col">하는 일</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="키"><kbd>⌘ + S</kbd></td>
+<td data-label="하는 일">간직</td>
+</tr>
+<tr>
+<td data-label="키"><kbd>⌘ + 엔터</kbd></td>
+<td data-label="하는 일">메모·각주·노트·자료 칸에서 간직</td>
+</tr>
+<tr>
+<td data-label="키"><kbd>Esc</kbd></td>
+<td data-label="하는 일">창·상자 닫기(쓴 것은 간직하고 닫음)</td>
+</tr>
+<tr>
+<td data-label="키"><kbd>⌘ + Z</kbd> / <kbd>⇧⌘Z</kbd></td>
+<td data-label="하는 일">되돌리기 / 다시 실행</td>
+</tr>
+<tr>
+<td data-label="키"><kbd>⌘ + B</kbd> · I · U</td>
+<td data-label="하는 일">굵게 · 기울임 · 밑줄</td>
+</tr>
+<tr>
+<td data-label="키"><kbd>⌘ + E</kbd></td>
+<td data-label="하는 일">읽기 모드 ↔ 다시 쓰기</td>
+</tr>
+<tr>
+<td data-label="키"><kbd>⌘ + ⇧ + F</kbd></td>
+<td data-label="하는 일">각주 달기</td>
+</tr>
+<tr>
+<td data-label="키"><kbd>⌥ + ↑</kbd> / ↓</td>
+<td data-label="하는 일">원고 안 앞 글 / 다음 글</td>
+</tr>
+<tr>
+<td data-label="키">← <span class="arr">→</span></td>
+<td data-label="하는 일">일기장 앞날 / 다음 날</td>
+</tr>
+<tr>
+<td data-label="키">?</td>
+<td data-label="하는 일">단축키 안내</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section></div></main>
+<div id="lightbox" tabindex="-1" aria-label="크게 본 그림"><div class="lb-in"></div></div>
+<script>
+(function(){
+var d=document,root=d.documentElement,KEY='seojae.manual.theme';
+function store(k,v){try{if(v===undefined)return localStorage.getItem(k);localStorage.setItem(k,v)}catch(e){return null}}
+var tb=[].slice.call(d.querySelectorAll('[data-t]'));
+function applyT(t){if(t==='light'||t==='dark')root.setAttribute('data-theme',t);else{root.removeAttribute('data-theme');t='auto'}
+ tb.forEach(function(b){b.setAttribute('aria-pressed',b.getAttribute('data-t')===t?'true':'false')})}
+applyT(store(KEY)||'auto');
+tb.forEach(function(b){b.addEventListener('click',function(){var t=b.getAttribute('data-t');applyT(t);store(KEY,t)})});
+/* 그림 크게 보기 */
+var lb=d.getElementById('lightbox');
+if(lb){var lbIn=lb.querySelector('.lb-in'),last=null;
+ function lbOpen(m){last=m;lbIn.innerHTML=m.innerHTML;lb.classList.add('show');lb.focus()}
+ function lbClose(){lb.classList.remove('show');lbIn.innerHTML='';if(last)last.focus()}
+ [].forEach.call(d.querySelectorAll('.fig-media'),function(m){if(m.querySelector('.fig-missing'))return;
+  m.setAttribute('role','button');m.setAttribute('tabindex','0');m.setAttribute('aria-label','그림 크게 보기');
+  m.addEventListener('click',function(){lbOpen(m)});
+  m.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();lbOpen(m)}})});
+ lb.addEventListener('click',lbClose);
+ d.addEventListener('keydown',function(e){if(e.key==='Escape'&&lb.classList.contains('show'))lbClose()});}
+if(!d.body.classList.contains('detail'))return;
+var toc=d.getElementById('toc'),btn=d.getElementById('tocBtn'),scrim=d.getElementById('scrim'),q=d.getElementById('q');
+var narrow=window.matchMedia('(max-width:1099px)');
+function openToc(o){toc.classList.toggle('open',o);scrim.classList.toggle('show',o);btn.setAttribute('aria-expanded',o?'true':'false');
+ if(o){setTimeout(function(){q.focus()},30)}else if(toc.contains(d.activeElement))btn.focus()}
+btn.addEventListener('click',function(){openToc(!toc.classList.contains('open'))});
+scrim.addEventListener('click',function(){openToc(false)});
+d.addEventListener('keydown',function(e){if(e.key==='Escape'&&toc.classList.contains('open')&&!(lb&&lb.classList.contains('show')))openToc(false)});
+toc.addEventListener('click',function(e){if(e.target.closest('a')&&narrow.matches)openToc(false)});
+var heads=[].slice.call(d.querySelectorAll('main [data-p]'));
+var tops=[];function measure(){var y=window.scrollY;tops=heads.map(function(h){return h.getBoundingClientRect().top+y})}
+var prog=d.querySelector('#progress span'),pbar=d.getElementById('progress'),wP=d.getElementById('wPart'),wC=d.getElementById('wChap');
+var curP,curC,curS,ticking=false,searching=false;
+var dets={};[].forEach.call(toc.querySelectorAll('details[data-p]'),function(x){dets[x.getAttribute('data-p')]=x});
+function update(){ticking=false;var y=window.scrollY,H=root.scrollHeight-window.innerHeight;var pc=H>0?Math.min(100,Math.max(0,y/H*100)):0;
+ prog.style.width=pc+'%';pbar.setAttribute('aria-valuenow',Math.round(pc));
+ var line=y+window.innerHeight*.22,lo=0,hi=tops.length-1,i=-1;while(lo<=hi){var m=(lo+hi)>>1;if(tops[m]<=line){i=m;lo=m+1}else hi=m-1}
+ var h=i>=0?heads[i]:null,p=h?h.getAttribute('data-p'):null,c=h?h.getAttribute('data-c'):null,s=h&&h.tagName==='H4'?h.id:null;
+ if(p!==curP){curP=p;if(!searching)for(var k in dets)dets[k].open=(k===p);
+  var dp=p&&dets[p];wP.textContent=dp?dp.getAttribute('data-short'):''}
+ if(c!==curC){var o=toc.querySelector('li.cur');if(o)o.classList.remove('cur');curC=c;var li=c&&toc.querySelector('li[data-c="'+c+'"]');
+  if(li){li.classList.add('cur');wC.textContent=' · '+li.getAttribute('data-short')}else wC.textContent=''}
+ if(s!==curS){var oa=toc.querySelector('a.cur');if(oa)oa.classList.remove('cur');curS=s;var a=s&&toc.querySelector('a[href="#'+s+'"]');if(a)a.classList.add('cur')}}
+function onScroll(){if(!ticking){ticking=true;window.requestAnimationFrame(update);setTimeout(function(){if(ticking)update()},150)}}
+window.addEventListener('scroll',onScroll,{passive:true});
+window.addEventListener('resize',function(){measure();onScroll()});
+if('ResizeObserver' in window)new ResizeObserver(function(){measure();onScroll()}).observe(d.querySelector('main'));
+if(d.fonts&&d.fonts.ready)d.fonts.ready.then(function(){measure();onScroll()});
+measure();update();
+q.addEventListener('input',function(){var v=q.value.trim().toLowerCase();searching=!!v;toc.classList.toggle('searching',searching);
+ [].forEach.call(toc.querySelectorAll('details[data-p]'),function(det){var any=false;
+  [].forEach.call(det.querySelectorAll(':scope>ol>li'),function(li){var own=li.firstElementChild.textContent.toLowerCase().indexOf(v)>=0,sh=false;
+   [].forEach.call(li.querySelectorAll('ol.secs>li'),function(sl){var mt=sl.textContent.toLowerCase().indexOf(v)>=0;sl.hidden=v?!mt:false;if(v&&mt)sh=true});
+   var show=!v||own||sh;li.hidden=!show;if(show)any=true});
+  var sm=v&&det.querySelector('summary').textContent.toLowerCase().indexOf(v)>=0;
+  det.hidden=!!v&&!any&&!sm;det.open=v?(any||!!sm):(det.getAttribute('data-p')===curP)})});
+})();
+</script>
+</body>
+</html>
