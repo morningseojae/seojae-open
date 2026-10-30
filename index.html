@@ -1890,9 +1890,13 @@ function askReplace(c){ let cur=null; try{ cur=JSON.parse(localStorage.getItem(C
 })();
 let CONN=null; try{ CONN=JSON.parse(localStorage.getItem(CONN_KEY)||"null"); }catch(_){}
 const IS_LOCAL=/^(localhost|127\.0\.0\.1|\[::1\]|192\.168\.|10\.)/.test(location.hostname)||location.protocol==="file:";
-const GAS=!!CONN;                        // 구글 서버를 쓰는지
-let NEED_CONNECT=!CONN&&!IS_LOCAL, AUTH_FAIL=false;
+// 공개판: 「구글로 로그인」 — 서버 없이 이 사람의 구글 드라이브(이 앱이 만든 파일만 보는 권한 drive.file)에 바로 간직합니다
+const GCLIENT="884999660293-18mjgfa18kgssch4q74j60qrer50a06v.apps.googleusercontent.com", DRV_KEY="seojae-open.drive";
+let DRV=null; try{ DRV=JSON.parse(localStorage.getItem(DRV_KEY)||"null"); }catch(_){}
+let GAS=!!CONN||!!DRV;                   // 구글(서버 또는 드라이브 직접)에 간직하는지 — 저장 순서(받기 전 저장 금지·판 번호 합치기)는 같음
+let NEED_CONNECT=!CONN&&!DRV&&!IS_LOCAL, AUTH_FAIL=false, DRV_NEED=false;
 async function gcall(fn,...args){
+  if(DRV) return drvCall(fn,args);
   if((fn==="coWrite"||fn==="reviewMs")&&args[0]&&typeof args[0]==="object"&&!Array.isArray(args[0])){ const cw=editId&&S.writings.find(x=>x.id===editId), mm=(cw&&wMs(cw))||S.manuscripts.find(x=>x.id===ROOM_MS), G2=mm?.genre==="novel"?ngOf(mm):null; args[0]={...args[0],callName:callName(),...(G2?{ng:{n:G2.n,rule:G2.rule}}:{})}; }   // AI가 나를 부를 호칭 · 소설 장르 관례   // AI가 나를 부를 때 쓸 호칭
   // 본문을 글자(text/plain)로 보내면 브라우저가 따로 허락을 묻지 않아 구글 서버에 바로 닿습니다
   const r=await fetch(CONN.u,{method:"POST",body:JSON.stringify({key:CONN.k,fn,args}),signal:AbortSignal.timeout?AbortSignal.timeout(fn==="saveData"?120000:fn==="cmtIndex"?300000:180000):undefined});
@@ -1901,7 +1905,94 @@ async function gcall(fn,...args){
   if(!j.ok) throw new Error(j.error);
   return j.result;
 }
-const connectLink=()=>location.origin+location.pathname+"#connect="+btoa(JSON.stringify(CONN)).replace(/\+/g,"-").replace(/\//g,"_");
+const connectLink=()=>DRV?location.origin+location.pathname:location.origin+location.pathname+"#connect="+btoa(JSON.stringify(CONN)).replace(/\+/g,"-").replace(/\//g,"_");
+
+// ───────── 드라이브 직접 (공개판) ─────────
+// 로그인 열쇠(토큰)는 화면 메모리에만 둡니다(한 시간쯤). 다시 열면 「구글 드라이브에 잇기」를 한 번 눌러 이어 줍니다.
+// 기록 파일 모양·이름은 서버판과 같습니다: 내 드라이브 「아침 서재/data.json」, 날마다 첫 사본 「아침 서재/백업/data-날짜.json」.
+let DTOK=null, DTOK_EXP=0, GIS_P=null;
+const DRV_API="https://www.googleapis.com/drive/v3", DRV_UP="https://www.googleapis.com/upload/drive/v3";
+const needLogin=()=>Object.assign(new Error("구글 드라이브에 다시 이어 주세요"),{needLogin:true});
+function gisLoad(){ return GIS_P||(GIS_P=new Promise((ok,no)=>{ if(window.google?.accounts?.oauth2) return ok();
+  const sc=document.createElement("script"); sc.src="https://accounts.google.com/gsi/client"; sc.async=true; sc.onload=()=>ok(); sc.onerror=()=>{ GIS_P=null; no(new Error("구글 로그인 부품을 불러오지 못했습니다 — 인터넷을 확인해 주세요")); }; document.head.appendChild(sc); })); }
+async function drvToken(ask){   // ask: 사람이 누른 때만 로그인 창을 엽니다(브라우저가 그 밖의 창은 막음)
+  if(DTOK&&Date.now()<DTOK_EXP-60000) return DTOK;
+  if(!ask) throw needLogin();
+  await gisLoad();
+  return new Promise((ok,no)=>{ const c=google.accounts.oauth2.initTokenClient({client_id:GCLIENT,scope:"https://www.googleapis.com/auth/drive.file",hint:DRV?.email||undefined,
+    callback:r=>{ if(r.error||!r.access_token) return no(new Error(r.error==="access_denied"?"구글이 허락을 받지 못했습니다 — 「허용」을 눌러야 내 드라이브에 간직할 수 있습니다":"구글 로그인이 끝나지 않았습니다 ("+(r.error||"알 수 없음")+")"));
+      DTOK=r.access_token; DTOK_EXP=Date.now()+(+r.expires_in||3600)*1000; ok(DTOK); },
+    error_callback:e=>no(new Error(e?.type==="popup_closed"?"로그인 창을 닫았습니다":e?.type==="popup_failed_to_open"?"로그인 창이 막혔습니다 — 브라우저의 팝업 차단을 풀어 주세요":"구글 로그인 창을 열지 못했습니다")) });
+    c.requestAccessToken({prompt:DRV?.ok?"":"consent"}); });
+}
+async function drvFetch(url,opt={},raw){
+  const t=await drvToken(false);
+  const r=await fetch(url,{...opt,headers:{...(opt.headers||{}),Authorization:"Bearer "+t}});
+  if(r.status===401){ DTOK=null; throw needLogin(); }
+  if(!r.ok){ let m=""; try{ m=(await r.json()).error?.message||""; }catch(_){} throw Object.assign(new Error("구글 드라이브가 답하지 않습니다 ("+r.status+(m?" · "+m:"")+")"),{status:r.status}); }
+  return raw?r:r.status===204?null:r.json();
+}
+const drvQ=q=>drvFetch(DRV_API+"/files?spaces=drive&pageSize=100&fields=files(id,name,createdTime)&orderBy=createdTime&q="+encodeURIComponent(q)).then(j=>j.files||[]);
+async function drvMake(name,parent,mime,body,props){   // 새 파일(또는 폴더) — 본문이 있으면 한 번에 올림
+  const meta={name,mimeType:mime,...(parent?{parents:[parent]}:{}),...(props?{appProperties:props}:{})};
+  if(body==null) return drvFetch(DRV_API+"/files?fields=id",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(meta)});
+  const b="sj"+Math.random().toString(36).slice(2), part=`--${b}\r\nContent-Type: application/json; charset=UTF-8\r\n\r\n${JSON.stringify(meta)}\r\n--${b}\r\nContent-Type: ${mime}; charset=UTF-8\r\n\r\n${body}\r\n--${b}--`;
+  return drvFetch(DRV_UP+"/files?uploadType=multipart&fields=id",{method:"POST",headers:{"Content-Type":"multipart/related; boundary="+b},body:part});
+}
+async function drvFolder(name,parent,tag){ const q=`mimeType='application/vnd.google-apps.folder' and trashed=false and appProperties has { key='seojae' and value='${tag}' }`+(parent?` and '${parent}' in parents`:"");
+  const f=(await drvQ(q))[0]; return f?f.id:(await drvMake(name,parent,"application/vnd.google-apps.folder",null,{seojae:tag})).id; }
+async function drvSetup(){   // 「아침 서재」 폴더와 기록 파일을 찾거나 만듭니다
+  const root=await drvFolder("아침 서재",null,"root");
+  let data=(await drvQ(`'${root}' in parents and trashed=false and appProperties has { key='seojae' and value='data' }`))[0]?.id;
+  if(!data) data=(await drvMake("data.json",root,"application/json",JSON.stringify({rev:0}),{seojae:"data"})).id;
+  let email=DRV?.email||""; try{ email=(await drvFetch(DRV_API+"/about?fields=user(emailAddress)")).user?.emailAddress||email; }catch(_){}
+  DRV={ok:1,email,root,data,bk:DRV?.bk||""}; try{ localStorage.setItem(DRV_KEY,JSON.stringify(DRV)); }catch(_){}
+}
+async function drvRead(){ try{ return await (await drvFetch(DRV_API+"/files/"+DRV.data+"?alt=media",{cache:"no-store"},true)).text(); }
+  catch(e){ if(e.status!==404) throw e; await drvSetup(); return (await (await drvFetch(DRV_API+"/files/"+DRV.data+"?alt=media",{cache:"no-store"},true)).text()); } }
+const drvWrite=(id,text)=>drvFetch(DRV_UP+"/files/"+id+"?uploadType=media&fields=id",{method:"PATCH",headers:{"Content-Type":"application/json; charset=UTF-8"},body:text});
+async function drvBackup(text,why){   // 「아침 서재/백업」에 사본 — 날마다 첫 사본 + 크게 줄어드는 저장 전, 60개 넘으면 오래된 것부터 휴지통(달마다 첫 사본은 남김)
+  if(!DRV.bk){ DRV.bk=await drvFolder("백업",DRV.root,"backup"); try{ localStorage.setItem(DRV_KEY,JSON.stringify(DRV)); }catch(_){} }
+  const d=today(), name=why?`data-${d}_${new Date().toTimeString().slice(0,5).replace(":","")}_${why}.json`:`data-${d}.json`;
+  await drvMake(name,DRV.bk,"application/json",text,{seojae:"bk"});
+  try{ const all=await drvQ(`'${DRV.bk}' in parents and trashed=false`); if(all.length>60){ const seen=new Set();
+    for(const f of all.slice(0,all.length-60)){ const mo=(f.name.match(/data-(\d{4}-\d{2})/)||[])[1]; if(mo&&!seen.has(mo)){ seen.add(mo); continue; }
+      await drvFetch(DRV_API+"/files/"+f.id,{method:"PATCH",headers:{"Content-Type":"application/json"},body:JSON.stringify({trashed:true})}); } } }catch(_){}
+}
+async function drvSave(json,baseRev){   // 서버판 saveData_ 와 같은 지킴이: 판 번호가 다르면 덮지 않고 최신본을 돌려 합치게 함
+  const curT=await drvRead(); let cur={}; try{ cur=JSON.parse(curT||"{}"); }catch(_){ return {ok:false,error:"드라이브의 기록 파일을 읽지 못했습니다. 잠시 뒤 다시 간직해 주세요."}; }
+  const curRev=cur.rev||0;
+  if(baseRev!==null&&baseRev!==undefined&&curRev!==baseRev) return {ok:false,conflict:true,data:curT};
+  const obj=JSON.parse(json), had=(cur.writings||[]).length+(cur.notes||[]).length, has=(obj.writings||[]).length+(obj.notes||[]).length;
+  if(!Array.isArray(obj.writings)||(had>=5&&has===0)) return {ok:false,error:"기록이 통째로 비어 있는 저장이라 막았습니다. 앱을 새로 고친 뒤 다시 간직해 주세요."};
+  try{ let k=""; try{ k=localStorage.getItem("seojae-open.drvBk"); }catch(_){} if(had&&k!==today()){ await drvBackup(curT); try{ localStorage.setItem("seojae-open.drvBk",today()); }catch(_){} } }catch(_){}
+  if(had>=10&&has<had*.8){ try{ await drvBackup(curT,"줄어듦"); }catch(_){} }
+  const again=JSON.parse(await drvRead()||"{}");   // 쓰기 바로 전 한 번 더 — 그사이 다른 기기가 간직했으면 합치기로
+  if((again.rev||0)!==curRev) return {ok:false,conflict:true,data:JSON.stringify(again)};
+  obj.rev=curRev+1; await drvWrite(DRV.data,JSON.stringify(obj));
+  return {ok:true,rev:obj.rev};
+}
+const drvConf=()=>({notion:false,kakao:false,nl:false,ai:"",aiKeys:{},cmtFolder:"",yt:false,claude:null,local:false,gas:true,drive:true,email:DRV?.email||"",driveUrl:"https://drive.google.com/drive/folders/"+(DRV?.root||"")});
+async function drvCall(fn,args){
+  if(!DRV?.data) await drvSetup();
+  if(fn==="boot") return {data:await drvRead()||"{}",config:drvConf()};
+  if(fn==="getData") return await drvRead()||"{}";
+  if(fn==="getConfig") return drvConf();
+  if(fn==="rev"){ const m=(await drvRead()||"").match(/"rev":\s*(\d+)/); return {rev:m?+m[1]:0}; }
+  if(fn==="saveData") return drvSave(args[0],args[1]);
+  throw new Error("공개판에서는 아직 쓰지 않는 기능입니다");
+}
+async function drvStart(btn){   // 연결 화면 「구글로 시작하기」·「구글 드라이브에 잇기」 (사람이 누른 때)
+  if(btn){ btn.disabled=true; btn.dataset.t=btn.textContent; btn.textContent="구글에 잇는 중…"; }
+  const fresh=NEED_CONNECT;   // 처음 시작(화면에 기록 없음)일 때만 「처음 받기」, 다시 잇기는 이 기기에 쓴 것과 합치기
+  try{ await drvToken(true); await drvSetup(); GAS=true; NEED_CONNECT=false; DRV_NEED=false; AUTH_FAIL=false;
+    toast(DRV.email?DRV.email+" 드라이브의 「아침 서재」 폴더에 간직합니다":"내 구글 드라이브 「아침 서재」 폴더에 간직합니다");
+    await fetchFresh(fresh); if(fresh&&SERVER){ ensurePlan(); ensureMs(); render(); } }
+  catch(e){ toast(e.message); if(btn){ btn.disabled=false; btn.textContent=btn.dataset.t||"구글로 시작하기"; } }
+}
+function drvLogout(){ if(!confirm("이 기기에서 구글 드라이브 잇기를 끊을까요? 글은 구글 드라이브 「아침 서재」 폴더에 그대로 남습니다. 이 기기의 사본은 지웁니다.")) return;
+  try{ if(DTOK&&window.google?.accounts?.oauth2) google.accounts.oauth2.revoke(DTOK,()=>{}); }catch(_){}
+  localStorage.removeItem(DRV_KEY); localStorage.removeItem(LKEY); localStorage.removeItem("seojae-open.dirty"); location.reload(); }
 function connectWith(text){ // 연결 링크나 연결 코드를 붙여 넣었을 때
   const code=(text||"").trim().replace(/^.*#connect=/,"");
   try{ const c=JSON.parse(atob(code.replace(/-/g,"+").replace(/_/g,"/"))); if(!validConn(c)||!askReplace(c)) throw 0;
@@ -1912,13 +2003,14 @@ function connectWith(text){ // 연결 링크나 연결 코드를 붙여 넣었�
 function disconnect(){ if(!confirm("이 기기의 연결을 끊을까요? 기록은 구글 드라이브에 그대로 남습니다.")) return; localStorage.removeItem(CONN_KEY); localStorage.removeItem(LKEY); location.reload(); }
 function connectView(){
   return `<section class="sheet tape" style="max-width:640px;margin:20px auto">
-    <p class="label">${AUTH_FAIL?"다시 연결해 주세요":"이 기기를 아침 서재에 연결하기"}</p>
-    <p class="sub">${AUTH_FAIL?"열쇠가 바뀌었거나 맞지 않습니다. 아래 방법으로 이 기기를 다시 연결해 주세요.":"처음 한 번만 하면 됩니다. 다음부터는 바로 열립니다."}</p>
-    <ol class="steps sub">
-      <li><b>이미 쓰는 기기(휴대폰·컴퓨터)가 있으면</b>: 그 기기에서 설정(톱니) → 「다른 기기 연결」의 QR을 이 기기 카메라로 찍거나, 「연결 링크 복사」로 복사한 링크를 아래 칸에 붙여 넣습니다.</li>
-      <li><b>완전히 처음이면</b>: 아침 서재를 설치할 때 받은 <b>구글 서버(웹 앱) 주소</b>를 엽니다. 그 화면은 <b>딱 한 번만</b> 「이 기기 연결하기」 단추를 보여 주니, 열기 전에 이 기기에서 열 준비를 하세요. (이미 열어 버렸다면 앱스 스크립트 편집기에서 resetKey 를 한 번 ▶ 실행한 뒤 다시 엽니다)</li>
-    </ol>
-    <div class="row"><input id="ccode" placeholder="연결 링크 또는 연결 코드" style="flex:1"><button class="btn ink" onclick="connectWith($('#ccode').value)">연결</button></div>
+    <p class="label">아침 서재 시작하기</p>
+    <p class="sub">말씀과 책을 읽고 쓰는 아침의 다이어리입니다. 쓰는 글은 모두 <b>내 구글 드라이브의 「아침 서재」 폴더</b>에 간직됩니다.</p>
+    <div class="row" style="margin:14px 0 6px"><button class="btn ink" onclick="drvStart(this)">구글로 시작하기</button></div>
+    <ul class="steps sub">
+      <li>구글 계정으로 로그인하고 「허용」을 누르면 끝입니다. 휴대폰·다른 컴퓨터에서도 같은 구글 계정으로 시작하면 같은 기록이 보입니다.</li>
+      <li>아침 서재는 <b>이 앱이 만든 파일만</b> 볼 수 있습니다. 드라이브의 다른 파일은 보지도 고치지도 못합니다.</li>
+      <li>글은 아침 서재를 만든 사람의 서버를 지나지 않습니다. 내 브라우저에서 내 드라이브로 바로 갑니다.</li>
+    </ul>
   </section>`;
 }
 const ROUTES={"/api/notion/sync":"notionSync","/api/notion/note":"notionNote","/api/notion/book":"notionBook","/api/notion/trash":"notionTrash","/api/reminder":"setReminder","/api/config":"setConfig"};
@@ -1992,6 +2084,7 @@ async function fetchFresh(first){
     if(window._justConnected){ window._justConnected=false; setTimeout(()=>toast("이 기기를 아침 서재에 연결했습니다"),300); }
   }catch(e){
     if(AUTH_FAIL){ if(!first) render(); return; }
+    if(e?.needLogin){ DRV_NEED=true; if(first){ SERVER=false; try{ const d=JSON.parse(localStorage.getItem(LKEY)); if(d) S=Object.assign(blank(),d); }catch(_){} } else render(); return; }   // 로그인 열쇠가 끝남 → 「구글 드라이브에 잇기」를 누를 때까지 저장을 미룸
     if(first){
       SERVER=false;
       try{ const d=JSON.parse(localStorage.getItem(LKEY)); if(d) S=Object.assign(blank(),d); else migrate(); }catch(_){}
@@ -2152,14 +2245,14 @@ async function pushSave(){
       if(tab==="write") afterRemote(); else if(!writingUnsaved()) render();    // 쓰는 중이면 화면을 바꾸지 않음
     } else if(r.busy){ AGAIN=false; setTimeout(()=>pushSave(),3000); }   // 서버가 노션 보내기 중이면 잠시 뒤 다시
     else if(r.error) toast(r.error);
-  }catch(e){ if(AUTH_FAIL) return render(); toast(PLACE()+"에 저장하지 못했습니다. 잠시 뒤 저절로 다시 보냅니다"); clearTimeout(window._retryT); window._retryT=setTimeout(()=>{ if(isDirty()) pushSave(); },20000); }
+  }catch(e){ if(AUTH_FAIL) return render(); if(e?.needLogin){ DRV_NEED=true; READY=false; PENDING=true; return render(); } toast(PLACE()+"에 저장하지 못했습니다. 잠시 뒤 저절로 다시 보냅니다"); clearTimeout(window._retryT); window._retryT=setTimeout(()=>{ if(isDirty()) pushSave(); },20000); }
   finally{ SAVING=false; if(AGAIN){ AGAIN=false; pushSave(); } }
 }
 
 // ───────── 새 버전 자동 새로 고침 ─────────
 // 올릴 때마다 version.json 의 번호가 바뀝니다. 앱이 열릴 때·다시 화면에 올라올 때·5분마다 확인해서,
 // 쓰는 중인 글이 없고 저장이 끝났을 때 새 버전으로 새로 고칩니다.
-const APP_BUILD="41414f118a";
+const APP_BUILD="3c63781fcf";
 let NEW_BUILD=null, UPDATE_NOTICED=false;
 async function checkUpdate(){
   if(APP_BUILD.startsWith("__")) return;                 // 원본 파일로 열었을 때(고치는 중)는 건너뜁니다
@@ -2526,7 +2619,11 @@ function setItem(r){ if(!r.body) return ""; const open=r.k in SET_OPEN?SET_OPEN[
   let body=r.body.replace(/^\s*<section[^>]*>/,"").replace(/<\/section>\s*$/,"").replace(/<p class="label[^"]*"[^>]*>[\s\S]*?<\/p>/,"");
   const pill={ok:r.pill||"설정됨",need:"설정 필요",off:r.pill||"꺼짐"}[r.st];
   return `<details class="setitem" data-k="${r.k}" ${open?"open":""} ontoggle="setOpenT('${r.k}',this)"><summary><span class="sic" aria-hidden="true">${r.ic}</span><span class="stx"><b>${r.t}</b><span class="ssum" id="ssum-${r.k}">${r.sum}</span></span>${pill?`<span class="spill s-${r.st}">${pill}</span>`:"<span></span>"}<span class="schev" aria-hidden="true">›</span></summary><div class="setbody">${body}</div></details>`; }
-function phoneSection(){ return `${CONF.phoneUrl?`<section class="sheet tape c ${GAS?"compact":""}">
+function phoneSection(){ if(DRV) return `<section class="sheet tape c compact"><p class="label">다른 기기에서 쓰기</p>
+    <div class="okline"><span class="stamp ok">구글 드라이브에 이음</span><span class="muted">${esc(DRV.email||"내 구글 계정")}</span></div>
+    <p class="sub">휴대폰이나 다른 컴퓨터에서 <b>${esc(location.origin+location.pathname)}</b> 를 열고 같은 구글 계정으로 「구글로 시작하기」를 누르면 같은 기록이 보입니다. 휴대폰은 열린 화면에서 <b>공유 → 홈 화면에 추가</b>로 앱처럼 쓸 수 있습니다.</p>
+    <div class="row"><button class="btn small danger" onclick="drvLogout()">이 기기에서 잇기 끊기</button></div></section>`;
+  return `${CONF.phoneUrl?`<section class="sheet tape c ${GAS?"compact":""}">
     <p class="label">${GAS?"다른 기기 연결":"휴대폰에서 쓰기"}</p>
     ${GAS?`<div class="okline"><span class="stamp ok">이 기기 연결됨</span><span class="muted">구글 드라이브와 같은 기록을 씁니다</span></div><details class="keybox"><summary>다른 기기 연결하기 (QR 보기) · 연결 끊기</summary>`:""}
     <p class="sub">${GAS?"휴대폰(또는 다른 컴퓨터) 카메라로 아래 QR을 찍으면 그 기기가 연결됩니다. 열린 화면에서 <b>공유 → 홈 화면에 추가</b>를 누르면 아침 서재 아이콘으로 앱처럼 쓸 수 있습니다. <b>컴퓨터가 꺼져 있어도 열립니다.</b>"
@@ -3199,7 +3296,7 @@ function render(){
   $("#nav").innerHTML=TABS.map(([k,n])=>`<button class="${k==="write"?"navroom ":""}${(k==="qt"?tab==="write"&&track==="bible":k==="write"?tab==="room"||(tab==="write"&&track!=="bible"):k===tab)?"on":""}" onclick="${k==="qt"?"go('write',{track:'bible'})":k==="write"?"go('room')":`go('${k}')`}">${k==="write"?`${ICO.pen}<span>${n}</span>`:n}</button>`).join("")+`<button class="navai ${AI_MODE==="research"&&$("#aipanel")?"on":""}" onclick="rsToggle()" title="AI 조사 도우미 — 오른쪽 창에서 대화하며 자료를 찾습니다">✦<span>AI</span></button>`;
   paintStreak();
   if(NEED_CONNECT||AUTH_FAIL){ $("#main").innerHTML=connectView(); return; }
-  $("#main").innerHTML=(SERVER?"":GAS?`<div class="notice">구글 서버에 아직 닿지 못해 이 기기의 사본을 보여 드립니다. 인터넷을 확인한 뒤 <a href="#" onclick="fetchFresh(false);return false">다시 시도</a></div>`:location.protocol==="file:"?`<div class="notice">파일로 직접 연 상태라 저장이 되지 않습니다. 아침 서재 주소(인터넷)로 열어 주세요.</div>`:"")+VIEWS[tab]();
+  $("#main").innerHTML=(DRV_NEED?`<div class="notice">구글 드라이브와 잠시 떨어져 이 기기의 사본을 보여 드립니다. 쓰는 글은 이 기기에 남아 있다가, 이으면 드라이브로 갑니다. <button class="btn small ink" onclick="drvStart(this)">구글 드라이브에 잇기</button></div>`:SERVER?"":GAS?`<div class="notice">구글 서버에 아직 닿지 못해 이 기기의 사본을 보여 드립니다. 인터넷을 확인한 뒤 <a href="#" onclick="fetchFresh(false);return false">다시 시도</a></div>`:location.protocol==="file:"?`<div class="notice">파일로 직접 연 상태라 저장이 되지 않습니다. 아침 서재 주소(인터넷)로 열어 주세요.</div>`:"")+VIEWS[tab]();
   AFTER[tab]?.();
   if(AI_MODE==="research"&&$("#aipanel")) rsDraw();   // 원고가 바뀌면 그 원고의 조사 대화로
   { const r=$(".sttabrow"), on=r?.querySelector(".sttab.on"); if(on){ const a=on.getBoundingClientRect(), b=r.getBoundingClientRect(); if(a.left<b.left||a.right>b.right) r.scrollLeft+=a.left-b.left-12; } }   // 지금 보는 탭이 탭 줄 밖에 숨지 않게 (휴대폰)
