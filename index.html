@@ -30,12 +30,16 @@ applyTheme();
 try{ const v=localStorage.getItem("seojae-open.stColor"); if(v==="forest"||v==="white") document.documentElement.dataset.stc=v; }catch(_){}   // 글방 둘레 색 (이 기기) — 화면을 그리기 전에
 // 이 기기만의 노트 꾸미기(종이 색·글자 색·글자 크기): 화면이 그려지기 전에 적용 (localStorage seojae.look — 휴대폰과 컴퓨터를 따로)
 // 보기 크기 → 화면 배율(viewport). 앱 맨 앞에서 바로 맞추려고 여기 둠
+// 휴대폰은 처음부터 「크게 보기」(팀장님 2026-10-30: 「모바일 보기는 크게 보이는게 기본」). 고른 값이 있으면 그것(s·m·l·xl)
+const vsPhone=()=>matchMedia("(pointer:coarse)").matches&&Math.min(screen.width,screen.height)<=700;
+const vsEff=v=>["s","m","l","xl"].includes(v)?v:(vsPhone()?"l":"m");
 function vsViewport(v){ const m=document.getElementById("vpmeta"); if(!m) return; const z={l:1.15,xl:1.3}[v];   // 작게 보기(s)는 배율 대신 본문만 0.9배(CSS) — 휴대폰은 1배보다 작게 줄이는 배율을 잘 받지 않음
   const phone=matchMedia("(pointer:coarse)").matches&&Math.min(screen.width,screen.height)<=700;
   if(!z||!phone){ m.setAttribute("content","width=device-width, initial-scale=1, viewport-fit=cover"); return; }
   const land=matchMedia("(orientation:landscape)").matches, dw=land?Math.max(screen.width,screen.height):Math.min(screen.width,screen.height);
   m.setAttribute("content",`width=${Math.round(dw/z)}, initial-scale=${z}, viewport-fit=cover`); }
-addEventListener("orientationchange",()=>setTimeout(()=>vsViewport(applyLook().vs),250));
+try{ const u=new URL(location.href); if(u.searchParams.has("vsz")){ u.searchParams.delete("vsz"); history.replaceState(history.state,"",u.pathname+u.search+u.hash); } }catch(_){}   // 보기 크기를 바꾸며 붙인 표시 지우기
+addEventListener("orientationchange",()=>setTimeout(()=>vsViewport(vsEff(applyLook().vs)),250));
 function applyLook(){
   let L={}; try{ L=JSON.parse(localStorage.getItem("seojae-open.look")||"{}")||{}; }catch(_){}
   const r=document.documentElement.style, fs=+L.fs||0;
@@ -43,8 +47,8 @@ function applyLook(){
   if(L.bg) r.setProperty("--note-bg",L.bg); else r.removeProperty("--note-bg");
   if(L.ink) r.setProperty("--note-ink",L.ink); else r.removeProperty("--note-ink");
   if(+L.sufs) r.setProperty("--su-fs",(+L.sufs)+"px"); else r.removeProperty("--su-fs");   // 매일성경 본문·해설 글자 크기
-  if(["s","l","xl"].includes(L.vs)) document.documentElement.dataset.vsize=L.vs; else delete document.documentElement.dataset.vsize;   // 보기 크기(휴대폰 화면 전체)
-  vsViewport(L.vs);
+  const ve=vsEff(L.vs); if(ve!=="m") document.documentElement.dataset.vsize=ve; else delete document.documentElement.dataset.vsize;   // 보기 크기(휴대폰 화면 전체)
+  vsViewport(ve);
   return L;
 }
 applyLook();
@@ -152,8 +156,16 @@ h2{font-family:"Nanum Myeongjo";font-weight:800;font-size:24px;margin:0 0 4px;le
 .routine{display:inline-flex;gap:6px;margin-left:auto;align-self:center}
 .routine button{font:inherit;font-size:13.5px;display:inline-flex;align-items:center;gap:4px;border:1px solid var(--edge);background:var(--paper-2);border-radius:999px;padding:3px 12px 3px 6px;color:var(--faint);cursor:pointer}
 .routine button.on{color:var(--ink);background:var(--paper)}
+.routine .rt-go{margin-left:2px;font-weight:700;opacity:.5;transition:transform .15s,opacity .15s}
+.routine button:hover .rt-go,.routine button:focus-visible .rt-go{opacity:1;transform:translateX(2px)}
+.routine button:active{transform:translateY(1px)}
+.rt-flash{animation:rtflash 1.6s ease-out}
+@keyframes rtflash{0%,35%{box-shadow:0 0 0 3px var(--sepia),0 10px 30px -10px color-mix(in srgb,var(--sepia) 70%,transparent)}100%{box-shadow:0 0 0 0 transparent}}
+@media (prefers-reduced-motion:reduce){.rt-flash{animation:none;outline:3px solid var(--sepia)}}
 .routine svg{width:20px;height:20px}
 @media (max-width:700px){ .routine{margin-left:0;width:100%} .routine button{padding:4px 10px 4px 5px;font-size:13px} }
+@media (max-width:700px){ /* 휴대폰: 할 일 네 칸을 2×2 큰 단추로(크게 보기에서도 한 칸이 혼자 떨어지지 않게, 누르기 쉽게) */
+  .routine{display:grid;grid-template-columns:1fr 1fr;gap:7px} .routine button{min-height:40px;padding:5px 10px 5px 6px;font-size:14px;justify-content:flex-start} .routine .rt-go{margin-left:auto;font-size:16px} }
 
 /* 입력 */
 input,select,textarea,w-ed{font:inherit;color:var(--ink);background:transparent;border:0;border-bottom:1px dashed var(--deco);padding:6px 2px;width:100%;border-radius:0}
@@ -732,14 +744,14 @@ body.focus .notice{display:none}
     box-shadow:0 3px 8px -4px color-mix(in srgb,var(--ink) 45%,transparent)}
   .vsbtn b{font-size:20px;font-weight:800}
   .vsbtn:active{transform:translateY(1px);box-shadow:none}
-  html[data-vsize] .vsbtn{background:var(--sepia);color:var(--paper);border-color:var(--sepia)}
+  html[data-vsize]:not([data-vsize="l"]) .vsbtn,html:not([data-vsize]) .vsbtn{background:var(--sepia);color:var(--paper);border-color:var(--sepia)}   /* 휴대폰 처음 크기(크게 보기)에서 바꿨으면 채움 */
 }
 /* 크게 보기로 화면 폭이 좁아질 때(340px 이하): 머리 줄·아래 메뉴가 넘치지 않게 */
 @media (max-width:340px){
   header .brand{white-space:nowrap;font-size:27px} header .topright{gap:6px}
   header .streak span:not(.n){display:none} header .streak .n::after{content:"일째";font-size:12px;margin-left:2px;font-family:var(--ui-font,sans-serif);font-weight:700}
   header .vsbtn{min-width:40px;height:36px;padding:0 7px} header .gearbtn{width:36px;height:36px}
-  .routine{flex-wrap:wrap;row-gap:6px} .dateline{flex-wrap:wrap}
+  .dateline{flex-wrap:wrap}
   nav{padding-left:3px;padding-right:3px} nav .nvi{padding:3px 6px;width:21px;height:21px} nav button:not(.navroom):not(.navai){font-size:11.5px}
   nav button.navroom{font-size:14px;margin-left:2px} nav button.navroom .ico{width:17px;height:17px} nav button.navai{margin-left:2px;flex:.55}
 }
@@ -2363,7 +2375,7 @@ async function pushSave(){
 // ───────── 새 버전 자동 새로 고침 ─────────
 // 올릴 때마다 version.json 의 번호가 바뀝니다. 앱이 열릴 때·다시 화면에 올라올 때·5분마다 확인해서,
 // 쓰는 중인 글이 없고 저장이 끝났을 때 새 버전으로 새로 고칩니다.
-const APP_BUILD="c318b56076";
+const APP_BUILD="179827cbfc";
 let NEW_BUILD=null, UPDATE_NOTICED=false;
 async function checkUpdate(){
   if(APP_BUILD.startsWith("__")) return;                 // 원본 파일로 열었을 때(고치는 중)는 건너뜁니다
@@ -4190,8 +4202,8 @@ today(){
   const qb=pickQ("bible",t+"b"), qk=pickQ("book",t+"k");
   return `
   <div class="dateline"><span class="d">${d.getMonth()+1}.${String(d.getDate()).padStart(2,"0")}</span><span class="w">${"일월화수목금토"[d.getDay()]}요일 ${dayPart()}, 말씀과 책 앞에서</span>
-    ${(()=>{ const L=S.log[t]||{}; const items=[["성경 읽기",!!(L.read||(L.bible||[]).length),"go('today')"],["묵상",tw.some(w=>w.track==="bible"),"go('write',{track:'bible'})"],["책 읽기",!!(L.book||Object.keys(L.books||{}).length),"go('shelf')"],["일기",!!(S.diary?.[t]?.line||"").trim(),"diaryDate=today();go('diary')"]];
-      return `<span class="routine">${items.map(([n,on,fn])=>`<button type="button" class="${on?"on":""}" onclick="${fn}" title="${on?"오늘 했습니다":"아직입니다"}">${tickSvg(on)}${n}</button>`).join("")}</span>`; })()}</div>
+    ${(()=>{ const L=S.log[t]||{}; const items=[["성경 읽기",!!(L.read||(L.bible||[]).length),"rtGoBible()","오늘의 말씀으로"],["묵상",tw.some(w=>w.track==="bible"),"go('write',{track:'bible'})","묵상 쓰기로"],["책 읽기",!!(L.book||Object.keys(L.books||{}).length),"go('shelf')","책장으로"],["일기",!!(S.diary?.[t]?.line||"").trim(),"diaryDate=today();go('diary')","오늘 일기로"]];
+      return `<span class="routine">${items.map(([n,on,fn,dest])=>`<button type="button" class="${on?"on":""}" onclick="${fn}" title="${on?"오늘 했습니다":"아직입니다"} — 누르면 ${dest}" aria-label="${n} ${on?"했음":"아직"} — ${dest} 가기">${tickSvg(on)}${n}<span class="rt-go" aria-hidden="true">›</span></button>`).join("")}</span>`; })()}</div>
   <div class="grid">
     ${todayBibleCard()}
     <section class="sheet tape b">
@@ -4797,15 +4809,19 @@ const PAPERS=[["","기본(밝기 따라)",""],["#fbf7ee","크림","#2e2721"],["#
 const stColor=()=>{ try{ const v=localStorage.getItem("seojae-open.stColor")||""; return ["forest","white"].includes(v)?v:""; }catch(_){ return ""; } };
 function stColorSet(v){ try{ localStorage.setItem("seojae-open.stColor",v); }catch(_){} if(v) document.documentElement.dataset.stc=v; else delete document.documentElement.dataset.stc; toast(v?"글방 둘레 색을 바꿨습니다 — 글방에 들어가 보세요":"글방 둘레를 「새벽 남빛」으로"); render(); }
 // ───────── 보기 크기(2026-10-30): 휴대폰 화면 전체(글자·단추·그림)를 함께 키우고 줄임 — 이 기기만(look.vs). 눈이 어두운 분도 쓰기 쉽게, 이름은 「크게 보기」처럼 ─────────
-const VS_ZOOM={s:.9,l:1.15,xl:1.3}, VS_OPTS=[["s","작게 보기","글자와 단추를 조금 작게 — 한 화면에 더 많이"],["","보통","처음 크기"],["l","크게 보기","글자와 단추를 한 단계 크게"],["xl","아주 크게 보기","가장 크게 — 글자가 또렷하고 누르기 쉽게"]];
-const vsNow=()=>{ const v=applyLook().vs; return VS_ZOOM[v]?v:""; };
+const VS_ZOOM={s:.9,m:1,l:1.15,xl:1.3}, VS_OPTS=[["s","작게 보기","글자와 단추를 조금 작게 — 한 화면에 더 많이"],["m","보통","원래 크기 — 컴퓨터 화면과 같은 비율"],["l","크게 보기","휴대폰 처음 크기 — 글자와 단추를 한 단계 크게"],["xl","아주 크게 보기","가장 크게 — 글자가 또렷하고 누르기 쉽게"]];
+const vsNow=()=>vsEff(applyLook().vs);
 function vsSet(v){ const vp0=document.getElementById("vpmeta")?.content; lookSet("vs",v);
-  if(document.getElementById("vpmeta")?.content!==vp0){ try{ if(typeof writingUnsaved==="function"&&writingUnsaved()) saveDraft(); }catch(_){} toast("화면 크기를 맞춥니다…"); setTimeout(()=>location.reload(),350); return; }   // 배율은 페이지를 다시 열어야 확실히 맞음
-  const o=VS_OPTS.find(x=>x[0]===v); toast(`${o?o[1]:"보통"}로 바꿨습니다${v?" — 다시 바꾸려면 위쪽 「가가」 단추":""}`); const p=$("#vspop"); if(p) vsPop(); }
+  if(document.getElementById("vpmeta")?.content!==vp0){ try{ if(typeof writingUnsaved==="function"&&writingUnsaved()) saveDraft(); }catch(_){} toast("화면 크기를 맞춥니다…"); setTimeout(()=>{ const u=new URL(location.href); u.searchParams.set("vsz",Date.now().toString(36)); location.replace(u.href); },350); return; }   // 배율은 페이지를 새로 열어야 확실히 맞음(그냥 다시 읽으면 브라우저가 예전 확대를 되살림)
+  const o=VS_OPTS.find(x=>x[0]===v); toast(`${o?o[1]:"보통"}로 바꿨습니다 — 다시 바꾸려면 위쪽 「가가」 단추`); const p=$("#vspop"); if(p) vsPop(); }
 function vsPop(ev){ ev?.stopPropagation?.(); let p=$("#vspop"); if(p&&ev){ p.remove(); return; } if(!p){ p=document.createElement("div"); p.id="vspop"; p.setAttribute("role","dialog"); p.setAttribute("aria-label","보기 크기"); document.body.appendChild(p);
     setTimeout(()=>document.addEventListener("pointerdown",function off(e){ if(!e.target.closest("#vspop,#vsbtn")){ $("#vspop")?.remove(); document.removeEventListener("pointerdown",off); } }),0); }
   const cur=vsNow();
   p.innerHTML=`<p class="vs-h">보기 크기 <small>화면 전체가 함께 커집니다 · 이 기기만</small></p>`+VS_OPTS.map(([v,n,d])=>`<button type="button" class="vs-o ${cur===v?"on":""}" onclick="vsSet('${v}')" aria-pressed="${cur===v}"><span class="vs-a" style="font-size:${Math.round(17*(VS_ZOOM[v]||1))}px">가</span><span class="vs-t"><b>${n}</b><small>${d}</small></span>${cur===v?'<span class="vs-c">✓</span>':""}</button>`).join("")+`<p class="vs-f">설정 → 화면 꾸미기 → 「보기 크기」에서도 바꿉니다</p>`; }
+// 할 일 줄 「성경 읽기」: 같은 오늘 화면 안의 「오늘의 말씀」 카드로 내려가 잠깐 빛나게(다른 화면이면 오늘로 간 뒤)
+function rtGoBible(){ const hit=()=>{ const c=document.querySelector("#main .portions")?.closest("section"); if(!c) return false;
+    c.scrollIntoView({behavior:matchMedia("(prefers-reduced-motion:reduce)").matches?"auto":"smooth",block:"start"}); c.classList.remove("rt-flash"); void c.offsetWidth; c.classList.add("rt-flash"); setTimeout(()=>c.classList.remove("rt-flash"),1800); return true; };
+  if(tab!=="today"){ go("today"); setTimeout(hit,120); } else if(!hit()) go("today"); }
 function lookSection(){
   const L=applyLook(), fs=+L.fs||0; let theme="light"; try{ theme=localStorage.getItem("seojae-open.theme")||"light"; }catch(_){}
   const dot=(bg,n,on,fn)=>`<span class="inkdot ${on?"on":""}" title="${n}" style="background:${bg};width:24px;height:24px" onclick="${fn}"></span>`;
