@@ -2079,9 +2079,9 @@ async function drvSave(json,baseRev){   // 서버판 saveData_ 와 같은 지킴
   obj.rev=curRev+1; await drvWrite(DRV.data,JSON.stringify(obj));
   return {ok:true,rev:obj.rev};
 }
-const drvConf=()=>{ const m=aiMode(), k=aiKeys(); return {notion:false,kakao:false,nl:false,ai:m==="own"?(k.claude?"claude":"gemini"):m==="shared"?"gemini":"",aiKeys:{gemini:m==="shared"||(m==="own"&&!!k.gemini),claude:m==="own"&&!!k.claude},aiShared:m==="shared",cmtFolder:"",yt:false,claude:null,local:false,gas:true,drive:!LOCALMODE,devOnly:LOCALMODE,email:DRV?.email||"",driveUrl:LOCALMODE?"":"https://drive.google.com/drive/folders/"+(DRV?.root||"")}; };
+const drvConf=()=>{ const m=aiMode(), k=aiKeys(); return {notion:false,kakao:false,nl:false,ai:m==="own"?(k.claude?"claude":"gemini"):m==="shared"?"gemini":"",aiKeys:{gemini:m==="shared"||(m==="own"&&!!k.gemini),claude:m==="own"&&!!k.claude},aiShared:m==="shared",cmtFolder:"",yt:true,claude:null,local:false,gas:true,drive:!LOCALMODE,devOnly:LOCALMODE,email:DRV?.email||"",driveUrl:LOCALMODE?"":"https://drive.google.com/drive/folders/"+(DRV?.root||"")}; };
 // 공개판 전용 창구(구글 앱스 스크립트, 4gospel — 개인 기록과 무관): 브라우저가 직접 닿지 못하는 성서유니온 「매일성경」을 대신 받아 줌. 로그인 없이 날짜만 보냄
-const PUB_GW="https://script.google.com/macros/s/AKfycbxRPmEN9s2BMkKZ4nQuEzCqalgn_SBqEztJT7b5Af5dXJdmOBsmmgUMlfpbxbB8DIYAAQ/exec", GW_FN=new Set(["dailyBible","dailyBibleNote"]);
+const PUB_GW="https://script.google.com/macros/s/AKfycbxRPmEN9s2BMkKZ4nQuEzCqalgn_SBqEztJT7b5Af5dXJdmOBsmmgUMlfpbxbB8DIYAAQ/exec", GW_FN=new Set(["dailyBible","dailyBibleNote","musicFind"]);   // 찬송가·CCM 찾기도 창구가 함께(창구의 유튜브 열쇠, 찾은 곡은 모두가 함께 기억)
 async function gwCall(fn,args){
   const r=await fetch(PUB_GW,{method:"POST",body:JSON.stringify({fn,args}),signal:AbortSignal.timeout?AbortSignal.timeout(60000):undefined});
   let j; try{ j=await r.json(); }catch(_){ throw new Error("매일성경 창구가 알아볼 수 없는 답을 보냈습니다 ("+r.status+")"); }
@@ -2117,7 +2117,7 @@ function aiCall(fn,args){
 async function drvCall(fn,args){
   if(GW_FN.has(fn)) return gwCall(fn,args);
   if(AI_FN.has(fn)) return aiCall(fn,args);
-  if(/^notion|^setReminder$|^setConfig$|^backup|^msVer|^slide|^cmt|^musicFind$/.test(fn)) throw new Error("공개판에서는 아직 쓰지 않는 기능입니다");
+  if(/^notion|^setReminder$|^setConfig$|^backup|^msVer|^slide|^cmt/.test(fn)) throw new Error("공개판에서는 아직 쓰지 않는 기능입니다");
   if(LOCALMODE&&!DRV) return locCall(fn,args);
   if(!DRV?.data) await drvSetup();
   if(fn==="boot") return {data:await drvRead()||"{}",config:drvConf()};
@@ -2435,7 +2435,7 @@ async function pushSave(){
 // ───────── 새 버전 자동 새로 고침 ─────────
 // 올릴 때마다 version.json 의 번호가 바뀝니다. 앱이 열릴 때·다시 화면에 올라올 때·5분마다 확인해서,
 // 쓰는 중인 글이 없고 저장이 끝났을 때 새 버전으로 새로 고칩니다.
-const APP_BUILD="91764877a8";
+const APP_BUILD="6757a05f5c";
 let NEW_BUILD=null, UPDATE_NOTICED=false;
 async function checkUpdate(){
   if(APP_BUILD.startsWith("__")) return;                 // 원본 파일로 열었을 때(고치는 중)는 건너뜁니다
@@ -2702,7 +2702,7 @@ const hymnNo=()=>String(SU?.hymn||"").replace(/[^0-9]/g,"").slice(0,4);
 const mpVol=()=>{ let v=50; try{ v=+(localStorage.getItem("seojae-open.mpVol")??50); }catch(_){} return isFinite(v)?v:50; };
 function mpSetVol(v){ try{ localStorage.setItem("seojae-open.mpVol",String(v)); }catch(_){} try{ MP?.setVolume(+v); }catch(_){} }
 function hymnCtl(){ const n=hymnNo(); if(!n) return "";
-  if(!SERVER||!CONF.yt) return ` <a class="hb" href="https://music.youtube.com/search?q=${encodeURIComponent("새찬송가 "+n+"장")}" target="_blank" rel="noopener" title="유튜브뮤직에서 찾기 (설정 → 찬송가·CCM 듣기에 유튜브 열쇠를 넣으면 여기서 바로 재생)">♪ ↗</a>`;
+  if(!SERVER||!CONF.yt||MUSIC.noYt) return ` <a class="hb" href="https://music.youtube.com/search?q=${encodeURIComponent("새찬송가 "+n+"장")}" target="_blank" rel="noopener" title="유튜브뮤직에서 찾기 (새 창)">♪ ↗</a>`;
   const on=MUSIC.playing&&MUSIC.slot==="hymn";
   return ` <button class="hb ${on?"on":""}" data-hb onclick="hymnToggle()" title="${on?"멈춤":"찬송가 듣기 (유튜브)"}">${on?"❚❚":"▶"}</button>${MUSIC.cur?`<input class="hbvol" type="range" min="0" max="100" value="${mpVol()}" oninput="mpSetVol(this.value)" title="음량">`:""}<button class="hb" onclick="ccmOpen()" title="오늘 본문·찬송가와 같은 주제의 CCM 추천">CCM</button>`; }
 function paintHymnCtl(){ const b=$("#hymnbox"); if(!b||!SU?.hymn) return; b.innerHTML=`찬송가 ${esc(SU.hymn)}장${hymnCtl()}`; }
@@ -2775,7 +2775,7 @@ async function hymnToggle(){ const n=hymnNo(); if(!n) return;
   const b=document.querySelector("[data-hb]"); b?.classList.add("busy");
   try{ if(MUSIC.key!==n||!MUSIC.v){ const r=await musicCall({hymn:n}); MUSIC.key=n; MUSIC.v=r.hymn; MUSIC.ccm=null; MUSIC.retry=false; }
     await mpPlay(MUSIC.v.id,`새찬송가 ${n}장`,MUSIC.v.title,"hymn",MUSIC.v.ym); }
-  catch(e){ toast(e.message||"찬송가를 찾지 못했습니다"); }
+  catch(e){ if(/준비되지|한도|쉽니다/.test(e.message||"")){ MUSIC.noYt=true; paintHymnCtl(); } toast(e.message||"찬송가를 찾지 못했습니다"); }   // 창구가 못 찾는 날은 유튜브뮤직 찾기(♪ ↗)로
   finally{ b?.classList.remove("busy"); } }
 async function ccmOpen(refresh){ const n=hymnNo(); mpCard(); const box=$("#mpccm");
   if(MUSIC.key!==n){ MUSIC.key=n; MUSIC.v=null; MUSIC.ccm=null; }
@@ -2909,6 +2909,7 @@ function setGroups(){ const R=S.reminder||{}, rOn=!!(R.on&&R.clock!==false), p=S
      {k:"plan",ic:"✚",t:"성경 통독",st:"",sum:`${esc(cur.name)} · ${p.mode==="date"?"달력대로":"이어 읽기"} · ${(p.day||0)+1}일째`,body:planSettings()},
      {k:"devo",ic:"❦",t:"오늘의 묵상 자료",st:"",sum:`${esc(devoSrc().name)} · 갈아 끼울 수 있음`,body:devoSection()},
      ...(PUB?[]:[{k:"remind",ic:"✉",t:"아침 알림",st:GAS?(rOn?"ok":"off"):"",pill:rOn?"켜짐":"꺼짐",sum:rOn?`날마다 오전 ${R.hour||6}시 · 메일`:R.on&&R.clock===false?"알림 시계 설치가 필요합니다":"꺼짐 — 켜면 오늘 분량을 메일로",body:reminderSection()}]),
+     ...(PUB?[{k:"music",ic:"♪",t:"찬송가·CCM 듣기",st:"",sum:"열쇠 없이 앱 안에서 · 유튜브 영상",body:musicPubSection()}]:[]),
      ...(PUB?[]:[{k:"music",ic:"♪",t:"찬송가·CCM 듣기",st:CONF.yt?"ok":"off",pill:CONF.yt?"설정됨":"선택",sum:CONF.yt?"유튜브 열쇠 들어 있음 · 앱 안에서 재생":"열쇠 없음 · 유튜브뮤직 검색으로 열림",body:musicSection()}]),
      {k:"streak",ic:"❋",t:"이어지는 아침",st:"",sum:`${streakShown()}일째${sf?` · ${+sf.slice(5,7)}월 ${+sf.slice(8,10)}일부터`:""}`,body:streakSection()}]},
    {id:"write",t:"쓰기",ic:"✎",acc:"var(--sepia)",rows:[
@@ -3010,6 +3011,10 @@ function locNudge(){ if(!LOCALMODE||tab!=="today") return ""; let snooze=""; try
 setInterval(()=>{ lbRun(false,false); },10*60e3);
 document.addEventListener("visibilitychange",()=>{ if(document.visibilityState==="hidden") lbRun(false,false); });
 setTimeout(()=>lbRun(false,false),20000);   // 열고 조금 뒤 (최신 기록을 받은 다음)
+function musicPubSection(){ return `<section class="sheet tape c compact"><p class="label">찬송가·CCM 듣기</p>
+    <p class="sub">묵상 화면 「찬송가 ○장」 옆 <b>▶</b>를 누르면 그 찬송가를 유튜브에서 찾아 <b>앱 안 작은 창</b>에서 틉니다. <b>CCM</b>을 누르면 오늘 본문·찬송가와 같은 주제의 곡을 AI가 고르고, 유튜브에 실제로 있는 곡만 보여 줍니다. 열쇠를 넣을 필요가 없습니다.</p>
+    <p class="hint">찾은 곡은 아침 서재 공개 창구가 기억해 모두가 함께 씁니다(찾을 때 가는 것은 찬송가 번호·날짜뿐, 쓴 글은 가지 않음). 붐비는 날에는 ▶ 대신 「♪ ↗」(유튜브뮤직에서 찾기)가 보입니다. 플레이어 크기·자리·이어 듣기는 플레이어의 ⋯ 단추에서 고릅니다.</p>
+    <p class="hint">이 기능은 YouTube API 서비스를 씁니다. 쓰면 <a href="https://www.youtube.com/t/terms" target="_blank" rel="noopener">YouTube 서비스 약관 ↗</a>에 동의하는 것이며, <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Google 개인정보처리방침 ↗</a>이 함께 적용됩니다.</p></section>`; }
 function musicSection(){
   return `<section class="sheet tape ${CONF.yt?"compact":""}">
     <p class="label">찬송가·CCM 듣기</p>
