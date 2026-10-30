@@ -1,7 +1,7 @@
 // 아침 서재 — 오프라인에서도 앱 화면이 열리게 (2026-10-30)
 // 네트워크를 먼저 쓰고(새 버전이 늘 바로 옴), 끊겼을 때만 이 기기에 둔 마지막 판을 보여 줌.
 // 같은 사이트의 GET 만 다룸 — 구글 서버(Apps Script)·노션 같은 바깥 요청은 건드리지 않음. 자료의 원본은 구글 드라이브.
-const C = "seojae-v1";
+const C = "seojae-open-v1";   // 공개판: 개인용(/seojae/)과 캐시 이름을 나눔
 self.addEventListener("install", e => self.skipWaiting());
 self.addEventListener("activate", e => e.waitUntil(self.clients.claim()));
 self.addEventListener("fetch", e => {

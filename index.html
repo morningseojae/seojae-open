@@ -18,7 +18,7 @@
 // 화면 밝기: 기기의 야간 모드와 상관없이 기본은 '밝게'. 설정에서 기기마다 '어둡게'·'기기 설정 따라'를 고를 수 있습니다.
 // (화면이 그려지기 전에 정해야 어둡게 번쩍이지 않아서 맨 앞에 둡니다)
 function applyTheme(t){
-  t=t||(()=>{ try{ return localStorage.getItem("seojae.theme"); }catch(_){ return null; } })()||"light";
+  t=t||(()=>{ try{ return localStorage.getItem("seojae-open.theme"); }catch(_){ return null; } })()||"light";
   const dark=t==="dark"||(t==="auto"&&matchMedia("(prefers-color-scheme: dark)").matches);
   document.documentElement.dataset.theme=dark?"dark":"light";
   document.getElementById("colorscheme").content=dark?"dark":"light";
@@ -26,10 +26,10 @@ function applyTheme(t){
   return t;
 }
 applyTheme();
-try{ const v=localStorage.getItem("seojae.stColor"); if(v==="forest"||v==="white") document.documentElement.dataset.stc=v; }catch(_){}   // 글방 둘레 색 (이 기기) — 화면을 그리기 전에
+try{ const v=localStorage.getItem("seojae-open.stColor"); if(v==="forest"||v==="white") document.documentElement.dataset.stc=v; }catch(_){}   // 글방 둘레 색 (이 기기) — 화면을 그리기 전에
 // 이 기기만의 노트 꾸미기(종이 색·글자 색·글자 크기): 화면이 그려지기 전에 적용 (localStorage seojae.look — 휴대폰과 컴퓨터를 따로)
 function applyLook(){
-  let L={}; try{ L=JSON.parse(localStorage.getItem("seojae.look")||"{}")||{}; }catch(_){}
+  let L={}; try{ L=JSON.parse(localStorage.getItem("seojae-open.look")||"{}")||{}; }catch(_){}
   const r=document.documentElement.style, fs=+L.fs||0;
   if(fs){ r.setProperty("--note-fs",fs+"px"); r.setProperty("--note-lh",Math.round(fs*2)+"px"); } else { r.removeProperty("--note-fs"); r.removeProperty("--note-lh"); }
   if(L.bg) r.setProperty("--note-bg",L.bg); else r.removeProperty("--note-bg");
@@ -1870,11 +1870,12 @@ const INKS=[["먹","#2e2721"],["청색","#24427a"],["세피아","#7a4a22"],["녹
 // ───────── 저장 ─────────
 const blank=()=>({settings:{bible:{idx:0,ch:1,perDay:3},currentBook:null,autoSync:true,ink:"",paper:"lined"},books:[],notes:[],writings:[],manuscripts:[],log:{},diary:{},marks:{},drafts:{},jots:[],codex:[],images:[],sends:[],sources:[],series:[]});
 let S=blank(), SERVER=false, CONF={notion:false,kakao:false}, REV=null;
-const LKEY="morningStudy.v2";
+// 공개판(seojae-open): 개인용(/seojae/)과 주소 앞부분이 같아 이 기기 저장 칸을 함께 쓰게 되므로, 모든 저장 칸 이름을 「seojae-open.」으로 따로 둡니다(IndexedDB 「seojae-open」)
+const LKEY="seojae-open.morningStudy.v2";
 // 서버와 주고받기
 //  · GitHub Pages 같은 인터넷 주소에서 열리면: 연결된 구글 서버(앱스 스크립트)에 비밀 열쇠와 함께 요청
 //  · 이 컴퓨터(localhost)에서 열리면: server.py
-const CONN_KEY="seojae.conn";
+const CONN_KEY="seojae-open.conn";
 // 연결 링크는 내 구글 앱스 스크립트 주소 모양일 때만 받고, 이미 다른 곳에 연결된 기기면 한 번 확인합니다(가짜 링크 방지)
 function validConn(c){ return !!c&&typeof c.k==="string"&&c.k.length>=20&&/^https:\/\/script\.google\.com\/macros\/s\/[\w-]+\/exec$/.test(c.u||""); }
 function askReplace(c){ let cur=null; try{ cur=JSON.parse(localStorage.getItem(CONN_KEY)||"null"); }catch(_){}
@@ -1934,7 +1935,7 @@ async function apiGet(path,params){
 const PLACE=()=>GAS?"구글 드라이브":"이 기기";
 // 빠르게 열기: 이 기기에 남은 지난번 사본(기록·설정)으로 화면을 먼저 그리고, 최신 기록은 뒤에서 받아 옵니다.
 // 최신 기록이 오기 전에는 구글에 저장하지 않고(PENDING), 도착하면 최신 기록과 합친 뒤 저장합니다 → 다른 기기 글을 덮지 않음.
-const CKEY="seojae.conf";
+const CKEY="seojae-open.conf";
 let READY=false, PENDING=false, CACHED_REV=null;
 const useData=d=>{ S=Object.assign(blank(),d); S.settings=Object.assign(blank().settings,d.settings);
   for(const k of ["writings","notes","books","manuscripts","jots"]) (S[k]||[]).forEach(x=>{ if(!/^[a-z0-9_-]{1,40}$/i.test(String(x.id||""))) x.id=uid(); });   // 번호는 글자·숫자만
@@ -2003,7 +2004,7 @@ async function fetchFresh(first){
 }
 function migrate(){ // 첫 버전 기록 옮기기
   try{
-    const old=JSON.parse(localStorage.getItem("morningStudy.v1")); if(!old) return;
+    const old=JSON.parse(localStorage.getItem("seojae-open.morningStudy.v1")); if(!old) return;
     S.notes=old.notes||[]; S.writings=old.writings||[]; S.manuscripts=old.manuscripts||[]; S.log=old.log||{};
     S.settings.bible=old.settings?.bible||S.settings.bible;
     const b=old.settings?.book;
@@ -2016,8 +2017,8 @@ function migrate(){ // 첫 버전 기록 옮기기
 // · 지운 것은 S.deleted 에 지운 시각(묘비)을 남겨, 옛 사본과 합쳐도 되살아나지 않게 합니다
 // · 책·원고·설정은 바뀔 때 시각을 찍어 두고(stampChanges), 합칠 때 나중에 바뀐 쪽을 씁니다
 const SER=()=>JSON.stringify(S,(k,v)=>k==="syncing"||k==="resync"?undefined:v);
-const isDirty=()=>{ try{ return localStorage.getItem("seojae.dirty")==="1"; }catch(_){ return false; } };
-const setDirty=on=>{ try{ on?localStorage.setItem("seojae.dirty","1"):localStorage.removeItem("seojae.dirty"); }catch(_){} };
+const isDirty=()=>{ try{ return localStorage.getItem("seojae-open.dirty")==="1"; }catch(_){ return false; } };
+const setDirty=on=>{ try{ on?localStorage.setItem("seojae-open.dirty","1"):localStorage.removeItem("seojae-open.dirty"); }catch(_){} };
 function tomb(id){ (S.deleted=S.deleted||{})[id]=new Date().toISOString(); }
 let SNAP=null;
 const itemKey=x=>JSON.stringify(x,(k,v)=>k==="updated"||k==="syncing"||k==="resync"?undefined:v);
@@ -2158,7 +2159,7 @@ async function pushSave(){
 // ───────── 새 버전 자동 새로 고침 ─────────
 // 올릴 때마다 version.json 의 번호가 바뀝니다. 앱이 열릴 때·다시 화면에 올라올 때·5분마다 확인해서,
 // 쓰는 중인 글이 없고 저장이 끝났을 때 새 버전으로 새로 고칩니다.
-const APP_BUILD="179f63dc8c";
+const APP_BUILD="d599a3208a";
 let NEW_BUILD=null, UPDATE_NOTICED=false;
 async function checkUpdate(){
   if(APP_BUILD.startsWith("__")) return;                 // 원본 파일로 열었을 때(고치는 중)는 건너뜁니다
@@ -2186,7 +2187,7 @@ function tryReload(){
     return;
   }
   if(saveT||SAVING||PENDING||SYNCING) return setTimeout(tryReload,1500);   // 저장·노션 보내기가 끝날 때까지 기다립니다
-  try{ if(sessionStorage.getItem("seojae.reloadedFor")===NEW_BUILD) return; sessionStorage.setItem("seojae.reloadedFor",NEW_BUILD); }catch(_){}
+  try{ if(sessionStorage.getItem("seojae-open.reloadedFor")===NEW_BUILD) return; sessionStorage.setItem("seojae-open.reloadedFor",NEW_BUILD); }catch(_){}
   location.replace(location.pathname+"?v="+NEW_BUILD);    // ?v= 를 붙여 예전 화면이 남아 있지 않게
 }
 if(/[?&]v=/.test(location.search)) history.replaceState(null,"",location.pathname+location.hash);
@@ -2266,7 +2267,7 @@ const jp=(w,a,b)=>jo(w,a,b).slice(String(w??"").length);   // 조사만
 // 나를 부르는 호칭 (설정 → 쓰기, S.settings.callName — 기기 사이에 따라감). 앱이 사용자를 부르는 문구는 모두 이것으로
 const cnClean=v=>String(v||"").replace(/[^가-힣ㄱ-ㅎㅏ-ㅣA-Za-z0-9 ·]/g,"").replace(/\s+/g," ").trim().slice(0,20);
 if("serviceWorker" in navigator&&location.protocol==="https:") addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));   // 인터넷이 끊겨도 앱 화면은 열림 (자료는 이 기기 사본 → 다시 이어지면 구글로)
-const smartQ=()=>{ try{ return localStorage.getItem("seojae.smartq")==="1"; }catch(_){ return false; } };   // 따옴표 저절로 바꾸기 (이 기기, 설정 → 쓰기)
+const smartQ=()=>{ try{ return localStorage.getItem("seojae-open.smartq")==="1"; }catch(_){ return false; } };   // 따옴표 저절로 바꾸기 (이 기기, 설정 → 쓰기)
 const callName=()=>cnClean(S?.settings?.callName)||"목사님";
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
@@ -2379,22 +2380,22 @@ function sideTip(){ if(document.querySelector(".sidetip")) return; const mac=/Ma
     <ul style="margin:0;padding-left:1.2em;line-height:1.8">${touch?`<li><b>갤럭시</b>: 최근 앱 단추(▢ 또는 |||) → 아침 서재 아이콘을 누름 → 「분할 화면으로 열기」 → 아래쪽에 크롬(성경 창)을 고르기</li>`:`<li><b>${mac?"맥":"컴퓨터"}</b>: ${mac?"성경 창 왼쪽 위 <b>초록 단추</b>에 마우스를 올리면 나오는 메뉴에서 「오른쪽에 배치」를 고르고, 아침 서재 창을 왼쪽에 둡니다 (단축키: fn + control + → / ←)":"성경 창을 화면 오른쪽 끝으로 끌어 붙이고(⊞ + →), 아침 서재 창을 왼쪽에 둡니다 (⊞ + ←)"}</li>`}
       <li><b>개역한글·영어 본문</b>은 「위에 띄우기」로 앱 위에 늘 떠 있는 작은 창으로 볼 수 있습니다.</li><li><b>듣기</b>는 앱 안 재생기로 들려 다른 메뉴로 옮겨도 계속됩니다.</li></ul>
     <div class="row" style="gap:6px"><button class="btn ink" data-ok>알겠습니다</button><button class="btn ghost" data-x>닫기</button></div></section>`;
-  document.body.appendChild(ov); const done=()=>{ try{ localStorage.setItem("seojae.sideTip","1"); }catch(_){} ov.remove(); };
+  document.body.appendChild(ov); const done=()=>{ try{ localStorage.setItem("seojae-open.sideTip","1"); }catch(_){} ov.remove(); };
   ov.querySelector("[data-ok]").onclick=done; ov.querySelector("[data-x]").onclick=done; ov.onclick=e=>{ if(e.target===ov) done(); }; }
 // ───────── 매일성경 듣기: 앱 안 작은 재생기 — 메뉴를 옮겨도 계속, 빠르기·10초 이동, 들은 자리 기억, 잠금 화면 조절 ─────────
 function suListen(){ if(!SU?.audio) return; let el=$("#suplayer"); const a0=el?.querySelector("audio");
   if(el&&el.dataset.src===SU.audio){ el.hidden=false; el.classList.remove("min"); suPlace(el); if(a0.paused) a0.play().catch(()=>{}); return; }
   if(!el){ el=document.createElement("div"); el.id="suplayer"; el.className="suplayer"; document.body.appendChild(el); }
-  let rate=1; try{ rate=+localStorage.getItem("seojae.suRate")||1; }catch(_){}
+  let rate=1; try{ rate=+localStorage.getItem("seojae-open.suRate")||1; }catch(_){}
   const src=SU.audio, title=`${SU.title||"매일성경"}`, sub=`${SU.book||""} ${SU.range||""}`.trim();
   el.dataset.src=src; el.hidden=false; el.classList.remove("min");
   el.innerHTML=`<div class="spl-t"><span class="spl-ic">🎧</span><div><b>${esc(title)}</b><small>매일성경 · ${esc(sub)}</small></div><span class="spacer"></span><button class="spl-pp" data-pp title="재생 / 멈춤">▶</button><button data-min title="작게 / 크게">▾</button><button data-x title="닫기">✕</button></div>
     <audio controls preload="metadata" src="${esc(src)}"></audio>
     <div class="spl-b"><button data-sk="-10">↺ 10초</button><button data-sk="10">10초 ↻</button><span class="spacer"></span>${[0.8,1,1.2,1.5].map(r=>`<button data-r="${r}" class="${r===rate?"on":""}">${r}×</button>`).join("")}</div>`;
   const a=el.querySelector("audio"); a.playbackRate=rate;
-  try{ const p=JSON.parse(localStorage.getItem("seojae.suAudio")||"null"); if(p?.src===src&&p.t>5) a.addEventListener("loadedmetadata",()=>{ if(p.t<a.duration-5) a.currentTime=p.t; },{once:true}); }catch(_){}
-  let lastSave=0; a.ontimeupdate=()=>{ if(Date.now()-lastSave<4000) return; lastSave=Date.now(); try{ localStorage.setItem("seojae.suAudio",JSON.stringify({src,t:Math.floor(a.currentTime)})); }catch(_){} };
-  a.onended=()=>{ try{ localStorage.removeItem("seojae.suAudio"); }catch(_){} el.classList.remove("playing"); };
+  try{ const p=JSON.parse(localStorage.getItem("seojae-open.suAudio")||"null"); if(p?.src===src&&p.t>5) a.addEventListener("loadedmetadata",()=>{ if(p.t<a.duration-5) a.currentTime=p.t; },{once:true}); }catch(_){}
+  let lastSave=0; a.ontimeupdate=()=>{ if(Date.now()-lastSave<4000) return; lastSave=Date.now(); try{ localStorage.setItem("seojae-open.suAudio",JSON.stringify({src,t:Math.floor(a.currentTime)})); }catch(_){} };
+  a.onended=()=>{ try{ localStorage.removeItem("seojae-open.suAudio"); }catch(_){} el.classList.remove("playing"); };
   const pp=el.querySelector("[data-pp]"); a.onplay=()=>{ el.classList.add("playing"); pp.textContent="❚❚"; try{ if(MUSIC.playing) MP?.pauseVideo(); }catch(_){} }; a.onpause=()=>{ el.classList.remove("playing"); pp.textContent="▶"; };   // 말씀 듣기를 켜면 찬송가·CCM은 멈춤
   pp.onclick=()=>{ a.paused?a.play().catch(()=>{}):a.pause(); };
   a.addEventListener("timeupdate",()=>{ if(a.duration) el.style.setProperty("--p",(a.currentTime/a.duration*100).toFixed(1)); });
@@ -2403,27 +2404,27 @@ function suListen(){ if(!SU?.audio) return; let el=$("#suplayer"); const a0=el?.
   el.querySelector("[data-min]").onclick=()=>{ el.classList.toggle("min"); suPlace(el); };
   suDrag(el); suPlace(el);
   el.querySelectorAll("[data-sk]").forEach(b=>b.onclick=()=>{ a.currentTime=Math.max(0,Math.min((a.duration||1e9)-1,a.currentTime+(+b.dataset.sk))); });
-  el.querySelectorAll("[data-r]").forEach(b=>b.onclick=()=>{ a.playbackRate=+b.dataset.r; try{ localStorage.setItem("seojae.suRate",b.dataset.r); }catch(_){} el.querySelectorAll("[data-r]").forEach(x=>x.classList.toggle("on",x===b)); });
+  el.querySelectorAll("[data-r]").forEach(b=>b.onclick=()=>{ a.playbackRate=+b.dataset.r; try{ localStorage.setItem("seojae-open.suRate",b.dataset.r); }catch(_){} el.querySelectorAll("[data-r]").forEach(x=>x.classList.toggle("on",x===b)); });
   if("mediaSession" in navigator){ try{ navigator.mediaSession.metadata=new MediaMetadata({title,artist:"매일성경 · 성서유니온",album:sub});
     navigator.mediaSession.setActionHandler("seekbackward",()=>{ a.currentTime=Math.max(0,a.currentTime-10); }); navigator.mediaSession.setActionHandler("seekforward",()=>{ a.currentTime+=10; }); }catch(_){} }
   a.play().catch(()=>{}); }
 // 재생기 끌어 옮기기: 위 줄(작게일 때는 어디든)을 잡고 끕니다. 자리는 이 기기에 기억(seojae.suPos), 화면 밖으로는 못 나감
-function suPlace(el,key="seojae.suPos"){ let p=null; try{ p=JSON.parse(localStorage.getItem(key)||"null"); }catch(_){} if(!p){ el.style.left=el.style.top=el.style.right=el.style.bottom=""; return; }
+function suPlace(el,key="seojae-open.suPos"){ let p=null; try{ p=JSON.parse(localStorage.getItem(key)||"null"); }catch(_){} if(!p){ el.style.left=el.style.top=el.style.right=el.style.bottom=""; return; }
   Object.assign(el.style,{right:"auto",bottom:"auto"}); const r=el.getBoundingClientRect(), x=Math.max(6,Math.min(innerWidth-r.width-6,p.x)), y=Math.max(6,Math.min(innerHeight-r.height-6,p.y)); Object.assign(el.style,{left:x+"px",top:y+"px"}); }   // 크기가 바뀐 즉시 화면 안으로
-function suDrag(el,key="seojae.suPos"){ if(el.dataset.drag) return; el.dataset.drag="1"; let st=null;
+function suDrag(el,key="seojae-open.suPos"){ if(el.dataset.drag) return; el.dataset.drag="1"; let st=null;
   el.addEventListener("pointerdown",e=>{ if(e.button>0||e.target.closest("button,audio,a,input,.mp-menu")||el.dataset.lock==="1") return; if(!el.classList.contains("min")&&!e.target.closest(".spl-t")) return;
     const r=el.getBoundingClientRect(); st={dx:e.clientX-r.left,dy:e.clientY-r.top,x0:e.clientX,y0:e.clientY,moved:false}; try{ el.setPointerCapture(e.pointerId); }catch(_){} });
   el.addEventListener("pointermove",e=>{ if(!st) return; if(!st.moved&&Math.hypot(e.clientX-st.x0,e.clientY-st.y0)<5) return; st.moved=true; el.classList.add("drag");
     const r=el.getBoundingClientRect(), x=Math.max(6,Math.min(innerWidth-r.width-6,e.clientX-st.dx)), y=Math.max(6,Math.min(innerHeight-r.height-6,e.clientY-st.dy));
     Object.assign(el.style,{left:x+"px",top:y+"px",right:"auto",bottom:"auto"}); e.preventDefault(); });
-  const end=()=>{ if(!st) return; if(st.moved){ const r=el.getBoundingClientRect(); try{ localStorage.setItem(key,JSON.stringify({x:Math.round(r.left),y:Math.round(r.top)})); if(key==="seojae.mpPos") localStorage.setItem("seojae.mpDock",""); }catch(_){} } st=null; el.classList.remove("drag"); };
+  const end=()=>{ if(!st) return; if(st.moved){ const r=el.getBoundingClientRect(); try{ localStorage.setItem(key,JSON.stringify({x:Math.round(r.left),y:Math.round(r.top)})); if(key==="seojae-open.mpPos") localStorage.setItem("seojae-open.mpDock",""); }catch(_){} } st=null; el.classList.remove("drag"); };
   el.addEventListener("pointerup",end); el.addEventListener("pointercancel",end);
   addEventListener("resize",()=>{ if(!el.hidden) suPlace(el,key); }); }
 // ───────── 찬송가·CCM 듣기: 서버 musicFind(유튜브 검색 열쇠) → 앱 안 작은 유튜브 창. 열쇠가 없으면 유튜브뮤직 검색을 새 창으로 ─────────
 let MUSIC={key:"",v:null,ccm:null,cur:null,slot:"",playing:false,retry:false}, MP=null, YT_P=null;   // slot: 지금 곡이 「hymn」인지 「ccm:번호」인지
 const hymnNo=()=>String(SU?.hymn||"").replace(/[^0-9]/g,"").slice(0,4);
-const mpVol=()=>{ let v=50; try{ v=+(localStorage.getItem("seojae.mpVol")??50); }catch(_){} return isFinite(v)?v:50; };
-function mpSetVol(v){ try{ localStorage.setItem("seojae.mpVol",String(v)); }catch(_){} try{ MP?.setVolume(+v); }catch(_){} }
+const mpVol=()=>{ let v=50; try{ v=+(localStorage.getItem("seojae-open.mpVol")??50); }catch(_){} return isFinite(v)?v:50; };
+function mpSetVol(v){ try{ localStorage.setItem("seojae-open.mpVol",String(v)); }catch(_){} try{ MP?.setVolume(+v); }catch(_){} }
 function hymnCtl(){ const n=hymnNo(); if(!n) return "";
   if(!SERVER||!CONF.yt) return ` <a class="hb" href="https://music.youtube.com/search?q=${encodeURIComponent("새찬송가 "+n+"장")}" target="_blank" rel="noopener" title="유튜브뮤직에서 찾기 (설정 → 찬송가·CCM 듣기에 유튜브 열쇠를 넣으면 여기서 바로 재생)">♪ ↗</a>`;
   const on=MUSIC.playing&&MUSIC.slot==="hymn";
@@ -2437,7 +2438,7 @@ function mpCard(){ let el=$("#mplayer");
     el.innerHTML=`<div class="spl-t"><span class="spl-ic">♪</span><div><b id="mp-t">찬송가·CCM</b><small id="mp-s">유튜브뮤직 음원 우선</small></div><span class="spacer"></span><button data-min title="크기 바꾸기 (작게 → 보통 → 크게)">▾</button><button data-lock title="자리 고정 (끌리지 않게)">📌</button><button data-menu title="크기·자리">⋯</button><button data-x title="닫기 (멈춤)">✕</button></div>
       <div class="mp-menu" hidden><div class="r"><span>크기</span><button data-sz="s">작게</button><button data-sz="m">보통</button><button data-sz="l">크게</button></div><div class="r"><span>자리</span><button data-dk="tl" title="왼쪽 위">↖</button><button data-dk="tr" title="오른쪽 위">↗</button><button data-dk="bl" title="왼쪽 아래">↙</button><button data-dk="br" title="오른쪽 아래">↘</button><button data-dk="" title="끌어서 둔 곳">자유</button></div><div class="r"><span>고정</span><button data-lk>📌 끌리지 않게</button></div><div class="r"><span>재생</span><button data-auto="1" title="곡이 끝나면 다음 곡 (찬송가 → CCM 차례로)">이어 듣기</button><button data-auto="0">한 곡씩</button><button data-auto="r" title="지금 곡을 끝나면 처음부터 다시 (찬송을 외우며 부를 때)">한 곡 반복</button></div></div>
       <div class="mp-vid" id="mpbox"><span>▶를 누르면 여기서 재생됩니다</span></div><div class="mp-ctl"><button data-prev title="이전 곡 (3초 넘게 들었으면 이 곡 처음으로)">⏮&#xFE0E;</button><button data-pp class="pp" title="재생 · 멈춤">▶</button><button data-next title="다음 곡">⏭&#xFE0E;</button><small id="mp-pos"></small></div><div class="mp-ccm" id="mpccm"></div><small class="mp-note">유튜브 영상 · 위 줄을 잡고 옮길 수 있습니다</small>`;
-    document.body.appendChild(el); el.querySelector("[data-x]").onclick=mpClose; suDrag(el,"seojae.mpPos");
+    document.body.appendChild(el); el.querySelector("[data-x]").onclick=mpClose; suDrag(el,"seojae-open.mpPos");
     const cyc={s:"m",m:"l",l:"s"};
     el.querySelector("[data-min]").onclick=()=>mpSize(cyc[el.dataset.size||"m"]);
     el.querySelector("[data-lock]").onclick=el.querySelector("[data-lk]").onclick=()=>mpLock(el.dataset.lock!=="1");
@@ -2445,29 +2446,29 @@ function mpCard(){ let el=$("#mplayer");
     el.querySelectorAll("[data-sz]").forEach(b=>b.onclick=()=>mpSize(b.dataset.sz));
     el.querySelectorAll("[data-dk]").forEach(b=>b.onclick=()=>mpDockSet(b.dataset.dk));
     const autoMark=()=>el.querySelectorAll("[data-auto]").forEach(b=>b.classList.toggle("on",b.dataset.auto===mpAutoMode()));
-    el.querySelectorAll("[data-auto]").forEach(b=>b.onclick=()=>{ try{ localStorage.setItem("seojae.mpAuto",b.dataset.auto); }catch(_){} autoMark(); paintMpCtl(); toast({"1":"곡이 끝나면 다음 곡을 이어서 틉니다","0":"한 곡씩 틉니다","r":"지금 곡을 되풀이해 틉니다"}[mpAutoMode()]); }); autoMark();
+    el.querySelectorAll("[data-auto]").forEach(b=>b.onclick=()=>{ try{ localStorage.setItem("seojae-open.mpAuto",b.dataset.auto); }catch(_){} autoMark(); paintMpCtl(); toast({"1":"곡이 끝나면 다음 곡을 이어서 틉니다","0":"한 곡씩 틉니다","r":"지금 곡을 되풀이해 틉니다"}[mpAutoMode()]); }); autoMark();
     el.querySelector("[data-prev]").onclick=()=>mpSkip(-1); el.querySelector("[data-next]").onclick=()=>mpSkip(1);
     el.querySelector("[data-pp]").onclick=()=>{ if(!MUSIC.cur) return hymnToggle(); try{ MUSIC.playing?MP.pauseVideo():MP.playVideo(); }catch(_){} };
     document.addEventListener("pointerdown",e=>{ const m=el.querySelector(".mp-menu"); if(!m.hidden&&!e.target.closest("#mplayer .mp-menu,#mplayer [data-menu]")) m.hidden=true; });
     addEventListener("resize",()=>{ if(!el.hidden) mpPlace(el); });
-    let sz="m", lk="0"; try{ sz=localStorage.getItem("seojae.mpSize")||(localStorage.getItem("seojae.mpMin")==="1"?"s":"m"); lk=localStorage.getItem("seojae.mpLock")||"0"; }catch(_){}
+    let sz="m", lk="0"; try{ sz=localStorage.getItem("seojae-open.mpSize")||(localStorage.getItem("seojae-open.mpMin")==="1"?"s":"m"); lk=localStorage.getItem("seojae-open.mpLock")||"0"; }catch(_){}
     mpSize(sz,true); mpLock(lk==="1",true); }   // 크기·자리·고정은 이 기기에 기억
   el.hidden=false; mpPlace(el); return el; }
 // 크기: s 작게(영상 200×200만) · m 보통(영상 224×200 + 목록) · l 크게(영상 330×330 + 목록). 유튜브 규칙상 영상은 200×200보다 작게·가리게 하지 않음
 function mpSize(z,quiet){ const el=$("#mplayer"); if(!el) return; z=["s","m","l"].includes(z)?z:"m"; el.dataset.size=z; el.classList.toggle("min",z==="s");
   try{ MP?.setSize?.(z==="l"?330:z==="s"?200:224,z==="l"?330:200); }catch(_){}
-  el.querySelectorAll("[data-sz]").forEach(b=>b.classList.toggle("on",b.dataset.sz===z)); if(!quiet) try{ localStorage.setItem("seojae.mpSize",z); }catch(_){} mpPlace(el); }
+  el.querySelectorAll("[data-sz]").forEach(b=>b.classList.toggle("on",b.dataset.sz===z)); if(!quiet) try{ localStorage.setItem("seojae-open.mpSize",z); }catch(_){} mpPlace(el); }
 // 자리: 네 귀퉁이에 붙이거나(창 크기가 바뀌어도 그 귀퉁이), 「자유」면 끌어서 둔 곳(seojae.mpPos)
-const mpDock=()=>{ try{ return localStorage.getItem("seojae.mpDock")||""; }catch(_){ return ""; } };
-function mpDockSet(d){ try{ localStorage.setItem("seojae.mpDock",d||""); }catch(_){} const el=$("#mplayer"); if(!el) return; el.querySelectorAll("[data-dk]").forEach(b=>b.classList.toggle("on",b.dataset.dk===(d||""))); mpPlace(el); }
-function mpPlace(el){ const d=mpDock(); el.querySelectorAll("[data-dk]").forEach(b=>b.classList.toggle("on",b.dataset.dk===d)); if(!d) return suPlace(el,"seojae.mpPos");
+const mpDock=()=>{ try{ return localStorage.getItem("seojae-open.mpDock")||""; }catch(_){ return ""; } };
+function mpDockSet(d){ try{ localStorage.setItem("seojae-open.mpDock",d||""); }catch(_){} const el=$("#mplayer"); if(!el) return; el.querySelectorAll("[data-dk]").forEach(b=>b.classList.toggle("on",b.dataset.dk===(d||""))); mpPlace(el); }
+function mpPlace(el){ const d=mpDock(); el.querySelectorAll("[data-dk]").forEach(b=>b.classList.toggle("on",b.dataset.dk===d)); if(!d) return suPlace(el,"seojae-open.mpPos");
   const m=12, low=innerWidth<=700?78:12; Object.assign(el.style,{right:"auto",bottom:"auto"}); const r=el.getBoundingClientRect();
   const x=d[1]==="l"?m:innerWidth-r.width-m, y=d[0]==="t"?m:innerHeight-r.height-low; Object.assign(el.style,{left:Math.max(6,x)+"px",top:Math.max(6,y)+"px"}); }
 // 고정: 끌리지 않게(머리 줄을 잡아도 안 움직임)
 function mpLock(on,quiet){ const el=$("#mplayer"); if(!el) return; el.dataset.lock=on?"1":"0"; el.querySelector("[data-lock]")?.classList.toggle("on",on); el.querySelector("[data-lk]")?.classList.toggle("on",on);
-  if(!quiet){ try{ localStorage.setItem("seojae.mpLock",on?"1":"0"); }catch(_){} toast(on?"플레이어 자리를 고정했습니다":"플레이어를 다시 끌어 옮길 수 있습니다"); } }
+  if(!quiet){ try{ localStorage.setItem("seojae-open.mpLock",on?"1":"0"); }catch(_){} toast(on?"플레이어 자리를 고정했습니다":"플레이어를 다시 끌어 옮길 수 있습니다"); } }
 // 재생 방식(이 기기에 기억): "1" 이어 듣기 — 찬송가 다음은 CCM 첫 곡(목록이 없으면 받아 옴), CCM은 목록 차례대로, 마지막 곡에서 멈춤 · "0" 한 곡씩 · "r" 한 곡 반복
-const mpAutoMode=()=>{ let v="1"; try{ v=localStorage.getItem("seojae.mpAuto")||"1"; }catch(_){} return ["1","0","r"].includes(v)?v:"1"; };
+const mpAutoMode=()=>{ let v="1"; try{ v=localStorage.getItem("seojae-open.mpAuto")||"1"; }catch(_){} return ["1","0","r"].includes(v)?v:"1"; };
 const mpAuto=()=>mpAutoMode()==="1";
 // 재생 목록: 오늘 찬송가 → CCM 차례
 const mpQueue=()=>[...(hymnNo()?["hymn"]:[]),...(MUSIC.ccm||[]).map((_,i)=>"ccm:"+i)];
@@ -2516,9 +2517,9 @@ function paintCcm(){ paintMpCtl(); const box=$("#mpccm"); if(!box||!MUSIC.ccm) r
 function ccmPlay(i){ const c=MUSIC.ccm?.[i]; if(!c) return; if(MP&&MUSIC.slot==="ccm:"+i){ try{ MUSIC.playing?MP.pauseVideo():MP.playVideo(); }catch(_){} return; } mpPlay(c.id,c.song,c.artist,"ccm:"+i,c.ym); }
 // ───────── 설정 화면 (2026-10-29 디자인 검토 반영): 갈래마다 한 판, 칸마다 한 줄 — 다 정한 칸은 접히고 줄에 무엇이 정해졌는지만 ─────────
 // st: ok 설정됨 · need 설정 필요 · off 꺼짐/선택 · "" 상태 없음. 사람이 펼치고 접은 것은 이 기기에 기억(seojae.setOpen) — 기억이 기본값보다 앞섬
-const SET_OPEN=(()=>{ try{ return JSON.parse(localStorage.getItem("seojae.setOpen")||"{}")||{}; }catch(_){ return {}; } })();
-function setOpenT(k,el){ SET_OPEN[k]=el.open; try{ localStorage.setItem("seojae.setOpen",JSON.stringify(SET_OPEN)); }catch(_){} const b=$(".setall"); if(b) b.textContent=document.querySelector(".setitem:not([open])")?"모두 펼치기":"모두 접기"; }
-function setAll(){ const open=!!document.querySelector(".setitem:not([open])"); document.querySelectorAll(".setitem").forEach(d=>{ d.open=open; SET_OPEN[d.dataset.k]=open; }); try{ localStorage.setItem("seojae.setOpen",JSON.stringify(SET_OPEN)); }catch(_){} }
+const SET_OPEN=(()=>{ try{ return JSON.parse(localStorage.getItem("seojae-open.setOpen")||"{}")||{}; }catch(_){ return {}; } })();
+function setOpenT(k,el){ SET_OPEN[k]=el.open; try{ localStorage.setItem("seojae-open.setOpen",JSON.stringify(SET_OPEN)); }catch(_){} const b=$(".setall"); if(b) b.textContent=document.querySelector(".setitem:not([open])")?"모두 펼치기":"모두 접기"; }
+function setAll(){ const open=!!document.querySelector(".setitem:not([open])"); document.querySelectorAll(".setitem").forEach(d=>{ d.open=open; SET_OPEN[d.dataset.k]=open; }); try{ localStorage.setItem("seojae-open.setOpen",JSON.stringify(SET_OPEN)); }catch(_){} }
 function setJump(k){ const d=$(`.setitem[data-k="${k}"]`); if(!d) return; d.open=true; d.scrollIntoView({behavior:"smooth",block:"start"}); }
 function setGo(id){ $("#setg-"+id)?.scrollIntoView({behavior:"smooth",block:"start"}); }
 function setItem(r){ if(!r.body) return ""; const open=r.k in SET_OPEN?SET_OPEN[r.k]:r.st==="need";
@@ -2584,7 +2585,7 @@ function devoSection(){ const d=devoSrc();
     <p class="hint">한 날의 묵상 = 날짜 · 제목 · 본문(책·장절) · 찬송가 번호 · 음성 주소 · 해설(소제목과 글 여러 개). 성경 본문 글자는 앱이 따로 불러옵니다.</p>
     ${d.url?`<p class="hint"><a href="${esc(d.url)}" target="_blank" rel="noopener">${esc(d.name)} 보기 ↗</a></p>`:""}</section>`; }
 function setGroups(){ const R=S.reminder||{}, rOn=!!(R.on&&R.clock!==false), p=S.settings.plan||{}, cur=planObj(), ps=pomoSet(), rules=vrList("rules").filter(x=>x.on!==false).length, voice=vrList("voice").length;
-  let theme="light"; try{ theme=localStorage.getItem("seojae.theme")||"light"; }catch(_){} const fs=+(()=>{ try{ return JSON.parse(localStorage.getItem("seojae.look")||"{}").fs; }catch(_){ return 0; } })()||0;
+  let theme="light"; try{ theme=localStorage.getItem("seojae-open.theme")||"light"; }catch(_){} const fs=+(()=>{ try{ return JSON.parse(localStorage.getItem("seojae-open.look")||"{}").fs; }catch(_){ return 0; } })()||0;
   const cm=(cmtLoad()?.files||[]).filter(f=>!f.hidden).length, sf=S.settings.streakFrom;
   return [
    {id:"morning",t:"아침",ic:"☀︎",acc:"var(--bible)",rows:[
@@ -2594,7 +2595,7 @@ function setGroups(){ const R=S.reminder||{}, rOn=!!(R.on&&R.clock!==false), p=S
      {k:"music",ic:"♪",t:"찬송가·CCM 듣기",st:CONF.yt?"ok":"off",pill:CONF.yt?"설정됨":"선택",sum:CONF.yt?"유튜브 열쇠 들어 있음 · 앱 안에서 재생":"열쇠 없음 · 유튜브뮤직 검색으로 열림",body:musicSection()},
      {k:"streak",ic:"❋",t:"이어지는 아침",st:"",sum:`${streakShown()}일째${sf?` · ${+sf.slice(5,7)}월 ${+sf.slice(8,10)}일부터`:""}`,body:streakSection()}]},
    {id:"write",t:"쓰기",ic:"✎",acc:"var(--sepia)",rows:[
-     {k:"smartq",ic:"“",t:"따옴표 저절로 바꾸기",st:"",pill:smartQ()?"켜짐":"꺼짐",sum:smartQ()?"\" → “ ” · ' → ‘ ’ · ... → … · -- → —":"꺼짐 — 출판사 원고 규칙에 맞추려면 켜세요",body:`<section class="sheet tape c compact"><p class="label">따옴표 저절로 바꾸기</p><label class="chk"><input type="checkbox" ${smartQ()?"checked":""} onchange="try{localStorage.setItem('seojae.smartq',this.checked?'1':'0')}catch(_){} toast(this.checked?'곧은 따옴표·말줄임·줄표를 바꿔 넣습니다':'그대로 넣습니다'); render()"> 글 칸에서 칠 때 " ' 는 “ ” ‘ ’ 로, ... 은 … 로, -- 는 — 로</label><p class="hint">이 기기에서만. 이미 쓴 글은 바꾸지 않습니다. 원고 전체를 바꾸려면 원고의 「찾아 바꾸기」를 쓰세요.</p></section>`},
+     {k:"smartq",ic:"“",t:"따옴표 저절로 바꾸기",st:"",pill:smartQ()?"켜짐":"꺼짐",sum:smartQ()?"\" → “ ” · ' → ‘ ’ · ... → … · -- → —":"꺼짐 — 출판사 원고 규칙에 맞추려면 켜세요",body:`<section class="sheet tape c compact"><p class="label">따옴표 저절로 바꾸기</p><label class="chk"><input type="checkbox" ${smartQ()?"checked":""} onchange="try{localStorage.setItem('seojae-open.smartq',this.checked?'1':'0')}catch(_){} toast(this.checked?'곧은 따옴표·말줄임·줄표를 바꿔 넣습니다':'그대로 넣습니다'); render()"> 글 칸에서 칠 때 " ' 는 “ ” ‘ ’ 로, ... 은 … 로, -- 는 — 로</label><p class="hint">이 기기에서만. 이미 쓴 글은 바꾸지 않습니다. 원고 전체를 바꾸려면 원고의 「찾아 바꾸기」를 쓰세요.</p></section>`},
      {k:"callname",ic:"☺",t:"나를 부르는 호칭",st:"",sum:`「${esc(callName())}」${S.settings.callName?"":" (기본)"}`,body:callNameSection()},
      {k:"quiet",ic:"◷",t:"쓰는 동안 조용히",st:"",sum:`집중 ${ps.focus}분 · 쉼 ${ps.short}분 · 긴 쉼 ${ps.long}분(${ps.rounds}번마다)`,body:quietSection()},
      {k:"vr",ic:"✎",t:"AI가 따를 것 — 규칙·말투",st:"",sum:rules||voice?`규칙 ${rules}개 · 말투 기준 ${voice}문장`:"아직 규칙 없음",body:vrSection()}]},
@@ -2614,8 +2615,8 @@ function setGroups(){ const R=S.reminder||{}, rOn=!!(R.on&&R.clock!==false), p=S
 // 고른 폴더(손잡이)는 이 기기 큰 저장소(IndexedDB lbDir)에만, 켜기·마지막 시각은 seojae.localBackup 에만 — 기록 파일(구글)에는 넣지 않음
 let BK_INFO=null, BK_ASKED=false, LB_NEED=false, LB_BUSY=false;
 const lbCan=()=>"showDirectoryPicker" in window&&!matchMedia("(pointer:coarse)").matches;
-const lbCfg=()=>{ try{ return JSON.parse(localStorage.getItem("seojae.localBackup")||"null")||{}; }catch(_){ return {}; } };
-const lbSetCfg=o=>{ try{ localStorage.setItem("seojae.localBackup",JSON.stringify(Object.assign(lbCfg(),o))); }catch(_){} };
+const lbCfg=()=>{ try{ return JSON.parse(localStorage.getItem("seojae-open.localBackup")||"null")||{}; }catch(_){ return {}; } };
+const lbSetCfg=o=>{ try{ localStorage.setItem("seojae-open.localBackup",JSON.stringify(Object.assign(lbCfg(),o))); }catch(_){} };
 const LB_PRE="아침서재-백업-";
 function bkWhen(iso){ if(!iso) return ""; const d=new Date(iso); return isNaN(d)?"":`${d.getMonth()+1}월 ${d.getDate()}일 ${String(d.getHours()).padStart(2,"0")}:${String(d.getMinutes()).padStart(2,"0")}`; }
 async function bkInfo(install){ if(!GAS||!SERVER) return; try{ const r=await gcall("backupInfo",{install:!!install}); if(r.ok){ BK_INFO=r; bkPaint(); } }catch(e){ BK_INFO={ok:false,error:e.message}; bkPaint(); } }
@@ -2637,7 +2638,7 @@ async function lbRun(force,ask){ const c=lbCfg(); if(!c.on||!lbCan()||LB_BUSY) r
   }catch(e){ if(force) toast("PC에 백업하지 못했습니다: "+e.message); return false; }
   finally{ LB_BUSY=false; } }
 async function lbPick(){ if(!lbCan()) return toast("이 브라우저는 폴더 고르기를 지원하지 않습니다 — 크롬·엣지에서 켜거나 「지금 내려받기」를 쓰세요");
-  try{ const h=await showDirectoryPicker({id:"seojae-backup",mode:"readwrite",startIn:"documents"}); await idbSet("lbDir",h); lbSetCfg({on:true,name:h.name,at:""}); LB_NEED=false; await lbRun(true,true); bkPaint(); }
+  try{ const h=await showDirectoryPicker({id:"seojae-open-backup",mode:"readwrite",startIn:"documents"}); await idbSet("lbDir",h); lbSetCfg({on:true,name:h.name,at:""}); LB_NEED=false; await lbRun(true,true); bkPaint(); }
   catch(e){ if(e?.name!=="AbortError") toast("폴더를 고르지 못했습니다: "+e.message); } }
 function lbOff(){ if(!confirm("이 PC 백업을 끌까요? 이미 만든 백업 파일은 폴더에 그대로 남습니다.")) return; lbSetCfg({on:false}); bkPaint(); toast("이 PC 백업을 껐습니다 (구글 백업은 그대로)"); }
 function lbDownload(){ download(LB_PRE+today()+".json",lbData(),"application/json"); toast("지금 기록 전체를 파일로 내려받았습니다"); }
@@ -2677,7 +2678,7 @@ function popBible(u){
   // 같은 이름("seojaeBible")의 창을 다시 써서, 누를 때마다 새 창이 늘지 않게 합니다
   const win=wide?window.open(u,"seojaeBible",`popup,width=${W},height=${H},left=${screen.availWidth-W-24},top=40`):window.open(u,"seojaeBible");
   if(win){ try{ win.focus(); }catch(_){} } else location.href=u;
-  let seen=false; try{ seen=localStorage.getItem("seojae.sideTip")==="1"; }catch(_){} if(!seen) setTimeout(sideTip,400);
+  let seen=false; try{ seen=localStorage.getItem("seojae-open.sideTip")==="1"; }catch(_){} if(!seen) setTimeout(sideTip,400);
   return false;
 }
 function openBible(x){ const u=bibleUrl(x); if(!u) return toast("본문 위치를 알 수 없습니다"); popBible(u); }
@@ -2688,11 +2689,11 @@ const BEN="Genesis|Exodus|Leviticus|Numbers|Deuteronomy|Joshua|Judges|Ruth|1 Sam
 const BALIAS={"요한일서":"요한1서","요한이서":"요한2서","요한삼서":"요한3서","예레미야 애가":"예레미야애가"};
 let SU=null, SUT=null, SUERR="";
 async function suInfo(date){
-  try{ const c=JSON.parse(localStorage.getItem("seojae.su."+date)||"null"); if(c) return c; }catch(_){}
+  try{ const c=JSON.parse(localStorage.getItem("seojae-open.su."+date)||"null"); if(c) return c; }catch(_){}
   if(!GAS) throw new Error("구글 서버에 연결되어 있어야 합니다");
   const r=await gcall("dailyBible",date);
-  try{ localStorage.setItem("seojae.su."+date,JSON.stringify(r));
-    const old=addMonths(today(),-1); for(let i=localStorage.length-1;i>=0;i--){ const k=localStorage.key(i); if(k?.startsWith("seojae.su.")&&k.slice(10)<old) localStorage.removeItem(k); } }catch(_){}   // 한 달 지난 것은 정리
+  try{ localStorage.setItem("seojae-open.su."+date,JSON.stringify(r));
+    const old=addMonths(today(),-1); for(let i=localStorage.length-1;i>=0;i--){ const k=localStorage.key(i); if(k?.startsWith("seojae-open.su.")&&k.slice("seojae-open.su.".length)<old) localStorage.removeItem(k); } }catch(_){}   // 한 달 지난 것은 정리
   return r;
 }
 function suPassage(su){
@@ -2724,8 +2725,8 @@ async function suNoteToggle(){
     <p class="hint" style="margin-top:8px">매일성경 해설 © 성서유니온선교회 · 개인 묵상용으로만 보여 드리며 기록·노션에는 남기지 않습니다. <a href="https://sum.su.or.kr:8888/bible/today" target="_blank" rel="noopener" onclick="return popBible(this.href)">성서유니온에서 보기 ↗</a></p></div>`;
 }
 // 휴대폰은 처음엔 접힘(쓸 종이가 먼저 보이게) — 한 번 펼치면 그 뒤로는 기억
-const suOpen=()=>{ try{ const v=localStorage.getItem("seojae.suOpen"); return v==null?innerWidth>700:v!=="0"; }catch(_){ return innerWidth>700; } };
-function suToggle(){ try{ localStorage.setItem("seojae.suOpen",suOpen()?"0":"1"); }catch(_){} paintSu(); }
+const suOpen=()=>{ try{ const v=localStorage.getItem("seojae-open.suOpen"); return v==null?innerWidth>700:v!=="0"; }catch(_){ return innerWidth>700; } };
+function suToggle(){ try{ localStorage.setItem("seojae-open.suOpen",suOpen()?"0":"1"); }catch(_){} paintSu(); }
 function suUse(){ const P=suPassage(SU), f=$("#wpassage"); if(!P||!f) return; f.value=P.label; if(!$("#wtitle").value.trim()&&SU.title) $("#wtitle").value=SU.title; draftInput(); toast("매일성경 본문을 넣었습니다"); }
 // 매일성경 앞뒤 날짜 보기: 그날 쓴 묵상이 있으면 그 글을 바로 열고(쓰던 글은 임시 보관), 없으면 그날 본문만 보여 줍니다
 function suGo(k){ const box=$("#sucard"); if(!box) return;
@@ -2898,7 +2899,7 @@ function parseRef(line){
 }
 const CHAP=new Map();
 // 개역한글 장 본문: 서버 상태·모양 확인 + 이 기기에 30일 보관
-async function getbible(bi,c){ const key="seojae.ch."+bi+"/"+c; try{ const o=JSON.parse(localStorage.getItem(key)||"null"); if(o&&Date.now()-o.at<30*864e5) return o.d; }catch(_){}
+async function getbible(bi,c){ const key="seojae-open.ch."+bi+"/"+c; try{ const o=JSON.parse(localStorage.getItem(key)||"null"); if(o&&Date.now()-o.at<30*864e5) return o.d; }catch(_){}
   const r=await fetch(`https://api.getbible.net/v2/korean/${bi+1}/${c}.json`); if(!r.ok) throw new Error("성경 본문 서버가 답하지 않습니다 ("+r.status+")");
   const d=await r.json(); if(!Array.isArray(d.verses)) throw new Error("성경 본문 모양이 바뀌었습니다");
   const slim={verses:d.verses.map(v=>({verse:v.verse,text:v.text}))}; try{ localStorage.setItem(key,JSON.stringify({at:Date.now(),d:slim})); }catch(_){} return slim; }
@@ -2927,8 +2928,8 @@ document.addEventListener("keydown",e=>{
 // 읽어 보기: 표시가 입혀진 모습으로 (각주는 아래에 번호로)
 let READVIEW=false;
 // 읽기 모드: 글자 칸을 숨기고(고칠 수 없음) 입혀진 모습으로 보기만. 설교문(🎬·▣·🎙 줄이나 슬라이드가 있는 글)은 강단용 짜임으로
-const readFs=()=>{ try{ const v=+localStorage.getItem("seojae.readfs"); return v>=12&&v<=34?v:null; }catch(_){ return null; } };
-function readFsStep(d){ const rv=$("#readview"); const cur=readFs()||(rv?.classList.contains("pulpit")?19:parseInt(getComputedStyle(rv||document.body).fontSize)||18), v=Math.max(12,Math.min(34,cur+d)); try{ localStorage.setItem("seojae.readfs",v); }catch(_){} if(rv){ rv.style.setProperty("--rv-fs",v+"px"); rv.classList.add("sized"); } }
+const readFs=()=>{ try{ const v=+localStorage.getItem("seojae-open.readfs"); return v>=12&&v<=34?v:null; }catch(_){ return null; } };
+function readFsStep(d){ const rv=$("#readview"); const cur=readFs()||(rv?.classList.contains("pulpit")?19:parseInt(getComputedStyle(rv||document.body).fontSize)||18), v=Math.max(12,Math.min(34,cur+d)); try{ localStorage.setItem("seojae-open.readfs",v); }catch(_){} if(rv){ rv.style.setProperty("--rv-fs",v+"px"); rv.classList.add("sized"); } }
 function toggleRead(){
   const b=$("#wbody"); if(!b) return; READVIEW=!READVIEW; let rv=$("#readview"); const ti=$("#wtitle");
   if(READVIEW){ const w=editId&&S.writings.find(x=>x.id===editId), text=b.value, ser=!!w?.slides||/^\s*(🎬|▣|🎙)/m.test(text)||/설교/.test(w?.type||$("#wtype")?.value||"");   // 설교초안은 늘 강단 모양
@@ -3211,7 +3212,7 @@ function stSwitch(){ const now=!!document.querySelector("#main .studio"); if(now
   b.classList.remove("stenter","stleave"); void b.offsetWidth; b.classList.add(now?"stenter":"stleave"); clearTimeout(stSwitch.t); stSwitch.t=setTimeout(()=>b.classList.remove("stenter","stleave"),1000);
   const tc=document.getElementById("themecolor"); if(tc) tc.content=getComputedStyle(document.documentElement).getPropertyValue("--desk").trim()||tc.content; }
 // ───────── 쓰던 글 임시 보관 (간직 전 탭 이동·앱 종료·새로 고침에도 사라지지 않게) ─────────
-const DKEY="seojae.draft";
+const DKEY="seojae-open.draft";
 let draftT;
 const draftKey=()=>DKEY+"."+(editId||(fromWriting?"from:"+fromWriting:track==="bible"?"new":"new.book"));   // 묵상 새 글과 글방 새 글은 칸을 따로 (서로 덮지 않게)   // 글마다 따로 보관 (새 글 초안이 남의 글 저장에 지워지지 않게)
 let DRAFT_DIRTY=false, DRAFT_AT=0;
@@ -3302,10 +3303,10 @@ function calGo(k){ // 그날 쓴 글로: 묵상(없으면 첫 글)을 바로 열
 
 // ───────── 주석 서재: 드라이브 「성경공부」 폴더의 주석에서 본문 구절 부분을 발췌·요약 ─────────
 let CMT=null, CMTQ="";   // 색인, 찾기 글자 {files:[{id,name,path,kind,size,books,score,series}],folder,at}
-function cmtLoad(){ if(CMT) return CMT; try{ CMT=JSON.parse(localStorage.getItem("seojae.cmt")||"null"); }catch(_){} return CMT; }
+function cmtLoad(){ if(CMT) return CMT; try{ CMT=JSON.parse(localStorage.getItem("seojae-open.cmt")||"null"); }catch(_){} return CMT; }
 async function cmtFresh(){ // 이름표 규칙이 바뀌었으면 드라이브를 다시 읽지 않고 이름표만 다시 받습니다
   const c=cmtLoad(); if(c&&c.tagv===3) return c; if(!c) return null;   // 색인을 아직 안 만들었으면 서버를 부르지 않음
-  try{ const r=await gcall("cmtIndex",{retag:true}); if(r.ok&&r.files?.length){ CMT=r; try{ localStorage.setItem("seojae.cmt",JSON.stringify(r)); }catch(_){} return r; } }catch(_){}
+  try{ const r=await gcall("cmtIndex",{retag:true}); if(r.ok&&r.files?.length){ CMT=r; try{ localStorage.setItem("seojae-open.cmt",JSON.stringify(r)); }catch(_){} return r; } }catch(_){}
   return c;
 }
 const cmtUse=f=>{ const u=(S.settings.cmtUse||{})[f.id]; return u!=null?u:f.score>=3; };   // 기본: 믿을 만한 1차 주석(3점 이상)만 사용. 종합·편집 주석(2점)은 직접 켬
@@ -3313,10 +3314,10 @@ const cmtBooks=f=>{ const o=(S.settings.cmtBook||{})[f.id]; return o?[o]:f.books
 function cmtSetBook(id,v){ const m=S.settings.cmtBook=S.settings.cmtBook||{}; if(v) m[id]=+v; else delete m[id]; if(v) (S.settings.cmtUse=S.settings.cmtUse||{})[id]=true; save(); }
 async function cmtRefresh(force){
   const b=$("#cmtidxbtn"); if(b) b.textContent="폴더를 읽는 중… (처음엔 1~3분)";
-  try{ const r=await gcall("cmtIndex",{refresh:!!force}); if(!r.ok) throw new Error(r.error); CMT=r; try{ localStorage.setItem("seojae.cmt",JSON.stringify(r)); }catch(_){}
+  try{ const r=await gcall("cmtIndex",{refresh:!!force}); if(!r.ok) throw new Error(r.error); CMT=r; try{ localStorage.setItem("seojae-open.cmt",JSON.stringify(r)); }catch(_){}
     toast(`주석 파일 ${r.files.length}개를 찾았습니다${r.partial?" (시간이 모자라 일부만)":""}`); render(); }
   catch(e){ // 브라우저 쪽이 먼저 끊겨도 서버는 끝까지 읽어 저장해 두므로, 저장된 색인이 있으면 그것을 씁니다
-    try{ const r=await gcall("cmtIndex",{refresh:false}); if(r.ok&&r.files?.length){ CMT=r; try{ localStorage.setItem("seojae.cmt",JSON.stringify(r)); }catch(_){} toast(`주석 파일 ${r.files.length}개를 찾았습니다`); return render(); } }catch(_){}
+    try{ const r=await gcall("cmtIndex",{refresh:false}); if(r.ok&&r.files?.length){ CMT=r; try{ localStorage.setItem("seojae-open.cmt",JSON.stringify(r)); }catch(_){} toast(`주석 파일 ${r.files.length}개를 찾았습니다`); return render(); } }catch(_){}
     toast(e.message+" — 잠시 뒤 「색인 만들기」를 한 번 더 눌러 주세요"); if(b) b.textContent="색인 만들기"; }
 }
 function cmtToggle(id,on){ (S.settings.cmtUse=S.settings.cmtUse||{})[id]=on; save(); }
@@ -3440,8 +3441,8 @@ const SPELL_RULES=[
   [/([가-힣])것(?=[이을은도의과만])/g,(m,c)=>"그이저어무아요새옛헌날별".includes(c)?null:c+" 것","'것'은 띄어 씁니다"],
   [/(\S) {2,}/g,(m,c)=>c+" ","띄어쓰기가 두 칸입니다"],[/([가-힣]) +([,.!?])/g,(m,c,p)=>c+p,"문장부호 앞은 붙여 씁니다"]
 ].filter(r=>r[1]!==null);
-const SPELL_SKIP=new Set((()=>{ try{ return JSON.parse(localStorage.getItem("seojae.spellskip")||"[]"); }catch(_){ return []; } })());   // 「그대로」 둔 말 (이 기기에 기억)
-const spellSkipSave=()=>{ try{ localStorage.setItem("seojae.spellskip",JSON.stringify([...SPELL_SKIP].slice(-300))); }catch(_){} };
+const SPELL_SKIP=new Set((()=>{ try{ return JSON.parse(localStorage.getItem("seojae-open.spellskip")||"[]"); }catch(_){ return []; } })());   // 「그대로」 둔 말 (이 기기에 기억)
+const spellSkipSave=()=>{ try{ localStorage.setItem("seojae-open.spellskip",JSON.stringify([...SPELL_SKIP].slice(-300))); }catch(_){} };
 let SPELL_AI=new Map(), SPELL_AI_T, SPELL_AI_BUSY=false;   // 문단 글자 → 인공지능이 찾은 것 (문단이 바뀌면 다시)
 const spellMode=()=>{ const m=applyLook().spell; return m==="ai"&&!CONF.ai?"rules":(m||"rules"); };   // rules | ai | off — 인공지능 검사는 설정에서 직접 켤 때만
 const inQuote=(l,s,e)=>{ let d=0; for(let i=0;i<e;i++){ if(l[i]==="「") d++; else if(l[i]==="」") d--; if(i===s&&d>0) return true; } return false; };   // 「 」 안인가
@@ -3536,7 +3537,7 @@ const jotCat=k=>JOT_CATS.find(x=>x[0]===k);
 function jotGuess(t){ t=String(t||"").trim(); if(/[?？]\s*$/.test(t)) return "ask"; if(/^(할 일|todo|□|☐|-\s*\[\s?\])/i.test(t)) return "todo"; if(/^[「“"『]/.test(t)) return "quote"; if(/[가-힣]{1,4}\s?\d{1,3}\s?[:장]\s?\d{1,3}/.test(t)) return "word"; return ""; }
 const jotNew=(t,cat)=>{ const now=new Date().toISOString(); return {id:uid(),t,at:now,updated:now,cat:cat||jotGuess(t)}; };
 let JB_CAT="all", JB_SORT="new", JB_Q="", JB_SEEDS=false, JB_UNUSED=false;
-try{ JB_SORT=localStorage.getItem("seojae.jbSort")||"new"; JB_SEEDS=localStorage.getItem("seojae.jbSeeds")==="1"; }catch(_){}
+try{ JB_SORT=localStorage.getItem("seojae-open.jbSort")||"new"; JB_SEEDS=localStorage.getItem("seojae-open.jbSeeds")==="1"; }catch(_){}
 const JB_COL={y:"노랑",p:"분홍",g:"연두",b:"하늘"};
 function jotFind(id){ return (S.jots||[]).find(x=>x.id===id); }
 function jotTouch(j){ j.updated=new Date().toISOString(); save(); }
@@ -3571,9 +3572,9 @@ function jotBoard(){ const all=jots(), wk=new Date(Date.now()-7*864e5).toISOStri
     <div class="jbin"><textarea id="jbin" class="pen" rows="2" placeholder="떠오른 한 줄… (⌘엔터 / Ctrl+엔터로 붙이기)" onkeydown="if((event.metaKey||event.ctrlKey)&&event.key==='Enter'&&!event.isComposing){event.preventDefault();jbAdd()}"></textarea>
       <div class="row" style="gap:6px"><select id="jbcat" title="분류 (고르지 않으면 모양을 보고 짐작합니다)"><option value="">분류 — 저절로</option>${JOT_CATS.map(([k,l,ic])=>`<option value="${k}">${ic} ${l}</option>`).join("")}</select><button class="btn ink" onclick="jbAdd()">붙이기</button></div></div>
     <div class="jbbar"><div class="jchips" id="jbchips">${jbChips()}</div>
-      <div class="row jbtools"><input id="jbq" placeholder="찾기" value="${esc(JB_Q)}" oninput="JB_Q=this.value;jbPaint()"><select onchange="JB_SORT=this.value;try{localStorage.setItem('seojae.jbSort',this.value)}catch(_){};jbPaint()" title="늘어놓는 순서">${[["new","최근 고친 순"],["old","처음 적은 순"],["long","긴 것부터"],["cat","분류별로 묶기"],["color","색깔별로 묶기"]].map(([k,l])=>`<option value="${k}" ${JB_SORT===k?"selected":""}>${l}</option>`).join("")}</select>
+      <div class="row jbtools"><input id="jbq" placeholder="찾기" value="${esc(JB_Q)}" oninput="JB_Q=this.value;jbPaint()"><select onchange="JB_SORT=this.value;try{localStorage.setItem('seojae-open.jbSort',this.value)}catch(_){};jbPaint()" title="늘어놓는 순서">${[["new","최근 고친 순"],["old","처음 적은 순"],["long","긴 것부터"],["cat","분류별로 묶기"],["color","색깔별로 묶기"]].map(([k,l])=>`<option value="${k}" ${JB_SORT===k?"selected":""}>${l}</option>`).join("")}</select>
         <label class="chk"><input type="checkbox" ${JB_UNUSED?"checked":""} onchange="JB_UNUSED=this.checked;jbPaint()">안 쓴 것만</label>
-        <label class="chk"><input type="checkbox" ${JB_SEEDS?"checked":""} onchange="JB_SEEDS=this.checked;try{localStorage.setItem('seojae.jbSeeds',this.checked?'1':'')}catch(_){};jbPaint()">원고 메모도 함께</label></div></div>
+        <label class="chk"><input type="checkbox" ${JB_SEEDS?"checked":""} onchange="JB_SEEDS=this.checked;try{localStorage.setItem('seojae-open.jbSeeds',this.checked?'1':'')}catch(_){};jbPaint()">원고 메모도 함께</label></div></div>
     <div id="jbbody">${jbList()}</div>
     <p class="hint" style="margin-top:14px">포스트잇을 누르면 바로 고칩니다. 위 띠는 분류, 📌는 맨 위 붙박이, ●는 색, 「→ 쓰기」는 원고 메모·새 ${"꼭지"}·새 글로 꺼내 쓰기(꺼내 쓴 끄적임에는 「✓ 쓰임」이 붙습니다), ×는 떼기.</p></section>`; }
 function jbAdd(){ const i=$("#jbin"), t=(i?.value||"").trim(); if(!t) return toast("적을 것을 먼저 써 주세요"); const j=jotNew(t,$("#jbcat")?.value||""); (S.jots=S.jots||[]).push(j); i.value=""; save(); jbPaint(); stSideCount(); i.focus();
@@ -3888,8 +3889,8 @@ function stkAct(op){
 }
 function toggleStk(){ if(typeof dCalClose==="function") dCalClose(); STK_OPEN=!STK_OPEN; if(!STK_OPEN) STK_SEL=null; paintStk(); document.querySelectorAll(".dstk").forEach(b=>b.classList.toggle("on",STK_OPEN)); }
 // 스티커 창 자리: 컴퓨터에서는 끌어다 왼쪽·오른쪽·위·아래 가장자리에 붙여 둘 수 있습니다 (이 기기에 기억)
-const stkDock=()=>{ try{ return localStorage.getItem("seojae.stkdock")||"b"; }catch(_){ return "b"; } };
-function setStkDock(d){ try{ localStorage.setItem("seojae.stkdock",d); }catch(_){} const el=$("#stkpal"); if(el) el.className="stk-palette"+(d==="b"?"":" dock-"+d); }
+const stkDock=()=>{ try{ return localStorage.getItem("seojae-open.stkdock")||"b"; }catch(_){ return "b"; } };
+function setStkDock(d){ try{ localStorage.setItem("seojae-open.stkdock",d); }catch(_){} const el=$("#stkpal"); if(el) el.className="stk-palette"+(d==="b"?"":" dock-"+d); }
 let PAL_DRAG=null;
 function palGrab(e){ const el=$("#stkpal"); if(!el||e.button) return; e.preventDefault(); const r=el.getBoundingClientRect();
   PAL_DRAG={el,dx:e.clientX-r.left,dy:e.clientY-r.top,w:r.width,h:r.height}; el.classList.add("dragging"); el.style.transform="none"; el.style.transition="none";
@@ -4061,7 +4062,7 @@ write0(){
       </div>
     </div>
     <aside>
-      ${(()=>{ let o=track==="bible"; try{ const v=localStorage.getItem("seojae.calfold."+track); if(v!=null) o=v==="1"; }catch(_){} return `<details class="calfold" ${o?"open":""} ontoggle="try{localStorage.setItem('seojae.calfold.${track}',this.open?'1':'0')}catch(_){}"><summary>${track==="bible"?"묵상 캘린더":"글쓰기 캘린더"}</summary>${calHtml()}</details>`; })()}
+      ${(()=>{ let o=track==="bible"; try{ const v=localStorage.getItem("seojae-open.calfold."+track); if(v!=null) o=v==="1"; }catch(_){} return `<details class="calfold" ${o?"open":""} ontoggle="try{localStorage.setItem('seojae-open.calfold.${track}',this.open?'1':'0')}catch(_){}"><summary>${track==="bible"?"묵상 캘린더":"글쓰기 캘린더"}</summary>${calHtml()}</details>`; })()}
       <div class="card-index ${track}${w&&isNovelW(w)?" nv":""}"><div class="nvhide">
         <p class="step"><span class="num">1</span>무엇에 대한 글인가요?</p>
         ${track==="bible"
@@ -4104,7 +4105,7 @@ write0(){
 shelf(){
   // 책장: 읽는 책은 표지를 크게(지금 읽는 책은 더 크게), 다 읽은 책은 책등으로 꽂아 둡니다 — 수백 권이 되어도 한 화면에 보이게.
   // 보기 방식: 최신 · 오래된 순 · 분류별 · 별점순 (이 기기에 기억). 찾기 칸으로 제목·저자를 거릅니다.
-  let sortBy="new"; try{ sortBy=localStorage.getItem("seojae.shelfsort")||"new"; }catch(_){}
+  let sortBy="new"; try{ sortBy=localStorage.getItem("seojae-open.shelfsort")||"new"; }catch(_){}
   const key=b=>b.finished||b.started||"";
   const sorters={new:(a,b)=>key(b).localeCompare(key(a)),old:(a,b)=>key(a).localeCompare(key(b)),star:(a,b)=>(b.rating||0)-(a.rating||0)||key(b).localeCompare(key(a)),cat:(a,b)=>(bookCat(a)||"힣").localeCompare(bookCat(b)||"힣","ko")||key(b).localeCompare(key(a))};
   const q=(SHELF_Q||"").trim().toLowerCase();
@@ -4120,7 +4121,7 @@ shelf(){
   // 다 읽은 책: 책등으로. 최신·오래된 순은 다 읽은 해마다 한 칸, 분류별은 갈래마다, 별점순은 한 칸
   const doneGroups=sortBy==="cat"?group(done,b=>bookCat(b)||"미정",catOrder):sortBy==="star"?[{c:"",items:done}]:group(done,b=>(b.finished||b.started||"").slice(0,4)||"연도 없음",(a,b)=>sortBy==="old"?a.localeCompare(b):b.localeCompare(a));
   const doneHtml=done.length?doneGroups.map(({c,items})=>`${c?`<p class="catlabel">${esc(c)}${/^\d{4}$/.test(c)?"년":""} <span class="muted" style="font-size:13px">${items.length}권</span></p>`:""}${spines(items)}`).join(""):`<p class="muted" style="margin:6px 0 20px">${q?"찾은 책이 없습니다.":"다 읽은 책이 여기에 책등으로 꽂힙니다."}</p>`;
-  const bar=`<div class="shelfbar"><span class="muted" style="font-size:13px">보기</span><span class="pills">${[["new","최신"],["old","오래된 순"],["cat","분류별"],["star","별점순"]].map(([k,n])=>`<button class="pill ${sortBy===k?"on":""}" onclick="try{localStorage.setItem('seojae.shelfsort','${k}')}catch(_){};render()">${n}</button>`).join("")}</span>
+  const bar=`<div class="shelfbar"><span class="muted" style="font-size:13px">보기</span><span class="pills">${[["new","최신"],["old","오래된 순"],["cat","분류별"],["star","별점순"]].map(([k,n])=>`<button class="pill ${sortBy===k?"on":""}" onclick="try{localStorage.setItem('seojae-open.shelfsort','${k}')}catch(_){};render()">${n}</button>`).join("")}</span>
     <input id="bqf" placeholder="책장에서 찾기 (제목·저자)" value="${esc(SHELF_Q||"")}" oninput="SHELF_Q=this.value;clearTimeout(window._sq);window._sq=setTimeout(shelfPaint,200)" style="width:auto;flex:1;min-width:160px;max-width:300px;margin-left:auto"></div>`;
   return `<div class="row" style="margin-bottom:18px"><h2>책장</h2><span class="muted" style="font-size:14px">읽는 중 ${S.books.filter(b=>b.status!=="완료").length}권 · 다 읽은 책 ${S.books.filter(b=>b.status==="완료").length}권</span></div>
   <section class="sheet tape" style="margin-bottom:30px">
@@ -4529,9 +4530,9 @@ function setInk(c){ S.settings.ink=c; save(); $("#wbody").style.setProperty("--p
 function setPaper(p){ S.settings.paper=p; save(); const t=$("#wbody"); t.className="page "+p; $(".notebook").className="notebook "+p; }
 // 집중 모드: 머리·옆 칸을 숨기고, 휴대폰이면 전체 화면(주소창·상태 표시 없이)으로. 쓰기 화면을 떠나면 저절로 풀립니다
 // 옆 칸 접기: 이 기기에 기억. 접혀 있어도 본문·종류 칸 값은 그대로 간직됨
-function toggleSide(){ if(document.querySelector(".studio .writegrid")){ const o=document.body.classList.toggle("staside"); try{ localStorage.setItem("seojae.staside",o?"1":"0"); }catch(_){} const b=$("#sidebtn"); if(b) b.textContent=o?"옆 칸 접기 ›":"옆 칸 펴기 ‹"; grow(); try{ paintHeads(); }catch(_){} return; }
-  const on=document.body.classList.toggle("sidefold"); try{ localStorage.setItem("seojae.sidefold",on?"1":"0"); }catch(_){} const b=$("#sidebtn"); if(b) b.textContent=on?"옆 칸 펴기 ‹":($(".writegrid.hasbinder")?"옆 칸 접기 › 목차 보기":"옆 칸 접기 ›"); grow(); try{ paintHeads(); }catch(_){} }
-try{ if(localStorage.getItem("seojae.sidefold")==="1") document.body.classList.add("sidefold"); if(localStorage.getItem("seojae.staside")==="1") document.body.classList.add("staside"); }catch(_){}
+function toggleSide(){ if(document.querySelector(".studio .writegrid")){ const o=document.body.classList.toggle("staside"); try{ localStorage.setItem("seojae-open.staside",o?"1":"0"); }catch(_){} const b=$("#sidebtn"); if(b) b.textContent=o?"옆 칸 접기 ›":"옆 칸 펴기 ‹"; grow(); try{ paintHeads(); }catch(_){} return; }
+  const on=document.body.classList.toggle("sidefold"); try{ localStorage.setItem("seojae-open.sidefold",on?"1":"0"); }catch(_){} const b=$("#sidebtn"); if(b) b.textContent=on?"옆 칸 펴기 ‹":($(".writegrid.hasbinder")?"옆 칸 접기 › 목차 보기":"옆 칸 접기 ›"); grow(); try{ paintHeads(); }catch(_){} }
+try{ if(localStorage.getItem("seojae-open.sidefold")==="1") document.body.classList.add("sidefold"); if(localStorage.getItem("seojae-open.staside")==="1") document.body.classList.add("staside"); }catch(_){}
 function toggleFocus(){ const on=document.body.classList.toggle("focus"); const fb=$("#focusbtn"); if(fb) fb.textContent=on?"나가기":"집중 모드";
   let x=$("#focusx"); if(on){ if(!x){ x=document.createElement("button"); x.id="focusx"; x.className="focusx"; x.title="집중 모드 나가기 (Esc)"; x.innerHTML="✕<span>집중 나가기</span>"; x.onclick=()=>toggleFocus(); document.body.appendChild(x); } } else x?.remove();
   grow(); setTimeout(()=>{ try{ paintHeads(); }catch(_){} if(on) $("#wbody")?.focus({preventScroll:true}); },60); if(on) scrollTo(0,0);
@@ -4552,12 +4553,12 @@ document.addEventListener("visibilitychange",()=>{ if(document.visibilityState==
 // 글자 크기: 이 기기만 (휴대폰에서 크게, 컴퓨터는 그대로)
 const FS_STEPS=[15,16,17,18,19,20,22,24,26];
 function fontStep(d){ const L=applyLook(); const cur=+L.fs||(isTouch()?17:18); let i=FS_STEPS.findIndex(x=>x>=cur); if(i<0) i=FS_STEPS.length-1; i=Math.max(0,Math.min(FS_STEPS.length-1,i+d)); lookSet("fs",FS_STEPS[i]); toast(`글자 크기 ${FS_STEPS[i]}`); grow(); }
-function lookSet(k,v){ const L=applyLook(); if(v==null||v===""||v===0) delete L[k]; else L[k]=v; try{ localStorage.setItem("seojae.look",JSON.stringify(L)); }catch(_){} applyLook(); const b=$("#wbody"); if(b) b.style.setProperty("--penink",penInk()); if(tab==="settings") render(); }
+function lookSet(k,v){ const L=applyLook(); if(v==null||v===""||v===0) delete L[k]; else L[k]=v; try{ localStorage.setItem("seojae-open.look",JSON.stringify(L)); }catch(_){} applyLook(); const b=$("#wbody"); if(b) b.style.setProperty("--penink",penInk()); if(tab==="settings") render(); }
 const PAPERS=[["","기본(밝기 따라)",""],["#fbf7ee","크림","#2e2721"],["#ffffff","흰 종이","#222222"],["#f3efe2","미색","#2e2721"],["#eef5e6","연두","#2b3326"],["#e9f1f7","하늘","#223040"],["#f8ecec","연분홍","#3a2626"],["#1f1b17","검은 종이","#e8dfcf"]];
-const stColor=()=>{ try{ const v=localStorage.getItem("seojae.stColor")||""; return ["forest","white"].includes(v)?v:""; }catch(_){ return ""; } };
-function stColorSet(v){ try{ localStorage.setItem("seojae.stColor",v); }catch(_){} if(v) document.documentElement.dataset.stc=v; else delete document.documentElement.dataset.stc; toast(v?"글방 둘레 색을 바꿨습니다 — 글방에 들어가 보세요":"글방 둘레를 「새벽 남빛」으로"); render(); }
+const stColor=()=>{ try{ const v=localStorage.getItem("seojae-open.stColor")||""; return ["forest","white"].includes(v)?v:""; }catch(_){ return ""; } };
+function stColorSet(v){ try{ localStorage.setItem("seojae-open.stColor",v); }catch(_){} if(v) document.documentElement.dataset.stc=v; else delete document.documentElement.dataset.stc; toast(v?"글방 둘레 색을 바꿨습니다 — 글방에 들어가 보세요":"글방 둘레를 「새벽 남빛」으로"); render(); }
 function lookSection(){
-  const L=applyLook(), fs=+L.fs||0; let theme="light"; try{ theme=localStorage.getItem("seojae.theme")||"light"; }catch(_){}
+  const L=applyLook(), fs=+L.fs||0; let theme="light"; try{ theme=localStorage.getItem("seojae-open.theme")||"light"; }catch(_){}
   const dot=(bg,n,on,fn)=>`<span class="inkdot ${on?"on":""}" title="${n}" style="background:${bg};width:24px;height:24px" onclick="${fn}"></span>`;
   return `<section class="sheet wide">
     <div class="row" style="gap:10px;align-items:baseline"><p class="label" style="margin:0">화면 꾸미기 <small class="hint" style="display:inline">· 이 기기만 — 휴대폰과 컴퓨터를 따로</small></p></div>
@@ -4929,7 +4930,7 @@ function discardPage(){
   NAV=true; try{ goInner("write",{new:true,track:tr}); }finally{ NAV=false; } toast("빈 페이지입니다");
 }
 // ───────── 화면 밝기 (기기마다) ─────────
-function setTheme(t){ try{ localStorage.setItem("seojae.theme",t); }catch(_){} applyTheme(t); render(); }
+function setTheme(t){ try{ localStorage.setItem("seojae-open.theme",t); }catch(_){} applyTheme(t); render(); }
 // 홈 화면·Dock 앱: 주소창 없이 다이어리처럼 따로 열기
 let INSTALL=null;
 addEventListener("beforeinstallprompt",e=>{ e.preventDefault(); INSTALL=e; if(tab==="settings") render(); });
@@ -5221,14 +5222,14 @@ function delMs(id){ const m=S.manuscripts.find(x=>x.id===id); if(!m) return; con
   document.body.appendChild(ov); ov.querySelector("[data-x]").onclick=()=>ov.remove();
   ov.querySelectorAll("[data-k]").forEach(b=>b.onclick=()=>{ const now=new Date().toISOString(), pages=[]; m.trashed=now; m.updated=now;
     if(b.dataset.k==="all") mine.forEach(w=>{ w.trashed=now; w.updated=now; w.trashedWith=m.id; pages.push(w.notion?.page,w.notion?.index); });
-    if(ROOM_MS===id){ ROOM_MS=null; try{ localStorage.removeItem("seojae.roomMs"); }catch(_){} }
+    if(ROOM_MS===id){ ROOM_MS=null; try{ localStorage.removeItem("seojae-open.roomMs"); }catch(_){} }
     stDropMs(id,ws.map(w=>w.id));
     save(); if(pages.filter(Boolean).length) trashInNotion(pages.filter(Boolean)); ov.remove(); render();
     toast(`「${m.title}」${jp(m.title,"을","를")} 휴지통에 넣었습니다 (${TRASH_DAYS}일 안에 서랍 → 휴지통에서 되살림)`); }); }
 async function restoreMs(id){ const m=S.manuscripts.find(x=>x.id===id); if(!m?.trashed) return; const now=new Date().toISOString();
   delete m.trashed; m.updated=now; const ws=S.writings.filter(w=>w.trashed&&w.trashedWith===id), pages=[];
   ws.forEach(w=>{ delete w.trashed; delete w.trashedWith; w.updated=now; pages.push(w.notion?.page,w.notion?.index); });
-  ROOM_MS=id; try{ localStorage.setItem("seojae.roomMs",id); }catch(_){} save(); render(); toast(`「${m.title}」${jp(m.title,"을","를")} 되살렸습니다${ws.length?` · 꼭지 글 ${ws.length}편도 함께`:""}`);
+  ROOM_MS=id; try{ localStorage.setItem("seojae-open.roomMs",id); }catch(_){} save(); render(); toast(`「${m.title}」${jp(m.title,"을","를")} 되살렸습니다${ws.length?` · 꼭지 글 ${ws.length}편도 함께`:""}`);
   const pg=pages.filter(Boolean); if(pg.length&&SERVER&&CONF.notion){ try{ await gcall("notionRestore",{pages:pg}); }catch(_){} } }
 function purgeMs(id){ const m=S.manuscripts.find(x=>x.id===id); if(!m||!confirm(`「${m.title}」 원고를 완전히 지울까요? 되살릴 수 없습니다.\n(함께 넣은 꼭지 글은 휴지통에 남아 따로 되살릴 수 있습니다)`)) return;
   S.writings.forEach(w=>{ if(w.trashedWith===id){ delete w.trashedWith; w.updated=new Date().toISOString(); } }); tomb(id); S.manuscripts=S.manuscripts.filter(x=>x.id!==id); save(); render(); }
@@ -5382,10 +5383,10 @@ sup.fnref{font-size:.6em} ol.fn{font-size:.7em;line-height:1.5;clear:both}
 // 강단용 본문: 노션 설교문 짜임 그대로 — 🎬 슬라이드 줄(+그림, 오른쪽), 🎙️ 전달 큐(노란 상자, 읽지 않음), > 성경 낭독(파랑 굵게), 🙏 기도, 📖 머리 상자, 【설교자의 자리】(주황)
 let TPL_HEADS=null;   // 앱 틀의 소제목 줄(「 — 안내말」을 지울 것) — 노션 설교문의 「도입 — 말의 무게」 같은 제목은 그대로
 function tplHeads(){ if(TPL_HEADS) return TPL_HEADS; TPL_HEADS=new Set(); [TYPES.bible,TYPES.book,typeof LEGACY_TYPES==="object"?LEGACY_TYPES:{}].forEach(T=>Object.values(T||{}).forEach(v=>String(v||"").split("\n").forEach(x=>{ if(x.trim().startsWith("■")) TPL_HEADS.add(x.trim()); }))); Object.values(GENRES).forEach(g=>String((g.tpl||"")+"\n"+(g.oldTpl||"")).split("\n").forEach(x=>{ if(x.trim().startsWith("■")) TPL_HEADS.add(x.trim()); })); [...Object.values(PAPER_TPL),...Object.values(ROLE_TPL).flatMap(o=>Object.values(o))].forEach(x=>(x.tpl||"").split("\n").forEach(l=>{ if(l.trim().startsWith("■")) TPL_HEADS.add(l.trim()); })); return TPL_HEADS; }
-const pulpitTags=()=>{ try{ return localStorage.getItem("seojae.pulpitTags")==="1"; }catch(_){ return false; } };
+const pulpitTags=()=>{ try{ return localStorage.getItem("seojae-open.pulpitTags")==="1"; }catch(_){ return false; } };
 // 강단에서 읽을 원고: (확인함)·(추론)·(확인 못 함) 꼬리표와 ■ 부록 — 검증표 칸은 작성자용이라 기본으로 뺌
 function pulpitClean(body){ if(pulpitTags()) return body; let skip=false; return String(body||"").split("\n").filter(l=>{ if(/^\s*■/.test(l)) skip=/부록\s*—\s*검증표/.test(l); return !skip; }).map(l=>l.replace(/\s*[(（](확인함|추론|확인 못 함)[)）]/g,"")).join("\n"); }
-const pulpitFn=()=>{ try{ return localStorage.getItem("seojae.pulpitFn")==="1"; }catch(_){ return false; } };   // 강단용은 각주(작성자 메모)를 기본으로 뺌 (2026-10-30 팀장님)
+const pulpitFn=()=>{ try{ return localStorage.getItem("seojae-open.pulpitFn")==="1"; }catch(_){ return false; } };   // 강단용은 각주(작성자 메모)를 기본으로 뺌 (2026-10-30 팀장님)
 function pulpitPara(w){ const d=w.slides&&SLIDES[w.slides.deck], imgs=d?.imgs||[], fn=[];
   const L=stripMemo(pulpitClean(w.body||"")).split("\n").map(l=>pulpitFn()?l.trim():mkUnmask(mkMask(l).replace(FN_RE,"")).trim());
   const rich=l=>richHtml(l,fn).replace(/【([^】\n]{1,30})】/g,'<span class="spot">【$1】</span>');
@@ -5419,7 +5420,7 @@ function sendList(kind,mid,o){ if(kind==="w"){ const w=S.writings.find(x=>x.id==
   const m=S.manuscripts.find(x=>x.id===mid); let ws=m?msList(m):[]; if(o?.done) ws=ws.filter(w=>w.status==="완성"); if(o?.ids) ws=ws.filter(w=>o.ids.includes(w.id)); return ws; }
 function sendOpen(kind,mid){
   if(kind==="w"){ const w=editId&&S.writings.find(x=>x.id===editId); if(!w) return toast("먼저 「간직」으로 글을 간직해 주세요"); if($("#wbody")&&writingUnsaved()) keepWriting(true); mid=wMs(w)?.id||null; }
-  let to="pdf"; try{ to=localStorage.getItem("seojae.sendTo")||"pdf"; }catch(_){}
+  let to="pdf"; try{ to=localStorage.getItem("seojae-open.sendTo")||"pdf"; }catch(_){}
   const m=mid&&S.manuscripts.find(x=>x.id===mid), w=kind==="w"?S.writings.find(x=>x.id===editId):null;
   const ov=document.createElement("div"); ov.className="bookview sendview"; const P=expPrefs(m);
   const draw=()=>{ const scope=ov.dataset.scope||(kind==="w"?"one":"all"), ws=scope==="one"?[w]:sendList("ms",mid,{done:scope==="done"}), sel=ov.dataset.sel?JSON.parse(ov.dataset.sel):null, list=scope==="pick"&&sel?ws.filter(x=>sel.includes(x.id)):ws, chs=list.reduce((a,x)=>a+charsAll(x.body||""),0);
@@ -5438,7 +5439,7 @@ function sendOpen(kind,mid){
       ${sent.length?`<p class="hint" style="margin:0">보낸 기록: ${sent.map(x=>`${esc((x.at||"").slice(5,10).replace("-","."))} ${esc((SEND_TO.find(t=>t[0]===x.to)||[,x.to])[1])}${x.url?` <a href="${esc(safeUrl(x.url)||"#")}" target="_blank" rel="noopener">열기</a>`:""}`).join(" · ")}</p>`:""}
     </section>`;
     ov.querySelector("[data-x]").onclick=()=>ov.remove();
-    ov.querySelectorAll("[data-to]").forEach(b=>b.onclick=()=>{ to=b.dataset.to; try{ localStorage.setItem("seojae.sendTo",to); }catch(_){} draw(); });
+    ov.querySelectorAll("[data-to]").forEach(b=>b.onclick=()=>{ to=b.dataset.to; try{ localStorage.setItem("seojae-open.sendTo",to); }catch(_){} draw(); });
     ov.querySelectorAll("[data-scope]").forEach(b=>b.onclick=()=>{ ov.dataset.scope=b.dataset.scope; draw(); });
     ov.querySelectorAll("[data-pick]").forEach(c=>c.onchange=()=>{ ov.dataset.sel=JSON.stringify([...ov.querySelectorAll("[data-pick]:checked")].map(x=>x.dataset.pick)); draw(); });
     ov.querySelector("[data-go]").onclick=()=>sendGo(to,list,m,ov,scope); expRowWire(ov,m,P);
@@ -5475,8 +5476,8 @@ const LIBS={}; function loadLib(url,sri,glob){ if(window[glob]) return Promise.r
 let TPL_BASES=null;
 const hdBase=t=>String(t).trim().replace(/^■\s*/,"").replace(/\s+—\s+.*$/,"").replace(/\s*\([^()]*\)\s*$/,"").trim();
 function tplBases(){ if(TPL_BASES) return TPL_BASES; TPL_BASES=new Set([...tplHeads(),...GENRE_TPL_LINES].filter(l=>l.startsWith("■")).map(hdBase).filter(Boolean)); return TPL_BASES; }
-function expPrefs(m){ let p={}; try{ p=JSON.parse(localStorage.getItem("seojae.expPrefs")||"{}")||{}; }catch(_){} return Object.assign({strip:true,hl:false,notes:"piece"},p,(m&&m.id!=="__one"&&m.exportOpts?.prefs)||{}); }
-function expPrefsSave(m,p){ try{ localStorage.setItem("seojae.expPrefs",JSON.stringify(p)); }catch(_){} if(m&&m.id!=="__one"&&S.manuscripts.includes(m)){ m.exportOpts=Object.assign({},m.exportOpts||{},{prefs:p}); save(); } }
+function expPrefs(m){ let p={}; try{ p=JSON.parse(localStorage.getItem("seojae-open.expPrefs")||"{}")||{}; }catch(_){} return Object.assign({strip:true,hl:false,notes:"piece"},p,(m&&m.id!=="__one"&&m.exportOpts?.prefs)||{}); }
+function expPrefsSave(m,p){ try{ localStorage.setItem("seojae-open.expPrefs",JSON.stringify(p)); }catch(_){} if(m&&m.id!=="__one"&&S.manuscripts.includes(m)){ m.exportOpts=Object.assign({},m.exportOpts||{},{prefs:p}); save(); } }
 // 본문을 내보내기용으로: 메모·슬라이드 줄 빼고, 틀 소제목 줄을 빼고(그 아래 글은 남김), 형광펜 표시를 풂
 function expBody(body,P){ P=P||{}; let L=stripMemo(body||"").split("\n").filter(l=>!SLIDE_RE.test(l)&&!/^\s*〔(직접 쓸 자리|고백)[^〕]*〕\s*$/.test(l));
   if(P.strip){ const B=tplBases(); L=L.filter(l=>!(l.trim().startsWith("■")&&B.has(hdBase(l)))); }
@@ -5563,7 +5564,7 @@ async function makeDocx(name,list,m,scope,P){ const D=await loadLib("https://unp
 function exportPdf(id){
   const m=id==="__one"?TMP_MS:S.manuscripts.find(x=>x.id===id); if(!m) return; if(!msList(m).length) return toast("원고에 글이 없습니다");
   const one=id==="__one"&&msList(m)[0], sermonOne=one&&(m.genre==="sermon"||/설교/.test(one.type||""));
-  let oneFmt=null; try{ oneFmt=JSON.parse(localStorage.getItem("seojae.oneFmt")||"null"); }catch(_){}
+  let oneFmt=null; try{ oneFmt=JSON.parse(localStorage.getItem("seojae-open.oneFmt")||"null"); }catch(_){}
   const o=Object.assign({fmt:"a5",preface:true,biblio:true,done:false,pfs:"xl"},G(m).exp.fmt?{fmt:G(m).exp.fmt}:{},m.exportOpts||{},id==="__one"?(oneFmt?.[sermonOne?"s":"o"]||(sermonOne?{fmt:"pulpit"}:{})):{}), bib=msBiblio(m); o.genre=m.genre||"free";
   if(DOC_MODE&&docPaper()!=="white"&&!PAPER_FMTS.some(x=>x[0]===o.fmt)) o.fmt=docPaper()==="note"?"note":docWidth()[0]==="land"?"wongoL":"wongo";
   const ov=document.createElement("div"); ov.className="bookview expopts"; const P=expPrefs(m);
@@ -5571,7 +5572,7 @@ function exportPdf(id){
     <p class="label" style="margin:0">${ICO.closed}「${esc(m.title)}」 책으로 묶기</p>
     <div class="setrow"><span class="k">판형</span><div class="pills"><button class="pill ${o.fmt==="a5"?"on":""}" data-fmt="a5">A5 책 (표지·차례·쪽 번호)</button><button class="pill ${o.fmt==="a4"?"on":""}" data-fmt="a4">A4 투고 원고 (넓은 줄 간격)</button><button class="pill ${o.fmt==="pulpit"?"on":""}" data-fmt="pulpit" title="강단에서 12인치 태블릿(세로)으로 보기 좋게: 표지·차례 없이 A4 세로, 슬라이드 그림·전달 큐 상자">강단용 태블릿 (A4 세로·슬라이드)</button></div></div>
     <div class="setrow"><span class="k">종이 모양</span><div class="pills">${PAPER_FMTS.map(([k,n,d])=>`<button class="pill ${o.fmt===k?"on":""}" data-fmt="${k}" title="${d}">${n}</button>`).join("")}</div><small class="hint" style="display:block;width:100%">문서 모드에서 보던 종이 그대로 — 원고지는 한 자 한 칸(띄어쓰기·문장부호도 한 칸), 노트는 줄 위에. 꾸밈(형광펜·밑줄)은 빼고 글자만, 각주는 글 끝에.</small></div>
-    <div class="setrow" id="eo-pfsrow" ${o.fmt==="pulpit"?"":"hidden"}><span class="k">글씨 크기</span><div class="pills">${[["l","보통"],["xl","조금 크게"],["xxl","크게"]].map(([k,n])=>`<button class="pill ${o.pfs===k?"on":""}" data-pfs="${k}">${n} <small>${PULPIT_FS[k]}pt</small></button>`).join("")}</div><label class="chk" style="width:100%"><input type="checkbox" ${pulpitTags()?"checked":""} onchange="try{localStorage.setItem('seojae.pulpitTags',this.checked?'1':'')}catch(_){}"> 확인 꼬리표 (확인함)·(확인 못 함)와 「■ 부록 — 검증표」도 싣기 <small class="muted">(기본: 빼고 — 작성자용 표시)</small></label><label class="chk" style="width:100%"><input type="checkbox" ${pulpitFn()?"checked":""} onchange="try{localStorage.setItem('seojae.pulpitFn',this.checked?'1':'')}catch(_){}"> 각주도 싣기 <small class="muted">(기본: 빼고 — 강단 원고는 소리 내어 읽는 원고)</small></label><small class="hint" style="display:block;width:100%">표지·차례 없이 첫 쪽부터 본문(A4 세로 = 12인치 태블릿 세로 화면). 🎬 슬라이드 줄 옆 오른쪽에 그 슬라이드 그림, 🎙️ 전달 큐는 노란 작은 상자, 성경 낭독은 파란 굵은 글씨, 【설교자의 자리】는 주황. 쪽 번호는 「3 / 12」.</small></div>
+    <div class="setrow" id="eo-pfsrow" ${o.fmt==="pulpit"?"":"hidden"}><span class="k">글씨 크기</span><div class="pills">${[["l","보통"],["xl","조금 크게"],["xxl","크게"]].map(([k,n])=>`<button class="pill ${o.pfs===k?"on":""}" data-pfs="${k}">${n} <small>${PULPIT_FS[k]}pt</small></button>`).join("")}</div><label class="chk" style="width:100%"><input type="checkbox" ${pulpitTags()?"checked":""} onchange="try{localStorage.setItem('seojae-open.pulpitTags',this.checked?'1':'')}catch(_){}"> 확인 꼬리표 (확인함)·(확인 못 함)와 「■ 부록 — 검증표」도 싣기 <small class="muted">(기본: 빼고 — 작성자용 표시)</small></label><label class="chk" style="width:100%"><input type="checkbox" ${pulpitFn()?"checked":""} onchange="try{localStorage.setItem('seojae-open.pulpitFn',this.checked?'1':'')}catch(_){}"> 각주도 싣기 <small class="muted">(기본: 빼고 — 강단 원고는 소리 내어 읽는 원고)</small></label><small class="hint" style="display:block;width:100%">표지·차례 없이 첫 쪽부터 본문(A4 세로 = 12인치 태블릿 세로 화면). 🎬 슬라이드 줄 옆 오른쪽에 그 슬라이드 그림, 🎙️ 전달 큐는 노란 작은 상자, 성경 낭독은 파란 굵은 글씨, 【설교자의 자리】는 주황. 쪽 번호는 「3 / 12」.</small></div>
     ${o.fmt==="pulpit"?"":expRowHtml(P)}
     <label class="chk"><input type="checkbox" id="eo-done" ${o.done?"checked":""}> 「완성」 ${esc(G(m).item)}만 넣기 (${msList(m).filter(w=>w.status==="완성").length}${esc(G(m).item==="꼭지"?"꼭지":"편")})</label>
     <label class="chk"><input type="checkbox" id="eo-pre" ${o.preface?"checked":""}> 머리말 넣기</label>
@@ -5584,7 +5585,7 @@ function exportPdf(id){
   ov.querySelectorAll("[data-pfs]").forEach(b=>b.onclick=()=>{ o.pfs=b.dataset.pfs; ov.querySelectorAll("[data-pfs]").forEach(x=>x.classList.toggle("on",x===b)); });
   ov.querySelector("#eo-x").onclick=()=>ov.remove(); expRowWire(ov,m,P);
   ov.querySelector("#eo-go").onclick=()=>{ o.done=ov.querySelector("#eo-done").checked; o.preface=ov.querySelector("#eo-pre").checked; o.biblio=ov.querySelector("#eo-bib").checked;
-    const pre=ov.querySelector("#eo-preface").value; if(pre!==(m.preface||"")) m.preface=pre; if(id==="__one"){ const k=sermonOne?"s":"o"; try{ localStorage.setItem("seojae.oneFmt",JSON.stringify(Object.assign(oneFmt||{},{[k]:{fmt:o.fmt,pfs:o.pfs}}))); }catch(_){} } else m.exportOpts={fmt:o.fmt,preface:o.preface,biblio:o.biblio,done:o.done,pfs:o.pfs};
+    const pre=ov.querySelector("#eo-preface").value; if(pre!==(m.preface||"")) m.preface=pre; if(id==="__one"){ const k=sermonOne?"s":"o"; try{ localStorage.setItem("seojae-open.oneFmt",JSON.stringify(Object.assign(oneFmt||{},{[k]:{fmt:o.fmt,pfs:o.pfs}}))); }catch(_){} } else m.exportOpts={fmt:o.fmt,preface:o.preface,biblio:o.biblio,done:o.done,pfs:o.pfs};
     if(o.fmt==="pulpit"){ o.preface=false; o.biblio=false; } o.P=P; save(); ov.remove(); if(TMP_SEND_IDS){ o.ids=TMP_SEND_IDS; TMP_SEND_IDS=null; } bookPreview(id,o); };
 }
 // 원고에 쓰인 책(글의 책, 꼭지에 인용된 밑줄의 책)을 「지은이, 『제목』, 출판사, 연도.」 꼴로
@@ -5734,7 +5735,7 @@ function msAmount(m){ const u=G(m).unit; return u==="편"?msList(m).length:u==="
 const unitFmt=(n,u)=>u==="자"?n.toLocaleString()+"자":n+u;
 function setMsGenre(mid,g){ const m=S.manuscripts.find(x=>x.id===mid); if(!m||!GENRES[g]) return; m.genre=g; save(); roomBase(); toast(`「${m.title}」의 성격을 ${GENRES[g].n}(으)로 정했습니다`); render(); }
 let ROOM_NEW=false, NEW_TPL="", NEW_TYPE=null;
-try{ ROOM_MS=localStorage.getItem("seojae.roomMs"); ROOM_VIEW=localStorage.getItem("seojae.roomView")||"binder"; }catch(_){}
+try{ ROOM_MS=localStorage.getItem("seojae-open.roomMs"); ROOM_VIEW=localStorage.getItem("seojae-open.roomView")||"binder"; }catch(_){}
 const isPart=x=>typeof x==="string"&&x.startsWith("part:");
 const msChars=m=>msList(m).reduce((a,w)=>a+charsAll(w.body),0);
 // 원고지 쓰는 법(2026-10-30 팀장님): 문단 첫 칸 비우기 · 줄 첫 칸 띄어쓰기 생략 · 줄 첫 칸에 올 부호는 앞 줄 끝 칸에 · 부호 둘(?” .”)은 한 칸 · 제목·장면 구분은 가운데 · 문단 사이 빈 줄 없음
@@ -5762,12 +5763,12 @@ function partsBefore(m){ const map=new Map(); let pend=[]; msSeq(m).forEach(x=>{
 // 글방으로 돌아가기: 원고가 있으면 그 원고 화면, 없으면 홈 (떠날 때 간직·임시 보관을 다시 하지 않도록 goInner 로)
 function backToRoom(mid){ const ok=mid&&liveMs().some(m=>m.id===mid); ROOM_NEW=false; ROOM_CODEX=null; ROOM_MAP=false; ST_ACT=ok?"ms:"+mid:"home"; if(ok){ ROOM_MS=mid; stAdd(ST_ACT); }
   NAV=true; try{ goInner("room",{}); }finally{ NAV=false; } }
-function roomBase(){ S.manuscripts.forEach(m=>{ const k="seojae.msday."+m.id; let o=null; try{ o=JSON.parse(localStorage.getItem(k)||"null"); }catch(_){} if(!o||o.d!==today()||o.u!==G(m).unit) try{ localStorage.setItem(k,JSON.stringify({d:today(),b:msAmount(m),u:G(m).unit})); }catch(_){} }); }
-function roomToday(m){ let o=null; try{ o=JSON.parse(localStorage.getItem("seojae.msday."+m.id)||"null"); }catch(_){} return o&&o.d===today()&&o.u===G(m).unit?msAmount(m)-o.b:0; }
+function roomBase(){ S.manuscripts.forEach(m=>{ const k="seojae-open.msday."+m.id; let o=null; try{ o=JSON.parse(localStorage.getItem(k)||"null"); }catch(_){} if(!o||o.d!==today()||o.u!==G(m).unit) try{ localStorage.setItem(k,JSON.stringify({d:today(),b:msAmount(m),u:G(m).unit})); }catch(_){} }); }
+function roomToday(m){ let o=null; try{ o=JSON.parse(localStorage.getItem("seojae-open.msday."+m.id)||"null"); }catch(_){} return o&&o.d===today()&&o.u===G(m).unit?msAmount(m)-o.b:0; }
 const ringSvg=(pct,sz=46)=>{ const r=sz/2-4, c=2*Math.PI*r, f=Math.max(0,Math.min(1,pct)); return `<svg width="${sz}" height="${sz}" viewBox="0 0 ${sz} ${sz}" aria-hidden="true"><circle cx="${sz/2}" cy="${sz/2}" r="${r}" fill="none" stroke="var(--edge)" stroke-width="4"/><circle cx="${sz/2}" cy="${sz/2}" r="${r}" fill="none" stroke="${f>=1?"var(--book)":"var(--sepia)"}" stroke-width="4" stroke-linecap="round" stroke-dasharray="${c.toFixed(1)}" stroke-dashoffset="${(c*(1-f)).toFixed(1)}" transform="rotate(-90 ${sz/2} ${sz/2})"/></svg>`; };
 const ST_CLS={"씨앗":"s1","초고":"s2","다듬는 중":"s3","완성":"s4"};
 const stOf=w=>WSTATUS.includes(w.status)?w.status:"초고";
-function roomPick(id){ stMsSwitch(id); ROOM_CODEX=null; ROOM_MAP=false; ROOM_NEW=false; ROOM_MS=id; ST_ACT="ms:"+id; stAdd(ST_ACT); try{ localStorage.setItem("seojae.roomMs",id); }catch(_){} render(); }
+function roomPick(id){ stMsSwitch(id); ROOM_CODEX=null; ROOM_MAP=false; ROOM_NEW=false; ROOM_MS=id; ST_ACT="ms:"+id; stAdd(ST_ACT); try{ localStorage.setItem("seojae-open.roomMs",id); }catch(_){} render(); }
 // ───────── 도움말 모드: 단추·메뉴에 마우스를 올리면 쓰임새 카드 (설정 → 도움말 모드, 이 기기 seojae.helpMode, 처음엔 켬) ─────────
 // 설명은 그 단추의 title·data-tip 을 먼저 쓰고, 없으면 아래 HELP_TXT (단추 글자에서 아이콘·숫자를 뗀 이름으로 찾음)
 const HELP_TXT={
@@ -5962,8 +5963,8 @@ const HELP_TXT={
  "목차":"부·장·글 차례를 줄이나 카드로 봅니다","플롯":"장면을 이야기 단계(발단·전개…)에 놓고 봅니다","설정 점검":"인물·장소가 글에 실제로 쓰였는지, 계획과 맞는지 점검합니다","상태":"글의 상태(초고·다듬는 중·완성)로 칸반처럼 봅니다","이어 읽기":"원고 전체를 한 줄로 이어 읽고 바로 고칩니다",
  "관계도":"항목 사이의 관계를 그림으로 봅니다", "휴지통":"지운 글·원고 — 30일 안에 되살릴 수 있습니다","가−":"글자를 한 단계 작게 (이 기기만)","가＋":"글자를 한 단계 크게 (이 기기만)","골라:줄 노트":"쓰는 칸의 종이 — 줄 노트·모눈·무지","보내기 · 가져오기 PDF·워드·노션":"PDF·워드·노션 등으로 보내거나, 노션·워드에서 가져옵니다","저장":"고친 내용을 저장합니다","항목":"새 노트 항목을 만듭니다","이름 ↓":"이름순으로 정렬","이름":"이름순으로 정렬","수정일":"고친 날짜순으로 정렬"
 };
-let HELP_ON=(()=>{ try{ return localStorage.getItem("seojae.helpMode")!=="0"; }catch(_){ return true; } })();
-function helpSet(on){ HELP_ON=on; try{ localStorage.setItem("seojae.helpMode",on?"1":"0"); }catch(_){} document.body.classList.toggle("helpon",on); helpHide(); toast(on?"도움말 모드를 켰습니다 — 단추에 마우스를 올리면 쓰임새가 보입니다":"도움말 모드를 껐습니다"); }
+let HELP_ON=(()=>{ try{ return localStorage.getItem("seojae-open.helpMode")!=="0"; }catch(_){ return true; } })();
+function helpSet(on){ HELP_ON=on; try{ localStorage.setItem("seojae-open.helpMode",on?"1":"0"); }catch(_){} document.body.classList.toggle("helpon",on); helpHide(); toast(on?"도움말 모드를 켰습니다 — 단추에 마우스를 올리면 쓰임새가 보입니다":"도움말 모드를 껐습니다"); }
 const helpKey=t=>String(t||"").replace(/\s+/g," ").trim().replace(/[▾▸]+\s*$/,"").replace(/\s*\(\d+\)\s*$/,"").replace(/\s+\d+\s*$/,"").trim();
 const helpBare=t=>helpKey(t).replace(/^[^\p{L}\p{N}?＋+]+/u,"").replace(/^[＋+]\s*/,"").replace(/\s*[—-].*$/,"").replace(/\s*→\s*$/,"").trim();
 function helpFor(el){ const own=el.getAttribute("data-help")||el.dataset.htitle||el.getAttribute("title")||el.getAttribute("data-tip")||el.getAttribute("aria-label");
@@ -5991,7 +5992,7 @@ function askText(label,def="",opt={}){ return new Promise(res=>{ document.queryS
   ov.querySelector("[data-ok]").onclick=()=>done(inp.value); ov.querySelector("[data-no]").onclick=()=>done(null); ov.onmousedown=e=>{ if(e.target===ov) done(null); };
   inp.onkeydown=e=>{ if(e.isComposing) return; if(e.key==="Enter"){ e.preventDefault(); done(inp.value); } else if(e.key==="Escape"){ e.preventDefault(); e.stopPropagation(); done(null); } };
   setTimeout(()=>{ inp.focus(); inp.select(); },30); }); }
-function roomSetView(v){ ROOM_VIEW=v; try{ localStorage.setItem("seojae.roomView",v); }catch(_){} render(); }
+function roomSetView(v){ ROOM_VIEW=v; try{ localStorage.setItem("seojae-open.roomView",v); }catch(_){} render(); }
 function roomNewMs(){ ROOM_NEW=true; ROOM_CODEX=null; ROOM_MAP=false; render(); setTimeout(()=>$("#nmtitle")?.focus(),50); }
 function roomNewHtml(){ return `<section class="sheet roommain newms"><p class="label" style="margin:0">새 원고</p>
   <input id="nmtitle" class="title-in" placeholder="가제 (예: 새벽에 머문 말씀)" style="margin:8px 0 14px" autofocus enterkeyhint="done" onkeydown="if(event.key==='Enter'&&!event.isComposing){ event.preventDefault(); createMs(); }">
@@ -6005,7 +6006,7 @@ async function nmDbl(k){ getSelection()?.removeAllRanges(); const r=document.que
 // 새 원고 양식에 가제를 적어 두고 다른 곳으로 가거나 앱을 닫으면, 원고부터 만들어 둡니다 (글은 나중에)
 function nmAuto(){ if(!ROOM_NEW||tab!=="room") return false; const t=($("#nmtitle")?.value||"").trim(); if(!t) return false; createMs(true); return true; }
 function createMs(auto){ const t=($("#nmtitle")?.value||"").trim(); if(!t) return toast("가제를 적어 주세요"); const g=document.querySelector('input[name="nmg"]:checked')?.value||"free";
-  const ng=g==="novel"?document.querySelector('input[name="nmng"]:checked')?.value||"":""; const m={id:uid(),title:t,items:[],parts:{},genre:g,...(ng?{exportOpts:{ngenre:ng}}:{})}; ROOM_NEW=false; S.manuscripts.push(m); ROOM_MS=m.id; ST_ACT="ms:"+m.id; { const i=STUDIO_TABS.indexOf("new"); if(i>=0) STUDIO_TABS.splice(i,1); } stAdd(ST_ACT); try{ localStorage.setItem("seojae.roomMs",m.id); }catch(_){} save(); flushSave(); roomBase(); toast(auto?`「${t}」 원고를 만들어 두었습니다 (글은 아직 없어도 서가에 남습니다)`:`「${t}」 ${GENRES[g].n} 원고를 만들었습니다. ${jo(GENRES[g].parts[0],"을","를")} 나누고 ${jo(GENRES[g].item,"을","를")} 넣어 보세요`); render(); }
+  const ng=g==="novel"?document.querySelector('input[name="nmng"]:checked')?.value||"":""; const m={id:uid(),title:t,items:[],parts:{},genre:g,...(ng?{exportOpts:{ngenre:ng}}:{})}; ROOM_NEW=false; S.manuscripts.push(m); ROOM_MS=m.id; ST_ACT="ms:"+m.id; { const i=STUDIO_TABS.indexOf("new"); if(i>=0) STUDIO_TABS.splice(i,1); } stAdd(ST_ACT); try{ localStorage.setItem("seojae-open.roomMs",m.id); }catch(_){} save(); flushSave(); roomBase(); toast(auto?`「${t}」 원고를 만들어 두었습니다 (글은 아직 없어도 서가에 남습니다)`:`「${t}」 ${GENRES[g].n} 원고를 만들었습니다. ${jo(GENRES[g].parts[0],"을","를")} 나누고 ${jo(GENRES[g].item,"을","를")} 넣어 보세요`); render(); }
 async function roomRename(mid){ const m=S.manuscripts.find(x=>x.id===mid); const t=(await askText("원고 가제",m.title)||"").trim(); if(!t||t===m.title) return; m.title=t; save(); render(); }
 async function addPart(mid,lv){ const m=S.manuscripts.find(x=>x.id===mid); if(!m||m.rule) return;
   const pn=G(m).parts[lv===1?0:1], ex1=m.genre==="novel"?(ngOf(m)?.part||`1${pn} · 그해 겨울`):m.genre==="paper"?`제1${pn} · 서론`:`1${pn} · 머무는 아침`, ex2=m.genre==="novel"?"첫 만남":m.genre==="paper"?"연구의 배경":"시편의 아침", t=(await askText(lv===1?`${pn} 이름 (예: ${ex1})`:`${pn} 이름 (예: ${ex2})`,"")||"").trim(); if(!t) return;
@@ -6142,8 +6143,8 @@ function stRules(mid){ const m=S.manuscripts.find(x=>x.id===mid)||S.manuscripts.
       <li><b>순서는 왼쪽 목차에서 끌어 옮깁니다</b> (휴대폰은 ⋮⋮ 손잡이). ${esc(g.parts[s.main-1])} 줄 아래쪽에 놓으면 그 안으로, ${esc(g.parts[s.main-1])}${jp(g.parts[s.main-1],"을","를")} 끌면 안에 든 글이 함께 갑니다.</li></ol>
     ${m?.genre==="paper"?`<p class="hint" style="margin:0">논문 예: <b>Ⅰ. 서론</b>(장 칸) → <b>1. 연구의 필요성</b>(글 하나) → <b>■ 1) 선행 연구의 공백</b>(글 안 소제목). 번호는 저절로 붙고, 워드로 내보내면 제목 1·2·3단계가 됩니다. 학위논문처럼 길면 장 위에 부를 둡니다.</p>`:""}</section>`;
   ov.querySelector("[data-x]").onclick=()=>ov.remove(); document.body.appendChild(ov); }
-let ARCH_GROUP=(()=>{ try{ return localStorage.getItem("seojae.archGroup")!=="0"; }catch(_){ return true; } })();
-function archGroupSet(v){ ARCH_GROUP=v; try{ localStorage.setItem("seojae.archGroup",v?"1":"0"); }catch(_){} renderArchive(); }
+let ARCH_GROUP=(()=>{ try{ return localStorage.getItem("seojae-open.archGroup")!=="0"; }catch(_){ return true; } })();
+function archGroupSet(v){ ARCH_GROUP=v; try{ localStorage.setItem("seojae-open.archGroup",v?"1":"0"); }catch(_){} renderArchive(); }
 
 function saveScene(wid,k,v){ metaSet(wid,k,v); const w=S.writings.find(x=>x.id===wid); if(!w||!isNovelW(w)) return;
   if(k==="turn"&&String(v).trim()!==String(wMeta(w,"c1")).trim()){ const was=!!wMeta(w,"cok"); metaSet(wid,"c1",v); if(was){ metaSet(wid,"cok",""); toast("장면이 할 일이 바뀌어 확정을 풀었습니다 — 설계 카드에서 다시 「확정」을 눌러 주세요"); } }
@@ -6153,14 +6154,14 @@ function saveMsGoal(mid,keepOpen){ const m=S.manuscripts.find(x=>x.id===mid); if
   m.goal=g>0?Math.round(g):null; m.due=/^\d{4}-\d{2}-\d{2}$/.test(d)?d:null; m.updated=new Date().toISOString(); save(); toast("목표·마감을 저장했습니다");
   if(keepOpen){ const dt=$("details.stmore"); if(dt) dt.dataset.dirty="1"; return; } render(); }   // 메뉴 안에서 바꾸면 메뉴는 열어 둔 채, 닫을 때 머리 줄을 새로 그림
 // ───────── 글방 = 작업실 (펜시브식): 왼쪽 칸(원고 고르기·둘러보기·작품 나무·휴지통), 가운데 탭과 홈 ─────────
-let ST_ACT="home", STUDIO_TABS=(()=>{ try{ const t=JSON.parse(localStorage.getItem("seojae.stTabs")||"null"); return Array.isArray(t)&&t.length?t:["home"]; }catch(_){ return ["home"]; } })();
-let ST_FOLD=(()=>{ try{ return new Set(JSON.parse(localStorage.getItem("seojae.stFold")||"[]")); }catch(_){ return new Set(); } })();
+let ST_ACT="home", STUDIO_TABS=(()=>{ try{ const t=JSON.parse(localStorage.getItem("seojae-open.stTabs")||"null"); return Array.isArray(t)&&t.length?t:["home"]; }catch(_){ return ["home"]; } })();
+let ST_FOLD=(()=>{ try{ return new Set(JSON.parse(localStorage.getItem("seojae-open.stFold")||"[]")); }catch(_){ return new Set(); } })();
 // 원고마다 열어 둔 탭을 따로 기억: 원고를 바꾸면 그 원고의 탭(글·노트)이 따라 열림 (이 기기)
-function stMsSwitch(id){ if(!id||id===ROOM_MS) return; stSave(); let t=null; try{ t=JSON.parse(localStorage.getItem("seojae.stTabs."+id)||"null"); }catch(_){}
+function stMsSwitch(id){ if(!id||id===ROOM_MS) return; stSave(); let t=null; try{ t=JSON.parse(localStorage.getItem("seojae-open.stTabs."+id)||"null"); }catch(_){}
   ROOM_MS=id; STUDIO_TABS=Array.isArray(t)&&t.length?t:["home"]; ROOM_CODEX=null; }
-function stSave(){ try{ const ks=Object.keys(ST_USED); if(ks.length>60) ks.sort((a,b)=>ST_USED[a]-ST_USED[b]).slice(0,ks.length-60).forEach(k=>delete ST_USED[k]); localStorage.setItem("seojae.stUsed",JSON.stringify(ST_USED)); localStorage.setItem("seojae.stTabs",JSON.stringify(STUDIO_TABS.slice(-14))); if(typeof ROOM_MS!=="undefined"&&ROOM_MS) localStorage.setItem("seojae.stTabs."+ROOM_MS,JSON.stringify(STUDIO_TABS.slice(-14))); localStorage.setItem("seojae.stFold",JSON.stringify([...ST_FOLD])); }catch(_){} }
+function stSave(){ try{ const ks=Object.keys(ST_USED); if(ks.length>60) ks.sort((a,b)=>ST_USED[a]-ST_USED[b]).slice(0,ks.length-60).forEach(k=>delete ST_USED[k]); localStorage.setItem("seojae-open.stUsed",JSON.stringify(ST_USED)); localStorage.setItem("seojae-open.stTabs",JSON.stringify(STUDIO_TABS.slice(-14))); if(typeof ROOM_MS!=="undefined"&&ROOM_MS) localStorage.setItem("seojae-open.stTabs."+ROOM_MS,JSON.stringify(STUDIO_TABS.slice(-14))); localStorage.setItem("seojae-open.stFold",JSON.stringify([...ST_FOLD])); }catch(_){} }
 // 탭은 홈 + 최근에 연 5개까지: 넘치면 가장 오래 안 본 탭부터 닫힘 (자리는 연 순서 그대로)
-const ST_MAX=5; let ST_USED=(()=>{ try{ return JSON.parse(localStorage.getItem("seojae.stUsed")||"{}")||{}; }catch(_){ return {}; } })();
+const ST_MAX=5; let ST_USED=(()=>{ try{ return JSON.parse(localStorage.getItem("seojae-open.stUsed")||"{}")||{}; }catch(_){ return {}; } })();
 function stTrim(keep){ let rest=STUDIO_TABS.filter(x=>x!=="home");
   while(rest.length>ST_MAX){ const old=rest.filter(x=>x!==keep).sort((a,b)=>(ST_USED[a]||0)-(ST_USED[b]||0))[0]; if(!old) break; STUDIO_TABS.splice(STUDIO_TABS.indexOf(old),1); delete ST_USED[old]; rest=STUDIO_TABS.filter(x=>x!=="home"); } }
 function stAdd(k){ if(!k||k==="draft") return; if(!STUDIO_TABS.includes("home")) STUDIO_TABS.unshift("home"); ST_USED[k]=Date.now(); if(!STUDIO_TABS.includes(k)) STUDIO_TABS.push(k); stTrim(k); stSave(); }
@@ -6169,15 +6170,15 @@ function stDropMs(id,wids){ const W=new Set(wids.map(x=>"w:"+x)), mine=k=>k==="m
   const scoped=k=>["memo","res","codex"].includes(k)||/^cx(k|sys):/.test(k);
   STUDIO_TABS=STUDIO_TABS.filter(k=>!mine(k)&&!(ROOM_MS==null&&scoped(k))); if(!STUDIO_TABS.includes("home")) STUDIO_TABS.unshift("home");
   if(!liveMs().length||ROOM_MS==null){ ST_ACT="home"; ROOM_CODEX=null; }
-  try{ localStorage.removeItem("seojae.stTabs."+id); }catch(_){} stSave(); }
+  try{ localStorage.removeItem("seojae-open.stTabs."+id); }catch(_){} stSave(); }
 function stValid(k){ if(["home","map","new","common","jots"].includes(k)) return true; if(["memo","res","codex"].includes(k)||/^cx(k|sys):/.test(k)) return liveMs().some(m=>m.id===ROOM_MS); const [t,id]=[k.slice(0,k.indexOf(":")),k.slice(k.indexOf(":")+1)];
   if(t==="w") return live().some(w=>w.id===id); if(t==="ms") return liveMs().some(m=>m.id===id); if(t==="cx") return codexLive().some(c=>c.id===id&&(!c.ms||liveMs().some(m=>m.id===c.ms))); return false; }
 function stLabel(k){ if(k==="home") return [ICO.closed.replace('class="ico"','class="ico" style="display:none"')+"⌂","글방 홈"]; if(k==="map") return ["✺","생각 지도"]; if(k==="common") return ["◎",CX_COMMON]; if(k==="jots") return ["✐","끄적이기"]; if(k==="cxk:~minor") return ["∘","스쳐 간 것"]; if(k.startsWith("cxk:")) return ["⋰",k==="cxk:*"?"월드 전체":k.slice(4)+" 전체"]; if(k==="cxsys:bg") return ["▣","월드 배경"]; if(k==="cxsys:premise") return ["◆","전제"]; if(k==="cxsys:rules") return ["⚙","정리 규칙"]; if(k==="memo") return ["▤","메모"]; if(k==="res") return ["⧉","자료 모음"]; if(k==="codex") return ["◎",G(S.manuscripts.find(x=>x.id===ROOM_MS)).codex||"인물·주제 노트"]; if(k==="new") return ["＋","새 원고"]; if(k==="draft"){ if(stCur()==="draft") return ["✎","새 글"]; const d=bookDraft(); return ["✎",d?.title?d.title+" (쓰던 글)":"쓰던 새 글"]; }
   const id=k.slice(k.indexOf(":")+1); if(k.startsWith("w:")){ const w=S.writings.find(x=>x.id===id); return ["✎",w?.title||"(제목 없음)"]; } if(k.startsWith("ms:")) return ["▦",S.manuscripts.find(x=>x.id===id)?.title||"원고"]; if(k.startsWith("cx:")) return ["◎",codexLive().find(c=>c.id===id)?.name||"노트"]; return ["",k]; }
-function stOpen(k){ document.body.classList.remove("stnav"); if(k!=="new") nmAuto(); if((k==="codex"||/^cx(k|sys)?:/.test(k))&&ST_LTAB!=="world"){ ST_LTAB="world"; try{ localStorage.setItem("seojae.stLtab","world"); }catch(_){} } if(k==="draft"){ if(tab==="write"&&!editId) return; const d=bookDraft(); return go('write',{new:true,track:"book",ms:d?.ms||null}); } if(k.startsWith("ms:")) stMsSwitch(k.slice(3)); stAdd(k);
+function stOpen(k){ document.body.classList.remove("stnav"); if(k!=="new") nmAuto(); if((k==="codex"||/^cx(k|sys)?:/.test(k))&&ST_LTAB!=="world"){ ST_LTAB="world"; try{ localStorage.setItem("seojae-open.stLtab","world"); }catch(_){} } if(k==="draft"){ if(tab==="write"&&!editId) return; const d=bookDraft(); return go('write',{new:true,track:"book",ms:d?.ms||null}); } if(k.startsWith("ms:")) stMsSwitch(k.slice(3)); stAdd(k);
   if(k.startsWith("w:")) return go('write',{edit:k.slice(2)});
   ROOM_NEW=k==="new"; ROOM_CODEX=k.startsWith("cx:")?k.slice(3):null; ROOM_MAP=k==="map"; ST_ACT=k;
-  if(k.startsWith("ms:")){ ROOM_MS=k.slice(3); try{ localStorage.setItem("seojae.roomMs",ROOM_MS); }catch(_){} }
+  if(k.startsWith("ms:")){ ROOM_MS=k.slice(3); try{ localStorage.setItem("seojae-open.roomMs",ROOM_MS); }catch(_){} }
   if(tab==="room") render(); else go('room'); }
 function stClose(k,e){ e?.stopPropagation();
   if(k==="draft"){ if(stCur()==="draft"){ const back=SEL_MS&&liveMs().some(m=>m.id===SEL_MS)?"ms:"+SEL_MS:STUDIO_TABS[STUDIO_TABS.length-1]||"home"; return stOpen(back); }   // 쓰는 중인 새 글: 닫으면 떠나기와 같음 (쓴 만큼 간직, 짧으면 임시 보관)
@@ -6454,13 +6455,13 @@ function wBinder(w){ const m=wMs(w); if(!m) return ""; let n=0;
 // 쓰기 화면 머리의 모드 띠: 이 글이 들어 있는 원고와 그 성격. 여러 원고에 들었으면 골라서 그 원고 안에서 엽니다
 function modeBand(w){ if(!w) return ""; const ms=liveMs().filter(m=>!m.rule&&(m.items||[]).includes(w.id)); if(!ms.length) return "";
   const m=wMs(w), g=G(m);
-  return `<span class="modeband nofocus g-${esc(m.genre||"free")}" title="이 글이 들어 있는 원고 — 원고의 성격에 맞게 도구가 바뀝니다">${g.ic} ${esc(g.n)} ${ms.length>1?`<select onchange="ROOM_MS=this.value;try{localStorage.setItem('seojae.roomMs',this.value)}catch(_){};render()">${ms.map(x=>`<option value="${x.id}" ${x.id===m.id?"selected":""}>『${esc(x.title)}』</option>`).join("")}</select>`:`『${esc(m.title)}』`}<button type="button" class="mbtoc" onclick="toggleSide()" title="옆 칸을 접고 원고 목차를 왼쪽에 펼칩니다 (다시 누르면 옆 칸)">☰ 목차</button></span>`; }
+  return `<span class="modeband nofocus g-${esc(m.genre||"free")}" title="이 글이 들어 있는 원고 — 원고의 성격에 맞게 도구가 바뀝니다">${g.ic} ${esc(g.n)} ${ms.length>1?`<select onchange="ROOM_MS=this.value;try{localStorage.setItem('seojae-open.roomMs',this.value)}catch(_){};render()">${ms.map(x=>`<option value="${x.id}" ${x.id===m.id?"selected":""}>『${esc(x.title)}』</option>`).join("")}</select>`:`『${esc(m.title)}』`}<button type="button" class="mbtoc" onclick="toggleSide()" title="옆 칸을 접고 원고 목차를 왼쪽에 펼칩니다 (다시 누르면 옆 칸)">☰ 목차</button></span>`; }
 function tgClose(){ document.querySelectorAll("details.tgrp[open]").forEach(d=>d.open=false); }
 document.addEventListener("click",e=>{ if(!e.target.closest?.("details.tgrp")) tgClose(); });
 document.addEventListener("toggle",e=>{ if(e.target.matches?.("details.tgrp")&&e.target.open) document.querySelectorAll("details.tgrp[open]").forEach(d=>{ if(d!==e.target) d.open=false; }); },true);
 // 곁 칸 네 탭: 메모 · 자료 · 노트 · AI (마지막 탭을 이 기기에 기억)
-let SIDE_TAB="memo"; try{ SIDE_TAB=localStorage.getItem("seojae.sidetab")||"memo"; }catch(_){}
-function sideTab(k){ SIDE_TAB=k; try{ localStorage.setItem("seojae.sidetab",k); }catch(_){} document.querySelectorAll(".stabs button").forEach(b=>b.classList.toggle("on",b.dataset.k===k)); document.querySelectorAll(".spanel").forEach(p=>p.hidden=p.dataset.k!==k); }
+let SIDE_TAB="memo"; try{ SIDE_TAB=localStorage.getItem("seojae-open.sidetab")||"memo"; }catch(_){}
+function sideTab(k){ SIDE_TAB=k; try{ localStorage.setItem("seojae-open.sidetab",k); }catch(_){} document.querySelectorAll(".stabs button").forEach(b=>b.classList.toggle("on",b.dataset.k===k)); document.querySelectorAll(".spanel").forEach(p=>p.hidden=p.dataset.k!==k); }
 function sideTabs(w){ const m=wMs(w), g=G(m), cx=w?codexIn(w.body+" "+(w.title||"")):[], rv=w&&(m||w.type==="설교초안");
   const memo=`${m&&w&&g.scene&&!isNovelW(w)?sceneFormHtml(w):""}
     ${m&&w?`<label class="field"><span>${esc(G(m).item||"꼭지")} 메모 <small class="hint" style="display:inline">· 본문 밖에 남기는 생각</small></span><textarea id="wmemo" class="pen" rows="3" style="font-size:19px;min-height:72px" placeholder="이 꼭지에서 더 다룰 것, 앞뒤 꼭지와 이을 것…" oninput="memoKick('${w.id}',this.value)" onchange="saveMemo('${w.id}',this.value)">${esc(w.memo||"")}</textarea></label>`:""}
@@ -6501,7 +6502,7 @@ const RES_PROF={
   poem:{kinds:["명언·시구","이미지·사진","낱말·어원","참고 시집","웹 글","AI 조사","기타"],intro:"<b>시에 들어올 것</b>을 두는 창고 — 시구·낱말의 어원·이미지. (떠오른 것은 「메모」에)",tPh:"예: 「별 헤는 밤」",bPh:"시구는 원문 그대로, 낱말의 뜻과 어원…",dflt:"명언·시구"}};
 const resP=m=>RES_PROF[m?.genre]||{kinds:RES_KINDS,intro:"<b>바깥에서 가져온 근거</b>를 출처와 함께 두는 창고 — 인용·각주·참고 문헌으로 이어집니다. (내 생각의 씨앗은 「메모」에)",tPh:"예: 칼빈 시편 주석 17편",bPh:"인용문, 주석 요약, 통계, 사례…",dflt:"인용"};
 const resKinds=(m,all)=>[...new Set([...resP(m).kinds,...(all||m?.research||[]).map(r=>r.kind).filter(Boolean)])];   // 성격의 종류 + 예전에 담긴 종류
-let RES_EDIT=null, RES_Q="", RES_KIND="", RES_TAG="", RES_SORT="new", RES_VIEW=(()=>{ try{ return localStorage.getItem("seojae.resView")||"card"; }catch(_){ return "card"; } })();
+let RES_EDIT=null, RES_Q="", RES_KIND="", RES_TAG="", RES_SORT="new", RES_VIEW=(()=>{ try{ return localStorage.getItem("seojae-open.resView")||"card"; }catch(_){ return "card"; } })();
 // 인용 표기: 저자, 『제목』, 연도, 쪽 (서지 칸이 없으면 예전 출처 한 줄)
 const resFor=r=>r.lang?r.lang==="국외":!/[가-힣]/.test((r.au||"")+(r.t||""));   // 국외 문헌인가 (칸이 비면 글자로 짐작)
 // 인용 표기: 학술지 논문 = 저자, 「논문」, 『학술지』 권호 (연도), 쪽 · 단행본 = 저자, 『책』 (출판사, 연도), 쪽 · 국외는 겹낫표 없이 "제목". 새 칸이 없으면 예전 표기 그대로(이미 넣은 각주와 맞게)
@@ -6550,7 +6551,7 @@ function resSave(mid){ const m=S.manuscripts.find(x=>x.id===mid); if(!m) return;
   m.research=m.research||[]; const old=RES_EDIT&&RES_EDIT!=="new"?m.research.find(x=>x.id===RES_EDIT):null;
   if(old){ ["kind","t","body","au","yr","pg","pub","jn","vol","lang","url","ok","note","tags","src"].forEach(k=>{ if(k in rec) old[k]=rec[k]; else if(k!=="src"||$("#rs-s")) delete old[k]; }); old.u=now; }
   else m.research.unshift({id:uid(),at:today(),...rec}); m.updated=now; save(); RES_EDIT=null; toast(old?"자료를 고쳤습니다":"자료를 모아 두었습니다"); render(); }
-function resView(v){ RES_VIEW=v; try{ localStorage.setItem("seojae.resView",v); }catch(_){} render(); }
+function resView(v){ RES_VIEW=v; try{ localStorage.setItem("seojae-open.resView",v); }catch(_){} render(); }
 function resPage(m){ const all=(m.research||[]).filter(r=>!(S.deleted||{})[r.id]), L=resList(m), tags=[...new Set(all.flatMap(r=>r.tags||[]))].sort((a,b)=>a.localeCompare(b,"ko")), kinds=resKinds(m,all).filter(k=>all.some(r=>(r.kind||"기타")===k));
   const pill=(on,txt,js)=>`<button class="pill ${on?"on":""}" onclick="${js};render()">${txt}</button>`, used=new Map(L.map(r=>[r.id,resUsed(m,r)]));
   const ed=RES_EDIT?resForm(m,RES_EDIT==="new"?null:all.find(r=>r.id===RES_EDIT)):"";
@@ -6695,8 +6696,8 @@ const cxP=(k,m)=>{ const base=CX_PROF[k]||CX_PROF.free; if(k!=="novel") return b
   return NG_CACHE[g]||(NG_CACHE[g]={...base,kinds:[...base.kinds.filter(x=>x!=="기타"),...G2.kinds,"기타"],tpl:{...base.tpl,...G2.tpl}}); };
 function ngenreSet(mid,v){ const m=S.manuscripts.find(x=>x.id===mid); if(!m) return; m.exportOpts={...(m.exportOpts||{}),ngenre:v||undefined}; m.updated=new Date().toISOString(); save(); toast(v?`「${NOVEL_GENRES[v].n}」에 맞췄습니다 — 노트 종류(${NOVEL_GENRES[v].kinds.join("·")}), 플롯 단계, 점검 문항, AI 관례`:"기본 소설로 돌아갑니다"); render(); }
 let CX_PAGE_K="free";   // 지금 열린 노트 화면의 형식 (기본 칸 채우기에 씀)
-let CX_VIEW=(()=>{ try{ return localStorage.getItem("seojae.cxView")||"list"; }catch(_){ return "list"; } })(), CX_KIND="";
-function cxView(v){ CX_VIEW=v; try{ localStorage.setItem("seojae.cxView",v); }catch(_){} render(); }
+let CX_VIEW=(()=>{ try{ return localStorage.getItem("seojae-open.cxView")||"list"; }catch(_){ return "list"; } })(), CX_KIND="";
+function cxView(v){ CX_VIEW=v; try{ localStorage.setItem("seojae-open.cxView",v); }catch(_){} render(); }
 const cxText=c=>[c.body,...(c.props||[]).map(p=>p.v)].join("\n");
 // 백링크: 이 항목을 가리키는 관계 · 이 이름을 적은 다른 항목
 function cxBack(c){ const ns=cxNames(c), L=cxScope(cxHome(c)).filter(x=>x.id!==c.id);
@@ -6975,9 +6976,9 @@ function wsTake(m,r,D){ const has=n=>cxAll(m.id).some(c=>cxNames(c).includes(n))
   D.minorN=D.minors.length; return [n,k]; }
 function wsMinorTake(){ if(!WS) return; const m=S.manuscripts.find(x=>x.id===WS.mid); if(!m) return; const k=wsMinorReg(m,WS.minors||[]); WS.minors=[]; WS.minorN=0; if(WS_PEND[m.id]) WS_PEND[m.id].minors=[]; toast(k?`스쳐 간 것 ${k}개를 이름만 등록했습니다`:"새로 등록할 이름이 없습니다"); wsDraw(); if(tab==="room") render(); }
 const WS_PEND={};   // 원고 → 저절로 찾은 것 {add,update,rel,from:[제목]} (이 기기 메모리)
-const wsAutoOn=()=>{ try{ return localStorage.getItem("seojae.wsAuto")==="1"; }catch(_){ return false; } };   // 2026-10-30 팀장님: 기본은 끔 — 승인 없이 AI 가 돌지 않게 (설정에서 켤 수 있음)
-function wsAutoSet(on){ try{ localStorage.setItem("seojae.wsAuto",on?"1":"0"); }catch(_){} toast(on?"글을 떠날 때 새 요소를 저절로 찾습니다":"이제 「원고에서 설정 정리」를 누를 때만 찾습니다"); }
-async function wsAuto(m,w){ if(!wsAutoOn()||!SERVER||!(CONF.ai||CONF.aiKeys?.claude||CONF.aiKeys?.gemini)) return; const k="seojae.wsAutoAt."+w.id, stamp=String(chars(w.body||""))+"|"+(w.updated||"");
+const wsAutoOn=()=>{ try{ return localStorage.getItem("seojae-open.wsAuto")==="1"; }catch(_){ return false; } };   // 2026-10-30 팀장님: 기본은 끔 — 승인 없이 AI 가 돌지 않게 (설정에서 켤 수 있음)
+function wsAutoSet(on){ try{ localStorage.setItem("seojae-open.wsAuto",on?"1":"0"); }catch(_){} toast(on?"글을 떠날 때 새 요소를 저절로 찾습니다":"이제 「원고에서 설정 정리」를 누를 때만 찾습니다"); }
+async function wsAuto(m,w){ if(!wsAutoOn()||!SERVER||!(CONF.ai||CONF.aiKeys?.claude||CONF.aiKeys?.gemini)) return; const k="seojae-open.wsAutoAt."+w.id, stamp=String(chars(w.body||""))+"|"+(w.updated||"");
   try{ if(localStorage.getItem(k)===stamp) return; localStorage.setItem(k,stamp); }catch(_){}
   const P=cxP(m.genre&&CX_PROF[m.genre]?m.genre:"free",m);
   try{ const r=await gcall("coWrite",{mode:"worldsync",...wsReqX(m),body:`■ ${w.title||""}\n${stripMemo(w.body||"")}`.slice(0,14000),settings:fbSettings(m),rules:cxSys(m.id,"rules")?.body||"",kinds:P.kinds.filter(k=>k!=="기타"),tpl:P.kinds.map(k=>`${k}: ${(P.tpl[k]||[]).join("·")}`).join(" / "),title:m.title,genre:G(m).n});
@@ -7002,9 +7003,9 @@ function plotHtml(m,ws0){ const lines=m.plot?.lines||[], lc=n=>PL_COL[lines.inde
       <span class="spacer"></span><span class="stviews" style="margin:0">${[["beat","단계"],["arc","아크"],["grow","성장 곡선"],["time","시간순"],["alibi","알리바이 표"]].map(([k,n])=>`<button class="${PLOT_VIEW===k?"on":""}" onclick="PLOT_VIEW='${k}';render()">${n}</button>`).join("")}</span></div>
     ${PLOT_VIEW==="grow"?plotGrowHtml(m,ws):PLOT_VIEW==="arc"?plotArcHtml(m,ws):PLOT_VIEW==="time"?plotTimeHtml(m,ws):PLOT_VIEW==="alibi"?plotAlibiHtml(m,ws):`<div class="sboard pboard">${un.length?col("","아직 정하지 않음",un):""}${st.map(s=>col(s,s,ws.filter(w=>wMeta(w,"beat")===s))).join("")}</div>`}`; }
 // 타자기 모드: 쓰는 줄을 화면 가운데에 (이 기기에 기억)
-let TYPEW=false; try{ TYPEW=localStorage.getItem("seojae.typew")==="1"; }catch(_){}
+let TYPEW=false; try{ TYPEW=localStorage.getItem("seojae-open.typew")==="1"; }catch(_){}
 if(TYPEW) document.body.classList.add("typew");
-function toggleTypew(){ TYPEW=!TYPEW; document.body.classList.toggle("typew",TYPEW); try{ localStorage.setItem("seojae.typew",TYPEW?"1":"0"); }catch(_){} const tb=$("#twbtn"); if(tb){ tb.classList.toggle("on",TYPEW); tb.setAttribute("aria-checked",TYPEW); const em=tb.querySelector("em"); if(em) em.textContent=TYPEW?"켬":"끔"; } grow(); toast(TYPEW?"타자기 모드: 쓰는 줄이 화면 가운데에 옵니다":"타자기 모드를 껐습니다"); if(TYPEW) typeCenter(); }
+function toggleTypew(){ TYPEW=!TYPEW; document.body.classList.toggle("typew",TYPEW); try{ localStorage.setItem("seojae-open.typew",TYPEW?"1":"0"); }catch(_){} const tb=$("#twbtn"); if(tb){ tb.classList.toggle("on",TYPEW); tb.setAttribute("aria-checked",TYPEW); const em=tb.querySelector("em"); if(em) em.textContent=TYPEW?"켬":"끔"; } grow(); toast(TYPEW?"타자기 모드: 쓰는 줄이 화면 가운데에 옵니다":"타자기 모드를 껐습니다"); if(TYPEW) typeCenter(); }
 function caretY(ta){ if(ta.tagName==="W-ED"){ const r=ta.rects(ta.selectionEnd,ta.selectionEnd)[0]; return r?r.top-ta.getBoundingClientRect().top:0; } const cs=getComputedStyle(ta), d=document.createElement("div");
   ["fontFamily","fontSize","fontWeight","lineHeight","letterSpacing","wordSpacing","paddingTop","paddingLeft","paddingRight","borderTopWidth","borderLeftWidth","borderRightWidth","boxSizing","wordBreak","overflowWrap","tabSize","textIndent"].forEach(k=>d.style[k]=cs[k]);
   Object.assign(d.style,{position:"absolute",visibility:"hidden",whiteSpace:"pre-wrap",top:"0",left:"-9999px",width:ta.offsetWidth+"px"});
@@ -7017,14 +7018,14 @@ let TW_RAF=0; function typeCenter(){ if(!TYPEW||TW_RAF) return; TW_RAF=requestAn
 // 모드: 「질문」 묻고 답하기(넣을 문장은 「<<<넣기」 카드) · 「제안」 고칠 곳 목록 → 하나씩 비교해 보고 ✓ 적용 (mode:"suggest"). 펜시브의 「기본(AI가 바로 고침)」은 두지 않음.
 // 맥락 칩: AI가 무엇을 읽는지 입력창 위에 보임(이 글·고른 곳·본문, ＋원고 자료). 갈래마다 선: 묵상은 질문만(넣기 카드 없음), 묵상·설교초안·시의 고치기는 비문만.
 // 대화는 글마다 이 기기에만(기기의 큰 저장소 IndexedDB "aiChats", 키 seojae.ai.<글 번호>), 기록 파일에는 넣지 않음.
-let AI_MSGS=[], AI_KEY="", AI_BUSY=false, AI_REFS=false, AI_WORLD=true, AI_SECRET=(()=>{ try{ return localStorage.getItem("seojae.aiSecret")==="1"; }catch(_){ return false; } })();   // AI_SECRET: 노트의 🔒 비밀도 AI에게 (복선·반전 점검, 이 기기 기억, 기본 끔)
-function aiSecretTog(){ AI_SECRET=!AI_SECRET; try{ localStorage.setItem("seojae.aiSecret",AI_SECRET?"1":""); }catch(_){} aiDraw(); }   // AI_WORLD: 월드(노트·배경·정리 규칙)도 함께 읽게 — 기본 켬
-const aiKeyNow=()=>"seojae.ai."+(editId||"new");
+let AI_MSGS=[], AI_KEY="", AI_BUSY=false, AI_REFS=false, AI_WORLD=true, AI_SECRET=(()=>{ try{ return localStorage.getItem("seojae-open.aiSecret")==="1"; }catch(_){ return false; } })();   // AI_SECRET: 노트의 🔒 비밀도 AI에게 (복선·반전 점검, 이 기기 기억, 기본 끔)
+function aiSecretTog(){ AI_SECRET=!AI_SECRET; try{ localStorage.setItem("seojae-open.aiSecret",AI_SECRET?"1":""); }catch(_){} aiDraw(); }   // AI_WORLD: 월드(노트·배경·정리 규칙)도 함께 읽게 — 기본 켬
+const aiKeyNow=()=>"seojae-open.ai."+(editId||"new");
 // 대화 보관: 예전에는 localStorage(아이폰은 기기 사본과 같은 5MB 칸)에 쌓였음 → 처음 한 번 IndexedDB로 옮기고 지움. 대화는 80개(최근 쓴 순)까지
 let AI_DB=null, AI_DB_T=0;
 async function aiDbBoot(){ try{ await idb(); }catch(_){ return; }   // 큰 저장소를 못 쓰는 기기는 예전처럼 localStorage
   let db=await idbGet("aiChats"); if(!db||typeof db!=="object") db={}; const moved=[];
-  try{ for(let i=0;i<localStorage.length;i++){ const k=localStorage.key(i); if(!k?.startsWith("seojae.ai.")) continue; let v=[]; try{ v=JSON.parse(localStorage.getItem(k)||"[]"); }catch(_){}
+  try{ for(let i=0;i<localStorage.length;i++){ const k=localStorage.key(i); if(!k?.startsWith("seojae-open.ai.")) continue; let v=[]; try{ v=JSON.parse(localStorage.getItem(k)||"[]"); }catch(_){}
     if(Array.isArray(v)&&!((db[k]?.m||[]).length>=v.length)) db[k]={m:v,at:Date.now()}; moved.push(k); } }catch(_){}
   AI_DB=db; if(moved.length){ await idbSet("aiChats",db); const back=await idbGet("aiChats"); if(back&&moved.every(k=>back[k])) moved.forEach(k=>{ try{ localStorage.removeItem(k); }catch(_){} }); }   // 옮긴 것이 확인된 뒤에만 지움
   if($("#aipanel")){ AI_MODE==="research"?rsLoad():aiLoad(); aiDraw(); } }
@@ -7039,8 +7040,8 @@ function aiStore(){ chatPut(AI_KEY,AI_MSGS); }
 function aiGenre(){ const w=editId&&S.writings.find(x=>x.id===editId), m=w?wMs(w):null, g=G(m), type=$("#wtype")?.value||w?.type||"";
   const sermon=/설교/.test(type)||m?.genre==="sermon", poem=m?.genre==="poem", meditation=type==="묵상"&&!m;
   return {w,m,g,name:m?g.n:(type||"글"),item:m?g.item:"",focus:m?g.focus:(sermon?GENRES.sermon.focus:""),noContinue:sermon||poem||meditation||m?.genre==="paper",sermon,poem,meditation,kind:m?.genre||(sermon?"sermon":"free")}; }
-const aiAsk=()=>{ if(aiGenre().meditation) return "ask"; try{ return localStorage.getItem("seojae.aiAsk")==="suggest"?"suggest":"ask"; }catch(_){ return "ask"; } };
-function aiSetAsk(v){ try{ localStorage.setItem("seojae.aiAsk",v); }catch(_){} aiDraw(); $("#aiin")?.focus(); }
+const aiAsk=()=>{ if(aiGenre().meditation) return "ask"; try{ return localStorage.getItem("seojae-open.aiAsk")==="suggest"?"suggest":"ask"; }catch(_){ return "ask"; } };
+function aiSetAsk(v){ try{ localStorage.setItem("seojae-open.aiAsk",v); }catch(_){} aiDraw(); $("#aiin")?.focus(); }
 function aiQuick(sel){ const k=aiGenre(); const q=[];
   if(aiAsk()==="suggest"){ const only=!rfDirs().free;
     q.push(["비문","주어·서술어 호응이 어긋나거나 조사가 틀린 문장을 찾아 고쳐 주세요"]); if(only) return q;
@@ -7210,11 +7211,11 @@ const scxGet=w=>{ const v=wMeta(w,"scx"); return Array.isArray(v)?v:[]; };
 function scxSet(wid,i,k,v){ const w=S.writings.find(x=>x.id===wid); if(!w) return; const L=scxGet(w).map(x=>({...x})); while(L.length<=i) L.push({}); L[i][k]=String(v||"").trim(); metaSet(wid,"scx",L); save(); }
 // 장면 단위: 첫 장면은 원래 장면 정보 칸, 둘째부터는 scx (시간순·알리바이 표가 장면마다)
 function sceneUnits(ws){ return ws.flatMap(w=>{ const P=sceneParts(w), X=scxGet(w); return P.map((t,k)=>k===0?{w,k,st:wMeta(w,"st"),pov:wMeta(w,"pov"),loc:wMeta(w,"loc"),txt:t}:{w,k,st:X[k-1]?.st||"",pov:X[k-1]?.pov||"",loc:X[k-1]?.loc||"",txt:t}); }); }
-function sceneBarHtml(w){ let o=false; try{ o=localStorage.getItem("seojae.scenebar")==="1"; }catch(_){} const sm=["pov","loc","when"].map(k=>wMeta(w,k)).filter(Boolean).join(" · ");
+function sceneBarHtml(w){ let o=false; try{ o=localStorage.getItem("seojae-open.scenebar")==="1"; }catch(_){} const sm=["pov","loc","when"].map(k=>wMeta(w,k)).filter(Boolean).join(" · ");
   const ppl=codexIn(w.body||"",wMs(w)?.id).filter(c=>c.kind==="인물").slice(0,6), GR=wMeta(w,"grow")||{}, GV=[[-2,"바닥"],[-1,"흔들림"],[0,"그대로"],[1,"나아감"],[2,"크게 자람"]];
   const grow=ppl.length?`<div class="growrow"><p class="hint" style="margin:6px 0 2px">인물의 마음 — 이 장면 끝에서 (플롯 「성장 곡선」에 이어 그려짐)</p>${ppl.map(c=>`<label class="field"><span>${esc(c.name)}</span><span class="row" style="gap:4px"><select onchange="growSet('${w.id}','${c.id}','v',this.value)"><option value="">—</option>${GV.map(([v,n])=>`<option value="${v}" ${GR[c.id]?.v===v?"selected":""}>${v>0?"+":""}${v} ${n}</option>`).join("")}</select><input value="${esc(GR[c.id]?.t||"")}" placeholder="한 줄 (예: 처음으로 거절함)" onchange="growSet('${w.id}','${c.id}','t',this.value)"></span></label>`).join("")}</div>`:"";
   const P=sceneParts(w), X=scxGet(w), more=P.length>1?`<div class="scxlist"><p class="hint" style="margin:6px 0 2px">이 화에는 「* * *」로 나눈 장면이 ${P.length}개 있습니다 — 위는 장면 1, 아래는 장면 2부터 (시간순·알리바이 표가 장면마다 갈라 봅니다)</p>${P.slice(1).map((t,i)=>`<div class="scxrow"><b>장면 ${i+2}</b><small class="muted">${esc(t.replace(/\s+/g," ").trim().slice(0,30))}…</small>${[["pov","시점 인물"],["loc","장소"],["st","이야기 시각"]].map(([k,n])=>`<label class="field"><span>${n}</span><input value="${esc(X[i]?.[k]||"")}" onchange="scxSet('${w.id}',${i},'${k}',this.value)"></label>`).join("")}</div>`).join("")}</div>`:"";
-  return `<details class="scenebar" ${o?"open":""} ontoggle="try{localStorage.setItem('seojae.scenebar',this.open?'1':'0')}catch(_){}"><summary>장면 정보${P.length>1?` · 장면 ${P.length}개`:""} <small>${esc(sm||"시점·장소·때 — 눌러서 적기")}</small></summary>${sceneFormHtml(w)}${more}${grow}</details>`; }
+  return `<details class="scenebar" ${o?"open":""} ontoggle="try{localStorage.setItem('seojae-open.scenebar',this.open?'1':'0')}catch(_){}"><summary>장면 정보${P.length>1?` · 장면 ${P.length}개`:""} <small>${esc(sm||"시점·장소·때 — 눌러서 적기")}</small></summary>${sceneFormHtml(w)}${more}${grow}</details>`; }
 function growSet(wid,cid,k,v){ const w=S.writings.find(x=>x.id===wid); if(!w) return; const G2={...(wMeta(w,"grow")||{})}, x={...(G2[cid]||{})}; if(k==="v"){ if(v==="") delete x.v; else x.v=+v; } else { const t=String(v||"").trim().slice(0,60); if(t) x.t=t; else delete x.t; } if(x.v==null&&!x.t) delete G2[cid]; else G2[cid]=x; metaSet(wid,"grow",G2); save(); }
 function plotGrowHtml(m,ws){ const P2=cxScope(m.id).filter(c=>c.kind==="인물"), pts=P2.map(c=>({c,L:ws.map((w,i)=>({i,w,x:(wMeta(w,"grow")||{})[c.id]})).filter(o=>o.x&&o.x.v!=null)})).filter(o=>o.L.length);
   if(!pts.length) return `<p class="muted">장면 정보 띠 아래 「인물의 마음」에 장면마다 −2(바닥)~+2(크게 자람)를 고르면, 인물마다 마음이 움직인 선이 여기 그려집니다 — 성장 소설·청소년 소설의 성장 곡선, 장편의 인물 변화 점검용.</p>`;
@@ -7242,9 +7243,9 @@ function cardKindOf(w){ const m=w?wMs(w):null, sermon=/설교/.test(w?.type||"")
 const cardHas=w=>!!w&&(CARD_F.some(([k])=>wMeta(w,k))||!!wMeta(w,"c3")||(isNovelW(w)&&!!wMeta(w,"turn")));
 const cardShown=w=>!!w&&!!cardKindOf(w)&&(cardKindOf(w).sermon||cardHas(w)||CARD_OPEN.has(w.id));
 function cardHtml(w){ if(!w) return /설교/.test(NEW_TYPE||"")?`<p class="hint dcardhint">✎ 몇 자 쓰면 저절로 간직되고, 그때부터 <b>설계 카드</b>(세 줄 · 한 문장 · 네 자리)를 쓸 수 있습니다.</p>`:"";
-  if(!cardShown(w)) return ""; const ok=wMeta(w,"cok"), one=wMeta(w,"c1"), sermon=cardKindOf(w).sermon, pref=(()=>{ try{ return localStorage.getItem("seojae.cardOpen."+w.id); }catch(_){ return null; } })(), open=CARD_OPEN.has(w.id)||(pref!=null?pref==="1":!ok);   // 한 문장을 확정하면 접힘 (접고 편 것은 이 기기에 기억)
+  if(!cardShown(w)) return ""; const ok=wMeta(w,"cok"), one=wMeta(w,"c1"), sermon=cardKindOf(w).sermon, pref=(()=>{ try{ return localStorage.getItem("seojae-open.cardOpen."+w.id); }catch(_){ return null; } })(), open=CARD_OPEN.has(w.id)||(pref!=null?pref==="1":!ok);   // 한 문장을 확정하면 접힘 (접고 편 것은 이 기기에 기억)
   const C=CARD_AI&&CARD_AI.id===w.id?CARD_AI:null, chip=(k,v)=>`<button type="button" class="cchip" onclick="cardPick('${k}',${jsArg(v)})">${esc(v)}</button>`;
-  return `<details class="dcard" ${open?"open":""} ontoggle="this.open?CARD_OPEN.add('${w.id}'):CARD_OPEN.delete('${w.id}');try{localStorage.setItem('seojae.cardOpen.${w.id}',this.open?'1':'0')}catch(_){}"><summary><b>설계 카드</b> <span class="dcsum ${ok?"ok":""}">${one?`${ok?"✓ ":""}${esc(one)}`:`아직 정하지 않았습니다 — ${cardF(w)[0][1]}`}</span>${!ok?`<small class="dcwarn">${cardKindOf(w).kind==="paper"?"AI 구조안은":"AI 초안은"} ${cardF(w)[0][1]}을 확정한 뒤에</small>`:""}</summary>
+  return `<details class="dcard" ${open?"open":""} ontoggle="this.open?CARD_OPEN.add('${w.id}'):CARD_OPEN.delete('${w.id}');try{localStorage.setItem('seojae-open.cardOpen.${w.id}',this.open?'1':'0')}catch(_){}"><summary><b>설계 카드</b> <span class="dcsum ${ok?"ok":""}">${one?`${ok?"✓ ":""}${esc(one)}`:`아직 정하지 않았습니다 — ${cardF(w)[0][1]}`}</span>${!ok?`<small class="dcwarn">${cardKindOf(w).kind==="paper"?"AI 구조안은":"AI 초안은"} ${cardF(w)[0][1]}을 확정한 뒤에</small>`:""}</summary>
     <div class="dcbody">
       <label class="field dc3"><span>${["paper","novel","selfhelp"].includes(cardKindOf(w)?.kind)?"내 생각 세 줄 <small>— 먼저 내 말로. AI는 여기서 출발합니다</small>":"내가 받은 것 세 줄 <small>— 본문을 먼저 읽고. AI는 여기서 출발합니다</small>"}</span><textarea id="c3" rows="3" placeholder="1.&#10;2.&#10;3." onchange="cardSet('c3',this.value)">${esc(wMeta(w,"c3"))}</textarea>${seedChips(w,"c3")}</label>
       ${scSyncLater(w)}${scDiffHtml(w)}<div class="dcgrid">${cardF(w).map(([k,n,ph,ak=k])=>`<label class="field ${k==="c1"?"dcone":""}"><span>${n}${k==="cpath"&&!CARD_SETS[cardKindOf(w).kind]?` <small>${sermon?"그리스도로 가는 길":"핵심으로 가는 길"}</small>`:""}</span>${k==="c1"?`<div class="row" style="gap:6px;flex-wrap:nowrap"><input id="card-c1" value="${esc(one)}" placeholder="${esc(ph)}" onchange="cardSet('c1',this.value)" style="flex:1;min-width:0"><button type="button" class="btn small ${ok?"ink":""}" onclick="cardOk()" title="${ok?"확정을 풉니다":"이 한 문장으로 확정 — 그 뒤에만 AI 초안"}">${ok?"✓ 확정됨":"확정"}</button></div>`:`<input id="card-${k}" value="${esc(wMeta(w,k))}" placeholder="${esc(ph)}" onchange="cardSet('${k}',this.value)">`}
@@ -7261,7 +7262,7 @@ function cardSet(k,v){ const w=cardW(); if(!w) return; const was=wMeta(w,k); met
   if(k==="c1"&&wMeta(w,"cok")&&String(v).trim()!==String(was).trim()){ metaSet(w.id,"cok",""); toast("한 문장이 바뀌어 확정을 풀었습니다 — 다시 「확정」을 눌러 주세요"); cardPaint(); }
   else if(k==="c1") cardPaint(); }
 function cardOk(){ const w=cardW(); if(!w) return; const v=($("#card-c1")?.value||"").trim(); if(!wMeta(w,"cok")&&!v) return toast("한 문장을 먼저 적어 주세요");
-  if(v!==wMeta(w,"c1")) metaSet(w.id,"c1",v); (()=>{ CARD_OPEN.delete(w.id); try{ localStorage.setItem("seojae.cardOpen."+w.id,wMeta(w,"cok")?"1":"0"); }catch(_){} })(),metaSet(w.id,"cok",wMeta(w,"cok")?"":new Date().toISOString()); cardPaint(); toast(wMeta(w,"cok")?"한 문장을 확정했습니다 — 이제 AI 구조안·초안을 청할 수 있습니다":"확정을 풀었습니다"); }
+  if(v!==wMeta(w,"c1")) metaSet(w.id,"c1",v); (()=>{ CARD_OPEN.delete(w.id); try{ localStorage.setItem("seojae-open.cardOpen."+w.id,wMeta(w,"cok")?"1":"0"); }catch(_){} })(),metaSet(w.id,"cok",wMeta(w,"cok")?"":new Date().toISOString()); cardPaint(); toast(wMeta(w,"cok")?"한 문장을 확정했습니다 — 이제 AI 구조안·초안을 청할 수 있습니다":"확정을 풀었습니다"); }
 function cardPick(k,v){ const w=cardW(); if(!w) return; if(isNovelW(w)&&SC_OLD[k]){ const o=SC_OLD[k]; scSplit(v,o.keys.length).concat(["","",""]).slice(0,o.keys.length).forEach((x,i)=>cardSet(o.keys[i],x)); return cardPaint(); } const el=$("#card-"+k); if(el) el.value=v; cardSet(k,v); if(k!=="c1") cardPaint(); }
 // 카드 부분만 다시 그림 (본문 칸은 그대로 — 쓰던 글·커서를 건드리지 않음)
 function cardPaint(){ const old=$(".dcard"), w=cardW(); if(!old||!w) return; const t=document.createElement("div"); t.innerHTML=cardHtml(w); const nw=t.firstElementChild; if(nw) old.replaceWith(nw); paintHeads(); }
@@ -7293,11 +7294,11 @@ function ownHit(text,s,e){ const z=ownZones(text); if(!z.size) return ""; const 
 // 글은 지금처럼 글자 그대로 간직합니다(저장 형식 그대로). 쓰는 칸은 글꼴·크기·줄 간격·정렬까지, 들여쓰기·문단 간격은 「쪽 미리보기」와 내보내기에서 보입니다.
 const DOC_FONTS=[["gowun","고운 바탕",'"Gowun Batang",serif',"바탕"],["myeongjo","나눔명조",'"Nanum Myeongjo",serif',"나눔명조"],["sans","고딕",'-apple-system,"Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",sans-serif',"맑은 고딕"],["noto","Noto Serif",'"Noto Serif","Gowun Batang",serif',"Noto Serif"],["georgia","Georgia",'Georgia,"Gowun Batang",serif',"Georgia"]];
 const DOC_DEF={font:"gowun",pt:11,lh:1.6,align:"left",ind:0,sp:0};
-let DOC_MODE=(()=>{ try{ return localStorage.getItem("seojae.docMode")==="1"; }catch(_){ return false; } })();
+let DOC_MODE=(()=>{ try{ return localStorage.getItem("seojae-open.docMode")==="1"; }catch(_){ return false; } })();
 // 문서 모드 종이(이 기기 seojae.docPaper — 화면에서만, 내보내기·쪽 미리보기는 흰 쪽 그대로): 흰 쪽 · 노트(줄) · 원고지(한 글자 한 칸)
 const DOC_PAPERS=[["white","흰 쪽"],["note","노트"],["wongo","원고지"]];
-const docPaper=()=>{ try{ const v=localStorage.getItem("seojae.docPaper"); return DOC_PAPERS.some(p=>p[0]===v)?v:"white"; }catch(_){ return "white"; } };
-function docPaperSet(v){ try{ localStorage.setItem("seojae.docPaper",v); }catch(_){} docPaperMark(); WG_KEY=""; docPaint(); toast(v==="wongo"?"원고지 — 한 글자가 한 칸에 들어갑니다 (화면에서만, 내보내기는 그대로)":v==="note"?"노트 — 줄 간격에 맞춘 줄 종이":"흰 쪽"); }
+const docPaper=()=>{ try{ const v=localStorage.getItem("seojae-open.docPaper"); return DOC_PAPERS.some(p=>p[0]===v)?v:"white"; }catch(_){ return "white"; } };
+function docPaperSet(v){ try{ localStorage.setItem("seojae-open.docPaper",v); }catch(_){} docPaperMark(); WG_KEY=""; docPaint(); toast(v==="wongo"?"원고지 — 한 글자가 한 칸에 들어갑니다 (화면에서만, 내보내기는 그대로)":v==="note"?"노트 — 줄 간격에 맞춘 줄 종이":"흰 쪽"); }
 function docPaperMark(){ document.body.dataset.dpaper=DOC_MODE?docPaper():""; document.body.dataset.dwidth=DOC_MODE?docWidth()[0]:""; }
 // 원고지: 칸 크기를 글자 크기에 맞춰 정하고, 쓰는 칸 폭이 칸의 정수배가 되게 · 한글 한 자(와 띄어쓰기 한 칸)가 한 칸이 되도록 글자·낱말 간격을 잼
 // 원고지: 글자 칸(textarea)은 글꼴 폭대로 놓아 ■·문장부호·숫자에서 칸이 밀리므로, 원고지에서는 글자를 거울 층에 「한 자 한 칸」으로 직접 그림.
@@ -7360,9 +7361,9 @@ let WG_TOUCH=null;
 addEventListener("resize",()=>{ if(DOC_MODE&&docPaper()==="wongo"){ WG_KEY=""; const t=$("#wbody"); if(t){ wongoFit(t); grow(); } } });
 // 쪽 폭(이 기기 seojae.docWidth): A4 세로(794) · 넓게(1000) · A4 가로(1123 — 원고지를 가로로 놓고 쓰기) · 화면 가득
 const DOC_WIDTHS=[["a4","A4 세로",794],["wide","넓게",1000],["land","A4 가로",1123],["full","화면 가득",0]];
-const docWidth=()=>{ try{ const v=localStorage.getItem("seojae.docWidth"); return DOC_WIDTHS.find(x=>x[0]===v)||DOC_WIDTHS[0]; }catch(_){ return DOC_WIDTHS[0]; } };
-function docWidthSet(v){ try{ localStorage.setItem("seojae.docWidth",v); }catch(_){} docPaperMark(); WG_KEY=""; docPaint(); requestAnimationFrame(()=>{ WG_KEY=""; wongoFit($("#wbody")); grow(); }); }
-const docZoom=()=>{ try{ return +localStorage.getItem("seojae.docZoom")||100; }catch(_){ return 100; } };
+const docWidth=()=>{ try{ const v=localStorage.getItem("seojae-open.docWidth"); return DOC_WIDTHS.find(x=>x[0]===v)||DOC_WIDTHS[0]; }catch(_){ return DOC_WIDTHS[0]; } };
+function docWidthSet(v){ try{ localStorage.setItem("seojae-open.docWidth",v); }catch(_){} docPaperMark(); WG_KEY=""; docPaint(); requestAnimationFrame(()=>{ WG_KEY=""; wongoFit($("#wbody")); grow(); }); }
+const docZoom=()=>{ try{ return +localStorage.getItem("seojae-open.docZoom")||100; }catch(_){ return 100; } };
 const docFont=k=>DOC_FONTS.find(f=>f[0]===k)||DOC_FONTS[0];
 function docOwn(w){ const m=w?wMs(w):null; return m&&!m.rule?m:null; }
 function docStyle(w){ const m=docOwn(w); return {...DOC_DEF,...(m?.genre==="paper"?{lh:2,align:"justify",ind:1}:{}),...(m?(m.exportOpts?.doc||{}):(S.settings.docStyle||{}))}; }
@@ -7387,11 +7388,11 @@ function docBar(w){ const d=docStyle(w), m=docOwn(w), z=docZoom(), opt=(v,list,f
     <small class="muted dbscope" title="${m?"이 원고의 모든 글에 같은 모양 — 워드·PDF로 내보낼 때도":"원고에 들지 않은 글의 기본 모양"}">${m?`『${esc(m.title)}』 전체 · 내보내기도`:"모든 글 기본"}</small></div>`; }
 function docPaint(){ const w=cardW(), nb=$(".notebook"); if(!nb) return; nb.setAttribute("style",DOC_MODE?docVars(w):""); const bar=$(".docbar"); if(DOC_MODE){ const t=document.createElement("div"); t.innerHTML=docBar(w); if(bar) bar.replaceWith(t.firstElementChild); else nb.prepend(t.firstElementChild); } else bar?.remove();
   WG_KEY=""; wongoFit($("#wbody")); if(READVIEW){ READVIEW=false; toggleRead(); } grow(); paintHeads(); }
-function docToggle(){ DOC_MODE=!DOC_MODE; try{ localStorage.setItem("seojae.docMode",DOC_MODE?"1":"0"); }catch(_){} document.body.classList.toggle("docmode",DOC_MODE); docPaperMark(); WG_KEY=""; const b=$("#docbtn"); if(b){ b.innerHTML=DOC_MODE?"✎ 노트로":"📄 문서 모드"; b.classList.toggle("on",DOC_MODE); } docPaint();
+function docToggle(){ DOC_MODE=!DOC_MODE; try{ localStorage.setItem("seojae-open.docMode",DOC_MODE?"1":"0"); }catch(_){} document.body.classList.toggle("docmode",DOC_MODE); docPaperMark(); WG_KEY=""; const b=$("#docbtn"); if(b){ b.innerHTML=DOC_MODE?"✎ 노트로":"📄 문서 모드"; b.classList.toggle("on",DOC_MODE); } docPaint();
   toast(DOC_MODE?"문서 모드 — 흰 쪽에 글꼴·문단 모양을 정합니다 (글은 그대로)":"노트 모드로 돌아왔습니다"); }
 function docSet(k,v){ const w=cardW(), m=docOwn(w), cur=docStyle(w); const nd={font:cur.font,pt:cur.pt,lh:cur.lh,align:cur.align,ind:cur.ind,sp:cur.sp,[k]:v};
   if(m){ m.exportOpts={...(m.exportOpts||{}),doc:nd}; m.updated=new Date().toISOString(); } else S.settings.docStyle=nd; save(); docPaint(); }
-function docZoomSet(z){ try{ localStorage.setItem("seojae.docZoom",String(z)); }catch(_){} docPaint(); }
+function docZoomSet(z){ try{ localStorage.setItem("seojae-open.docZoom",String(z)); }catch(_){} docPaint(); }
 function docHead(){ const b=$("#wbody"); if(!b) return; const v=b.value, s=v.lastIndexOf("\n",Math.max(0,b.selectionStart-1))+1, e0=v.indexOf("\n",b.selectionStart), e=e0<0?v.length:e0, l=v.slice(s,e);
   const nl=/^\s*■/.test(l)?l.replace(/^\s*■\s*/,""):"■ "+l; tInsert(b,nl,s,e); b.setSelectionRange(s+nl.length,s+nl.length); }
 // 굵게·기울임 넣기/풀기: 고른 글을 **…** / *…* 로 감쌈 (이미 감싸 있으면 풂). ⌘B · ⌘I
@@ -7546,7 +7547,7 @@ document.addEventListener("keydown",e=>{ if(tab!=="write"||!e.altKey||e.metaKey|
 // 설정 정리: AI가 원고를 읽고 노트에 없는 인물·달라진 속성·새 관계를 제안 → 골라서 넣기
 let WS=null;   // {mid,busy,err,add,update,rel,pick:Set}
 // 원고 전체 설정 정리: 길면 글 단위로 나눠 여러 번 읽음(한 번에 14,000자). 지난 정리 뒤 새로 쓰거나 고친 글이 있으면 그 글만 먼저 — 이 기기에 시각(seojae.wsAt.<원고>)
-const wsAtKey=mid=>"seojae.wsAt."+mid, wsAt=mid=>{ try{ return localStorage.getItem(wsAtKey(mid))||""; }catch(_){ return ""; } };
+const wsAtKey=mid=>"seojae-open.wsAt."+mid, wsAt=mid=>{ try{ return localStorage.getItem(wsAtKey(mid))||""; }catch(_){ return ""; } };
 const wsNew=m=>{ const at=wsAt(m.id); return msList(m).filter(w=>chars(w.body||"")>=100&&(!at||(w.updated||w.created||"")>at)); };
 async function wsStart(scope,all){ const w=editId&&S.writings.find(x=>x.id===editId), m=(tab==="write"?wMs(w):null)||S.manuscripts.find(x=>x.id===ROOM_MS); if(!m||m.rule) return toast("원고 안에서 쓸 수 있습니다");
   if(!SERVER) return toast("구글 서버에 닿아야 AI를 쓸 수 있습니다"); if(!(CONF.ai||CONF.aiKeys?.claude||CONF.aiKeys?.gemini)) return toast("설정 → 주석 서재에서 클로드(또는 제미나이) 열쇠를 넣어 주세요");
@@ -7589,8 +7590,8 @@ function wsDraw(){ if(!WS) return $("#wspanel")?.remove(); let p=$("#wspanel"); 
 // ───────── 왼쪽 칸 탭 「원고 | 월드」 (2026-10-29, 타입탁 월드를 본뜸 — 릴리즈 노트로 확인한 구성) ─────────
 // 월드 = 월드 배경(시대·무대처럼 특정 항목에 속하지 않는 설정) · 종류별 항목(+ 그 종류 「전체」 그래프) · 전체 그래프 · 월드 정리 규칙(설정 정리 AI가 따름)
 // 배경·규칙은 노트 항목에 sys:"bg"|"rules" 를 붙여 그 원고에 둠(항목마다 합침 — 저장 방식 그대로). 일반 목록·그래프·찾기에서는 빠짐
-let ST_LTAB=(()=>{ try{ return localStorage.getItem("seojae.stLtab")||"ms"; }catch(_){ return "ms"; } })(), WT_FOLD=new Set();
-function stLtab(t){ ST_LTAB=t; try{ localStorage.setItem("seojae.stLtab",t); }catch(_){} render(); }
+let ST_LTAB=(()=>{ try{ return localStorage.getItem("seojae-open.stLtab")||"ms"; }catch(_){ return "ms"; } })(), WT_FOLD=new Set();
+function stLtab(t){ ST_LTAB=t; try{ localStorage.setItem("seojae-open.stLtab",t); }catch(_){} render(); }
 const CX_COLOR={"스킬·능력":"#3f8fb0",아이템:"#93b34f","세력·길드":"#9a74c9","종족·몬스터":"#b0703f","체계·등급":"#7d6aa8",무공:"#b0534a",경지:"#7d6aa8","문파·세가":"#9a74c9",병기:"#8a7a66","비급·영약":"#5f8a68",가문:"#a0577a","작위·신분":"#a08a3c",사교계:"#d07a9a","마법·축복":"#4f7fa8","관계 변화":"#d0607a","직장·무대":"#6fa3d8","사건 기록":"#b0534a",증거:"#c08a3e","용의자 알리바이":"#5b5bd6","단서·복선":"#c08a3e",인물:"#5b5bd6",사람:"#5b5bd6",학자:"#5b5bd6",장소:"#6fa3d8",지명:"#6fa3d8",조직:"#9a74c9",사물:"#93b34f",물건:"#93b34f",사건:"#d0806a",개념:"#e0956f",용어:"#e0956f",이론:"#e0956f",기술:"#e0956f",문헌:"#8a7a66",자료:"#8a7a66",예화:"#c08a3e",주제:"#4f9a8a","장면·기억":"#c0779a",이미지:"#7fa86a",낱말:"#7fa86a",계절:"#6fa3d8",사례:"#c08a3e","연구·통계":"#8a7a66",실천:"#4f9a8a",인용:"#8a7a66"};
 const cxCol=c=>CX_COLOR[c?.kind]||"#8a7a66";
 // ───────── 관계도 (타입탁 월드 그래프처럼) — 관계 성격(좋음·나쁨·복잡)을 색과 선 모양으로, 이름은 선을 따라, 연결 많은 항목은 크게, 휠·단추로 확대, 끌어 옮기기, ⤢ 크게 보기 ─────────
@@ -7748,9 +7749,9 @@ function cxGraphFull(centerId){ const m=S.manuscripts.find(x=>x.id===ROOM_MS); c
   const ov=document.createElement("div"); ov.className="bookview sendview cxfull"; ov.innerHTML=`<section class="sheet" style="max-width:1180px;margin:18px auto;display:grid;gap:10px;grid-template-rows:auto 1fr;height:calc(100vh - 60px)"><div class="row"><p class="label" style="margin:0">관계도 — ${esc(m?.title||CX_COMMON)}${c?` · ${esc(c.name)} 가운데`:""}</p><span class="spacer"></span><button class="btn small ghost" data-x>닫기 <small>Esc</small></button></div><div class="cxego full">${cxGraph(all,c?c.id:"",{full:true})}</div></section>`;
   ov.querySelector("[data-x]").onclick=()=>ov.remove(); const key=e=>{ if(e.key==="Escape"){ e.stopPropagation(); ov.remove(); document.removeEventListener("keydown",key,true); } }; document.addEventListener("keydown",key,true); document.body.appendChild(ov); }
 // ───────── 종류 화면 (타입탁 「월드 / 인물」처럼): 위에 그래프, 아래 「보기」 설정으로 고른 속성만 카드·표에 ─────────
-let CXK_VIEW=(()=>{ try{ return localStorage.getItem("seojae.cxkView")||"table"; }catch(_){ return "table"; } })(), CXK_SORT="name", CXK_SET=false;
-function cxkView(v){ CXK_VIEW=v; try{ localStorage.setItem("seojae.cxkView",v); }catch(_){} render(); }
-const cxShowKey=(mid,kind)=>`seojae.cxShow.${mid}.${kind}`;
+let CXK_VIEW=(()=>{ try{ return localStorage.getItem("seojae-open.cxkView")||"table"; }catch(_){ return "table"; } })(), CXK_SORT="name", CXK_SET=false;
+function cxkView(v){ CXK_VIEW=v; try{ localStorage.setItem("seojae-open.cxkView",v); }catch(_){} render(); }
+const cxShowKey=(mid,kind)=>`seojae-open.cxShow.${mid}.${kind}`;
 function cxPropsOf(m,kind,rows){ const P=cxP(cxPK({ms:m.id}),m); return [...new Set([...(P.tpl[kind]||[]),...rows.flatMap(c=>(c.props||[]).map(p=>p.k).filter(Boolean))])]; }
 function cxShown(m,kind,rows){ const all=cxPropsOf(m,kind,rows); try{ const v=JSON.parse(localStorage.getItem(cxShowKey(m.id,kind))||"null"); if(Array.isArray(v)) return v.filter(x=>all.includes(x)); }catch(_){} return all.filter(k=>rows.some(c=>(c.props||[]).some(p=>p.k===k&&p.v))).slice(0,4); }   // 처음엔 값이 있는 칸 넷까지
 function cxShowTog(mid,kind,k){ const m=S.manuscripts.find(x=>x.id===mid); if(!m) return; const rows=cxScope(mid).filter(c=>c.kind===kind), cur=cxShown(m,kind,rows), next=cur.includes(k)?cur.filter(x=>x!==k):[...cur,k]; try{ localStorage.setItem(cxShowKey(mid,kind),JSON.stringify(next)); }catch(_){} CXK_SET=true; render(); }
@@ -8064,7 +8065,7 @@ document.addEventListener("keydown",e=>{ if(RF&&e.key==="Escape"){ e.preventDefa
 // 답은 「자료 모음에 담기」(원고 m.research — 원고가 없으면 끄적이기)나 「커서 자리에 넣기」를 눌러야 들어감. 저절로 글을 고치지 않음.
 let RS_MSGS=[], RS_KEY="";
 const rsMs=()=>{ const w=tab==="write"&&editId&&S.writings.find(x=>x.id===editId); return (w&&wMs(w))||liveMs().find(m=>m.id===ROOM_MS&&!m.rule)||null; };
-const rsKeyNow=()=>"seojae.ai.r."+(rsMs()?.id||"all");
+const rsKeyNow=()=>"seojae-open.ai.r."+(rsMs()?.id||"all");
 function rsLoad(){ RS_KEY=rsKeyNow(); RS_MSGS=chatGet(RS_KEY); }
 function rsStore(){ chatPut(RS_KEY,RS_MSGS); }
 function rsOpen(prefill){ AI_MODE="research"; let el=$("#aipanel"); if(!el){ el=document.createElement("div"); el.id="aipanel"; document.body.appendChild(el); }
@@ -8263,7 +8264,7 @@ function kbHelp(){ if(document.querySelector(".kbhelp")) return; const mac=/Mac|
 const PDFJS=["https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js","sha384-/1qUCSGwTur9vjf/z9lmu/eCUYbpOTgSjmpbMQZ1/CtX2v/WcAIKqRv+U1DUCG6e","pdfjsLib"];
 const SLIDE_RE=/^\s*▣\s*슬라이드\s*(\d+)/;
 const SLIDES={}; let IDB=null, SLIDE_CHK={};
-function idb(){ return IDB||(IDB=new Promise((ok,no)=>{ try{ const r=indexedDB.open("seojae",1); r.onupgradeneeded=()=>r.result.createObjectStore("kv"); r.onsuccess=()=>ok(r.result); r.onerror=()=>no(r.error); }catch(e){ no(e); } })); }
+function idb(){ return IDB||(IDB=new Promise((ok,no)=>{ try{ const r=indexedDB.open("seojae-open",1); r.onupgradeneeded=()=>r.result.createObjectStore("kv"); r.onsuccess=()=>ok(r.result); r.onerror=()=>no(r.error); }catch(e){ no(e); } })); }
 async function idbGet(k){ try{ const db=await idb(); return await new Promise(ok=>{ const q=db.transaction("kv").objectStore("kv").get(k); q.onsuccess=()=>ok(q.result||null); q.onerror=()=>ok(null); }); }catch(_){ return null; } }
 async function idbSet(k,v){ try{ const db=await idb(); await new Promise(ok=>{ const t=db.transaction("kv","readwrite"); t.objectStore("kv").put(v,k); t.oncomplete=ok; t.onerror=ok; }); }catch(_){} }
 async function slideData(deck){ if(!deck) return null; if(SLIDES[deck]) return SLIDES[deck]; let d=await idbGet("slides:"+deck);
@@ -8339,7 +8340,7 @@ async function slideRun(w,ov,get,meta){ const st=ov.querySelector("[data-state]"
   try{ st.textContent="PPT를 받아 PDF로 바꾸는 중… (구글 드라이브, 큰 PPT는 1분쯤)"; const g=await get();
     const d=await pdfSlides(g.buf,(i,n)=>st.textContent=`슬라이드를 작은 그림으로 만드는 중… ${i}/${n}`); st.textContent="보관하는 중…";
     await slideAttach(w,d,Object.assign({},meta,g.src?{src:Object.assign({kind:"drive"},g.src)}:{})); ov.remove(); toast(`슬라이드 ${d.imgs.length}장을 가져왔습니다`);
-    SIDE_TAB="slides"; try{ localStorage.setItem("seojae.sidetab","slides"); }catch(_){} if(document.querySelector('.spanel[data-k="slides"]')){ sideTab("slides"); paintSlideTab(w); }
+    SIDE_TAB="slides"; try{ localStorage.setItem("seojae-open.sidetab","slides"); }catch(_){} if(document.querySelector('.spanel[data-k="slides"]')){ sideTab("slides"); paintSlideTab(w); }
     const b=$("#wbody"); if(b&&editId===w.id&&!slideNums(b.value).length&&d.texts.some(t=>t.length>3)&&confirm("슬라이드 글자와 설교 문단을 맞춰 자리를 자동으로 잡을까요? (⌘Z로 되돌릴 수 있습니다)")) slideAuto(w.id); }
   catch(e){ st.textContent="가져오지 못했습니다: "+e.message; ov.querySelectorAll("button").forEach(b=>b.disabled=false); } }
 function slideRefresh(wid){ const w=S.writings.find(x=>x.id===wid); if(!w?.slides?.src?.id) return; const ov=document.createElement("div"); ov.className="bookview sendview";
@@ -8390,7 +8391,7 @@ function notionImportOpen(mid){ if(!SERVER) return toast("구글 서버에 닿�
       const w={id:uid(),date:today(),track:"book",type:TYPES.book[g.type]!=null?g.type:"자유 글",title:pv.querySelector("#ni-t").value.trim()||R.title||"노션에서 가져온 글",body:R.body,summary:"",topics:[],status:pv.querySelector("#ni-s").value,updated:now,
         importFrom:{kind:"notion",page:R.page,url:R.url,at:now,edited:R.edited}};
       const ps=pv.querySelector("#ni-p").value.trim(); if(ps) w.passage=normPassage(ps);
-      S.writings.push(w); if(mm&&!mm.items.includes(w.id)) mm.items.push(w.id); save(); ov.remove(); toast("노션 글을 새 글로 가져왔습니다 (구글에 간직됨)"); if(R.imgs?.length){ SIDE_TAB="slides"; try{ localStorage.setItem("seojae.sidetab","slides"); }catch(_){} } go('write',{edit:w.id});
+      S.writings.push(w); if(mm&&!mm.items.includes(w.id)) mm.items.push(w.id); save(); ov.remove(); toast("노션 글을 새 글로 가져왔습니다 (구글에 간직됨)"); if(R.imgs?.length){ SIDE_TAB="slides"; try{ localStorage.setItem("seojae-open.sidetab","slides"); }catch(_){} } go('write',{edit:w.id});
       if(R.imgs?.length){ slidesFromNotion(w,R).catch(e=>toast("슬라이드 그림을 받지 못했습니다: "+e.message)); } }; };
 }
 async function impRefresh(wid){ const w=S.writings.find(x=>x.id===wid); if(!w?.importFrom) return; toast("노션 원본을 읽는 중…");
@@ -8799,10 +8800,10 @@ async function saveCredit(){ if(!SERVER) return toast("서버로 열어야 저�
 // 앱을 열 때 클로드 크레딧이 $1 아래면 하루 한 번 알림
 // 기록 파일 크기 (원본은 구글 드라이브 — 한도 10MB, 이 기기 사본은 보조로 아이폰 5MB) — 2MB부터 하루 한 번 알림: 글의 이전 판을 기록 파일 밖(드라이브)으로 옮길 때 (2026-10-30 팀장님)
 const dataBytes=()=>{ try{ return new Blob([SER()]).size; }catch(_){ return SER().length*2; } };
-function sizeWarn(){ const b=dataBytes(); if(b<2e6) return; let k=""; try{ k=localStorage.getItem("seojae.sizeWarn"); }catch(_){} if(k===today()) return; try{ localStorage.setItem("seojae.sizeWarn",today()); }catch(_){}
+function sizeWarn(){ const b=dataBytes(); if(b<2e6) return; let k=""; try{ k=localStorage.getItem("seojae-open.sizeWarn"); }catch(_){} if(k===today()) return; try{ localStorage.setItem("seojae-open.sizeWarn",today()); }catch(_){}
   setTimeout(()=>toast(b<6e6?`기록 파일이 ${(b/1e6).toFixed(1)}MB가 되었습니다 — 글의 이전 판을 드라이브 파일로 옮길 때입니다 (설정 → 자동 백업의 「기록 크기」)`:`기록 파일이 ${(b/1e6).toFixed(1)}MB입니다. 10MB가 한도라 이전 판을 드라이브로 옮겨야 합니다 (설정 → 자동 백업의 「기록 크기」)`),2600); }
-function creditWarn(){ const c=CONF?.claude; if(!c||!c.low) return; let k=""; try{ k=localStorage.getItem("seojae.creditWarn"); }catch(_){} if(k===today()) return;
-  try{ localStorage.setItem("seojae.creditWarn",today()); }catch(_){}
+function creditWarn(){ const c=CONF?.claude; if(!c||!c.low) return; let k=""; try{ k=localStorage.getItem("seojae-open.creditWarn"); }catch(_){} if(k===today()) return;
+  try{ localStorage.setItem("seojae-open.creditWarn",today()); }catch(_){}
   setTimeout(()=>toast(c.empty?"클로드 크레딧을 다 썼습니다. 요약은 제미나이로 이어집니다 (설정 → 주석 서재)":`클로드 크레딧이 약 $${c.left.toFixed(2)} 남았습니다. 다음 충전 ${c.next}`),1500); }
 // 설정 → 주석 서재의 요약 열쇠 칸을 펴고 클로드 칸에 커서를
 // 설정 톱니: 누르면 설정, 설정에서 한 번 더 누르면 들어오기 전 화면·자리로 (쓰던 글은 그 글로, 새 글은 임시 보관에서 이어서)
@@ -8841,18 +8842,18 @@ function restore(input){ const f=input.files[0]; if(!f) return; const r=new File
 // 집중 → 짧은 쉼 → … → 네 번째 뒤 긴 쉼. 끝나는 시각(endsAt)으로 세므로 화면을 옮기거나 새로 고쳐도 이어집니다(이 기기 localStorage seojae.pomo).
 // 머리의 날 수 아래에 작은 시계가 모든 화면에서 보입니다. 맥·아이폰 방해금지는 웹앱이 직접 못 켜서 「단축어」를 불러 켭니다(설정 → 쓰는 동안 조용히).
 const POMO_DEF={focus:25,short:5,long:15,rounds:4,dnd:false,sOn:"아침서재 집중 시작",sOff:"아침서재 집중 끝",sound:true,autoBreak:true,idle:false,endNote:true};
-const pomoSet=()=>{ let o={}; try{ o=JSON.parse(localStorage.getItem("seojae.pomoSet")||"{}"); }catch(_){} return Object.assign({},POMO_DEF,o); };
-function pomoSetSave(k,v){ const o=pomoSet(); o[k]=v; try{ localStorage.setItem("seojae.pomoSet",JSON.stringify(o)); }catch(_){} if(!P.on){ P.left=pomoLen(P.phase)*60000; pomoSave(); } pomoPaint(true); if(tab==="settings") render(); }
-let P=(()=>{ let o=null; try{ o=JSON.parse(localStorage.getItem("seojae.pomo")||"null"); }catch(_){} return Object.assign({phase:"focus",on:false,endsAt:0,left:null,round:1,waiting:false},o||{}); })();
-const pomoSave=()=>{ try{ localStorage.setItem("seojae.pomo",JSON.stringify(P)); }catch(_){} };
+const pomoSet=()=>{ let o={}; try{ o=JSON.parse(localStorage.getItem("seojae-open.pomoSet")||"{}"); }catch(_){} return Object.assign({},POMO_DEF,o); };
+function pomoSetSave(k,v){ const o=pomoSet(); o[k]=v; try{ localStorage.setItem("seojae-open.pomoSet",JSON.stringify(o)); }catch(_){} if(!P.on){ P.left=pomoLen(P.phase)*60000; pomoSave(); } pomoPaint(true); if(tab==="settings") render(); }
+let P=(()=>{ let o=null; try{ o=JSON.parse(localStorage.getItem("seojae-open.pomo")||"null"); }catch(_){} return Object.assign({phase:"focus",on:false,endsAt:0,left:null,round:1,waiting:false},o||{}); })();
+const pomoSave=()=>{ try{ localStorage.setItem("seojae-open.pomo",JSON.stringify(P)); }catch(_){} };
 const pomoLen=ph=>{ const c=pomoSet(); return ph==="focus"?c.focus:ph==="long"?c.long:c.short; };
 const pomoLeft=()=>P.on?Math.max(0,P.endsAt-Date.now()):(P.left??pomoLen(P.phase)*60000);
 const pomoActive=()=>P.on||(P.left!=null&&P.left<pomoLen(P.phase)*60000)||P.waiting;
 const mmss=ms=>{ const t=Math.ceil(ms/1000); return `${String(Math.floor(t/60)).padStart(2,"0")}:${String(t%60).padStart(2,"0")}`; };
 const PH_NAME={focus:"집중",short:"쉼",long:"긴 쉼"};
 // 오늘 집중한 횟수·분 (이 기기)
-function pomoDay(){ let o=null; try{ o=JSON.parse(localStorage.getItem("seojae.pomoDay")||"null"); }catch(_){} return o&&o.d===today()?o:{d:today(),n:0,min:0}; }
-function pomoDayAdd(min){ const o=pomoDay(); o.n++; o.min+=min; try{ localStorage.setItem("seojae.pomoDay",JSON.stringify(o)); }catch(_){} }
+function pomoDay(){ let o=null; try{ o=JSON.parse(localStorage.getItem("seojae-open.pomoDay")||"null"); }catch(_){} return o&&o.d===today()?o:{d:today(),n:0,min:0}; }
+function pomoDayAdd(min){ const o=pomoDay(); o.n++; o.min+=min; try{ localStorage.setItem("seojae-open.pomoDay",JSON.stringify(o)); }catch(_){} }
 // 단축어 부르기 (맥·아이폰): shortcuts://run-shortcut?name=…&input=text&text=…
 function runShortcut(name,text){ if(!name) return; const a=document.createElement("a"); a.href="shortcuts://run-shortcut?name="+encodeURIComponent(name)+(text!=null?"&input=text&text="+encodeURIComponent(text):""); a.rel="noopener"; document.body.appendChild(a); a.click(); a.remove(); }
 function pomoDnd(on,min){ const c=pomoSet(); if(!c.dnd) return; if(on) runShortcut(c.sOn,String(min)); else runShortcut(c.sOff); }
