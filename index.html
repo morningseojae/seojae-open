@@ -1086,7 +1086,7 @@ body.docmode[data-dpaper="wongo"] :is(textarea,w-ed).page[data-wg]{background-im
   background-position:0 var(--wg-y,4px),0 var(--wg-y,4px),var(--wg-x) 0!important;background-size:100% var(--wg-l),100% var(--wg-l),calc(var(--wg-c) * var(--wg-n,1000) + 1px) 100%;background-repeat:repeat-y,repeat-y,no-repeat}
 body.docmode .writegrid>div,body.docmode .notebook{min-width:0}
 /* 쪽 폭을 넓히면 글쓰기 화면 전체 폭도 함께 (곁 칸은 그대로 오른쪽) */
-body.docmode[data-dwidth="wide"] #main:has(.writegrid){max-width:1400px} body.docmode[data-dwidth="land"] #main:has(.writegrid){max-width:1520px} body.docmode[data-dwidth="full"] #main:has(.writegrid){max-width:none}   /* 위 막대(한 줄로 옆으로 넘김)가 쪽 폭을 밀어 휴대폰 화면이 옆으로 넓어지던 것 막음 */
+body.docmode[data-dwidth="wide"] #main:has(.studio){max-width:1400px} body.docmode[data-dwidth="land"] #main:has(.studio){max-width:1520px} body.docmode[data-dwidth="full"] #main:has(.studio){max-width:none}   /* 위 막대(한 줄로 옆으로 넘김)가 쪽 폭을 밀어 휴대폰 화면이 옆으로 넓어지던 것 막음 */
 @media (max-width:700px){ body.docmode[data-dpaper="note"] .notebook{background-image:none} }
 body.docmode[data-dpaper="wongo"] :is(textarea,w-ed).page[data-wg]{min-height:0!important;color:transparent!important;caret-color:transparent;-webkit-text-fill-color:transparent} body.docmode[data-dpaper="wongo"] :is(textarea,w-ed).page[data-wg]::selection{background:transparent} body.docmode[data-dpaper="wongo"] :is(textarea,w-ed).page[data-wg]::placeholder{-webkit-text-fill-color:var(--faint);color:var(--faint)}
 .hmirror.wgm{white-space:normal;letter-spacing:0!important;word-spacing:0!important;overflow:visible} .hmirror.wgm .wgr{display:flex;height:var(--wg-l,30px);align-items:center} .hmirror.wgm .wgr i{flex:0 0 var(--wg-c);width:var(--wg-c);text-align:center;font-style:normal;line-height:1} .hmirror.wgm .wgr.hd i{font-weight:700} .hmirror.wgm .wgr i,.hmirror.wgm .wgcar{visibility:visible} .hmirror.wgm .wgr i.hl{background:linear-gradient(176deg,transparent 14%,color-mix(in srgb,var(--hl) 62%,transparent) 22%,color-mix(in srgb,var(--hl) 42%,transparent) 80%,transparent 90%)} .hmirror.wgm .wgr i.ul{text-decoration:underline;text-decoration-color:var(--sepia);text-underline-offset:4px} .hmirror.wgm .wgr i.bd{font-weight:800} .hmirror.wgm .wgr i.it{font-style:italic} .hmirror.wgm .wgr i.fn{font-size:.7em;color:var(--sepia)}
@@ -2252,7 +2252,7 @@ async function pushSave(){
 // ───────── 새 버전 자동 새로 고침 ─────────
 // 올릴 때마다 version.json 의 번호가 바뀝니다. 앱이 열릴 때·다시 화면에 올라올 때·5분마다 확인해서,
 // 쓰는 중인 글이 없고 저장이 끝났을 때 새 버전으로 새로 고칩니다.
-const APP_BUILD="3c63781fcf";
+const APP_BUILD="10319b6c89";
 let NEW_BUILD=null, UPDATE_NOTICED=false;
 async function checkUpdate(){
   if(APP_BUILD.startsWith("__")) return;                 // 원본 파일로 열었을 때(고치는 중)는 건너뜁니다
