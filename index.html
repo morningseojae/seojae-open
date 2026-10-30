@@ -2159,7 +2159,7 @@ async function pushSave(){
 // ───────── 새 버전 자동 새로 고침 ─────────
 // 올릴 때마다 version.json 의 번호가 바뀝니다. 앱이 열릴 때·다시 화면에 올라올 때·5분마다 확인해서,
 // 쓰는 중인 글이 없고 저장이 끝났을 때 새 버전으로 새로 고칩니다.
-const APP_BUILD="d599a3208a";
+const APP_BUILD="41414f118a";
 let NEW_BUILD=null, UPDATE_NOTICED=false;
 async function checkUpdate(){
   if(APP_BUILD.startsWith("__")) return;                 // 원본 파일로 열었을 때(고치는 중)는 건너뜁니다
@@ -2268,7 +2268,7 @@ const jp=(w,a,b)=>jo(w,a,b).slice(String(w??"").length);   // 조사만
 const cnClean=v=>String(v||"").replace(/[^가-힣ㄱ-ㅎㅏ-ㅣA-Za-z0-9 ·]/g,"").replace(/\s+/g," ").trim().slice(0,20);
 if("serviceWorker" in navigator&&location.protocol==="https:") addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));   // 인터넷이 끊겨도 앱 화면은 열림 (자료는 이 기기 사본 → 다시 이어지면 구글로)
 const smartQ=()=>{ try{ return localStorage.getItem("seojae-open.smartq")==="1"; }catch(_){ return false; } };   // 따옴표 저절로 바꾸기 (이 기기, 설정 → 쓰기)
-const callName=()=>cnClean(S?.settings?.callName)||"목사님";
+const callName=()=>cnClean(S?.settings?.callName)||"작가님";
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
 const dkey=(d=new Date())=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
@@ -4599,9 +4599,9 @@ function pomoSettingsHtml(){ const c=pomoSet(), num=(k,v,min,max)=>`<input type=
       <p class="hint">아이폰도 같은 이름으로 단축어를 만들면 홈 화면 아침 서재에서 똑같이 켜집니다. 앱이 뒤로 가 있을 때 집중이 끝나면, 시간으로 만든 단축어는 저절로 꺼지고 「끄기 전까지」로 만든 단축어는 아침 서재로 돌아올 때 꺼집니다.</p>
     </details></div>`; }
 function callNameSection(){ return `<section class="sheet tape c compact"><p class="label">나를 부르는 호칭</p>
-    <label class="field"><span>앱과 AI가 나를 부를 때</span><input id="callname" value="${esc(S.settings.callName||"")}" maxlength="20" placeholder="예: 목사님 · 요한님 · 팀장님" onchange="callNameSet(this.value)" onkeydown="if(event.key==='Enter'&&!event.isComposing){event.preventDefault();callNameSet(this.value)}"></label>
-    <div class="row" style="gap:6px;flex-wrap:wrap">${["목사님","요한님","팀장님"].map(x=>`<button type="button" class="pill ${callName()===x?"on":""}" aria-pressed="${callName()===x}" onclick="callNameSet('${x}')">${x}</button>`).join("")}</div>
-    <p class="hint">비워 두면 「목사님」으로 부릅니다. 안내 문구와 AI 도우미가 이 호칭을 씁니다. 기기 사이에 함께 따라갑니다.</p></section>`; }
+    <label class="field"><span>앱과 AI가 나를 부를 때</span><input id="callname" value="${esc(S.settings.callName||"")}" maxlength="20" placeholder="예: 작가님 · 선생님 · 목사님" onchange="callNameSet(this.value)" onkeydown="if(event.key==='Enter'&&!event.isComposing){event.preventDefault();callNameSet(this.value)}"></label>
+    <div class="row" style="gap:6px;flex-wrap:wrap">${["작가님","선생님","목사님"].map(x=>`<button type="button" class="pill ${callName()===x?"on":""}" aria-pressed="${callName()===x}" onclick="callNameSet('${x}')">${x}</button>`).join("")}</div>
+    <p class="hint">비워 두면 「작가님」으로 부릅니다. 안내 문구와 AI 도우미가 이 호칭을 씁니다. 기기 사이에 함께 따라갑니다.</p></section>`; }
 function callNameSet(v){ v=cnClean(v); if(v===(S.settings.callName||"")) return; S.settings.callName=v; save(); toast(`이제 「${callName()}」${jp(callName(),"으로","로")} 부릅니다`); if(tab==="settings") render(); }
 function quietSection(){
   const ua=navigator.userAgent, ios=/iPhone|iPad|iPod/.test(ua), and=/Android/.test(ua);
