@@ -1046,6 +1046,7 @@ body.dfull .dbook>.diary>.pg>.dfolio{position:static;order:99;margin-top:auto;pa
 .suplayer:not(.mplayer).min [data-min],.suplayer:not(.mplayer).min [data-x]{position:absolute;top:2px;width:24px;height:24px;padding:0;font-size:12px;border:0;background:none;color:var(--faint)} .suplayer:not(.mplayer).min [data-min]{left:2px;transform:rotate(180deg)} .suplayer:not(.mplayer).min [data-x]{right:2px} .suplayer.playing .spl-ic{animation:splp 1.6s ease-in-out infinite} @keyframes splp{50%{opacity:.4}}
 @media (max-width:700px){ .suplayer{right:12px;bottom:calc(70px + env(safe-area-inset-bottom));width:calc(100vw - 24px)} .suplayer:not(.mplayer).min{width:84px} }
 @media print{ .suplayer{display:none} }
+.mplayer:not([hidden]){z-index:2100}   /* 공개판: 유튜브 규칙(III.I.9) — 재생 중인 유튜브 창은 집중 화면·책만 보기 같은 화면 가득 창에도 가리지 않게 맨 위에 */
 /* 찬송가·CCM 듣기: 찬송가 자리의 은은한 조작 단추 + 작은 유튜브 창(유튜브 규칙상 영상은 보이게, 200×200 이상) */
 .hymnbox{white-space:nowrap} .hymnbox .hb[data-hb]{opacity:1;color:var(--sepia);font-weight:700;border:1px solid color-mix(in srgb,var(--sepia) 45%,transparent);padding:3px 9px;margin-left:2px} .hymnbox .hb[data-hb]::after{content:" 듣기";font-size:12px} .hymnbox .hb[data-hb].on::after{content:""} .hb{border:0;background:none;color:var(--faint);font:inherit;font-size:12.5px;line-height:1;padding:3px 6px;border-radius:999px;cursor:pointer;opacity:.7;vertical-align:baseline;text-decoration:none}
 .hb:hover{opacity:1;color:var(--ink);background:color-mix(in srgb,var(--ink) 8%,transparent)} .hb.on{color:var(--sepia);opacity:1} .hb.busy{opacity:.4;pointer-events:none}
@@ -2435,7 +2436,7 @@ async function pushSave(){
 // ───────── 새 버전 자동 새로 고침 ─────────
 // 올릴 때마다 version.json 의 번호가 바뀝니다. 앱이 열릴 때·다시 화면에 올라올 때·5분마다 확인해서,
 // 쓰는 중인 글이 없고 저장이 끝났을 때 새 버전으로 새로 고칩니다.
-const APP_BUILD="6757a05f5c";
+const APP_BUILD="ff29fde5ec";
 let NEW_BUILD=null, UPDATE_NOTICED=false;
 async function checkUpdate(){
   if(APP_BUILD.startsWith("__")) return;                 // 원본 파일로 열었을 때(고치는 중)는 건너뜁니다
