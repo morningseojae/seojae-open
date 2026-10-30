@@ -3,7 +3,8 @@
 // ───────── 구글 앱스 스크립트 흉내(이 일꾼 안에서만) ─────────
 // 개인용 서버의 AI 코드를 고치지 않고 그대로 돌리려고, 그 코드가 쓰는 구글 서버 도구를 브라우저 것으로 바꿔 둡니다.
 // 웹 워커 안이라 「기다렸다 받기」(동기 요청)를 써도 화면이 멈추지 않습니다.
-let KEYS_ = {}, PROPS_ = {}, OUTPROPS_ = {};
+let KEYS_ = {}, PROPS_ = {}, OUTPROPS_ = {}, GW_ = "", DEV_ = "";
+const SHARED_ = () => KEYS_.geminiKey === "__SHARED__";   // 열쇠 없이 「함께 쓰는 무료 AI」 — 제미나이 요청을 공개 창구로 보내 창구의 열쇠로 부름
 const userProps_ = {
   getProperty: k => (k in KEYS_ ? KEYS_[k] : (k in PROPS_ ? PROPS_[k] : null)),
   setProperty: (k, v) => { PROPS_[k] = String(v); OUTPROPS_[k] = String(v); return userProps_; },
@@ -28,9 +29,23 @@ const Utilities = {
   base64Encode: s => btoa(unescape(encodeURIComponent(String(s)))),
 };
 const Logger = { log: () => {} };
+function sharedFetch_(url, o) {   // 공개 창구(aiShared)에 맡김: 모델 목록 · 글 만들기만
+  const m = String(url).match(/\/models\/([\w.\-]+):generateContent/), op = m ? "gen" : /\/models\?/.test(url) ? "models" : "";
+  const fail = (code, msg) => ({ getResponseCode: () => code, getContentText: () => JSON.stringify({ error: { message: msg } }), getHeaders: () => ({}) });
+  if (!op || !GW_) return fail(400, "함께 쓰는 무료 AI로는 할 수 없는 요청입니다");
+  const x = new XMLHttpRequest();
+  x.open("POST", GW_, false); x.setRequestHeader("Content-Type", "text/plain;charset=utf-8");
+  try { x.send(JSON.stringify({ fn: "aiShared", args: [{ op, model: m ? m[1] : "", body: op === "gen" ? String(o.payload || "") : "", dev: DEV_ }] })); }
+  catch (e) { return fail(0, "함께 쓰는 무료 AI 창구에 닿지 못했습니다 — 인터넷을 확인해 주세요"); }
+  let j = null; try { j = JSON.parse(x.responseText); } catch (e) {}
+  if (!j) return fail(502, "함께 쓰는 무료 AI 창구가 알아볼 수 없는 답을 보냈습니다");
+  if (!j.ok) return fail(429, j.error || "함께 쓰는 무료 AI가 지금 답하지 않습니다");
+  return { getResponseCode: () => j.result.code, getContentText: () => j.result.text, getHeaders: () => ({}) };
+}
 const UrlFetchApp = {
   fetch: (url, o) => {
     o = o || {};
+    if (SHARED_() && /^https:\/\/generativelanguage\.googleapis\.com\//.test(url)) return sharedFetch_(url, o);
     const x = new XMLHttpRequest();
     x.open(String(o.method || "get").toUpperCase(), url, false);
     if (o.contentType) x.setRequestHeader("Content-Type", o.contentType);
@@ -48,10 +63,11 @@ const UrlFetchApp = {
 function claudeWarn_() { /* 개인용은 크레딧 경고를 메일로 보냄 — 공개판은 하지 않음 */ }
 
 const AI_ENTRY_ = { coWrite: b => coWrite_(b), spellCheck: b => spellCheck_(b), reviewMs: b => reviewMs_(b) };
-const AI_MSG_ = m => String(m || "").replace(/설정 → 주석 서재(에서)?/g, "설정 → 쓰기 → AI 열쇠$1").replace(/요약 열쇠/g, "AI 열쇠");
+const AI_MSG_ = m => { m = String(m || "").replace(/설정 → 주석 서재(에서)?/g, "설정 → 쓰기 → AI 열쇠$1").replace(/요약 열쇠/g, "AI 열쇠");
+  return SHARED_() && m && !/내 열쇠/.test(m) && /한도|429|붐빕|몫|준비되지|닿지|답하지|혼잡|많이 썼/.test(m) ? m + " — 함께 쓰는 무료 AI는 여러 사람이 나눠 써서 한도가 작습니다. 설정 → 쓰기 → AI 열쇠에 내 열쇠를 넣으면 넉넉하고 더 좋은 답을 받습니다." : m; };
 self.onmessage = e => {
   const d = e.data || {};
-  KEYS_ = d.keys || {}; PROPS_ = d.props || {}; OUTPROPS_ = {};
+  KEYS_ = d.keys || {}; PROPS_ = d.props || {}; OUTPROPS_ = {}; GW_ = d.gw || ""; DEV_ = d.dev || "";
   let out;
   try {
     if (!AI_ENTRY_[d.fn]) throw new Error("공개판에서는 아직 쓰지 않는 AI 기능입니다: " + d.fn);
