@@ -572,6 +572,8 @@ body.focus main.wrap{padding-top:40px}
 .pplay.lg{width:68px;height:68px} .pplay.lg svg{width:28px;height:28px}
 .pico{width:40px;height:40px;border-radius:50%;border:1px solid color-mix(in srgb,var(--ink) 12%,transparent);background:color-mix(in srgb,var(--paper) 70%,transparent);color:var(--ink-soft);cursor:pointer;display:inline-flex;align-items:center;justify-content:center}
 .pico svg{width:18px;height:18px;fill:currentColor} .pico:hover{color:var(--ink);background:var(--paper)}
+.pico{background:var(--paper);border-color:color-mix(in srgb,var(--ink) 22%,transparent);box-shadow:0 2px 6px -3px color-mix(in srgb,var(--ink) 45%,transparent);transition:transform .15s,box-shadow .15s}
+.pico:hover{transform:translateY(-1px);box-shadow:0 5px 12px -5px color-mix(in srgb,var(--ink) 55%,transparent)} .pico:active{transform:translateY(1px);box-shadow:none}
 .btn.pfocus .ico{width:16px;height:16px;margin-right:5px;vertical-align:-3px}
 /* 집중 섬: 위 가운데 유리 알약 */
 .pisle{position:fixed;top:max(10px,env(safe-area-inset-top));left:50%;transform:translateX(-50%);z-index:60;border-radius:999px;transition:opacity .25s,border-radius .25s}
@@ -1471,8 +1473,26 @@ body.typew #wbody{padding-bottom:45vh}
 .stk-palette .pi .sst{font-family:"Nanum Pen Script";font-size:17px;color:var(--stamp);border:1.5px solid currentColor;border-radius:999px;padding:2px 8px}
 @media (max-width:700px){ .stk-palette{bottom:calc(74px + env(safe-area-inset-bottom))} body.typing .stk-palette{bottom:10px} }
 /* 성경 본문 열기 */
-.portion .plink{margin-left:auto;display:flex;color:var(--sepia);opacity:.8;padding:5px 8px;border-radius:6px;transition:transform .15s}
-.portion .plink:hover{opacity:1;background:var(--paper-2);transform:rotate(-4deg)}
+/* 성경 읽기 단추(2026-10-30): 흐린 그림 → 눌러 보고 싶은 알약 — 테두리·바탕·그림자로 「단추」임을 보이고, 글자 「읽기」로 할 일을 알림 */
+.portion .plink{margin-left:auto;flex:none;display:inline-flex;align-items:center;gap:6px;min-height:34px;padding:4px 13px 4px 9px;border-radius:999px;
+  font:700 13px/1 var(--ui-font,sans-serif);letter-spacing:.02em;color:var(--sepia);cursor:pointer;
+  background:linear-gradient(180deg,var(--paper),color-mix(in srgb,var(--sepia) 9%,var(--paper)));
+  border:1.5px solid color-mix(in srgb,var(--sepia) 55%,transparent);
+  box-shadow:0 1px 0 color-mix(in srgb,var(--sepia) 30%,transparent),0 3px 8px -4px color-mix(in srgb,var(--ink) 45%,transparent);
+  transition:transform .15s,box-shadow .15s,background .15s,color .15s}
+.portion .plink svg{width:24px;height:19px;flex:none;transition:transform .2s}
+.portion .plink .pl-go{font-size:12px;opacity:.75;margin-left:-2px}
+.portion .plink:hover,.portion .plink:focus-visible{color:var(--paper);background:var(--sepia);border-color:var(--sepia);transform:translateY(-1px);
+  box-shadow:0 2px 0 color-mix(in srgb,var(--ink) 30%,transparent),0 6px 14px -6px color-mix(in srgb,var(--ink) 60%,transparent);outline:none}
+.portion .plink:hover svg,.portion .plink:focus-visible svg{transform:rotate(-6deg) scale(1.06)}
+.portion .plink:active{transform:translateY(1px);box-shadow:0 0 0 color-mix(in srgb,var(--sepia) 30%,transparent),0 1px 3px -1px color-mix(in srgb,var(--ink) 40%,transparent)}
+@media (prefers-reduced-motion:reduce){.portion .plink,.portion .plink svg{transition:none}.portion .plink:hover svg{transform:none}}
+@media (max-width:599px){.portion .plink{min-height:38px;padding:5px 12px 5px 9px}}
+/* 칸이 좁으면(맥체인 네 줄 등) 본문 이름이 끊기지 않게 단추를 줄임: ↗ 빼기 → 더 좁으면 책 그림만(테두리·그림자는 그대로) */
+.portions{container-type:inline-size}
+.portion .ptext{word-break:keep-all}
+@container (max-width:380px){.portion .plink{padding:4px 10px 4px 8px;gap:5px}.portion .plink .pl-go{display:none}}
+@container (max-width:310px){.portion .plink{padding:4px 9px}.portion .plink .pl-t{display:none}}
 .portions-flow span.pl{cursor:pointer;text-decoration:underline dotted var(--deco);text-underline-offset:4px}
 
 /* 매일성경 카드 (쓰기 화면 맨 위) */
@@ -2291,7 +2311,7 @@ async function pushSave(){
 // ───────── 새 버전 자동 새로 고침 ─────────
 // 올릴 때마다 version.json 의 번호가 바뀝니다. 앱이 열릴 때·다시 화면에 올라올 때·5분마다 확인해서,
 // 쓰는 중인 글이 없고 저장이 끝났을 때 새 버전으로 새로 고칩니다.
-const APP_BUILD="1203bec5c1";
+const APP_BUILD="62a53e1ff0";
 let NEW_BUILD=null, UPDATE_NOTICED=false;
 async function checkUpdate(){
   if(APP_BUILD.startsWith("__")) return;                 // 원본 파일로 열었을 때(고치는 중)는 건너뜁니다
@@ -4401,7 +4421,7 @@ function todayBibleCard(){
     <div class="planline"><b>${esc(plan.name)}</b> · ${i+1}일째 <span class="muted">/ ${days.length}일</span></div>
     ${many?`<div class="portions-flow ${done?"done":""}">${portions.map(x=>`<span class="pl" title="${bibleVer()[1]}으로 읽기" onclick="openBible(${jsArg(x)})">${esc(x)}</span>`).join("")}</div>`
       :`<div class="portions">${portions.map((x,k)=>{ const on=done||p.checks.includes(k);
-        return `<button class="portion ${on?"on":""}" onclick="togglePortion(${k})"><span class="tick">${tickSvg(on)}</span>${plan.labels?`<span class="plab">${plan.labels[k]}</span>`:""}<span class="ptext">${esc(x)}</span><span class="plink" title="${bibleVer()[1]}으로 읽기" onclick="event.stopPropagation();openBible(${jsArg(x)})">${bookSvg()}</span></button>`; }).join("")}</div>`}
+        return `<button class="portion ${on?"on":""}" onclick="togglePortion(${k})"><span class="tick">${tickSvg(on)}</span>${plan.labels?`<span class="plab">${plan.labels[k]}</span>`:""}<span class="ptext">${esc(x)}</span><span class="plink" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();event.stopPropagation();this.click();}" title="${bibleVer()[1]}으로 읽기" onclick="event.stopPropagation();openBible(${jsArg(x)})">${bookSvg()}<span class="pl-t">읽기</span><span class="pl-go" aria-hidden="true">↗</span></span></button>`; }).join("")}</div>`}
     <div class="progress" style="margin-top:14px"><i style="width:${pr.pct}%;background:var(--bible)"></i></div>
     <div class="muted">${pr.done} / ${pr.len}일 · ${pr.pct}%${late?` · <span style="color:var(--ink-soft)">천천히 따라잡을 날 ${late}일</span>`:""}</div>
     ${late?`<details class="more"><summary>놓친 분량 보기 <small class="hint" style="display:inline">· 읽은 날은 「읽음」을 눌러 지워 가세요</small></summary><div class="portions">${missedDays().slice(0,14).map(k=>`<button class="portion" onclick="catchUp(${k})"><span class="tick">${tickSvg(false)}</span><span class="plab">${k+1}일째</span><span class="ptext" style="font-weight:400;font-size:16px">${esc((days[k]||[]).join(" · "))}</span><span class="plink" style="font-size:13px;font-family:inherit">읽음</span></button>`).join("")}${late>14?`<p class="hint">…그 뒤 ${late-14}일 더</p>`:""}</div></details>`:""}
