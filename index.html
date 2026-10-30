@@ -1974,7 +1974,15 @@ async function drvSave(json,baseRev){   // 서버판 saveData_ 와 같은 지킴
   return {ok:true,rev:obj.rev};
 }
 const drvConf=()=>({notion:false,kakao:false,nl:false,ai:"",aiKeys:{},cmtFolder:"",yt:false,claude:null,local:false,gas:true,drive:true,email:DRV?.email||"",driveUrl:"https://drive.google.com/drive/folders/"+(DRV?.root||"")});
+// 공개판 전용 창구(구글 앱스 스크립트, 4gospel — 개인 기록과 무관): 브라우저가 직접 닿지 못하는 성서유니온 「매일성경」을 대신 받아 줌. 로그인 없이 날짜만 보냄
+const PUB_GW="https://script.google.com/macros/s/AKfycbxRPmEN9s2BMkKZ4nQuEzCqalgn_SBqEztJT7b5Af5dXJdmOBsmmgUMlfpbxbB8DIYAAQ/exec", GW_FN=new Set(["dailyBible","dailyBibleNote"]);
+async function gwCall(fn,args){
+  const r=await fetch(PUB_GW,{method:"POST",body:JSON.stringify({fn,args}),signal:AbortSignal.timeout?AbortSignal.timeout(60000):undefined});
+  let j; try{ j=await r.json(); }catch(_){ throw new Error("매일성경 창구가 알아볼 수 없는 답을 보냈습니다 ("+r.status+")"); }
+  if(!j.ok) throw new Error(j.error||"매일성경 창구가 답하지 않습니다"); return j.result;
+}
 async function drvCall(fn,args){
+  if(GW_FN.has(fn)) return gwCall(fn,args);
   if(!DRV?.data) await drvSetup();
   if(fn==="boot") return {data:await drvRead()||"{}",config:drvConf()};
   if(fn==="getData") return await drvRead()||"{}";
@@ -2253,7 +2261,7 @@ async function pushSave(){
 // ───────── 새 버전 자동 새로 고침 ─────────
 // 올릴 때마다 version.json 의 번호가 바뀝니다. 앱이 열릴 때·다시 화면에 올라올 때·5분마다 확인해서,
 // 쓰는 중인 글이 없고 저장이 끝났을 때 새 버전으로 새로 고칩니다.
-const APP_BUILD="d0d7418ebc";
+const APP_BUILD="56f7f3a1cf";
 let NEW_BUILD=null, UPDATE_NOTICED=false;
 async function checkUpdate(){
   if(APP_BUILD.startsWith("__")) return;                 // 원본 파일로 열었을 때(고치는 중)는 건너뜁니다
