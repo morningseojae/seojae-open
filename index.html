@@ -2,7 +2,7 @@
 <html lang="ko" data-theme="light">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" id="vpmeta" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>아침 서재</title>
 <meta name="author" content="임요한 목사">
 <link rel="manifest" href="manifest.webmanifest">
@@ -29,6 +29,13 @@ function applyTheme(t){
 applyTheme();
 try{ const v=localStorage.getItem("seojae-open.stColor"); if(v==="forest"||v==="white") document.documentElement.dataset.stc=v; }catch(_){}   // 글방 둘레 색 (이 기기) — 화면을 그리기 전에
 // 이 기기만의 노트 꾸미기(종이 색·글자 색·글자 크기): 화면이 그려지기 전에 적용 (localStorage seojae.look — 휴대폰과 컴퓨터를 따로)
+// 보기 크기 → 화면 배율(viewport). 앱 맨 앞에서 바로 맞추려고 여기 둠
+function vsViewport(v){ const m=document.getElementById("vpmeta"); if(!m) return; const z={l:1.15,xl:1.3}[v];   // 작게 보기(s)는 배율 대신 본문만 0.9배(CSS) — 휴대폰은 1배보다 작게 줄이는 배율을 잘 받지 않음
+  const phone=matchMedia("(pointer:coarse)").matches&&Math.min(screen.width,screen.height)<=700;
+  if(!z||!phone){ m.setAttribute("content","width=device-width, initial-scale=1, viewport-fit=cover"); return; }
+  const land=matchMedia("(orientation:landscape)").matches, dw=land?Math.max(screen.width,screen.height):Math.min(screen.width,screen.height);
+  m.setAttribute("content",`width=${Math.round(dw/z)}, initial-scale=${z}, viewport-fit=cover`); }
+addEventListener("orientationchange",()=>setTimeout(()=>vsViewport(applyLook().vs),250));
 function applyLook(){
   let L={}; try{ L=JSON.parse(localStorage.getItem("seojae-open.look")||"{}")||{}; }catch(_){}
   const r=document.documentElement.style, fs=+L.fs||0;
@@ -36,6 +43,8 @@ function applyLook(){
   if(L.bg) r.setProperty("--note-bg",L.bg); else r.removeProperty("--note-bg");
   if(L.ink) r.setProperty("--note-ink",L.ink); else r.removeProperty("--note-ink");
   if(+L.sufs) r.setProperty("--su-fs",(+L.sufs)+"px"); else r.removeProperty("--su-fs");   // 매일성경 본문·해설 글자 크기
+  if(["s","l","xl"].includes(L.vs)) document.documentElement.dataset.vsize=L.vs; else delete document.documentElement.dataset.vsize;   // 보기 크기(휴대폰 화면 전체)
+  vsViewport(L.vs);
   return L;
 }
 applyLook();
@@ -123,7 +132,7 @@ main.wrap{padding:34px 16px 80px}
 .sheet.tape.c::before{background:repeating-linear-gradient(90deg,var(--tape-c) 0 6px,transparent 6px 10px),var(--tape-c);transform:rotate(-1.5deg);left:auto;right:28px}
 .grid{display:grid;gap:26px;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));align-items:start}
 .sheet.wide{grid-column:1 / -1}
-.lookgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:4px 32px;margin-top:4px}
+.lookgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(300px,100%),1fr));gap:4px 32px;margin-top:4px}
 .lookgrid .setrow{margin-top:12px;align-items:flex-start} .lookgrid .setrow>.k{min-width:96px;padding-top:4px}
 .lookgrid .pills{gap:6px} .lookgrid .pill{padding:4px 11px;font-size:13.5px}
 .label{font-family:"Nanum Pen Script";font-size:22px;color:var(--sepia);line-height:1.1;margin:0 0 6px}
@@ -342,7 +351,7 @@ body.docmode[data-dpaper="wongo"] w-ed.page[data-wg] *::selection{background:tra
 .hmirror i.mkfn{visibility:visible;font-style:normal;color:transparent;position:relative;background:var(--note-bg,var(--paper));border-radius:3px;box-shadow:inset 0 -1px 0 color-mix(in srgb,var(--sepia) 35%,transparent)}
 .hmirror i.mkfn .fnsup{position:absolute;left:0;top:-.42em;font:700 .62em/1 Georgia,serif;color:#a0522d} .hmirror i.mkfn.en .fnsup{color:#4f7fa8}
 .hmirror i.mkfn .fntx{visibility:visible;position:absolute;left:.95em;right:0;top:50%;transform:translateY(-50%);font-size:.66em;line-height:1.2;color:var(--ink-soft);font-style:italic;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.fnpane{margin:14px 0 4px;padding-top:10px;border-top:1px solid color-mix(in srgb,var(--ink) 25%,transparent);max-width:46%;min-width:260px;font:13px/1.55 -apple-system,"Apple SD Gothic Neo",sans-serif;color:var(--ink-soft)}
+.fnpane{margin:14px 0 4px;padding-top:10px;border-top:1px solid color-mix(in srgb,var(--ink) 25%,transparent);max-width:46%;min-width:min(260px,100%);font:13px/1.55 -apple-system,"Apple SD Gothic Neo",sans-serif;color:var(--ink-soft)}
 .fnpane .fnh{margin:4px 0 2px;font-weight:600;color:var(--ink)} .fnpane .fnh small{font-weight:400;color:var(--faint)} .fnpane ol{margin:0;padding:0;list-style:none} .fnpane li{display:flex;align-items:flex-start;gap:2px}
 .fnpane li>button:first-child{flex:1;border:0;background:none;text-align:left;font:inherit;color:inherit;cursor:pointer;padding:2px 4px;border-radius:5px} .fnpane li>button:first-child:hover{background:color-mix(in srgb,var(--ink) 6%,transparent)} .fnpane b{font-family:Georgia,serif;color:#a0522d;margin-right:4px}
 .fnpane .fned{border:0;background:none;color:var(--faint);cursor:pointer;font-size:12px} .fnkind{display:flex;gap:14px;margin-bottom:6px;font-size:13px} .fnkind small{color:var(--faint)}
@@ -715,6 +724,35 @@ body.focus .notice{display:none}
 
 /* 설정: 구석의 톱니(손으로 그린 듯한 놋쇠 톱니) */
 .top{position:relative}
+.vsbtn{display:none}
+@media (max-width:700px){
+  html[data-vsize="s"] header,html[data-vsize="s"] #main{zoom:.9}
+  .vsbtn{display:inline-flex;align-items:baseline;justify-content:center;gap:0;flex:none;min-width:44px;height:38px;padding:0 9px;border-radius:999px;cursor:pointer;
+    font:700 14px/1 var(--ui-font,sans-serif);color:var(--sepia);background:var(--paper);border:1.5px solid color-mix(in srgb,var(--sepia) 50%,transparent);
+    box-shadow:0 3px 8px -4px color-mix(in srgb,var(--ink) 45%,transparent)}
+  .vsbtn b{font-size:20px;font-weight:800}
+  .vsbtn:active{transform:translateY(1px);box-shadow:none}
+  html[data-vsize] .vsbtn{background:var(--sepia);color:var(--paper);border-color:var(--sepia)}
+}
+/* 크게 보기로 화면 폭이 좁아질 때(340px 이하): 머리 줄·아래 메뉴가 넘치지 않게 */
+@media (max-width:340px){
+  header .brand{white-space:nowrap;font-size:27px} header .topright{gap:6px}
+  header .streak span:not(.n){display:none} header .streak .n::after{content:"일째";font-size:12px;margin-left:2px;font-family:var(--ui-font,sans-serif);font-weight:700}
+  header .vsbtn{min-width:40px;height:36px;padding:0 7px} header .gearbtn{width:36px;height:36px}
+  .routine{flex-wrap:wrap;row-gap:6px} .dateline{flex-wrap:wrap}
+  nav{padding-left:3px;padding-right:3px} nav .nvi{padding:3px 6px;width:21px;height:21px} nav button:not(.navroom):not(.navai){font-size:11.5px}
+  nav button.navroom{font-size:14px;margin-left:2px} nav button.navroom .ico{width:17px;height:17px} nav button.navai{margin-left:2px;flex:.55}
+}
+#vspop{position:fixed;z-index:120;top:calc(64px + env(safe-area-inset-top));right:10px;left:10px;max-width:380px;margin-left:auto;background:var(--paper) var(--grain);color:var(--ink);
+  border:1.5px solid color-mix(in srgb,var(--sepia) 45%,var(--edge));border-radius:16px;padding:12px 10px 8px;box-shadow:0 18px 40px -16px rgba(30,20,10,.6);font-family:var(--ui-font,sans-serif)}
+#vspop .vs-h{margin:0 6px 8px;font-weight:800;font-size:16px} #vspop .vs-h small{display:block;font-weight:400;font-size:12.5px;color:var(--ink-soft);margin-top:2px}
+#vspop .vs-o{display:flex;align-items:center;gap:12px;width:100%;text-align:left;border:1.5px solid transparent;background:transparent;border-radius:12px;padding:9px 10px;margin:2px 0;cursor:pointer;color:inherit;font:inherit}
+#vspop .vs-o.on{border-color:var(--sepia);background:color-mix(in srgb,var(--sepia) 10%,var(--paper))}
+#vspop .vs-o:active{background:color-mix(in srgb,var(--sepia) 16%,var(--paper))}
+#vspop .vs-a{flex:none;width:40px;height:40px;border-radius:10px;display:grid;place-items:center;background:var(--paper-2);font-weight:800;color:var(--sepia)}
+#vspop .vs-t{flex:1;min-width:0} #vspop .vs-t b{display:block;font-size:15px} #vspop .vs-t small{display:block;font-size:12.5px;color:var(--ink-soft);margin-top:2px;line-height:1.4}
+#vspop .vs-c{color:var(--sepia);font-weight:800;font-size:18px}
+#vspop .vs-f{margin:6px 8px 2px;font-size:12px;color:var(--faint)}
 .gearbtn{width:44px;height:44px;border:0;background:transparent;padding:0;cursor:pointer;color:var(--sepia);border-radius:50%;transition:transform .5s ease;flex:none}
 .gearbtn svg{width:100%;height:100%;display:block;filter:drop-shadow(0 1.5px 0 rgba(0,0,0,.12))}
 .gearbtn:hover{transform:rotate(40deg)}
@@ -1503,7 +1541,7 @@ body.typew #wbody{padding-bottom:45vh}
 @media (max-width:599px){.portion .plink{min-height:38px;padding:5px 12px 5px 9px}}
 /* 칸이 좁으면(맥체인 네 줄 등) 본문 이름이 끊기지 않게 단추를 줄임: ↗ 빼기 → 더 좁으면 책 그림만(테두리·그림자는 그대로) */
 .portions{container-type:inline-size}
-.portion .ptext{word-break:keep-all}
+.portion .ptext{word-break:keep-all} .portion .ptext .nw{white-space:nowrap}
 @container (max-width:380px){.portion .plink{padding:4px 10px 4px 8px;gap:5px}.portion .plink .pl-go{display:none}}
 @container (max-width:310px){.portion:has(.plab) .plink{padding:4px 9px}.portion:has(.plab) .plink .pl-t{display:none}}
 .portions-flow span.pl{cursor:pointer;text-decoration:underline dotted var(--deco);text-underline-offset:4px}
@@ -1833,6 +1871,7 @@ details.more[open]>summary{margin-bottom:var(--sp-1)}
   <div class="top">
     <div class="brand" onclick="go('today')" title="오늘 화면으로" role="link">아침 서재<span class="beta" title="아직 시험 중인 베타판입니다 — 허락 없이 배포하지 마세요">베타</span><small>MORNING · STUDY · DIARY</small></div>
     <div class="topright"><div class="stkcol"><div class="streak" id="streak"></div><div class="pomomini" id="pomomini" hidden></div></div>
+    <button class="vsbtn" id="vsbtn" onclick="vsPop(event)" title="보기 크기 — 화면을 크게·작게" aria-label="보기 크기 바꾸기"><span>가</span><b>가</b></button>
     <button class="gearbtn" id="gearbtn" onclick="gearToggle()" title="설정 (한 번 더 누르면 하던 화면으로)" aria-label="설정"></button></div>
   </div>
   <nav id="nav"></nav>
@@ -2324,7 +2363,7 @@ async function pushSave(){
 // ───────── 새 버전 자동 새로 고침 ─────────
 // 올릴 때마다 version.json 의 번호가 바뀝니다. 앱이 열릴 때·다시 화면에 올라올 때·5분마다 확인해서,
 // 쓰는 중인 글이 없고 저장이 끝났을 때 새 버전으로 새로 고칩니다.
-const APP_BUILD="95eee4bc7d";
+const APP_BUILD="c318b56076";
 let NEW_BUILD=null, UPDATE_NOTICED=false;
 async function checkUpdate(){
   if(APP_BUILD.startsWith("__")) return;                 // 원본 파일로 열었을 때(고치는 중)는 건너뜁니다
@@ -4435,7 +4474,7 @@ function todayBibleCard(){
     <div class="planline"><b>${esc(plan.name)}</b> · ${i+1}일째 <span class="muted">/ ${days.length}일</span></div>
     ${many?`<div class="portions-flow ${done?"done":""}">${portions.map(x=>`<span class="pl" title="${bibleVer()[1]}으로 읽기" onclick="openBible(${jsArg(x)})">${esc(x)}</span>`).join("")}</div>`
       :`<div class="portions">${portions.map((x,k)=>{ const on=done||p.checks.includes(k);
-        return `<button class="portion ${on?"on":""}" onclick="togglePortion(${k})"><span class="tick">${tickSvg(on)}</span>${plan.labels?`<span class="plab">${plan.labels[k]}</span>`:""}<span class="ptext">${esc(x)}</span><span class="plink" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();event.stopPropagation();this.click();}" title="${bibleVer()[1]}으로 읽기" onclick="event.stopPropagation();openBible(${jsArg(x)})">${bookSvg()}<span class="pl-t">읽기</span><span class="pl-go" aria-hidden="true">↗</span></span></button>`; }).join("")}</div>`}
+        return `<button class="portion ${on?"on":""}" onclick="togglePortion(${k})"><span class="tick">${tickSvg(on)}</span>${plan.labels?`<span class="plab">${plan.labels[k]}</span>`:""}<span class="ptext">${esc(x).replace(/(\S*-\S*)/g,'<span class="nw">$1</span>')}</span><span class="plink" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();event.stopPropagation();this.click();}" title="${bibleVer()[1]}으로 읽기" onclick="event.stopPropagation();openBible(${jsArg(x)})">${bookSvg()}<span class="pl-t">읽기</span><span class="pl-go" aria-hidden="true">↗</span></span></button>`; }).join("")}</div>`}
     <div class="progress" style="margin-top:14px"><i style="width:${pr.pct}%;background:var(--bible)"></i></div>
     <div class="muted">${pr.done} / ${pr.len}일 · ${pr.pct}%${late?` · <span style="color:var(--ink-soft)">천천히 따라잡을 날 ${late}일</span>`:""}</div>
     ${late?`<details class="more"><summary>놓친 분량 보기 <small class="hint" style="display:inline">· 읽은 날은 「읽음」을 눌러 지워 가세요</small></summary><div class="portions">${missedDays().slice(0,14).map(k=>`<button class="portion" onclick="catchUp(${k})"><span class="tick">${tickSvg(false)}</span><span class="plab">${k+1}일째</span><span class="ptext" style="font-weight:400;font-size:16px">${esc((days[k]||[]).join(" · "))}</span><span class="plink" style="font-size:13px;font-family:inherit">읽음</span></button>`).join("")}${late>14?`<p class="hint">…그 뒤 ${late-14}일 더</p>`:""}</div></details>`:""}
@@ -4757,16 +4796,27 @@ function lookSet(k,v){ const L=applyLook(); if(v==null||v===""||v===0) delete L[
 const PAPERS=[["","기본(밝기 따라)",""],["#fbf7ee","크림","#2e2721"],["#ffffff","흰 종이","#222222"],["#f3efe2","미색","#2e2721"],["#eef5e6","연두","#2b3326"],["#e9f1f7","하늘","#223040"],["#f8ecec","연분홍","#3a2626"],["#1f1b17","검은 종이","#e8dfcf"]];
 const stColor=()=>{ try{ const v=localStorage.getItem("seojae-open.stColor")||""; return ["forest","white"].includes(v)?v:""; }catch(_){ return ""; } };
 function stColorSet(v){ try{ localStorage.setItem("seojae-open.stColor",v); }catch(_){} if(v) document.documentElement.dataset.stc=v; else delete document.documentElement.dataset.stc; toast(v?"글방 둘레 색을 바꿨습니다 — 글방에 들어가 보세요":"글방 둘레를 「새벽 남빛」으로"); render(); }
+// ───────── 보기 크기(2026-10-30): 휴대폰 화면 전체(글자·단추·그림)를 함께 키우고 줄임 — 이 기기만(look.vs). 눈이 어두운 분도 쓰기 쉽게, 이름은 「크게 보기」처럼 ─────────
+const VS_ZOOM={s:.9,l:1.15,xl:1.3}, VS_OPTS=[["s","작게 보기","글자와 단추를 조금 작게 — 한 화면에 더 많이"],["","보통","처음 크기"],["l","크게 보기","글자와 단추를 한 단계 크게"],["xl","아주 크게 보기","가장 크게 — 글자가 또렷하고 누르기 쉽게"]];
+const vsNow=()=>{ const v=applyLook().vs; return VS_ZOOM[v]?v:""; };
+function vsSet(v){ const vp0=document.getElementById("vpmeta")?.content; lookSet("vs",v);
+  if(document.getElementById("vpmeta")?.content!==vp0){ try{ if(typeof writingUnsaved==="function"&&writingUnsaved()) saveDraft(); }catch(_){} toast("화면 크기를 맞춥니다…"); setTimeout(()=>location.reload(),350); return; }   // 배율은 페이지를 다시 열어야 확실히 맞음
+  const o=VS_OPTS.find(x=>x[0]===v); toast(`${o?o[1]:"보통"}로 바꿨습니다${v?" — 다시 바꾸려면 위쪽 「가가」 단추":""}`); const p=$("#vspop"); if(p) vsPop(); }
+function vsPop(ev){ ev?.stopPropagation?.(); let p=$("#vspop"); if(p&&ev){ p.remove(); return; } if(!p){ p=document.createElement("div"); p.id="vspop"; p.setAttribute("role","dialog"); p.setAttribute("aria-label","보기 크기"); document.body.appendChild(p);
+    setTimeout(()=>document.addEventListener("pointerdown",function off(e){ if(!e.target.closest("#vspop,#vsbtn")){ $("#vspop")?.remove(); document.removeEventListener("pointerdown",off); } }),0); }
+  const cur=vsNow();
+  p.innerHTML=`<p class="vs-h">보기 크기 <small>화면 전체가 함께 커집니다 · 이 기기만</small></p>`+VS_OPTS.map(([v,n,d])=>`<button type="button" class="vs-o ${cur===v?"on":""}" onclick="vsSet('${v}')" aria-pressed="${cur===v}"><span class="vs-a" style="font-size:${Math.round(17*(VS_ZOOM[v]||1))}px">가</span><span class="vs-t"><b>${n}</b><small>${d}</small></span>${cur===v?'<span class="vs-c">✓</span>':""}</button>`).join("")+`<p class="vs-f">설정 → 화면 꾸미기 → 「보기 크기」에서도 바꿉니다</p>`; }
 function lookSection(){
   const L=applyLook(), fs=+L.fs||0; let theme="light"; try{ theme=localStorage.getItem("seojae-open.theme")||"light"; }catch(_){}
   const dot=(bg,n,on,fn)=>`<span class="inkdot ${on?"on":""}" title="${n}" style="background:${bg};width:24px;height:24px" onclick="${fn}"></span>`;
   return `<section class="sheet wide">
     <div class="row" style="gap:10px;align-items:baseline"><p class="label" style="margin:0">화면 꾸미기 <small class="hint" style="display:inline">· 이 기기만 — 휴대폰과 컴퓨터를 따로</small></p></div>
     <div class="lookgrid">
+      <div class="setrow"><span class="k">보기 크기</span><div class="pills">${VS_OPTS.map(([v,n,d])=>`<button class="pill ${vsNow()===v?"on":""}" data-tip="${d}" onclick="vsSet('${v}')">${n}</button>`).join("")}</div><small class="hint" style="display:block;width:100%">휴대폰 화면에서 글자·단추·그림이 함께 커집니다(위쪽 「가가」 단추로도). 컴퓨터는 브라우저 확대(⌘＋ 또는 Ctrl＋)를 쓰세요. 이 기기만.</small></div>
       <div class="setrow"><span class="k">도움말 모드</span><button type="button" class="twsw ${HELP_ON?"on":""}" style="width:auto" role="switch" aria-checked="${HELP_ON}" data-help="켜면 단추·메뉴에 마우스를 올렸을 때 쓰임새 카드가 뜹니다 (이 기기만)" onclick="helpSet(!HELP_ON);this.classList.toggle('on',HELP_ON);this.querySelector('em').textContent=HELP_ON?'켬':'끔'"><span class="sw"><i></i></span><span class="twt"><b>단추 설명 보기</b><small>마우스를 올리면 쓰임새가 카드로</small></span><em>${HELP_ON?"켬":"끔"}</em></button></div>
       <div class="setrow"><span class="k">글방 둘레</span><div class="pills">${[["","새벽 남빛","기본 — 파랑 계열·낮은 채도, 금빛 등불 (전문가 추천)"],["forest","숲 그늘","초록 계열 — 오래 쓰기 편하고 덜 차가움"],["white","흰 작업대","색을 빼고 종이만 떠 보이게"]].map(([v,n,d])=>`<button class="pill ${stColor()===v?"on":""}" title="${d}" onclick="stColorSet('${v}')">${n}</button>`).join("")}</div><small class="hint" style="display:block;width:100%">글방(창작의 자리)에 들어가면 둘레 색이 바뀝니다. 종이는 그대로. 이 기기만.</small></div>
       <div class="setrow"><span class="k">밝기</span><div class="pills">${[["light","밝게","기기가 야간 모드여도 항상 밝은 종이 화면"],["dark","어둡게","항상 어두운 밤 서재 화면"],["auto","기기 따라","기기의 주간·야간 모드를 그대로"]].map(([v,n,d])=>`<button class="pill ${theme===v?"on":""}" data-tip="${d}" onclick="setTheme('${v}')">${n}</button>`).join("")}</div></div>
-      <div class="setrow"><span class="k">글자 크기</span><div class="pills">${[["",isTouch()?"보통(17)":"보통(18)"],[16,"작게"],[20,"크게"],[22,"더 크게"],[26,"아주 크게"]].map(([v,n])=>`<button class="pill ${(fs||"")===v?"on":""}" onclick="lookSet('fs',${v===""?"''":v})">${n}</button>`).join("")}</div></div>
+      <div class="setrow"><span class="k">쓰는 글 글자</span><div class="pills">${[["",isTouch()?"보통(17)":"보통(18)"],[16,"작게"],[20,"크게"],[22,"더 크게"],[26,"아주 크게"]].map(([v,n])=>`<button class="pill ${(fs||"")===v?"on":""}" onclick="lookSet('fs',${v===""?"''":v})">${n}</button>`).join("")}</div></div>
       <div class="setrow"><span class="k">종이 색</span><div class="row" style="gap:7px;flex-wrap:wrap;padding-top:4px">${PAPERS.map(([bg,n,ink])=>dot(bg||"linear-gradient(135deg,#fbf7ee 50%,#29231d 50%)",n,(L.bg||"")===bg,`lookSet('bg','${bg}');lookSet('ink','${(L.ink&&L.inkManual)?L.ink:ink}')`)).join("")}</div></div>
       <div class="setrow"><span class="k">글자 색</span><div class="row" style="gap:7px;flex-wrap:wrap;padding-top:4px">${dot("linear-gradient(135deg,#2e2721 50%,#7a4a22 50%)","기본(펜 잉크 따라)",!L.ink,"lookSet('ink','')")}${[["#2e2721","먹"],["#222222","검정"],["#24427a","청색"],["#7a4a22","세피아"],["#2f5d4e","녹색"],["#5a2d2d","적갈"],["#e8dfcf","밝은 글자(검은 종이용)"]].map(([c,n])=>dot(c,n,L.ink===c,`lookSet('ink','${c}')`)).join("")}</div></div>
       <div class="setrow"><span class="k">맞춤법 밑줄</span><div class="pills">${[["rules","규칙만","자주 틀리는 맞춤법·띄어쓰기 규칙으로 쓰는 즉시 밑줄 (인터넷 없이, 바로)"],["ai","규칙 + 인공지능","규칙 밑줄에 더해, 5초 쉬면 바뀐 문단을 인공지능(빠른 모델)이 조용히 살펴 밑줄을 보탭니다"],["off","끄기","밑줄을 긋지 않습니다"]].map(([k,n,tip])=>`<button class="pill ${spellMode()===k?"on":""}" data-tip="${tip}" onclick="if('${k}'==='ai'&&!confirm('켜면 글을 5초 쉴 때마다 바뀐 문단이 ${CONF.ai==="claude"?"클로드":"제미나이"} 서버로 보내집니다. 무료 열쇠는 품질 개선에 쓰일 수 있습니다(각 회사 약관). 켤까요?')) return; lookSet('spell','${k}')" ${k==="ai"&&!CONF.ai?"disabled":""}>${n}</button>`).join("")}</div></div>
