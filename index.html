@@ -46,6 +46,10 @@ function applyLook(){
   const r=document.documentElement.style, fs=+L.fs||0;
   if(fs){ r.setProperty("--note-fs",fs+"px"); r.setProperty("--note-lh",Math.round(fs*2)+"px"); } else { r.removeProperty("--note-fs"); r.removeProperty("--note-lh"); }
   if(L.bg) r.setProperty("--note-bg",L.bg); else r.removeProperty("--note-bg");
+  { // 종이 색 = 앱 전체(밝은 화면): 카드·칸 바탕(--paper)과 책상(--desk)까지 그 색으로 (2026-10-31 팀장님 — 전에는 글 쓰는 공책 한 장에만). 글방 둘레 색은 그대로
+    let st=document.getElementById("lookpaper"); const bg=/^#[0-9a-f]{6}$/i.test(L.bg||"")&&L.bg.toLowerCase()!=="#1f1b17"?L.bg:"";
+    if(!st){ st=document.createElement("style"); st.id="lookpaper"; document.head.appendChild(st); }
+    st.textContent=bg?`:root[data-theme="light"]{--paper:${bg};--paper-2:color-mix(in srgb,${bg} 91%,#a08a6a)}:root[data-theme="light"]:not(:has(#main .studio)){--desk:color-mix(in srgb,${bg} 80%,#a08a6a)}`:""; }
   if(L.ink) r.setProperty("--note-ink",L.ink); else r.removeProperty("--note-ink");
   if(+L.sufs) r.setProperty("--su-fs",(+L.sufs)+"px"); else r.removeProperty("--su-fs");   // 매일성경 본문·해설 글자 크기
   const ve=vsEff(L.vs); if(ve!=="m") document.documentElement.dataset.vsize=ve; else delete document.documentElement.dataset.vsize;   // 보기 크기(휴대폰 화면 전체)
@@ -265,6 +269,11 @@ ol.toc{margin:6px 0 4px;padding-left:20px;font-size:13.5px;line-height:1.6;color
 
 /* 도움말 · 단계 */
 .hint{display:block;font-size:13.5px;line-height:1.55;color:var(--faint);margin-top:4px}
+.pgghost{position:fixed;inset:0;z-index:4;pointer-events:none;overflow:hidden;opacity:1;transition:opacity .26s ease-in}
+.pgghost.out{opacity:0}
+#main.pgin{animation:pgin .38s cubic-bezier(.2,.7,.3,1) both}
+@keyframes pgin{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){ .pgghost{display:none} #main.pgin{animation:none} }
 .appfoot{text-align:center;font:11.5px/1.6 var(--ui-font,-apple-system,sans-serif);color:var(--faint);opacity:.8;margin:34px auto 14px;padding:0 16px;letter-spacing:.01em}
 .appfoot .af-beta{font-weight:700;color:#a0402c} .appfoot .af-warn{color:#a0402c}
 body.focus .appfoot,body.readmode .appfoot,body.typing .appfoot{display:none}
@@ -1277,12 +1286,12 @@ body.docmode .readview{font-family:var(--doc-font);font-size:var(--doc-fs);line-
 .stburger{display:none}
 .sthome{padding:2px;max-width:900px;margin:0 auto}
 .sth1{font:800 17px/1.3 var(--ui-font,-apple-system,"Apple SD Gothic Neo",sans-serif);color:var(--ink);margin:22px 0 10px;display:flex;align-items:baseline;gap:6px} .sth1 small{font-weight:600;font-size:13px;color:var(--faint)}
-.sth-l1 .sth1:first-child{margin-top:0}
-.stnew{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(220px,100%),1fr));gap:12px}
-.stnewc{display:flex;align-items:center;gap:12px;padding:14px 16px;border:1px solid var(--edge);border-radius:14px;background:var(--paper);color:var(--ink);cursor:pointer;text-align:left;font:inherit;box-shadow:0 6px 16px -12px rgba(40,25,10,.5);transition:transform .15s,box-shadow .15s}
+.sth-l1 .sth1:first-child{margin-top:0;justify-content:center}
+.stnew{display:flex;justify-content:center;flex-wrap:wrap;gap:18px;margin:4px 0 8px}
+.stnewc{display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;width:176px;aspect-ratio:1;box-sizing:border-box;gap:12px;padding:16px;border:1px solid var(--edge);border-radius:14px;background:var(--paper);color:var(--ink);cursor:pointer;text-align:left;font:inherit;box-shadow:0 6px 16px -12px rgba(40,25,10,.5);transition:transform .15s,box-shadow .15s}
 .stnewc:hover{transform:translateY(-2px);box-shadow:0 10px 20px -12px rgba(40,25,10,.55)} .stnewc:active{transform:translateY(0)}
-.stnewc>span:last-child{display:grid;line-height:1.3} .stnewc b{font:700 15.5px var(--ui-font,sans-serif)} .stnewc small{font:12.5px var(--ui-font,sans-serif);color:var(--faint)}
-.stnewi{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;font-size:20px;font-weight:700;background:var(--ink);color:var(--paper);flex:none} .stnewc.alt .stnewi{background:var(--paper-2);color:var(--ink);border:1px solid var(--edge)}
+.stnewc>span:last-child{display:grid;justify-items:center;gap:3px;line-height:1.35} .stnewc b{font:700 15.5px var(--ui-font,sans-serif)} .stnewc small{font:12.5px var(--ui-font,sans-serif);color:var(--faint)}
+.stnewi{width:54px;height:54px;border-radius:16px;display:grid;place-items:center;font-size:25px;font-weight:700;background:var(--ink);color:var(--paper);flex:none} .stnewc.alt .stnewi{background:var(--paper-2);color:var(--ink);border:1px solid var(--edge)}
 .stmslist{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(260px,100%),1fr));gap:12px}
 .stmsc{display:flex;align-items:center;gap:12px;padding:14px 14px 14px 16px;border:1px solid var(--edge);border-left:5px solid var(--gc,#5a5048);border-radius:14px;background:var(--paper);color:var(--ink);cursor:pointer;text-align:left;font:inherit;min-width:0;box-shadow:0 6px 16px -12px rgba(40,25,10,.5);transition:transform .15s,box-shadow .15s}
 .stmsc:hover{transform:translateY(-2px);box-shadow:0 10px 20px -12px rgba(40,25,10,.55)}
@@ -1307,12 +1316,12 @@ body.docmode .readview{font-family:var(--doc-font);font-size:var(--doc-fs);line-
 .msmemo{margin-top:24px;padding-top:14px;border-top:1px dashed var(--edge)}
 .stmst[onclick]{cursor:pointer} .stmst[onclick]:hover .stn{text-decoration:underline;text-underline-offset:3px}
 .stms summary.on{background:var(--paper);box-shadow:0 1px 2px rgba(0,0,0,.08)}
-.stjot{display:flex;align-items:center;gap:10px;width:100%;border:1px solid color-mix(in srgb,#d9b84a 45%,var(--edge));background:linear-gradient(170deg,#fdf3bf,#f8e79a);color:#4a3a12;border-radius:4px 12px 12px 12px;padding:9px 10px;cursor:pointer;text-align:left;font:inherit;box-shadow:0 5px 12px -8px rgba(90,70,10,.55);transform:rotate(-.6deg);transition:transform .15s}
+.stjot{display:flex;align-items:center;gap:10px;width:100%;border:1px solid color-mix(in srgb,#d9b84a 22%,var(--st-line,var(--edge)));background:linear-gradient(170deg,color-mix(in srgb,#fbf0c4 52%,var(--st-side,var(--paper))),color-mix(in srgb,#f3e3a6 40%,var(--st-side,var(--paper))));color:color-mix(in srgb,#4a3a12 70%,var(--st-ink,var(--ink)));border-radius:4px 12px 12px 12px;padding:9px 10px;cursor:pointer;text-align:left;font:inherit;box-shadow:0 3px 9px -7px rgba(90,70,10,.4);transform:rotate(-.6deg);transition:transform .15s,background .2s}
 .stjot:hover{transform:rotate(0) translateY(-1px)} .stjot.on{box-shadow:0 0 0 2px var(--ink),0 5px 12px -8px rgba(90,70,10,.55);transform:none}
-@media(max-width:700px){ .stnew{grid-template-columns:1fr 1fr;gap:8px} .stnewc{padding:11px 12px;gap:9px} .stnewc small{display:none} .stnewi{width:34px;height:34px;font-size:17px} .sth-l2{margin-top:22px} }
-.stjot-i{width:28px;height:28px;border-radius:8px;display:grid;place-items:center;background:rgba(255,255,255,.55);font-size:15px;flex:none}
+@media(max-width:700px){ .stnew{gap:12px} .stnewc{width:min(146px,calc(50% - 6px));padding:12px;gap:9px} .stnewc small{font-size:11.5px} .stnewi{width:44px;height:44px;font-size:21px;border-radius:13px} .sth-l2{margin-top:22px} }
+.stjot-i{width:28px;height:28px;border-radius:8px;display:grid;place-items:center;background:rgba(255,255,255,.4);font-size:15px;flex:none}
 .stjot-t{display:grid;line-height:1.25;flex:1;min-width:0} .stjot-t b{font-size:14.5px} .stjot-t small{font-size:11.5px;opacity:.75}
-.stjot .stc{background:rgba(255,255,255,.7);color:#4a3a12}
+.stjot .stc{background:rgba(255,255,255,.55);color:inherit}
 :root[data-theme="dark"] .stjot{background:linear-gradient(170deg,#5a4f25,#4a4120);color:#f4e7b4;border-color:#6b5d2a} :root[data-theme="dark"] .stjot .stc{background:rgba(0,0,0,.25);color:#f4e7b4}
 .sthello{font-family:"Nanum Myeongjo",serif;font-weight:800;font-size:30px;text-align:center;margin:22px 0 26px;color:var(--ink)}
 .stcards{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:14px;max-width:840px;margin:0 auto 30px}
@@ -1674,10 +1683,11 @@ body.typew #wbody{padding-bottom:45vh}
 .portions-flow span.pl{cursor:pointer;text-decoration:underline dotted var(--deco);text-underline-offset:4px}
 
 /* 매일성경 카드 (쓰기 화면 맨 위) */
-.sucard{background:var(--paper) var(--grain);border:1px solid var(--edge);border-left:3px solid var(--bible);border-radius:4px;padding:14px 18px;margin-bottom:34px;box-shadow:var(--shadow)}
+.sucard{background:var(--paper) var(--grain);border:1px solid var(--edge);border-left:3px solid var(--bible);border-radius:4px;padding:14px 18px;margin-bottom:60px;box-shadow:var(--shadow);position:relative}
+.sucard::after{content:"";position:absolute;left:6%;right:6%;bottom:-31px;height:1px;background:linear-gradient(90deg,transparent,color-mix(in srgb,var(--edge) 85%,transparent) 15%,color-mix(in srgb,var(--edge) 85%,transparent) 85%,transparent);pointer-events:none}
 .sucard .verlink{font-size:14px;color:var(--ink-soft);text-decoration:underline dotted 1px;text-decoration-color:color-mix(in srgb,currentColor 55%,transparent);text-underline-offset:5px;padding:5px 7px;border-radius:6px;white-space:nowrap}
 .sucard .verlink:hover,.sucard .verlink:focus-visible{color:var(--ink);text-decoration-style:solid;background:var(--paper-2)}
-@media(max-width:700px){.sucard{margin-bottom:26px}}
+@media(max-width:700px){.sucard{margin-bottom:44px}.sucard::after{bottom:-23px;left:4%;right:4%}}
 .sucard .sut{font-family:"Nanum Myeongjo";font-size:17px;margin:4px 0 8px}
 .sucard .sut b{font-weight:800}
 .sucard .links{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
@@ -2007,10 +2017,10 @@ details.more[open]>summary{margin-bottom:var(--sp-1)}
   <nav id="nav"></nav>
 </div><div class="navline"></div></header>
 <main class="wrap" id="main"></main>
-<footer class="appfoot" id="appfoot" aria-label="저작권·판">© 2026 임요한 목사 · 아침 서재 <b class="af-beta">베타</b> · <span id="afver"></span> · <span class="af-warn">배포 금지</span></footer>
-<script>/* 맨 아래 카피라이트·판: 판 = 올린 날(GitHub Pages가 알려 주는 파일 날짜) + build */
+<footer class="appfoot" id="appfoot" aria-label="저작권·판">© 2026 임요한 목사 · 아침 서재 <b class="af-beta">베타</b> <span id="afver"></span> · <span class="af-warn">배포 금지</span></footer>
+<script>/* 맨 아래 카피라이트·판 번호(APP_VER, 1.0 → 1.1 … 1.9 → 2.0). 마우스를 올리면 올린 날·build */
 addEventListener("DOMContentLoaded",function(){ var d=new Date(document.lastModified), ok=!isNaN(d)&&d.getFullYear()>2025, v=document.getElementById("afver");
-  if(v) v.textContent=(ok?d.getFullYear()+"."+(d.getMonth()+1)+"."+d.getDate()+"판":"판")+(typeof APP_BUILD==="string"?" ("+APP_BUILD.slice(0,6)+")":""); });</script>
+  if(v) v.textContent=typeof APP_VER==="string"?APP_VER:""; v&&(v.title=(ok?"올린 날 "+d.getFullYear()+"."+(d.getMonth()+1)+"."+d.getDate():"")+(typeof APP_BUILD==="string"?" · build "+APP_BUILD:"")); });</script>
 <div class="toast" id="toast"></div>
 
 <script src="plans.js"></script>
@@ -2565,7 +2575,7 @@ async function pushSave(){
 // ───────── 새 버전 자동 새로 고침 ─────────
 // 올릴 때마다 version.json 의 번호가 바뀝니다. 앱이 열릴 때·다시 화면에 올라올 때·5분마다 확인해서,
 // 쓰는 중인 글이 없고 저장이 끝났을 때 새 버전으로 새로 고칩니다.
-const APP_BUILD="11be88f2c3";
+const APP_BUILD="a32f724c45"; const APP_VER="1.0";   // 판 번호: 배포할 때마다 도구/판올리기.py 가 0.1씩 올림 (1.9 다음은 2.0) — 손으로 고치지 말 것
 let NEW_BUILD=null, UPDATE_NOTICED=false;
 async function checkUpdate(){
   if(APP_BUILD.startsWith("__")) return;                 // 원본 파일로 열었을 때(고치는 중)는 건너뜁니다
@@ -3065,6 +3075,11 @@ const MANUALS=[["quick","간단 매뉴얼","읽자마자 바로 써 보는 한 �
 // ───────── 새 소식 (공개판, 2026-10-31 팀장님): 중요한 고침은 앱을 열 때 한 번만 쉬운 말로 알림 ─────────
 // 새 소식을 더할 때: NEWS 맨 앞에 넣고 id 는 날짜(같은 날 둘째는 2026-11-02b 처럼 — 글자 순서로 새것이 뒤). 본 소식 id 는 이 기기에만(seojae-open.newsSeen)
 const NEWS=[
+ {id:"2026-10-31c",date:"2026년 10월 31일",title:"화면이 부드럽게 넘어가요",items:[
+  ["⇄","화면이 부드럽게 넘어가요","메뉴를 옮기면 지난 화면이 서서히 사라지고 새 화면이 서서히 떠올라요. 기기에서 「동작 줄이기」를 켜 두셨으면 바로 바뀌어요.",""],
+  ["🎨","종이 색이 앱 전체에 들어요","설정 → 화면 꾸미기 → 「종이 색」을 고르면 이제 글 쓰는 공책뿐 아니라 모든 화면의 카드와 바탕이 그 색이 돼요. 「검은 종이」는 어두운 화면으로 바꿔요.",""],
+  ["▦","글방과 묵상이 한결 여유로워졌어요","글방 홈의 「새 원고」·「자유 글」이 가운데 네모 두 장이 되었고, 「끄적이기」 색은 둘레와 어울리게 옅어졌어요. 묵상은 성경 본문과 쓰는 칸 사이를 넓히고 옅은 가로선을 그었어요.",""],
+  ["1.0","맨 아래에 판 번호","화면 맨 아래 작은 글씨의 판 번호가 1.0부터 시작해요. 고칠 때마다 0.1씩 올라가고, 1.9 다음은 2.0이에요.",""]]},
  {id:"2026-10-31b",date:"2026년 10월 31일",title:"더 단정하고 쉬워졌어요",items:[
   ["✓","읽은 표시를 풀 수 있어요","「오늘의 말씀」에서 잘못 눌렀으면 그 분량을 한 번 더 누르거나, 도장 옆 「읽음 풀기」를 누르면 됩니다.",""],
   ["?","화면이 한결 단정해졌어요","오늘 화면의 묻기 상자를 빼고, 긴 설명은 작은 「?」 단추 안에 넣었어요. 묵상의 「개역개정」 같은 성경 이름은 점선 글자를 누르면 열리고, 일기 칸은 옅은 종이 바탕이 되었어요.","궁금할 때 「?」를 누르면 짧은 도움말이 떠요"],
@@ -3707,7 +3722,24 @@ function goInner(t,o){ TRACK_PICK=!!o.track; if(editId&&FRESH[editId]!=null&&o.e
   editId=o.edit||null; fromNote=o.fromNote||null; fromWriting=o.fromWriting||(o.fromWritings||[])[0]||null; FROMS=o.fromWritings||(fromWriting?[fromWriting]:null); SEL_PLACE=o.place; SEL_MS=o.ms||null; NEW_TPL=o.new&&o.tpl?o.tpl:""; NEW_TYPE=o.new&&o.type?o.type:null; selLen=undefined; promoAsk=null; if(o.sub) drawerSub=o.sub; wStk=[]; STK_SEL=null; STK_OPEN=false; READVIEW=false; $("#stkpal")?.remove(); selTopics=[]; selSits=[]; draft=null; noteOpen=null; document.body.classList.remove("focus"); render(); scrollTo(0,0);
   if(t==="write"&&innerWidth<=700&&(o.edit||o.new||o.fromWritings)) setTimeout(()=>$(".toolbar")?.scrollIntoView({block:"start"}),60); }   // 휴대폰: 글을 열면 쓰는 자리로
 const FLOW=`<div class="flow"><span><b>묵상</b> 날마다 말씀 앞에서 쓴 글</span><i>→</i><span><b>끄적이기</b> 수시로 적어 두는 글감</span><i>→</i><span><b>글쓰기</b> 책을 읽고, 생각을 엮어 쓴 글</span><i>→</i><span><b>원고</b> 글을 모아 엮는 한 권의 책</span></div>`;
+// 화면 넘김 (2026-10-31 팀장님: 「모든 화면이 넘어갈 때 페이드 인·아웃」): 화면 이름이 바뀔 때만 — 같은 화면을 다시 그릴 때·일기장 넘기기·동작 줄이기면 안 함
+let FADE_K=null;
+const fadeKey=()=>tab+"|"+(tab==="room"?ST_ACT:tab==="write"?(editId||"new")+track:tab==="drawer"?drawerSub:"");
+function fadeGhost(){ const m=$("#main"); if(!m||!m.firstElementChild||document.documentElement.dataset.vsize==="s") return null;
+  const r=m.getBoundingClientRect(); if(r.bottom<0||r.top>innerHeight) return null;
+  const g=document.createElement("div"); g.className="pgghost"; g.setAttribute("aria-hidden","true"); g.inert=true;
+  const c=m.cloneNode(true); c.querySelectorAll("[id]").forEach(e=>e.removeAttribute("id"));   // 겉 이름(#main)만 남겨 모양을 그대로 — 칸 이름은 지워 찾기에 걸리지 않게
+  c.querySelectorAll("w-ed").forEach(e=>{ const d=document.createElement("div"); d.className=e.className; d.innerHTML=e.innerHTML; e.replaceWith(d); });
+  c.querySelectorAll("iframe,video,audio,canvas,[contenteditable]").forEach(e=>e.tagName==="CANVAS"||e.tagName==="IFRAME"||e.tagName==="VIDEO"||e.tagName==="AUDIO"?e.remove():e.removeAttribute("contenteditable"));
+  c.style.cssText=`position:absolute;left:${r.left}px;top:${r.top}px;width:${r.width}px;margin:0;box-sizing:border-box`; g.appendChild(c); return g; }
+function fadeRun(g){ const m=$("#main"); if(!m) return; m.classList.remove("pgin"); void m.offsetWidth; m.classList.add("pgin"); clearTimeout(fadeRun.t); fadeRun.t=setTimeout(()=>m.classList.remove("pgin"),420);
+  document.querySelectorAll(".pgghost").forEach(x=>x.remove());
+  if(g){ document.body.appendChild(g); requestAnimationFrame(()=>g.classList.add("out")); setTimeout(()=>g.remove(),320); } }
 function render(){
+  const fk=fadeKey(), fade=FADE_K!=null&&fk!==FADE_K&&!NEED_CONNECT&&!matchMedia("(prefers-reduced-motion:reduce)").matches; FADE_K=fk;
+  let ghost=null; if(fade){ try{ ghost=fadeGhost(); }catch(_){ ghost=null; } }
+  try{ render0(); }finally{ if(fade) fadeRun(ghost); } }
+function render0(){
   if(SCRIV_EDIT&&$("#scta")) scrivAuto(true);   // 이어 읽기에서 고치던 글은 다시 그리기 전에 간직
   // 같은 쓰기 화면을 다시 그릴 때(말씀/책 바꾸기, 합친 뒤 등) 쓰던 제목·본문을 그대로 지켜 줍니다
   const keep=!NAV&&tab==="write"&&$("#wbody")?{e:editId,t:$("#wtitle").value,b:$("#wbody").value,p:$("#wpassage")?.value}:null;
@@ -5111,6 +5143,9 @@ document.addEventListener("visibilitychange",()=>{ if(document.visibilityState==
 const FS_STEPS=[15,16,17,18,19,20,22,24,26];
 function fontStep(d){ const L=applyLook(); const cur=+L.fs||(isTouch()?17:18); let i=FS_STEPS.findIndex(x=>x>=cur); if(i<0) i=FS_STEPS.length-1; i=Math.max(0,Math.min(FS_STEPS.length-1,i+d)); lookSet("fs",FS_STEPS[i]); toast(`글자 크기 ${FS_STEPS[i]}`); grow(); }
 function lookSet(k,v){ const L=applyLook(); if(v==null||v===""||v===0) delete L[k]; else L[k]=v; try{ localStorage.setItem("seojae-open.look",JSON.stringify(L)); }catch(_){} applyLook(); const b=$("#wbody"); if(b) b.style.setProperty("--penink",penInk()); if(tab==="settings") render(); }
+function paperPick(bg,ink){ const dark=document.documentElement.dataset.theme==="dark";
+  if(bg==="#1f1b17"&&!dark) setTheme("dark"); else if(bg&&bg!=="#1f1b17"&&dark) setTheme("light");
+  lookSet('bg',bg); lookSet('ink',ink); }
 const PAPERS=[["","기본(밝기 따라)",""],["#fbf7ee","크림","#2e2721"],["#ffffff","흰 종이","#222222"],["#f3efe2","미색","#2e2721"],["#eef5e6","연두","#2b3326"],["#e9f1f7","하늘","#223040"],["#f8ecec","연분홍","#3a2626"],["#1f1b17","검은 종이","#e8dfcf"]];
 const stColor=()=>{ try{ const v=localStorage.getItem("seojae-open.stColor")||""; return ["forest","white"].includes(v)?v:""; }catch(_){ return ""; } };
 function stColorSet(v){ try{ localStorage.setItem("seojae-open.stColor",v); }catch(_){} if(v) document.documentElement.dataset.stc=v; else delete document.documentElement.dataset.stc; toast(v?"글방 둘레 색을 바꿨습니다 — 글방에 들어가 보세요":"글방 둘레를 「새벽 남빛」으로"); render(); }
@@ -5139,7 +5174,8 @@ function lookSection(){
       <div class="setrow"><span class="k">글방 둘레</span><div class="pills">${[["","새벽 남빛","기본 — 파랑 계열·낮은 채도, 금빛 등불 (전문가 추천)"],["forest","숲 그늘","초록 계열 — 오래 쓰기 편하고 덜 차가움"],["white","흰 작업대","색을 빼고 종이만 떠 보이게"]].map(([v,n,d])=>`<button class="pill ${stColor()===v?"on":""}" title="${d}" onclick="stColorSet('${v}')">${n}</button>`).join("")}</div><small class="hint" style="display:block;width:100%">글방(창작의 자리)에 들어가면 둘레 색이 바뀝니다. 종이는 그대로. 이 기기만.</small></div>
       <div class="setrow"><span class="k">밝기</span><div class="pills">${[["light","밝게","기기가 야간 모드여도 항상 밝은 종이 화면"],["dark","어둡게","항상 어두운 밤 서재 화면"],["auto","기기 따라","기기의 주간·야간 모드를 그대로"]].map(([v,n,d])=>`<button class="pill ${theme===v?"on":""}" data-tip="${d}" onclick="setTheme('${v}')">${n}</button>`).join("")}</div></div>
       <div class="setrow"><span class="k">쓰는 글 글자</span><div class="pills">${[["",isTouch()?"보통(17)":"보통(18)"],[16,"작게"],[20,"크게"],[22,"더 크게"],[26,"아주 크게"]].map(([v,n])=>`<button class="pill ${(fs||"")===v?"on":""}" onclick="lookSet('fs',${v===""?"''":v})">${n}</button>`).join("")}</div></div>
-      <div class="setrow"><span class="k">종이 색</span><div class="row" style="gap:7px;flex-wrap:wrap;padding-top:4px">${PAPERS.map(([bg,n,ink])=>dot(bg||"linear-gradient(135deg,#fbf7ee 50%,#29231d 50%)",n,(L.bg||"")===bg,`lookSet('bg','${bg}');lookSet('ink','${(L.ink&&L.inkManual)?L.ink:ink}')`)).join("")}</div></div>
+      <div class="setrow"><span class="k">종이 색</span><div class="row" style="gap:7px;flex-wrap:wrap;padding-top:4px">${PAPERS.map(([bg,n,ink])=>dot(bg||"linear-gradient(135deg,#fbf7ee 50%,#29231d 50%)",n,(L.bg||"")===bg,`paperPick('${bg}','${(L.ink&&L.inkManual)?L.ink:ink}')`)).join("")}</div></div>
+      <small class="hint" style="margin:-4px 0 8px">고른 종이 색이 앱 전체 바탕에 듭니다. 「검은 종이」는 어두운 화면으로 바꿉니다.</small>
       <div class="setrow"><span class="k">글자 색</span><div class="row" style="gap:7px;flex-wrap:wrap;padding-top:4px">${dot("linear-gradient(135deg,#2e2721 50%,#7a4a22 50%)","기본(펜 잉크 따라)",!L.ink,"lookSet('ink','')")}${[["#2e2721","먹"],["#222222","검정"],["#24427a","청색"],["#7a4a22","세피아"],["#2f5d4e","녹색"],["#5a2d2d","적갈"],["#e8dfcf","밝은 글자(검은 종이용)"]].map(([c,n])=>dot(c,n,L.ink===c,`lookSet('ink','${c}')`)).join("")}</div></div>
       <div class="setrow"><span class="k">맞춤법 밑줄</span><div class="pills">${[["rules","규칙만","자주 틀리는 맞춤법·띄어쓰기 규칙으로 쓰는 즉시 밑줄 (인터넷 없이, 바로)"],["ai","규칙 + 인공지능","규칙 밑줄에 더해, 5초 쉬면 바뀐 문단을 인공지능(빠른 모델)이 조용히 살펴 밑줄을 보탭니다"],["off","끄기","밑줄을 긋지 않습니다"]].map(([k,n,tip])=>`<button class="pill ${spellMode()===k?"on":""}" data-tip="${tip}" onclick="if('${k}'==='ai'&&!confirm('켜면 글을 5초 쉴 때마다 바뀐 문단이 ${CONF.ai==="claude"?"클로드":"제미나이"} 서버로 보내집니다. 무료 열쇠는 품질 개선에 쓰일 수 있습니다(각 회사 약관). 켤까요?')) return; lookSet('spell','${k}')" ${k==="ai"&&!CONF.ai?"disabled":""}>${n}</button>`).join("")}</div></div>
       <div class="setrow"><span class="k">매일성경 글자</span><div class="pills">${[["","보통(15)"],[13,"작게"],[17,"크게"],[20,"더 크게"],[24,"아주 크게"]].map(([v,n])=>`<button class="pill ${(+L.sufs||"")===v?"on":""}" onclick="lookSet('sufs',${v===""?"''":v})">${n}</button>`).join("")}</div></div>
