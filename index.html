@@ -551,7 +551,12 @@ body.focus .notebook{margin:0 auto!important;max-width:min(860px,100%)} body.doc
 @media (min-width:881px){
   body.sidefold .writegrid{grid-template-columns:1fr!important} body.sidefold .writegrid>aside{display:none}
 }
-.sidebtn{display:none} @media (min-width:881px){ .sidebtn{display:inline-flex} }
+.sidebtn{display:none} @media (min-width:881px){ .sidebtn{display:inline-flex;align-items:center;gap:6px} }
+.sbico{width:22px;height:17px;flex:none} .sbico .sbpane,.sbico .sbline{transition:opacity .25s,transform .25s;transform-origin:24px 10px} .sbico .sbarr{transition:transform .25s;transform-origin:9.5px 10px}
+.sbico.folded .sbpane{opacity:0;transform:scaleX(.2)} .sbico.folded .sbline{opacity:.35} .sbico.folded .sbarr{transform:rotate(180deg)}
+.sidebtn:hover .sbico:not(.folded) .sbpane{transform:scaleX(.55)} .sidebtn:hover .sbico.folded .sbpane{opacity:.12;transform:scaleX(.6)}
+.sidebtn small{font-size:.85em;opacity:.7}
+@media (prefers-reduced-motion:reduce){ .sbico *{transition:none!important} }
 body.focus main.wrap{padding-top:40px}
 
 /* 책장 */
@@ -2601,7 +2606,7 @@ async function pushSave(){
 // ───────── 새 버전 자동 새로 고침 ─────────
 // 올릴 때마다 version.json 의 번호가 바뀝니다. 앱이 열릴 때·다시 화면에 올라올 때·5분마다 확인해서,
 // 쓰는 중인 글이 없고 저장이 끝났을 때 새 버전으로 새로 고칩니다.
-const APP_BUILD="482108573e"; const APP_VER="1.3";   // 판 번호: 배포할 때마다 도구/판올리기.py 가 0.1씩 올림 (1.9 다음은 2.0) — 손으로 고치지 말 것
+const APP_BUILD="fc7362a190"; const APP_VER="1.4";   // 판 번호: 배포할 때마다 도구/판올리기.py 가 0.1씩 올림 (1.9 다음은 2.0) — 손으로 고치지 말 것
 let NEW_BUILD=null, UPDATE_NOTICED=false;
 async function checkUpdate(){
   if(APP_BUILD.startsWith("__")) return;                 // 원본 파일로 열었을 때(고치는 중)는 건너뜁니다
@@ -3071,7 +3076,7 @@ function setGroups(){ const R=S.reminder||{}, rOn=!!(R.on&&R.clock!==false), p=S
   return [
    {id:"help",t:"도움",ic:"?",acc:"var(--sepia)",rows:[
      {k:"news",ic:"✉",t:"새 소식",st:"",sum:NEWS[0]?`${esc(NEWS[0].date)} · ${esc(NEWS[0].title)}`:"아직 없음",body:newsSection()},
-     {k:"manual",ic:"❧",t:"사용 설명서",st:"",sum:"간단 매뉴얼 · 책 『쓰는 사람의 아침』(상세 안내) — 웹으로 보기 · PDF 받기",body:manualSection()}]},
+     {k:"manual",ic:"❧",t:"사용 설명서",st:"",sum:"간단 매뉴얼 · 상세 매뉴얼 — 웹으로 보기 · PDF 받기",body:manualSection()}]},
    {id:"morning",t:"아침",ic:"☀︎",acc:"var(--bible)",rows:[
      {k:"plan",ic:"✚",t:"성경 통독",st:"",sum:`${esc(cur.name)} · ${p.mode==="date"?"달력대로":"이어 읽기"} · ${(p.day||0)+1}일째`,body:planSettings()},
      {k:"devo",ic:"❦",t:"오늘의 묵상 자료",st:"",sum:`${esc(devoSrc().name)} · 갈아 끼울 수 있음`,body:devoSection()},
@@ -3097,12 +3102,15 @@ function setGroups(){ const R=S.reminder||{}, rOn=!!(R.on&&R.clock!==false), p=S
    {id:"keep",t:"기록 지키기",ic:"☁︎",acc:"var(--book)",rows:[
      {k:"backup",ic:"☁",t:"자동 백업 · 간직된 곳",st:LOCALMODE?(fileBkOld()?"need":"ok"):GAS||SERVER?"ok":"need",pill:LOCALMODE?(fileBkOld()?"백업 받을 때":"이 기기"):"켜짐",sum:bkSum(),body:backupSection()}]}]; }
 // 사용 설명서 두 권 (매뉴얼 원고 → 매뉴얼/build.py 가 웹·PDF로 만들어 manual/ 폴더에 둠). 새 창으로 열어 쓰던 화면은 그대로
-const MANUALS=[["quick","간단 매뉴얼","읽자마자 바로 써 보는 한 장 — 시작하기·하루 한 바퀴·메뉴 한눈에·단축키"],["book","책 『쓰는 사람의 아침』","말씀과 책과 한 줄로 작가가 되어 가는 날들 — 자기계발·글쓰기 책에 「아침 서재」 사용 안내를 함께 담았습니다 (상세 안내서)"]];
+const MANUALS=[["quick","간단 매뉴얼","읽자마자 바로 써 보는 한 장 — 시작하기·하루 한 바퀴·메뉴 한눈에·단축키"],["book","상세 매뉴얼","책처럼 읽는 안내서 — 묵상·독서·일기·글쓰기 이야기에 사용법을 한 스푼 담았습니다"]];
 // ───────── 새 소식 (공개판, 2026-10-31 팀장님): 중요한 고침은 앱을 열 때 한 번만 쉬운 말로 알림 ─────────
 // 새 소식을 더할 때: NEWS 맨 앞에 넣고 id 는 날짜(같은 날 둘째는 2026-11-02b 처럼 — 글자 순서로 새것이 뒤). 본 소식 id 는 이 기기에만(seojae-open.newsSeen)
 const NEWS=[
- {id:"2026-10-31e",date:"2026년 10월 31일",title:"사용 설명서가 책이 되었어요",items:[
-  ["📖","사용 설명서가 책이 되었어요","상세 매뉴얼이 책 『쓰는 사람의 아침』으로 새로 태어났어요. 표지부터 책처럼 펼쳐지고, 장마다 여는 글과 닫는 한 문장이 있어요. 단추를 누르는 차례는 그대로 담았어요.","설정 → 도움 → 사용 설명서에서 펴 보세요"],
+ {id:"2026-10-31f",date:"2026년 10월 31일",title:"상세 매뉴얼이 더 가벼워졌어요",items:[
+  ["📖","상세 매뉴얼이 더 가벼워졌어요","이름을 다시 「상세 매뉴얼」로 하고, 책처럼 읽히는 짜임은 그대로 둔 채 분량을 4할쯤 줄였어요. 사용법은 꼭 필요한 만큼만 담았고, 맨 앞의 차례는 뺐어요.",""],
+  ["✎","묵상 쓰는 칸이 넉넉해졌어요","글 쓰는 칸이 오른쪽 칸 끝까지 길어져 화면이 꽉 차 보여요. 「옆 칸 접기」는 위 도구 줄 「버리기」 바로 옆으로 옮겼어요. 누르면 오른쪽 칸이 접히는 모양이 그림으로 보여요.",""]]},
+ {id:"2026-10-31e",date:"2026년 10월 31일",title:"상세 매뉴얼이 책처럼",items:[
+  ["📖","상세 매뉴얼이 책처럼","상세 매뉴얼이 책처럼 펼쳐져요. 표지부터 시작해 장마다 여는 글과 닫는 한 문장이 있고, 사용법은 꼭 필요한 만큼만 담아 더 가벼워졌어요.","설정 → 도움 → 사용 설명서에서 펴 보세요"],
   ["✐","묵상 곁의 메모·자료·노트·AI","묵상 화면 오른쪽 「묵상 캘린더」 바로 아래로 옮겼어요. 하나를 누를 때마다 메모지 한 장 위에 그 내용이 보여요.",""],
   ["✦","날마다 다른 오늘의 한 줄","「이번 주의 아침」의 손글씨 한 줄을 AI가 날마다 다른 주제로 써 주고, 옆 그림도 그 문장에 맞게 바뀌어요.",""]]},
  {id:"2026-10-31d",date:"2026년 10월 31일",title:"오늘 화면이 아기자기해졌어요",items:[
@@ -3138,7 +3146,7 @@ function newsSection(){ return `<section class="sheet tape c compact"><p class="
   <div class="row" style="margin:6px 0 10px"><button class="btn small ink" onclick="newsOpen(NEWS)">새 소식 모두 보기</button></div>
   ${NEWS.map(n=>`<p class="hint" style="margin:4px 0">· ${esc(n.date)} — ${esc(n.title)}</p>`).join("")}</section>`; }
 function manualSection(){ return `<section class="sheet tape c compact"><p class="label">사용 설명서</p>
-  <p class="sub">처음이라면 간단 매뉴얼부터, 더 깊이 알고 싶을 때 책 『쓰는 사람의 아침』을 펴 보세요. 둘 다 새 창으로 열립니다.</p>
+  <p class="sub">처음이라면 간단 매뉴얼부터, 더 깊이 알고 싶을 때 상세 매뉴얼을 펴 보세요. 둘 다 새 창으로 열립니다.</p>
   <div class="mancards">${MANUALS.map(([k,n,d])=>`<div class="mancard"><b>${n}</b><span>${d}</span><div class="row" style="gap:6px;flex-wrap:wrap"><a class="btn small ink" href="manual/${k}.html" target="_blank" rel="noopener" title="${n}을 웹 페이지로 엽니다 (차례·검색·밝게/어둡게)">웹으로 보기 ↗</a><a class="btn small" href="manual/${k}.pdf" target="_blank" rel="noopener" download title="${n}을 PDF 책으로 받습니다 (인쇄용)">PDF 받기</a></div></div>`).join("")}</div>
   <p class="hint">프로그램이 바뀌면 설명서도 함께 고쳐집니다. 단추 위에 마우스를 올리면 뜨는 도움말(설정 → 화면·기기 → 화면 꾸미기 → 도움말 모드)도 함께 쓰세요.</p><div class="betanote"><b>베타판입니다.</b> 아직 시험 중인 프로그램이라 기능이 바뀌거나 오류가 날 수 있습니다. 중요한 글은 따로 사본을 남겨 두세요.<br><b>⚠ 배포 금지</b> — 만든 사람의 허락 없이 이 프로그램(주소·코드)을 다른 사람에게 퍼뜨리거나 배포하지 마세요.</div><p class="madeby">아침 서재 베타판 · <b>임요한 목사</b>(좋은나무교회 담임목사)가 만들었습니다. 매일성경 묵상을 나누는 YouTube <a href="https://www.youtube.com/@%EA%B5%BF%ED%8A%B8%EB%A6%AC%EC%94%A8" target="_blank" rel="noopener" title="YouTube 굿트리씨[매일성경묵상] 채널을 새 창으로 엽니다">「굿트리씨」 채널 ↗</a>을 운영합니다. 만든 사람의 허락 없이 배포하지 마세요.</p></section>`; }
 // ───────── 자동 백업: 구글 드라이브 「아침 서재/백업」(모든 기기, 서버가 날마다) + 이 PC 폴더(설정한 PC만, 휴대폰은 구글만) ─────────
@@ -3819,6 +3827,7 @@ function paintDraftStamp(msg){ const el=$("#draftstamp"); if(!el) return; if(AUT
 // 글자 칸의 자리·너비가 바뀌면(창 크기, 집중 모드, 위 표시 줄 바뀜) 거울 층을 다시 맞춥니다
 new ResizeObserver(()=>{ const t=$("#wbody"), m=$("#hmirror"); if(t&&m&&(m.style.top!==t.offsetTop+"px"||m.style.width!==t.clientWidth+"px")) paintHeads(); }).observe(document.body);
 addEventListener("resize",()=>paintHeads());
+addEventListener("resize",()=>{ clearTimeout(grow.rt); grow.rt=setTimeout(()=>{ if(tab==="write"&&track==="bible") grow(); },150); });   // 묵상: 창 크기가 바뀌면 글 칸 길이를 다시 맞춤
 const clearDraft=()=>{ try{ localStorage.removeItem(draftKey()); localStorage.removeItem(DKEY); }catch(_){} DRAFT_DIRTY=false;
   const k=cloudKey(); if(S.drafts&&S.drafts[k]){ delete S.drafts[k]; tomb("draft:"+k); } };
 // 예전(칸을 나누기 전)에 「new」 칸에 남은 글방 새 글 — 새 칸으로 옮긴 뒤 옛 칸은 비움 (묵상 새 글을 열 때 글방 글이 끼어들지 않게)
@@ -4652,7 +4661,6 @@ write0(){
       <span class="row" style="gap:4px"><button class="btn small" onclick="spellCheck()" id="spellbtn" title="쓰는 즉시 규칙으로 밑줄이 그어지고, 누르면 ${CONF.ai?(CONF.ai==="claude"?"클로드":"제미나이")+"가 모든 문단을 다시 살핍니다":"규칙 밑줄만 됩니다"}">맞춤법</button><span id="spellstate" class="muted" style="font-size:12.5px"></span></span>
       <button class="btn small" onclick="toggleStk();tgClose()">${ICO.flower}스티커</button>
     </div></details>
-      <button class="btn small ghost sidebtn nofocus" onclick="toggleSide()" id="sidebtn" title="오른쪽 칸(달력·글 정보·간직)을 펴거나 접습니다">${track==="book"?(document.body.classList.contains("staside")?"옆 칸 접기 ›":"옆 칸 펴기 ‹"):document.body.classList.contains("sidefold")?"옆 칸 펴기 ‹":wMs(w)?"옆 칸 접기 › 목차 보기":"옆 칸 접기 ›"}</button>
 
     <button class="btn small nofocus fnbtn" onmousedown="event.preventDefault()" onclick="fnHere()" title="각주 달기 — 고른 글 뒤에, 고르지 않았으면 커서 자리에 (⌘⇧F)"><b style="font-family:Georgia,serif">¹</b> 각주</button>
     <button class="btn small nofocus ${DOC_MODE?"on":""}" onclick="docToggle()" id="docbtn" title="워드처럼: 흰 쪽에 글꼴·크기·줄 간격·정렬·들여쓰기 (글은 그대로)">${DOC_MODE?"✎ 노트로":"📄 문서 모드"}</button>
@@ -4660,6 +4668,7 @@ write0(){
     <button class="btn small" onclick="toggleRead()" id="readbtn" title="글을 건드리지 않고 보기만 합니다. 설교문은 슬라이드·전달 큐가 강단용 모양으로 보입니다">${ICO.eye}읽기 모드</button>
     ${track!=="bible"||(dtype&&dtype!=="묵상")?`<button class="btn small nofocus" onclick="sendOpen('w')" title="노션·PDF·워드로 보냅니다 (묵상 말고는 구글에만 간직되어 있습니다)">보내기</button>`:""}${serBtns()}
     <button class="btn small aibtn nofocus" id="aitog" onclick="aiToggle()" title="AI 글쓰기 도우미 — 누르면 열고, 다시 누르면 닫습니다 (글은 바꾸지 않고 제안만)">✦ AI</button>
+    <button class="btn small ghost sidebtn nofocus" onclick="toggleSide()" id="sidebtn" title="오른쪽 칸(달력·글 정보·간직)을 접거나 폅니다">${sideBtnInner(track==="book"?!document.body.classList.contains("staside"):document.body.classList.contains("sidefold"),track!=="book"&&!!wMs(w))}</button>
     <button class="btn small ghost nofocus discardbtn" onclick="discardPage()" title="${w?"이 글을 휴지통에 넣습니다 (30일 안에 서랍 → 휴지통에서 되살림)":"쓰던 내용을 버리고 빈 페이지로"}">${ICO.trash}${w?"휴지통에":"버리기"}</button>
     <button class="btn small ink" onclick="saveWriting()" title="간직 (⌘S) — 쓰는 대로 저절로도 간직됩니다">간직</button>
   </div>
@@ -4931,7 +4940,9 @@ function updatePage(){ let p=+$("#pg").value; const b=curBook(); if(!b) return; 
 
 // ───────── 동작: 글쓰기 ─────────
 let HEADS_RAF=0;
-function grow(){ const t=$("#wbody"); if(!t) return; const y=scrollY; t.style.height="auto"; { const h=Math.max(wgOn(t)?wgModel(t).length*t._wg.L+t._wg.pt+t._wg.L:t.scrollHeight,innerHeight*.62); t.style.height=(wgOn(t)?t._wg.pt+Math.ceil((h-t._wg.pt)/t._wg.L)*t._wg.L+2:h)+"px"; } if(scrollY!==y) scrollTo(0,y); if(!HEADS_RAF){ HEADS_RAF=requestAnimationFrame(()=>{ HEADS_RAF=0; paintHeads(); }); setTimeout(()=>{ if(HEADS_RAF){ cancelAnimationFrame(HEADS_RAF); HEADS_RAF=0; paintHeads(); } },200); } }   // 화면 그리기가 늦어도(가려진 창·느린 기기) 0.2초 안에는 거울 층을 그림
+function growFit(t){ if(track!=="bible"||innerWidth<=880||document.body.classList.contains("sidefold")||document.body.classList.contains("readmode")||document.body.classList.contains("focus")) return 0;   // 묵상: 공책 아래가 오른쪽 칸보다 짧으면 글 칸을 그만큼 늘림
+  const a=$(".writegrid>aside"), nb=t.closest(".notebook"); if(!a||!nb||!a.offsetHeight) return 0; const need=a.getBoundingClientRect().bottom-nb.getBoundingClientRect().bottom; return need>0?t.offsetHeight+need:0; }
+function grow(){ const t=$("#wbody"); if(!t) return; const y=scrollY; t.style.height="auto"; { const h=Math.max(wgOn(t)?wgModel(t).length*t._wg.L+t._wg.pt+t._wg.L:t.scrollHeight,innerHeight*.62,growFit(t)); t.style.height=(wgOn(t)?t._wg.pt+Math.ceil((h-t._wg.pt)/t._wg.L)*t._wg.L+2:h)+"px"; } if(scrollY!==y) scrollTo(0,y); if(!HEADS_RAF){ HEADS_RAF=requestAnimationFrame(()=>{ HEADS_RAF=0; paintHeads(); }); setTimeout(()=>{ if(HEADS_RAF){ cancelAnimationFrame(HEADS_RAF); HEADS_RAF=0; paintHeads(); } },200); } }   // 화면 그리기가 늦어도(가려진 창·느린 기기) 0.2초 안에는 거울 층을 그림
 // 소제목(■ 줄)과 주석 요약의 ◆ 줄을 굵게: 줄마다 모양을 따로 두지 않고, 같은 자리에 투명한 거울 층을 겹쳐 그 줄의 한글만 굵은 글자로 한 번 더 그립니다
 // (한글은 굵게 해도 글자 폭이 같아 정확히 겹칩니다. 거울 층은 맞춤법·AI 표시·네 자리도 함께 그림 — 꾸밈 자체는 글 칸(<w-ed>)이 모양째 보임)
 const HEAD_RE=/^\s*(■|◆|▣|※\s*주석 요약|※\s*요약 끝)/;
@@ -5198,8 +5209,10 @@ function setInk(c){ S.settings.ink=c; save(); $("#wbody").style.setProperty("--p
 function setPaper(p){ S.settings.paper=p; save(); const t=$("#wbody"); t.className="page "+p; $(".notebook").className="notebook "+p; }
 // 집중 모드: 머리·옆 칸을 숨기고, 휴대폰이면 전체 화면(주소창·상태 표시 없이)으로. 쓰기 화면을 떠나면 저절로 풀립니다
 // 옆 칸 접기: 이 기기에 기억. 접혀 있어도 본문·종류 칸 값은 그대로 간직됨
-function toggleSide(){ if(document.querySelector(".studio .writegrid")){ const o=document.body.classList.toggle("staside"); try{ localStorage.setItem("seojae-open.staside",o?"1":"0"); }catch(_){} const b=$("#sidebtn"); if(b) b.textContent=o?"옆 칸 접기 ›":"옆 칸 펴기 ‹"; grow(); try{ paintHeads(); }catch(_){} return; }
-  const on=document.body.classList.toggle("sidefold"); try{ localStorage.setItem("seojae-open.sidefold",on?"1":"0"); }catch(_){} const b=$("#sidebtn"); if(b) b.textContent=on?"옆 칸 펴기 ‹":($(".writegrid.hasbinder")?"옆 칸 접기 › 목차 보기":"옆 칸 접기 ›"); grow(); try{ paintHeads(); }catch(_){} }
+// 옆 칸 단추 그림: 창 오른쪽 칸이 실제로 접히고 펴지는 모양 (펼쳐진 때 = 오른쪽 칸 + 바깥으로 접는 화살표, 접힌 때 = 빈 칸 + 펴는 화살표)
+function sideBtnInner(folded,binder){ return `<svg class="sbico ${folded?"folded":""}" viewBox="0 0 26 20" aria-hidden="true"><rect x="1.5" y="2" width="23" height="16" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.5"/><rect class="sbpane" x="16" y="2.75" width="7.75" height="14.5" rx="1.5" fill="currentColor" opacity=".22"/><path class="sbline" d="M16 2.5v15" stroke="currentColor" stroke-width="1.3"/><path class="sbarr" d="M8 7l3 3-3 3" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>${folded?"옆 칸 펴기":"옆 칸 접기"}${!folded&&binder&&!$(".studio .writegrid")?"<small> · 목차 보기</small>":""}</span>`; }
+function toggleSide(){ if(document.querySelector(".studio .writegrid")){ const o=document.body.classList.toggle("staside"); try{ localStorage.setItem("seojae-open.staside",o?"1":"0"); }catch(_){} const b=$("#sidebtn"); if(b) b.innerHTML=sideBtnInner(!o,false); grow(); try{ paintHeads(); }catch(_){} return; }
+  const on=document.body.classList.toggle("sidefold"); try{ localStorage.setItem("seojae-open.sidefold",on?"1":"0"); }catch(_){} const b=$("#sidebtn"); if(b) b.innerHTML=sideBtnInner(on,!!$(".writegrid.hasbinder")); grow(); try{ paintHeads(); }catch(_){} }
 try{ if(localStorage.getItem("seojae-open.sidefold")==="1") document.body.classList.add("sidefold"); if(localStorage.getItem("seojae-open.staside")==="1") document.body.classList.add("staside"); }catch(_){}
 function toggleFocus(){ const on=document.body.classList.toggle("focus"); const fb=$("#focusbtn"); if(fb) fb.textContent=on?"나가기":"집중 모드";
   let x=$("#focusx"); if(on){ if(!x){ x=document.createElement("button"); x.id="focusx"; x.className="focusx"; x.title="집중 모드 나가기 (Esc)"; x.innerHTML="✕<span>집중 나가기</span>"; x.onclick=()=>toggleFocus(); document.body.appendChild(x); } } else x?.remove();
@@ -7179,7 +7192,7 @@ document.addEventListener("click",e=>{ if(!e.target.closest?.("details.tgrp")) t
 document.addEventListener("toggle",e=>{ if(e.target.matches?.("details.tgrp")&&e.target.open) document.querySelectorAll("details.tgrp[open]").forEach(d=>{ if(d!==e.target) d.open=false; }); },true);
 // 곁 칸 네 탭: 메모 · 자료 · 노트 · AI (마지막 탭을 이 기기에 기억)
 let SIDE_TAB="memo"; try{ SIDE_TAB=localStorage.getItem("seojae-open.sidetab")||"memo"; }catch(_){}
-function sideTab(k){ SIDE_TAB=k; try{ localStorage.setItem("seojae-open.sidetab",k); }catch(_){} document.querySelectorAll(".stabs button").forEach(b=>b.classList.toggle("on",b.dataset.k===k)); document.querySelectorAll(".spanel").forEach(p=>p.hidden=p.dataset.k!==k); }
+function sideTab(k){ setTimeout(()=>{ try{ grow(); }catch(_){} },30); SIDE_TAB=k; try{ localStorage.setItem("seojae-open.sidetab",k); }catch(_){} document.querySelectorAll(".stabs button").forEach(b=>b.classList.toggle("on",b.dataset.k===k)); document.querySelectorAll(".spanel").forEach(p=>p.hidden=p.dataset.k!==k); }
 function sideTabs(w){ const m=wMs(w), g=G(m), cx=w?codexIn(w.body+" "+(w.title||"")):[], rv=w&&(m||w.type==="설교초안");
   const memo=`${m&&w&&g.scene&&!isNovelW(w)?sceneFormHtml(w):""}
     ${m&&w?`<label class="field"><span>${esc(G(m).item||"꼭지")} 메모 <small class="hint" style="display:inline">· 본문 밖에 남기는 생각</small></span><textarea id="wmemo" class="pen" rows="3" style="font-size:19px;min-height:72px" placeholder="이 꼭지에서 더 다룰 것, 앞뒤 꼭지와 이을 것…" oninput="memoKick('${w.id}',this.value)" onchange="saveMemo('${w.id}',this.value)">${esc(w.memo||"")}</textarea></label>`:""}
