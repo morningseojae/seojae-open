@@ -894,6 +894,13 @@ details.keybox>summary{cursor:pointer;color:var(--ink-soft);font-size:14px}
 .dhead .dhico{display:inline-flex;gap:4px;margin-bottom:-4px;flex:none}
 .dhead .dwrow .dw{white-space:nowrap} @media (max-width:420px){ .dhead .dwrow{gap:7px} .dhead .dwrow .dw{letter-spacing:.08em} .dhead .dhico{gap:2px} .dhead .dhico .dico{width:25px;height:25px} }
 .dhead .dhico .dico{width:27px;height:27px;fill:none;stroke:var(--c);stroke-width:1.55;stroke-linecap:round;stroke-linejoin:round;display:block}
+.dmood{flex-direction:column;gap:4px}
+.dmrow{display:flex;align-items:center;gap:2px;flex-wrap:nowrap;min-width:0;width:100%;max-width:100%} .dmrow>button{flex:0 1 34px;min-width:26px;height:auto;aspect-ratio:1} .dslots{flex:none}
+@media (max-width:420px){ .dslots{margin-left:4px;padding-left:6px;gap:3px} .dslots i{width:20px;height:20px} .dslots i .dico{width:13px;height:13px} }
+.dslots{display:inline-flex;gap:4px;margin-left:8px;padding-left:9px;border-left:1.5px dashed color-mix(in srgb,var(--edge) 90%,transparent)}   /* 두 칸 = 두 개까지 고를 수 있음(글 대신 그림으로) */
+.dslots i{width:22px;height:22px;display:grid;place-items:center;border:1.4px dashed color-mix(in srgb,var(--ink-soft) 45%,transparent);border-radius:48% 52% 50% 46%/52% 46% 54% 48%;box-sizing:border-box}
+.dslots i.on{border-style:solid;border-color:color-mix(in srgb,var(--c) 70%,transparent);background:color-mix(in srgb,var(--c) 14%,transparent);transform:rotate(-4deg)}
+.dslots i .dico{width:15px;height:15px;fill:none;stroke:var(--c);stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
 .dmood .dico{width:21px;height:21px;fill:none;stroke:currentColor;stroke-width:1.55;stroke-linecap:round;stroke-linejoin:round}
 .dli .dm .dico{width:18px;height:18px;fill:none;stroke:var(--c);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;vertical-align:-3px;margin-right:1px}
 .dsec{margin:18px 0 0}
@@ -2488,7 +2495,7 @@ async function pushSave(){
 // ───────── 새 버전 자동 새로 고침 ─────────
 // 올릴 때마다 version.json 의 번호가 바뀝니다. 앱이 열릴 때·다시 화면에 올라올 때·5분마다 확인해서,
 // 쓰는 중인 글이 없고 저장이 끝났을 때 새 버전으로 새로 고칩니다.
-const APP_BUILD="529c59b0b0";
+const APP_BUILD="a2e2ef0e42";
 let NEW_BUILD=null, UPDATE_NOTICED=false;
 async function checkUpdate(){
   if(APP_BUILD.startsWith("__")) return;                 // 원본 파일로 열었을 때(고치는 중)는 건너뜁니다
@@ -4103,7 +4110,7 @@ function diaryPage(){
     ${stkLayer("diary:"+d)}
     <div class="pg l"><div class="dfolio">${pn*2-1}</div>
       <div class="dhead"><span class="dd">${x.getMonth()+1}.${String(x.getDate()).padStart(2,"0")}</span><span class="dwrow"><span class="dw">${x.getFullYear()} · ${WEEK[x.getDay()]}요일</span>${(()=>{ const ic=[...dPick("weather",e.weather),...dPick("mood",e.mood)]; return ic.length?`<span class="dhico">${ic.map(k=>`<span title="${esc(DICO[k]?.[0]||"")}">${dIco(k)}</span>`).join("")}</span>`:""; })()}</span></div>
-      <div class="dmood" title="날씨와 기분을 두 개까지 고를 수 있습니다 — 한 번 더 누르면 빠집니다">${WEATHER.map(w=>dIcoBtn("weather",w,dPick("weather",e.weather).includes(w))).join("")}<span style="width:8px"></span>${MOODS.map(m=>dIcoBtn("mood",m,dPick("mood",e.mood).includes(m))).join("")}</div>
+      <div class="dmood">${[["weather",WEATHER,"날씨"],["mood",MOODS,"기분"]].map(([k,L,n])=>{ const P=dPick(k,e[k]); return `<div class="dmrow">${L.map(x=>dIcoBtn(k,x,P.includes(x))).join("")}<span class="dslots" title="${n} 두 개까지 — 한 번 더 누르면 빠집니다" aria-label="${n} ${P.length}/2">${[0,1].map(i=>P[i]?`<i class="on" style="--c:${DICO[P[i]]?.[1]||"var(--sepia)"}">${dIco(P[i])}</i>`:`<i></i>`).join("")}</span></div>`; }).join("")}</div>
       <div class="dsec"><p class="dl">${DW} 읽은 말씀</p>${bible}</div>
       <div class="dsec"><p class="dl">${DW} 읽은 책</p>${books||`<p class="muted">${L.read&&!L.bible?"":"이날은 책을 읽은 기록이 아직 없어요. 「책장」에서 「여기까지 읽음」을 남기면 여기에 차곡차곡 쌓여요."}</p>`}</div>
       ${notes.length?`<div class="dsec dqs"><p class="dl">밑줄</p>${notes.map(n=>`<div class="dquote" onclick="dSlipNotes('${d}')" title="눌러서 이날 밑줄을 모두 펼쳐 봅니다">${esc(n.text)}<div class="muted">${esc(noteSrc(n))}</div></div>`).join("")}<button type="button" class="dw-more" hidden onclick="dSlipNotes('${d}')"></button></div>`:""}
