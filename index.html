@@ -265,6 +265,16 @@ ol.toc{margin:6px 0 4px;padding-left:20px;font-size:13.5px;line-height:1.6;color
 
 /* 도움말 · 단계 */
 .hint{display:block;font-size:13.5px;line-height:1.55;color:var(--faint);margin-top:4px}
+.appfoot{text-align:center;font:11.5px/1.6 var(--ui-font,-apple-system,sans-serif);color:var(--faint);opacity:.8;margin:34px auto 14px;padding:0 16px;letter-spacing:.01em}
+.appfoot .af-beta{font-weight:700;color:#a0402c} .appfoot .af-warn{color:#a0402c}
+body.focus .appfoot,body.readmode .appfoot,body.typing .appfoot{display:none}
+@media print{.appfoot{display:none}}
+.tipbtn{display:inline-flex;align-items:center;gap:5px;vertical-align:middle;margin-left:6px;font:600 12px/1 var(--ui-font,sans-serif);color:var(--ink-soft);background:var(--paper);border:1px solid var(--edge);border-radius:999px;min-width:22px;height:22px;padding:0 6px;justify-content:center;cursor:pointer;box-shadow:0 1px 2px rgba(60,40,20,.12)}
+.tipbtn>span{display:inline-grid;place-items:center;width:15px;height:15px;border-radius:50%;background:var(--paper-2);border:1px solid var(--edge);font-size:10.5px}
+.tipbtn:hover,.tipbtn:focus-visible{color:var(--ink);border-color:var(--ink-soft)}
+#tippop{position:absolute;z-index:9000;background:var(--paper);color:var(--ink);border:1px solid var(--edge);border-radius:12px;padding:10px 13px;font:14px/1.6 var(--ui-font,sans-serif);box-shadow:0 8px 24px rgba(40,30,20,.18);animation:tipin .12s ease-out}
+@keyframes tipin{from{opacity:0;transform:translateY(-3px)}}
+.pomotip{margin-top:8px!important}
 .step{display:flex;align-items:center;gap:8px;font-family:"Nanum Myeongjo";font-weight:700;font-size:15px;margin:0 0 6px}
 .step .num{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;border:1.5px solid var(--sepia);color:var(--sepia);font-family:"Gamja Flower";font-size:18px;line-height:1}
 
@@ -954,8 +964,10 @@ html[data-theme="dark"] .dslipcard{background:var(--paper) var(--grain);color:va
 .dline{font-family:"Gamja Flower";font-size:25px;line-height:34px;border:0;background:transparent;min-height:238px;padding:0;color:var(--ink);width:100%;resize:none;overflow:hidden;display:block}
 /* 크레파스 상자: 삐뚤한 두 겹 테두리(아래 svg 필터 crayon으로 왁스 느낌), 안쪽은 줄공책 */
 .crayon{position:relative;padding:16px 18px 14px;margin:2px 0 0}
-.crayon::before{content:"";position:absolute;inset:0;border:4px solid var(--crayon,#e4714a);border-radius:255px 18px 225px 18px/18px 225px 18px 255px;opacity:.85;filter:url(#crayon);pointer-events:none}
-.crayon::after{content:"";position:absolute;inset:3px;border:2.5px solid var(--crayon,#e4714a);border-radius:18px 225px 18px 255px/225px 18px 255px 18px;opacity:.35;filter:url(#crayon);pointer-events:none;transform:rotate(.4deg)}
+.crayon::before{content:"";position:absolute;inset:0;border-radius:14px;background:color-mix(in srgb,var(--crayon,#e4714a) 5%,transparent);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--crayon,#e4714a) 14%,transparent);pointer-events:none;transition:background .2s,box-shadow .2s}   /* 일기 쓰는 칸: 굵은 크레파스 테두리 대신 옅은 종이 바탕 하나 */
+.crayon::after{content:"";position:absolute;left:0;top:14px;bottom:14px;width:3px;border-radius:3px;background:var(--crayon,#e4714a);opacity:0;pointer-events:none;transition:opacity .2s}
+.crayon:focus-within::before{background:color-mix(in srgb,var(--crayon,#e4714a) 8%,var(--paper));box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--crayon,#e4714a) 26%,transparent),0 2px 10px rgba(60,40,20,.06)}
+.crayon:focus-within::after{opacity:.55}
 .crayon .dline{background:repeating-linear-gradient(transparent 0 32px,color-mix(in srgb,var(--crayon,#e4714a) 28%,transparent) 32px 33px,transparent 33px 34px);background-attachment:local;padding-top:0}
 .crayon .dline::placeholder{color:var(--faint)}
 .dsec>.dl.cr{color:var(--crayon,#e4714a)}
@@ -1263,7 +1275,45 @@ body.docmode .readview{font-family:var(--doc-font);font-size:var(--doc-fs);line-
 .sttab:hover{background:color-mix(in srgb,var(--ink) 4%,transparent)} .sttab.on{background:var(--paper);border-color:var(--edge);color:var(--ink);margin-bottom:-1px;font-weight:600}
 .sttab .sti{width:auto} .sttab button{border:0;background:none;color:var(--faint);cursor:pointer;font-size:15px;line-height:1;padding:1px 4px;border-radius:4px} .sttab button:hover{background:color-mix(in srgb,var(--ink) 10%,transparent);color:var(--ink)}
 .stburger{display:none}
-.sthome{padding:2px}
+.sthome{padding:2px;max-width:900px;margin:0 auto}
+.sth1{font:800 17px/1.3 var(--ui-font,-apple-system,"Apple SD Gothic Neo",sans-serif);color:var(--ink);margin:22px 0 10px;display:flex;align-items:baseline;gap:6px} .sth1 small{font-weight:600;font-size:13px;color:var(--faint)}
+.sth-l1 .sth1:first-child{margin-top:0}
+.stnew{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(220px,100%),1fr));gap:12px}
+.stnewc{display:flex;align-items:center;gap:12px;padding:14px 16px;border:1px solid var(--edge);border-radius:14px;background:var(--paper);color:var(--ink);cursor:pointer;text-align:left;font:inherit;box-shadow:0 6px 16px -12px rgba(40,25,10,.5);transition:transform .15s,box-shadow .15s}
+.stnewc:hover{transform:translateY(-2px);box-shadow:0 10px 20px -12px rgba(40,25,10,.55)} .stnewc:active{transform:translateY(0)}
+.stnewc>span:last-child{display:grid;line-height:1.3} .stnewc b{font:700 15.5px var(--ui-font,sans-serif)} .stnewc small{font:12.5px var(--ui-font,sans-serif);color:var(--faint)}
+.stnewi{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;font-size:20px;font-weight:700;background:var(--ink);color:var(--paper);flex:none} .stnewc.alt .stnewi{background:var(--paper-2);color:var(--ink);border:1px solid var(--edge)}
+.stmslist{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(260px,100%),1fr));gap:12px}
+.stmsc{display:flex;align-items:center;gap:12px;padding:14px 14px 14px 16px;border:1px solid var(--edge);border-left:5px solid var(--gc,#5a5048);border-radius:14px;background:var(--paper);color:var(--ink);cursor:pointer;text-align:left;font:inherit;min-width:0;box-shadow:0 6px 16px -12px rgba(40,25,10,.5);transition:transform .15s,box-shadow .15s}
+.stmsc:hover{transform:translateY(-2px);box-shadow:0 10px 20px -12px rgba(40,25,10,.55)}
+.stmsc .stlogo{width:38px;height:38px;border-radius:11px;font-size:18px}
+.stmsc-b{display:grid;gap:3px;min-width:0;flex:1} .stmsc-b b{font:700 16px/1.3 "Nanum Myeongjo",serif;overflow:hidden;text-overflow:ellipsis;white-space:nowrap} .stmsc-b .stgen{font-size:12px}
+.stmsc-bar{display:block;height:5px;border-radius:3px;background:var(--edge);overflow:hidden;margin-top:3px} .stmsc-bar i{display:block;height:100%;background:var(--gc,var(--book))}
+.stmsc-m{display:flex;gap:8px;flex-wrap:wrap;font:12px var(--ui-font,sans-serif);color:var(--faint)} .stmsc-m .dday{font-weight:700}
+.stmsc-go{font-size:22px;color:var(--faint);flex:none}
+.stmsc.g-sermon{--gc:#2f3b52} .stmsc.g-essay{--gc:#6b7a3a} .stmsc.g-novel{--gc:#7a3b2e} .stmsc.g-poem{--gc:#6a4b7a} .stmsc.g-selfhelp{--gc:#b86a2a} .stmsc.g-paper{--gc:#4a6274} .stmsc.g-free{--gc:#5a5048}
+.sth-l2{margin-top:30px;padding-top:18px;border-top:1px dashed var(--edge)}
+.sth2{font:700 14px var(--ui-font,sans-serif);color:var(--ink-soft);margin:0 0 10px;letter-spacing:.02em}
+.strec2{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(230px,100%),1fr));gap:10px}
+.strc2{min-width:0;display:grid;gap:4px;align-content:start;text-align:left;padding:10px 12px 11px;border:1px solid color-mix(in srgb,var(--edge) 80%,transparent);border-radius:11px;background:color-mix(in srgb,var(--paper) 70%,transparent);cursor:pointer;color:var(--ink);font:13px/1.4 var(--ui-font,-apple-system,sans-serif)}
+.strc2:hover{background:var(--paper);border-color:var(--sepia)}
+.strc2 b{font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis} .strc2-p{color:var(--ink-soft);font-size:12.5px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.strc2 small{color:var(--faint);font-size:11.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.stown{justify-self:start;max-width:100%;display:inline-flex;align-items:center;gap:6px;padding:2px 10px 2px 3px;border-radius:99px;background:color-mix(in srgb,var(--gc,#5a5048) 13%,var(--paper));color:var(--gc,#5a5048);font:700 12px/1.6 var(--ui-font,sans-serif);border:1px solid color-mix(in srgb,var(--gc,#5a5048) 30%,transparent)}
+.stown>span:last-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap} .stown .stlogo.sm{width:19px;height:19px;font-size:11px;border-radius:6px}
+.stown.free{padding-left:10px;color:var(--ink-soft);background:var(--paper-2);border-color:var(--edge)}
+:root[data-theme="dark"] .stown{filter:brightness(1.5)}
+.stown.g-sermon{--gc:#2f3b52} .stown.g-essay{--gc:#6b7a3a} .stown.g-novel{--gc:#7a3b2e} .stown.g-poem{--gc:#6a4b7a} .stown.g-selfhelp{--gc:#b86a2a} .stown.g-paper{--gc:#4a6274} .stown.g-free{--gc:#5a5048}
+.msmemo{margin-top:24px;padding-top:14px;border-top:1px dashed var(--edge)}
+.stmst[onclick]{cursor:pointer} .stmst[onclick]:hover .stn{text-decoration:underline;text-underline-offset:3px}
+.stms summary.on{background:var(--paper);box-shadow:0 1px 2px rgba(0,0,0,.08)}
+.stjot{display:flex;align-items:center;gap:10px;width:100%;border:1px solid color-mix(in srgb,#d9b84a 45%,var(--edge));background:linear-gradient(170deg,#fdf3bf,#f8e79a);color:#4a3a12;border-radius:4px 12px 12px 12px;padding:9px 10px;cursor:pointer;text-align:left;font:inherit;box-shadow:0 5px 12px -8px rgba(90,70,10,.55);transform:rotate(-.6deg);transition:transform .15s}
+.stjot:hover{transform:rotate(0) translateY(-1px)} .stjot.on{box-shadow:0 0 0 2px var(--ink),0 5px 12px -8px rgba(90,70,10,.55);transform:none}
+@media(max-width:700px){ .stnew{grid-template-columns:1fr 1fr;gap:8px} .stnewc{padding:11px 12px;gap:9px} .stnewc small{display:none} .stnewi{width:34px;height:34px;font-size:17px} .sth-l2{margin-top:22px} }
+.stjot-i{width:28px;height:28px;border-radius:8px;display:grid;place-items:center;background:rgba(255,255,255,.55);font-size:15px;flex:none}
+.stjot-t{display:grid;line-height:1.25;flex:1;min-width:0} .stjot-t b{font-size:14.5px} .stjot-t small{font-size:11.5px;opacity:.75}
+.stjot .stc{background:rgba(255,255,255,.7);color:#4a3a12}
+:root[data-theme="dark"] .stjot{background:linear-gradient(170deg,#5a4f25,#4a4120);color:#f4e7b4;border-color:#6b5d2a} :root[data-theme="dark"] .stjot .stc{background:rgba(0,0,0,.25);color:#f4e7b4}
 .sthello{font-family:"Nanum Myeongjo",serif;font-weight:800;font-size:30px;text-align:center;margin:22px 0 26px;color:var(--ink)}
 .stcards{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:14px;max-width:840px;margin:0 auto 30px}
 .stcard{display:grid;gap:10px;padding:12px;border:1px solid var(--edge);border-radius:12px;background:var(--paper);cursor:pointer;text-align:left;font:600 14px -apple-system,"Apple SD Gothic Neo",sans-serif;color:var(--ink);box-shadow:0 8px 18px -14px rgba(0,0,0,.5);transition:transform .15s}
@@ -1624,7 +1674,10 @@ body.typew #wbody{padding-bottom:45vh}
 .portions-flow span.pl{cursor:pointer;text-decoration:underline dotted var(--deco);text-underline-offset:4px}
 
 /* 매일성경 카드 (쓰기 화면 맨 위) */
-.sucard{background:var(--paper) var(--grain);border:1px solid var(--edge);border-left:3px solid var(--bible);border-radius:4px;padding:14px 18px;margin-bottom:16px;box-shadow:var(--shadow)}
+.sucard{background:var(--paper) var(--grain);border:1px solid var(--edge);border-left:3px solid var(--bible);border-radius:4px;padding:14px 18px;margin-bottom:34px;box-shadow:var(--shadow)}
+.sucard .verlink{font-size:14px;color:var(--ink-soft);text-decoration:underline dotted 1px;text-decoration-color:color-mix(in srgb,currentColor 55%,transparent);text-underline-offset:5px;padding:5px 7px;border-radius:6px;white-space:nowrap}
+.sucard .verlink:hover,.sucard .verlink:focus-visible{color:var(--ink);text-decoration-style:solid;background:var(--paper-2)}
+@media(max-width:700px){.sucard{margin-bottom:26px}}
 .sucard .sut{font-family:"Nanum Myeongjo";font-size:17px;margin:4px 0 8px}
 .sucard .sut b{font-weight:800}
 .sucard .links{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
@@ -1954,6 +2007,10 @@ details.more[open]>summary{margin-bottom:var(--sp-1)}
   <nav id="nav"></nav>
 </div><div class="navline"></div></header>
 <main class="wrap" id="main"></main>
+<footer class="appfoot" id="appfoot" aria-label="저작권·판">© 2026 임요한 목사 · 아침 서재 <b class="af-beta">베타</b> · <span id="afver"></span> · <span class="af-warn">배포 금지</span></footer>
+<script>/* 맨 아래 카피라이트·판: 판 = 올린 날(GitHub Pages가 알려 주는 파일 날짜) + build */
+addEventListener("DOMContentLoaded",function(){ var d=new Date(document.lastModified), ok=!isNaN(d)&&d.getFullYear()>2025, v=document.getElementById("afver");
+  if(v) v.textContent=(ok?d.getFullYear()+"."+(d.getMonth()+1)+"."+d.getDate()+"판":"판")+(typeof APP_BUILD==="string"?" ("+APP_BUILD.slice(0,6)+")":""); });</script>
 <div class="toast" id="toast"></div>
 
 <script src="plans.js"></script>
@@ -2150,9 +2207,10 @@ async function drvSave(json,baseRev){   // 서버판 saveData_ 와 같은 지킴
   obj.rev=curRev+1; await drvWrite(DRV.data,JSON.stringify(obj));
   return {ok:true,rev:obj.rev};
 }
-const drvConf=()=>{ const m=aiMode(), k=aiKeys(); return {notion:false,kakao:false,nl:false,ai:m==="own"?(k.claude?"claude":"gemini"):m==="shared"?"gemini":"",aiKeys:{gemini:m==="shared"||(m==="own"&&!!k.gemini),claude:m==="own"&&!!k.claude},aiShared:m==="shared",cmtFolder:"",yt:true,claude:null,local:false,gas:true,drive:!LOCALMODE,devOnly:LOCALMODE,email:DRV?.email||"",driveUrl:LOCALMODE?"":"https://drive.google.com/drive/folders/"+(DRV?.root||"")}; };
+const gwNl=()=>{ try{ return localStorage.getItem("seojae-open.gwNl")==="1"; }catch(_){ return false; } };   // 창구에 국립중앙도서관 열쇠가 있는지 (책을 찾을 때 창구가 알려 줌)
+const drvConf=()=>{ const m=aiMode(), k=aiKeys(); return {notion:false,kakao:true,nl:gwNl(),ai:m==="own"?(k.claude?"claude":"gemini"):m==="shared"?"gemini":"",aiKeys:{gemini:m==="shared"||(m==="own"&&!!k.gemini),claude:m==="own"&&!!k.claude},aiShared:m==="shared",cmtFolder:"",yt:true,claude:null,local:false,gas:true,drive:!LOCALMODE,devOnly:LOCALMODE,email:DRV?.email||"",driveUrl:LOCALMODE?"":"https://drive.google.com/drive/folders/"+(DRV?.root||"")}; };
 // 공개판 전용 창구(구글 앱스 스크립트, 4gospel — 개인 기록과 무관): 브라우저가 직접 닿지 못하는 성서유니온 「매일성경」을 대신 받아 줌. 로그인 없이 날짜만 보냄
-const PUB_GW="https://script.google.com/macros/s/AKfycbxRPmEN9s2BMkKZ4nQuEzCqalgn_SBqEztJT7b5Af5dXJdmOBsmmgUMlfpbxbB8DIYAAQ/exec", GW_FN=new Set(["dailyBible","dailyBibleNote","musicFind"]);   // 찬송가·CCM 찾기도 창구가 함께(창구의 유튜브 열쇠, 찾은 곡은 모두가 함께 기억)
+const PUB_GW="https://script.google.com/macros/s/AKfycbxRPmEN9s2BMkKZ4nQuEzCqalgn_SBqEztJT7b5Af5dXJdmOBsmmgUMlfpbxbB8DIYAAQ/exec", GW_FN=new Set(["dailyBible","dailyBibleNote","musicFind","searchBooks","bookDetail"]);   // 찬송가·CCM 찾기도 창구가 함께(창구의 유튜브 열쇠, 찾은 곡은 모두가 함께 기억)
 async function gwCall(fn,args){
   const r=await fetch(PUB_GW,{method:"POST",body:JSON.stringify({fn,args}),signal:AbortSignal.timeout?AbortSignal.timeout(60000):undefined});
   let j; try{ j=await r.json(); }catch(_){ throw new Error("매일성경 창구가 알아볼 수 없는 답을 보냈습니다 ("+r.status+")"); }
@@ -2507,7 +2565,7 @@ async function pushSave(){
 // ───────── 새 버전 자동 새로 고침 ─────────
 // 올릴 때마다 version.json 의 번호가 바뀝니다. 앱이 열릴 때·다시 화면에 올라올 때·5분마다 확인해서,
 // 쓰는 중인 글이 없고 저장이 끝났을 때 새 버전으로 새로 고칩니다.
-const APP_BUILD="9a65a6faaa";
+const APP_BUILD="11be88f2c3";
 let NEW_BUILD=null, UPDATE_NOTICED=false;
 async function checkUpdate(){
   if(APP_BUILD.startsWith("__")) return;                 // 원본 파일로 열었을 때(고치는 중)는 건너뜁니다
@@ -3007,6 +3065,11 @@ const MANUALS=[["quick","간단 매뉴얼","읽자마자 바로 써 보는 한 �
 // ───────── 새 소식 (공개판, 2026-10-31 팀장님): 중요한 고침은 앱을 열 때 한 번만 쉬운 말로 알림 ─────────
 // 새 소식을 더할 때: NEWS 맨 앞에 넣고 id 는 날짜(같은 날 둘째는 2026-11-02b 처럼 — 글자 순서로 새것이 뒤). 본 소식 id 는 이 기기에만(seojae-open.newsSeen)
 const NEWS=[
+ {id:"2026-10-31b",date:"2026년 10월 31일",title:"더 단정하고 쉬워졌어요",items:[
+  ["✓","읽은 표시를 풀 수 있어요","「오늘의 말씀」에서 잘못 눌렀으면 그 분량을 한 번 더 누르거나, 도장 옆 「읽음 풀기」를 누르면 됩니다.",""],
+  ["?","화면이 한결 단정해졌어요","오늘 화면의 묻기 상자를 빼고, 긴 설명은 작은 「?」 단추 안에 넣었어요. 묵상의 「개역개정」 같은 성경 이름은 점선 글자를 누르면 열리고, 일기 칸은 옅은 종이 바탕이 되었어요.","궁금할 때 「?」를 누르면 짧은 도움말이 떠요"],
+  ["⌂","글방 홈에 내 원고가 모두 보여요","위에는 「새로 쓰기」와 「내 원고」, 아래에는 최근에 연 글이 어느 원고의 글인지 색 이름표와 함께 보여요. 왼쪽 칸의 원고 이름을 누르면 그 원고 홈(목차·메모)이 열려요.","공통 창고에는 「끄적이기」만 남겼어요"],
+  ["◫","책을 찾을 때 열쇠가 필요 없어요","책장에서 책 이름이나 ISBN을 넣고 찾으면 아침 서재가 대신 찾아 드려요. 따로 카카오 열쇠를 만들지 않아도 됩니다.",""]]},
  {id:"2026-10-31",date:"2026년 10월 31일",title:"아침 서재가 이렇게 새로워졌어요",items:[
   ["✦","열쇠 없이 AI를 써요","글쓰기 도우미·고른 곳 다듬기·맞춤법 뒷검사 같은 AI를 이제 열쇠를 넣지 않아도 씁니다. 처음 쓸 때 한 번만 동의를 여쭙니다. 일기는 AI로 보내지 않습니다.","내 AI 열쇠를 넣으면 더 깊고 넉넉한 답을 받습니다 — 설정 → 쓰기 → AI 열쇠"],
   ["♪","찬송가·CCM을 앱 안에서 들어요","묵상 화면 「찬송가 ○장」 옆 ▶를 누르면 앱 안 작은 창에서 바로 들립니다. 「CCM」을 누르면 오늘 말씀과 어울리는 찬양을 골라 드립니다.","붐비는 날에는 ▶ 대신 「♪ ↗」가 보이고, 누르면 유튜브뮤직에서 찾아 드립니다"],
@@ -3195,12 +3258,12 @@ async function paintSu(){
     ${date!==today()&&!(cur&&cur.date===date)?`<div class="muted" style="font-size:13.5px;margin-top:4px">${dayWs.length?`이날 쓴 글: ${dayWs.map(w=>`<a href="#" onclick="go('write',{edit:'${w.id}'});return false">[${esc(wTag(w))}] ${esc(w.title||w.passage||"(제목 없음)")}</a>`).join(", ")}`:"이날 쓴 묵상이 없습니다. 「이 본문으로 쓰기」를 누르면 오늘 날짜로 새 글을 씁니다."}</div>`:""}
     <div class="sut"><b>${esc(SU.title)}</b> · ${esc(P.label)}${SU.hymn?` · <span class="muted hymnbox" id="hymnbox">찬송가 ${esc(SU.hymn)}장${hymnCtl()}</span>`:""}</div>
     <div class="links"><button class="btn small ink" onclick="suUse()">이 본문으로 쓰기</button>
-      <a class="btn small ghost" href="${esc(suOfficial(P,"NKRV"))}" target="_blank" rel="noopener" onclick="return popBible(this.href)" title="개역개정은 저작권 때문에 앱 안에 넣을 수 없어 대한성서공회 사이트에서 같은 구절을 엽니다">개역개정 ↗</a><a class="btn small ghost" href="${esc(suOfficial(P,"NKT"))}" target="_blank" rel="noopener" onclick="return popBible(this.href)">새한글 ↗</a><a class="btn small ghost" href="${esc(suOfficial(P,"RNKSV"))}" target="_blank" rel="noopener" onclick="return popBible(this.href)">새번역 ↗</a><a class="btn small ghost" href="${esc(suNiv(P))}" target="_blank" rel="noopener" onclick="return popBible(this.href)">NIV ↗</a><button class="btn small ghost" onclick="sideTip()" title="성경 창을 띄워 둔 채 쓰는 법">ⓘ</button><button class="btn small ghost" onclick="pipBible()" title="오늘 본문(개역한글·영어)을 다른 창보다 늘 위에 떠 있는 작은 창으로 띄웁니다 (크롬·엣지)">${ICO.closed}위에 띄우기</button>
+      <a class="verlink" href="${esc(suOfficial(P,"NKRV"))}" target="_blank" rel="noopener" onclick="return popBible(this.href)" title="개역개정은 저작권 때문에 앱 안에 넣을 수 없어 대한성서공회 사이트에서 같은 구절을 엽니다">개역개정</a><a class="verlink" href="${esc(suOfficial(P,"NKT"))}" target="_blank" rel="noopener" onclick="return popBible(this.href)">새한글</a><a class="verlink" href="${esc(suOfficial(P,"RNKSV"))}" target="_blank" rel="noopener" onclick="return popBible(this.href)">새번역</a><a class="verlink" href="${esc(suNiv(P))}" target="_blank" rel="noopener" onclick="return popBible(this.href)">NIV</a><button class="btn small ghost" onclick="sideTip()" title="성경 창을 띄워 둔 채 쓰는 법">ⓘ</button><button class="btn small ghost" onclick="pipBible()" title="오늘 본문(개역한글·영어)을 다른 창보다 늘 위에 떠 있는 작은 창으로 띄웁니다 (크롬·엣지)">${ICO.closed}위에 띄우기</button>
       ${SU.audio?`<button class="btn small ghost" onclick="suListen()" title="앱 안 작은 재생기로 듣습니다. 다른 메뉴로 옮겨도 계속 들립니다">${ICO.audio}듣기</button>`:""}<button class="btn small ghost" id="subtn" onclick="suNoteToggle()">${ICO.book}해설 보기</button></div>
     <details class="more"><summary>말씀 앞에서 묻기 <small class="hint" style="display:inline">· 오늘의 질문</small></summary><ol class="q" style="margin:4px 0 0">${pickQ("bible",today()+"b").map(q=>`<li>${esc(q)}</li>`).join("")}</ol></details>
     <div id="sunote"></div>
     ${open?`<div class="row" style="gap:6px;margin-top:10px;flex-wrap:wrap"><span class="muted" style="font-size:12.5px">보기</span><span class="pills">${SU_VIEWS.map(([k,n,tip])=>`<button class="pill ${suView()===k?"on":""}" style="padding:3px 10px;font-size:13px" data-tip="${tip}" onclick="lookSet('suview','${k}');paintSuText()">${n}</button>`).join("")}</span><span class="spacer"></span><span class="row" style="gap:4px" title="매일성경 글자 크기 (이 기기만)"><button class="fsbtn" onclick="suFont(-1)">가−</button><button class="fsbtn" onclick="suFont(1)">가＋</button></span><button class="fsbtn" onclick="lookSet('sutall',applyLook().sutall?'':1);paintSuText()" title="본문 칸을 다 펼쳐 스크롤 없이 봅니다">${applyLook().sutall?"칸 줄이기":"다 펼치기"}</button></div>
-      <div class="sutext" id="sutext"><span class="muted">본문을 불러오는 중…</span></div><small class="hint">앱 안 본문: 개역한글 · World English Bible (둘 다 저작권이 끝난 공개본). 개역개정·새한글·새번역·NIV는 저작권 때문에 위 단추로 공식 사이트에서 같은 구절을 엽니다.</small>`:""}`;
+      <div class="sutext" id="sutext"><span class="muted">본문을 불러오는 중…</span></div>`:""}`;
   if(!open) return;
   try{ if(!SUT||SUT.label!==P.label){ const t=await suTexts(P); if(gen!==SUGEN) return; SUT=t; SUT.label=P.label; } }catch(e){ const t=$("#sutext"); if(t) t.innerHTML=`<span class="muted">본문을 불러오지 못했습니다. 위 단추로 열어 주세요.</span>`; return; }
   paintSuText();
@@ -3565,13 +3628,19 @@ function completeDay(){
   p.checks=[]; mark("read"); save(); toast("오늘 말씀을 다 읽었습니다"); render();
 }
 function togglePortion(k){
-  if(doneToday()) return;
+  if(doneToday()) return uncompleteDay(k);
   const p=S.settings.plan, n=planDays()[todayIdx()]?.length||0;
   p.checks=p.checks.includes(k)?p.checks.filter(x=>x!==k):[...p.checks,k];
   if(p.checks.length>=n) completeDay(); else { save(); render(); }
 }
 function missedDays(){ const p=S.settings.plan, out=[]; if(p.mode!=="date") return out; for(let i=activeBetween(p.start,p.setOn||p.start);i<todayIdx();i++) if(!p.done[i]) out.push(i); return out; }
 function catchUp(i){ const p=S.settings.plan; if(p.mode!=="date") return; p.done[i]=true; mark("read"); save(); toast(`${i+1}일째 분량을 읽음으로 표시했습니다`); render(); }
+function uncompleteDay(k){ // 「오늘 읽음」을 풀기 — 누른 조각만 빼고 나머지는 표시한 채로
+  const p=S.settings.plan, i=todayIdx(), n=planDays()[i]?.length||0;
+  if(p.mode==="date") delete p.done[i]; else if(p.last?.date===today()){ p.day=p.last.index; p.last=null; }
+  p.checks=k==null?[]:[...Array(n).keys()].filter(x=>x!==k);
+  const L=S.log[today()]; if(L){ L.bible=(L.bible||[]).filter(x=>!(x.plan===planObj().name&&x.day===i+1)); if(!L.bible.length){ delete L.bible; L.read=false; } }
+  save(); toast("「오늘 읽음」을 풀었습니다"); render(); }
 function readAhead(){ S.settings.plan.last=null; S.settings.plan.checks=[]; save(); render(); }
 function planProgress(){ const p=S.settings.plan, len=planDays().length; const done=p.mode==="date"?activeBetween(p.start,p.setOn||p.start)+Object.keys(p.done).length:p.day; return {len,done,pct:Math.min(100,Math.round(done/len*1000)/10)}; }
 function behind(){ // 이 방법을 고른 날 이후에 놓친 날만 셉니다
@@ -4129,7 +4198,7 @@ function diaryPage(){
   const d=diaryDate=diaryDate||today(), x=new Date(d+"T00:00"), L=S.log[d]||{}, e=dEntry(d); dcalY=x.getFullYear(); dcalM=x.getMonth();
   const notes=S.notes.filter(n=>n.date===d), ws=live().filter(w=>w.date===d), DW=d===today()?"오늘":"이날";
   const bible=(L.bible||[]).map(b=>`<div class="muted">${esc(b.plan)} · ${b.day}일째</div><ul>${b.portions.map(p=>`<li><a href="#" onclick="openBible(${jsArg(p)});return false">${esc(p)}</a></li>`).join("")}</ul>`).join("")
-    || (L.read?`<p class="sub">말씀을 읽었습니다 ✓</p>`:`<p class="muted">이날은 말씀을 읽은 기록이 아직 없어요. 「오늘」이나 「묵상」에서 말씀을 읽고 표시하면 여기에 함께 남아요.</p>`);
+    || (L.read?`<p class="sub">말씀을 읽었습니다 ✓</p>`:`<p class="muted">아직 없어요${tipHtml("「오늘」이나 「묵상」에서 말씀을 읽고 표시하면 여기에 함께 남아요.")}</p>`);
   const books=Object.entries(L.books||{}).map(([id,v])=>{ const b=S.books.find(y=>y.id===id);
     const u=pgUnit(b); return `<div class="row" style="gap:12px;align-items:center;margin:6px 0">${b?coverHtml(b,"cover"):""}<div><b class="myeongjo">${esc(v.title)}</b><div class="muted">${v.from}${u} → ${v.to}${u} · ${Math.max(0,v.to-v.from)}${u} 읽음</div></div></div>`; }).join("");
   const nav=`<div class="dnav"><button class="btn small" onclick="dGo(-1)" ${d<=dMin()?"disabled title=\"일기장 첫날입니다 (1일째)\"":""}>‹ 전날</button><button class="btn small" onclick="dGo(1)" ${d>=today()?"disabled":""}>다음 날 ›</button>
@@ -4147,7 +4216,7 @@ function diaryPage(){
       <div class="dhead"><span class="dd">${x.getMonth()+1}.${String(x.getDate()).padStart(2,"0")}</span><span class="dwrow"><span class="dw">${x.getFullYear()} · ${WEEK[x.getDay()]}요일</span>${(()=>{ const ic=[...dPick("weather",e.weather),...dPick("mood",e.mood)]; return ic.length?`<span class="dhico">${ic.map(k=>`<span title="${esc(DICO[k]?.[0]||"")}">${dIco(k)}</span>`).join("")}</span>`:""; })()}</span></div>
       <div class="dmood">${[["weather",WEATHER,"날씨"],["mood",MOODS,"기분"]].map(([k,L,n])=>{ const P=dPick(k,e[k]); return `<div class="dmrow">${L.map(x=>dIcoBtn(k,x,P.includes(x))).join("")}<span class="dslots" title="${n} 두 개까지 — 한 번 더 누르면 빠집니다" aria-label="${n} ${P.length}/2">${[0,1].map(i=>P[i]?`<i class="on" style="--c:${DICO[P[i]]?.[1]||"var(--sepia)"}">${dIco(P[i])}</i>`:`<i></i>`).join("")}</span></div>`; }).join("")}</div>
       <div class="dsec"><p class="dl">${DW} 읽은 말씀</p>${bible}</div>
-      <div class="dsec"><p class="dl">${DW} 읽은 책</p>${books||`<p class="muted">${L.read&&!L.bible?"":"이날은 책을 읽은 기록이 아직 없어요. 「책장」에서 「여기까지 읽음」을 남기면 여기에 차곡차곡 쌓여요."}</p>`}</div>
+      <div class="dsec"><p class="dl">${DW} 읽은 책</p>${books||`<p class="muted">${L.read&&!L.bible?"":"아직 없어요"+tipHtml("「책장」에서 「여기까지 읽음」을 남기면 여기에 차곡차곡 쌓여요.")}</p>`}</div>
       ${notes.length?`<div class="dsec dqs"><p class="dl">밑줄</p>${notes.map(n=>`<div class="dquote" onclick="dSlipNotes('${d}')" title="눌러서 이날 밑줄을 모두 펼쳐 봅니다">${esc(n.text)}<div class="muted">${esc(noteSrc(n))}</div></div>`).join("")}<button type="button" class="dw-more" hidden onclick="dSlipNotes('${d}')"></button></div>`:""}
     </div>
     <div class="pg r">
@@ -4156,7 +4225,7 @@ function diaryPage(){
         <div class="crayon"><div class="dline dedit" contenteditable="true" spellcheck="false" role="textbox" aria-multiline="true" aria-label="${DW} 일기" data-ph="${d===today()?"오늘 하루는 어땠나요? 마음에 남은 장면 하나, 편하게 적어 보세요. 한 줄이어도 충분해요.":"그날의 마음을 떠올리며 한 줄 적어 보세요."}" oninput="dInput(this)" onkeydown="dKey(event)" onpaste="dPaste(event)">${dHtmlChars(dParse(e.line||""))}</div></div></div>
       <div class="dsec"><p class="dl">${DW} 쓴 글</p>
         ${ws.length?`<div class="dwlist">${ws.map((w,i)=>`<button type="button" class="dw-slip ${w.track}" style="--rot:${[-.6,.5,-.3,.7][i%4]}deg" onclick="dSlip('${w.id}')" title="눌러서 이 글을 펼쳐 봅니다"><span class="k">[${esc(wTag(w))}]${w.passage?" "+esc(w.passage):""}</span><b>${esc(w.title||"(제목 없음)")}</b>${dHlHtml(w)}</button>`).join("")}<button type="button" class="dw-more" hidden onclick="dSlipList('${d}')"></button></div>`
-          :`<p class="muted">이날 쓴 묵상·글이 아직 없어요. 「묵상」이나 「글방」에서 글을 쓰면 여기에 쪽지처럼 끼워져요.</p>`}</div>
+          :`<p class="muted">아직 없어요${tipHtml("「묵상」이나 「글방」에서 글을 쓰면 여기에 쪽지처럼 끼워져요.")}</p>`}</div>
       <div class="dfolio">${pn*2}</div>
     </div>
   </div></div>`;
@@ -4274,7 +4343,7 @@ document.addEventListener("keydown",e=>{ const ed=e.target; if(!ed?.classList?.c
 function dKey(ev){ if(ev.key==="Enter"&&!ev.isComposing&&!ev.shiftKey){ ev.preventDefault(); document.execCommand("insertLineBreak"); } }
 function dPaste(ev){ ev.preventDefault(); { const ed=dEd(); if(ed) dSnap(ed,"paste"); } const t=(ev.clipboardData||window.clipboardData)?.getData("text")||""; document.execCommand("insertText",false,t.replace(/\r\n?/g,"\n")); }
 // 일기 꾸미기: 글쓰기 칸과 같은 원칙 — 글자를 고르면 그 위에 뜨는 꾸밈 막대 (형광펜 4색 · 펜 밑줄 · 지우개). 칸 위에는 스티커 단추만
-function dDecoBar(){ return `<div class="ddeco" role="toolbar" aria-label="일기"><button type="button" class="dk dstk ${STK_OPEN?"on":""}" onpointerdown="event.preventDefault()" onclick="toggleStk()" title="스티커 붙이기">🌼 스티커</button><small class="ddh">글자를 고르면 꾸밈 막대가 뜹니다 · 같은 색을 한 번 더 누르면 지워집니다</small></div>`; }
+function dDecoBar(){ return `<div class="ddeco" role="toolbar" aria-label="일기"><button type="button" class="dk dstk ${STK_OPEN?"on":""}" onpointerdown="event.preventDefault()" onclick="toggleStk()" title="스티커 붙이기">🌼 스티커</button>${tipHtml("글자를 고르면 형광펜·밑줄 막대가 뜹니다. 같은 색을 한 번 더 누르면 지워집니다.")}</div>`; }
 function dBarHtml(){ return HLC.map(([k,c])=>`<button title="${{y:"노랑",g:"연두",p:"분홍",b:"하늘"}[k]} 형광펜 — 같은 색을 한 번 더 누르면 지워집니다" onclick="dMark('hl','${k}');hlClose()"><span class="dot" style="background:${c}"></span></button>`).join("")+`<button title="펜 밑줄 (⌘U)" onclick="dMark('ul');hlClose()" style="text-decoration:underline;text-decoration-color:var(--sepia)">U</button><button class="hlerase" title="꾸밈 지우기 — 고른 곳의 형광펜·밑줄을 지웁니다 (글은 그대로)" onclick="dMark('x');hlClose()">꾸밈 지우개</button><button title="닫기" onclick="hlClose()">✕</button>`; }
 function dBarShow(){ const ed=dEd(), sel=getSelection(); if(!ed||!sel.rangeCount||sel.isCollapsed||!ed.contains(sel.anchorNode)||!ed.contains(sel.focusNode)) return; const rs=[...sel.getRangeAt(0).getClientRects()].filter(r=>r.width||r.height); if(!rs.length) return;
   const top=Math.min(...rs.map(r=>r.top)), first=rs.filter(r=>r.top-top<2), l=Math.min(...first.map(r=>r.left)), rr=Math.max(...first.map(r=>r.right)), bot=Math.max(...rs.map(r=>r.bottom)); hlBar(dBarHtml(),{left:l,width:rr-l,top,bottom:bot,height:bot-top},false,matchMedia("(pointer:coarse)").matches); }
@@ -4434,7 +4503,6 @@ today(){
   const d=new Date(), t=today(), b=curBook();
   const tn=S.notes.filter(n=>n.date===t), tw=live().filter(w=>w.date===t);
   const ly=new Date(); ly.setFullYear(ly.getFullYear()-1); const old=live().filter(w=>w.date===dkey(ly));
-  const qb=pickQ("bible",t+"b"), qk=pickQ("book",t+"k");
   return `
   <div class="dateline"><span class="d">${d.getMonth()+1}.${String(d.getDate()).padStart(2,"0")}</span><span class="w">${"일월화수목금토"[d.getDay()]}요일 ${dayPart()}, 말씀과 책 앞에서</span>
     ${(()=>{ const L=S.log[t]||{}; const items=[["성경 읽기",!!(L.read||(L.bible||[]).length),"rtGoBible()","오늘의 말씀으로"],["묵상",tw.some(w=>w.track==="bible"),"go('write',{track:'bible'})","묵상 쓰기로"],["책 읽기",!!(L.book||Object.keys(L.books||{}).length),"go('shelf')","책장으로"],["일기",!!(S.diary?.[t]?.line||"").trim(),"diaryDate=today();go('diary')","오늘 일기로"]];
@@ -4456,16 +4524,12 @@ today(){
     <section class="sheet pomocard" id="pomocard">${pomoCardHtml()}</section>
   </div>
   <div class="grid" style="margin-top:30px">
-    <section class="sheet tape c"><p class="label bible">말씀 앞에서 묻기</p><ol class="q">${qb.map(q=>`<li>${q}</li>`).join("")}</ol></section>
-    <section class="sheet"><p class="label book">책 앞에서 묻기</p><ol class="q">${qk.map(q=>`<li>${q}</li>`).join("")}</ol></section>
-  </div>
-  <div class="grid" style="margin-top:30px">
     <section class="sheet">
       <p class="label">오늘의 기록</p>
       
       <div class="sub" style="margin-top:12px">오늘 밑줄 ${tn.length}개 · 글 ${tw.length}편 · ${tw.reduce((a,w)=>a+chars(w.body),0).toLocaleString()}자</div>
       ${tw.length?`<div style="margin-top:6px">${tw.map(w=>`<div class="row" style="gap:8px;padding:3px 0"><span class="label ${w.track}" style="margin:0;font-size:17px">[${esc(wTag(w))}]</span><a href="#" class="myeongjo" style="color:var(--ink)" onclick="go('write',{edit:'${w.id}'});return false"><b>${esc(w.title||w.passage||"(제목 없음)")}</b></a>${nState(w)}</div>`).join("")}</div>`:""}
-      <div class="row" style="margin-top:12px;gap:8px"><input id="jotin" class="pen" placeholder="끄적이기 — 떠오른 생각을 한 줄 적어 두세요" style="flex:1;min-width:200px;font-size:21px" onkeydown="if(event.key==='Enter'&&!event.isComposing){event.preventDefault();jotAdd()}"><button class="btn small" onclick="jotAdd()">끄적여 두기</button>${(S.jots||[]).length?`<span class="muted" style="font-size:13px">끄적임 ${(S.jots||[]).length}개 · <a href="#" onclick="go('write',{track:'book'});return false">글쓰기에서 보기</a></span>`:""}</div>
+      <div class="row" style="margin-top:12px;gap:8px"><input id="jotin" class="pen" placeholder="끄적이기" title="떠오른 생각을 한 줄 적어 두면 글방 「끄적이기」에 모입니다" style="flex:1;min-width:200px;font-size:21px" onkeydown="if(event.key==='Enter'&&!event.isComposing){event.preventDefault();jotAdd()}"><button class="btn small" onclick="jotAdd()">끄적여 두기</button></div>
       <div class="row" style="margin-top:14px"><button class="btn ink" onclick="go('write',{track:'bible'})">묵상 쓰기</button><button class="btn ink" onclick="go('room')">글방으로</button></div>
       <div class="row" style="margin-top:10px"><button class="btn" onclick="diaryDate=today();go('diary')">${ICO.diary}오늘의 독서 일기 꾸미기</button></div>
     </section>
@@ -4613,7 +4677,7 @@ shelf(){
   <section class="sheet tape" style="margin-bottom:30px">
     <p class="label book">새 책 꽂기</p>
     <div class="row"><input id="bq" placeholder="책 이름, 저자, 또는 ISBN" style="flex:1" onkeydown="if(event.key==='Enter'&&!event.isComposing)searchBook()"><button class="btn ink" onclick="searchBook()">표지 찾기</button><button class="btn" onclick="if(!$('#bq').value.trim()) return toast('책 이름을 먼저 적어 주세요'); addBook(-1)" title="검색 없이 적은 제목 그대로 꽂습니다">제목만으로 꽂기</button><button class="btn" onclick="openStore(millieUrl,$('#bq').value)" title="같은 이름으로 밀리의 서재를 검색합니다 (밀리에 로그인되어 있어야 결과가 보입니다)">밀리의 서재</button><button class="btn" onclick="openStore(welaaaUrl,$('#bq').value)" title="같은 이름으로 윌라(전자책·오디오북)를 검색합니다">윌라</button></div>
-    ${CONF.kakao?"":`<p class="muted" style="margin-top:8px">한국 책 표지를 정확히 찾으려면 설정에서 카카오 검색 키를 넣어 주세요. 지금은 해외 도서 검색만 씁니다.</p>`}
+
     <div id="bresults"></div>
   </section>
   <div id="bookdetail"></div>
@@ -4718,25 +4782,32 @@ function todayBibleCard(){
   const many=portions.length>5; // 연대기순처럼 조각이 많은 날은 하루 단위로만 표시
   return `<section class="sheet tape">
     <p class="label bible">오늘의 말씀</p>
-    <div class="planline"><b>${esc(plan.name)}</b> · ${i+1}일째 <span class="muted">/ ${days.length}일</span></div>
+    <div class="planline"><b>${esc(plan.name)}</b> · ${i+1}일째 <span class="muted">/ ${days.length}일</span>${many?"":tipHtml("읽은 곳을 하나씩 눌러 표시하세요. 모두 표시하면 오늘 읽기가 끝납니다. 잘못 눌렀으면 한 번 더 누르면 풀립니다.")}</div>
     ${many?`<div class="portions-flow ${done?"done":""}">${portions.map(x=>`<span class="pl" title="${bibleVer()[1]}으로 읽기" onclick="openBible(${jsArg(x)})">${esc(x)}</span>`).join("")}</div>`
       :`<div class="portions">${portions.map((x,k)=>{ const on=done||p.checks.includes(k);
-        return `<button class="portion ${on?"on":""}" onclick="togglePortion(${k})"><span class="tick">${tickSvg(on)}</span>${plan.labels?`<span class="plab">${plan.labels[k]}</span>`:""}<span class="ptext">${esc(x).replace(/(\S*-\S*)/g,'<span class="nw">$1</span>')}</span><span class="plink" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();event.stopPropagation();this.click();}" title="${bibleVer()[1]}으로 읽기" onclick="event.stopPropagation();openBible(${jsArg(x)})">${bookSvg()}<span class="pl-t">읽기</span><span class="pl-go" aria-hidden="true">↗</span></span></button>`; }).join("")}</div>`}
+        return `<button class="portion ${on?"on":""}" onclick="togglePortion(${k})"><span class="tick">${tickSvg(on)}</span>${plan.labels?`<span class="plab">${plan.labels[k]}</span>`:""}<span class="ptext">${esc(x).replace(/(\S*-\S*)/g,'<span class="nw">$1</span>')}</span><span class="plink" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();event.stopPropagation();this.click();}" title="${bibleVer()[1]}으로 읽기" onclick="event.stopPropagation();openBible(${jsArg(x)})">${bookSvg()}<span class="pl-t">읽기</span></span></button>`; }).join("")}</div>`}
     <div class="progress" style="margin-top:14px"><i style="width:${pr.pct}%;background:var(--bible)"></i></div>
     <div class="muted">${pr.done} / ${pr.len}일 · ${pr.pct}%${late?` · <span style="color:var(--ink-soft)">천천히 따라잡을 날 ${late}일</span>`:""}</div>
     ${late?`<details class="more"><summary>놓친 분량 보기 <small class="hint" style="display:inline">· 읽은 날은 「읽음」을 눌러 지워 가세요</small></summary><div class="portions">${missedDays().slice(0,14).map(k=>`<button class="portion" onclick="catchUp(${k})"><span class="tick">${tickSvg(false)}</span><span class="plab">${k+1}일째</span><span class="ptext" style="font-weight:400;font-size:16px">${esc((days[k]||[]).join(" · "))}</span><span class="plink" style="font-size:13px;font-family:inherit">읽음</span></button>`).join("")}${late>14?`<p class="hint">…그 뒤 ${late-14}일 더</p>`:""}</div></details>`:""}
     <div class="row" style="margin-top:14px">
-      ${done?`<span class="stamp">오늘 읽음</span>${p.mode!=="date"?`<button class="btn ghost small" onclick="readAhead()">다음 날 분량 이어 읽기</button>`:""}`
+      ${done?`<span class="stamp">오늘 읽음</span><button class="btn ghost small" onclick="uncompleteDay()" title="잘못 눌렀으면 읽기 표시를 풉니다">읽음 풀기</button>${p.mode!=="date"?`<button class="btn ghost small" onclick="readAhead()">다음 날 분량 이어 읽기</button>`:""}`
         :`<button class="btn ink" onclick="completeDay()">${many?"다 읽었습니다":"모두 읽었습니다"}</button>`}
       <button class="btn" onclick="toggleNoteForm('bible')">${ICO.pen}밑줄 남기기</button>
       <button class="btn ghost pfocus" onclick="pomoStageOpen({ctx:${jsArg("오늘 말씀 · "+portions.slice(0,3).join(" · ")+(portions.length>3?" 외":""))},start:true})" title="집중 시간을 시작하고 시계만 크게 띄웁니다">${pomoFocusIco()}집중해서 읽기</button>
     </div>
-    ${done||many?"":`<p class="hint">읽은 곳을 하나씩 눌러 표시하세요. 모두 표시하면 오늘 읽기가 끝납니다.</p>`}
     ${noteOpen==="bible"?noteForm("bible"):""}${todayNotes("bible")}
   </section>`;
 }
 // 손으로 그린 펼친 책 (잉크 선, 책갈피 끈)
 const bookSvg=()=>`<svg viewBox="0 0 30 24" width="31" height="25" aria-hidden="true"><path d="M15 5.6C12 3.6 7.6 3.2 3.4 4.3c-.4.1-.6.4-.6.8v14c0 .5.4.8.9.7 3.9-.9 8-.5 11.3 1.5 3.3-2 7.4-2.4 11.3-1.5.5.1.9-.2.9-.7v-14c0-.4-.2-.7-.6-.8-4.2-1.1-8.6-.7-11.6 1.3z" fill="var(--paper)" stroke="currentColor" stroke-width="1.35" stroke-linejoin="round"/><path d="M15 5.7v15.2" stroke="currentColor" stroke-width="1.2"/><path d="M6 8.3c2.3-.5 4.6-.3 6.6.6M6 11.4c2.3-.5 4.6-.3 6.6.6M6 14.5c2-.4 3.9-.3 5.6.4M18 8.9c2-.9 4.3-1.1 6.6-.6M18 12c2-.9 4.3-1.1 6.6-.6" fill="none" stroke="currentColor" stroke-width=".8" opacity=".55" stroke-linecap="round"/><path d="M21.5 5.2v8.6l1.4-1.3 1.4 1.3V4.9" fill="var(--bible)" stroke="var(--bible)" stroke-width=".6" stroke-linejoin="round" opacity=".85"/></svg>`;
+// 팁: 화면에 늘 적어 두던 설명은 작은 「?」 단추 안으로 (누르면 말풍선, 다시 누르거나 바깥을 누르면 닫힘)
+function tipHtml(t,lab){ return `<button type="button" class="tipbtn" onclick="event.stopPropagation();tipShow(this)" data-tip="${esc(t)}" aria-label="${lab?esc(lab):"도움말"}" title="${esc(t)}">${lab?`<span>?</span>${esc(lab)}`:"?"}</button>`; }
+function tipShow(b){ const o=document.getElementById("tippop"), same=o&&o._b===b; o?.remove(); if(same) return;
+  const p=document.createElement("div"); p.id="tippop"; p.textContent=b.dataset.tip; p._b=b; document.body.appendChild(p);
+  const r=b.getBoundingClientRect(), w=Math.min(300,innerWidth-24); p.style.width=w+"px";
+  p.style.left=Math.max(12,Math.min(innerWidth-w-12,r.left+r.width/2-w/2))+"px"; p.style.top=(r.bottom+8+scrollY)+"px"; }
+document.addEventListener("pointerdown",e=>{ const o=document.getElementById("tippop"); if(o&&!e.target.closest("#tippop,.tipbtn")) o.remove(); },true);
+document.addEventListener("keydown",e=>{ if(e.key==="Escape") document.getElementById("tippop")?.remove(); });
 function tickSvg(on){ // 손으로 그린 동그라미와 체크
   return `<svg viewBox="0 0 28 28" width="24" height="24" aria-hidden="true"><path d="M14 2.6c6.5-.3 11.3 4.6 11.1 11.2-.2 6.4-5.3 11.4-11.6 11.1C7.2 24.6 2.8 19.6 3 13.4 3.2 7.3 8 2.9 14 2.6z" fill="none" stroke="currentColor" stroke-width="1.6" opacity=".55"/>${on?`<path d="M8 14.5l4.2 4.3L21 8.6" fill="none" stroke="var(--stamp)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>`:""}</svg>`;
 }
@@ -5527,6 +5598,7 @@ async function searchBook(){
   if(!SERVER){ $("#bresults").innerHTML=`<p class="muted">서버로 열어야 검색할 수 있습니다.</p>`; return; }
   try{
     const r=await apiGet("/api/books",{q}); found=r.results||[];
+    if(typeof r.nl==="boolean"){ CONF.nl=r.nl; try{ localStorage.setItem("seojae-open.gwNl",r.nl?"1":"0"); }catch(_){} }   // 책 찾기는 공개 창구의 열쇠로 (따로 열쇠를 넣지 않아도 됨)
     $("#bresults").innerHTML=found.length?`<div class="results">${found.map((b,i)=>`<div class="result">${b.cover?`<img src="${esc(b.cover)}" alt="" loading="lazy">`:`<div class="cover blank" style="width:100%">${esc(b.title)}</div>`}<div class="t">${esc(b.title)}</div><div class="muted">${esc((b.authors||[]).join(", "))}${b.publisher?" · "+esc(b.publisher):""}</div><button class="btn small ink" onclick="addBook(${i})">이 책 꽂기</button>${storeLinks(b.title)}</div>`).join("")}</div>`
       :`<p class="muted" style="margin-top:12px">찾지 못했습니다. ${esc((r.errors||[]).join(" / "))}</p><button class="btn small" onclick="addBook(-1)">“${esc(q)}” 제목으로 직접 꽂기</button> ${storeLinks(q)}`;
   }catch(e){ $("#bresults").innerHTML=`<p class="muted">검색하지 못했습니다.</p>`; }
@@ -6726,31 +6798,44 @@ function stSide(cur){ const ms=liveMs(), m=ms.find(x=>x.id===ROOM_MS)||ms[0]||nu
   return `<aside class="stside" id="stside">
     <div class="sttop"><button class="sthomebtn ${cur==="home"?"on":""}" onclick="stOpen('home')" title="모든 원고를 아우르는 글방의 첫 화면 — 최근 글·목표·마감"><span class="sthomeic">⌂</span><span><b>글방 홈</b><small>모든 원고 · 최근 글 · 목표</small></span></button><button class="stnavi stthink ${cur==="map"?"on":""}" onclick="stOpen('map')" title="모든 글(묵상·설교·글방·일기·밑줄) 사이를 생각으로 건너갑니다"><span class="sti">✺</span><span><b>생각 지도</b><small>모든 글 사이를 건너기</small></span></button></div>
     <div class="stmsbox g-${esc(m?.genre||"free")}"><p class="stsech stmsh">지금 원고</p>
-    <details class="stms"><summary title="${m?`『${esc(m.title)}』 · ${esc(g.n)} — 원고 바꾸기`:"원고 고르기"}"><span class="stlogo g-${esc(m?.genre||"free")}">${m?esc(g.ic):"✎"}</span><span class="stmst"><span class="stn">${esc(m?.title||"원고 고르기")}</span>${m?`<small class="stgen g-${esc(m.genre||"free")}">${esc(g.n)} · ${msList(m).length}${esc(g.item)}</small>`:""}</span><span class="stud">바꾸기 ▾</span></summary>
+    <details class="stms"><summary class="${m&&cur==="ms:"+m.id?"on":""}" title="${m?`이름을 누르면 원고 홈 · 「바꾸기」로 다른 원고`:"원고 고르기"}"><span class="stlogo g-${esc(m?.genre||"free")}" ${m?`onclick="event.preventDefault();stOpen('ms:${m.id}')"`:""}>${m?esc(g.ic):"✎"}</span><span class="stmst" ${m?`onclick="event.preventDefault();stOpen('ms:${m.id}')" title="『${esc(m.title)}』 원고 홈"`:""}><span class="stn">${esc(m?.title||"원고 고르기")}</span>${m?`<small class="stgen g-${esc(m.genre||"free")}">${esc(g.n)} · ${msList(m).length}${esc(g.item)}</small>`:""}</span><span class="stud">바꾸기 ▾</span></summary>
       <div class="stmsmenu">${ms.map(x=>`<button class="${m&&x.id===m.id?"on":""}" onclick="this.closest('details').open=false;stOpen('ms:${x.id}')"><span class="stlogo sm g-${esc(x.genre||"free")}">${esc(G(x).ic)}</span><span><b>${esc(x.title)}</b><small>${esc(G(x).n)} · ${msList(x).length}${esc(G(x).item)}</small></span></button>`).join("")}<button onclick="this.closest('details').open=false;stOpen('new')">＋ 새 원고</button></div></details>
     ${m?`<div class="stltab"><button class="${ST_LTAB!=="world"?"on":""}" onclick="stLtab('ms')">원고</button><button class="${ST_LTAB==="world"?"on":""}" onclick="stLtab('world')">${m.genre==="novel"?"월드":"노트"} <small>${cxScope(m.id).length||""}</small></button></div>`:""}
     ${m&&ST_LTAB==="world"?worldTree(m,cur)+"</div>":`${m?`<div class="stnavs">${nav("memo","▤","메모 (포스트잇)",seeds)}${nav("res","⧉","자료 모음",(m?.research||[]).length)}</div>`:""}
     <div class="stsec"><p class="stsech">목차</p><div id="sttree" data-m="${m?.id||""}">${stTree(m,cur)}</div></div></div>`}
-    <div class="stcommon"><p class="stsech"><span class="combadge">공통</span> 공통 창고</p><button class="stnavi ${cur==="common"||(cur.startsWith("cx:")&&cxOrphan(codexLive().find(c=>"cx:"+c.id===cur)||{}))?"on":""}" onclick="stOpen('common')"><span class="sti">◎</span>${CX_COMMON}<span class="stc">${cxComN()||""}</span></button><button class="stnavi ${cur==="jots"?"on":""}" onclick="stOpen('jots')"><span class="sti">✐</span>끄적이기<span class="stc" id="stjotn">${(S.jots||[]).length||""}</span></button></div>
-    <div class="stfoot"><button onclick="go('drawer',{sub:'trash'})"><span class="sti">${ICO.trash}</span>휴지통</button><button onclick="go('drawer',{sub:'all'})"><span class="sti">${ICO.search}</span>서랍 (모든 글)</button><button onclick="go('settings')"><span class="sti">⚙</span>설정</button></div></aside>`; }
+    <div class="stcommon"><p class="stsech"><span class="combadge">공통</span> 공통 창고</p><button class="stjot ${cur==="jots"?"on":""}" onclick="stOpen('jots')" title="오늘 화면·쓰는 화면에서 끄적인 생각이 모두 모이는 곳"><span class="stjot-i">✐</span><span class="stjot-t"><b>끄적이기</b><small>떠오른 생각 모음</small></span><span class="stc" id="stjotn">${(S.jots||[]).length||""}</span></button></div>
+    <div class="stfoot">${cxComN()?`<button class="${cur==="common"||(cur.startsWith("cx:")&&cxOrphan(codexLive().find(c=>"cx:"+c.id===cur)||{}))?"on":""}" onclick="stOpen('common')"><span class="sti">◎</span>${CX_COMMON}<span class="stc">${cxComN()}</span></button>`:""}<button onclick="go('drawer',{sub:'trash'})"><span class="sti">${ICO.trash}</span>휴지통</button><button onclick="go('drawer',{sub:'all'})"><span class="sti">${ICO.search}</span>서랍 (모든 글)</button><button onclick="go('settings')"><span class="sti">⚙</span>설정</button></div></aside>`; }
 function studioWrap(cur,main){ stAdd(cur); return `<div class="studio">${stSide(cur)}<div class="stmain">${stTabs(cur)}${main}</div></div><div class="stback" onclick="document.body.classList.remove('stnav')"></div>`; }
 const stHello=()=>{ const h=Math.floor(kstMinutes()/60); return h<5?"고요한 새벽입니다":h<12?"좋은 아침입니다":h<18?"좋은 오후입니다":"평안한 저녁입니다"; };
 const stAgo=t=>{ const d=(Date.now()-Date.parse(t||0))/6e4; return !t||isNaN(d)?"":d<1?"방금":d<60?Math.round(d)+"분 전":d<1440?Math.round(d/60)+"시간 전":d<10080?Math.round(d/1440)+"일 전":String(t).slice(0,10); };
 let ST_REC_MORE=false;
-function stHome(m){ const g=G(m), rec=live().filter(w=>w.track==="book"||liveMs().some(x=>!x.rule&&(x.items||[]).includes(w.id))).filter(w=>(w.title||"").trim()||pv(w,1)).sort((a,b)=>(b.updated||b.date||"").localeCompare(a.updated||a.date||"")).slice(0,ST_REC_MORE?12:6);   // 빈 글은 빼고, 처음엔 6개(두 줄쯤) · 더 보기 12개
-  const goals=liveMs().filter(x=>x.goal||x.due); const seeds=(m?.seeds||[]).filter(x=>!x.done).slice(0,6);
-  const card=(on,ic,t,sk)=>`<button class="stcard" onclick="${on}"><span class="stct">${ic} ${t}</span><span class="sketch ${sk}"><i></i><i></i><i></i><i></i></span></button>`;
+function stHome(m){ const rec=live().filter(w=>w.track==="book"||liveMs().some(x=>!x.rule&&(x.items||[]).includes(w.id))).filter(w=>(w.title||"").trim()||pv(w,1)).sort((a,b)=>(b.updated||b.date||"").localeCompare(a.updated||a.date||"")).slice(0,ST_REC_MORE?12:6);   // 빈 글은 빼고, 처음엔 6개 · 더 보기 12개
+  const ms=liveMs().slice().sort((a,b)=>msTouched(b).localeCompare(msTouched(a)));   // 내 원고: 최근에 손댄 원고부터
+  const msCard=x=>{ const gg=G(x), am=msAmount(x), pc=x.goal?Math.min(100,Math.round(am/x.goal*100)):null, dd=x.due?Math.round((new Date(x.due+"T00:00")-new Date(today()+"T00:00"))/864e5):null, t=msTouched(x);
+    return `<button class="stmsc g-${esc(x.genre||"free")}" onclick="stOpen('ms:${x.id}')" title="『${esc(x.title)}』 원고 홈 열기"><span class="stlogo g-${esc(x.genre||"free")}">${esc(gg.ic)}</span>
+      <span class="stmsc-b"><b>${esc(x.title)}</b><small class="stgen g-${esc(x.genre||"free")}">${esc(gg.n)} · ${msList(x).length}${esc(gg.item)} · ${unitFmt(am,gg.unit)}</small>
+      ${pc!=null?`<span class="stmsc-bar"><i style="width:${pc}%"></i></span>`:""}
+      <span class="stmsc-m">${pc!=null?`<span>목표 ${pc}%</span>`:""}${dd!=null?`<span class="dday ${dd<0?"over":dd<=7?"soon":""}">${dd>0?"D-"+dd:dd===0?"오늘 마감":(-dd)+"일 지남"}</span>`:""}${t?`<span>${stAgo(t)}</span>`:""}</span></span><span class="stmsc-go" aria-hidden="true">›</span></button>`; };
   return `<section class="sthome"><h2 class="sthello">${stHello()}</h2>
-    <div class="stcards">${m&&!m.rule?card(`roomNewPiece('${m.id}')`,"✎",`새 ${esc(g.item)}`,"doc"):""}${card(`go('write',{track:'book',new:true,type:'자유 글'})`,"✐","자유 글","doc2")}${card(`stOpen('memo');setTimeout(()=>$('#memoin')?.focus(),60)`,"▤","새 메모","stk")}${m?card(`ROOM_VIEW='cork';stOpen('ms:${m.id}')`,"▦","목차 카드","cork"):""}${card(`stOpen('new')`,"＋","새 원고","stack")}</div>
-    ${thHomeCard()}
-    <div class="row" style="align-items:baseline"><p class="sthl">최근에 연 글</p><span class="spacer"></span>${rec.length>=6?`<button class="btn small ghost" onclick="ST_REC_MORE=!ST_REC_MORE;render()">${ST_REC_MORE?"줄이기":"더 보기"}</button>`:""}</div>
-    <div class="strec">${rec.map(w=>{ const wm=liveMs().find(x=>!x.rule&&(x.items||[]).includes(w.id)), where=wm?[wm.title,...msPath(wm,w.id)].join(" › "):"";
-      return `<button class="strc" onclick="stOpen('w:${w.id}')"><b>✎ ${esc(w.title||"(제목 없음)")}</b><span>${esc(pv(w,60))}</span><small>${stAgo(w.updated||w.date)}${where?` · ${esc(where)}`:""}</small></button>`; }).join("")||`<p class="muted">아직 쓴 글이 없습니다.</p>`}</div>
-    ${goals.length?`<p class="sthl">목표 · 마감</p><div class="stgoals">${goals.map(x=>{ const gg=G(x), am=msAmount(x), pc=x.goal?Math.min(100,Math.round(am/x.goal*100)):null, dd=x.due?Math.round((new Date(x.due+"T00:00")-new Date(today()+"T00:00"))/864e5):null;
-      return `<button class="stgoal" onclick="stOpen('ms:${x.id}')"><span class="stn">${esc(x.title)}</span>${pc!=null?`<span class="bar"><i style="width:${pc}%"></i></span><span class="muted">${pc}% · ${unitFmt(am,gg.unit)} / ${unitFmt(x.goal,gg.unit)}</span>`:`<span class="muted">${unitFmt(am,gg.unit)}</span>`}${dd!=null?`<span class="dday ${dd<0?"over":dd<=7?"soon":""}">${dd>0?"D-"+dd:dd===0?"오늘 마감":(-dd)+"일 지남"}</span>`:""}</button>`; }).join("")}</div>`:""}
-    <div class="row" style="margin-top:22px"><p class="sthl" style="margin:0">메모${m?` · ${esc(m.title)}`:""}</p><span class="spacer"></span>${m?`<button class="btn small" onclick="stOpen('memo')">모두 보기</button>`:""}</div>
-    ${m?`<div class="stickies small">${seeds.map(stickyHtml.bind(null,m)).join("")||`<p class="muted">떠오른 생각·할 일을 포스트잇처럼 붙여 두세요. 「새 메모」를 누르면 됩니다.</p>`}</div>`:`<p class="muted">원고를 만들면 원고마다 메모를 붙일 수 있습니다.</p>`}
+    <div class="sth-l1">
+      <p class="sth1">새로 쓰기</p>
+      <div class="stnew"><button class="stnewc" onclick="stOpen('new')"><span class="stnewi">＋</span><span><b>새 원고</b><small>책 한 권을 엮어 갈 원고</small></span></button><button class="stnewc alt" onclick="go('write',{track:'book',new:true,type:'자유 글'})"><span class="stnewi">✐</span><span><b>자유 글</b><small>원고 없이 한 편</small></span></button></div>
+      <p class="sth1">내 원고 <small>${ms.length}</small></p>
+      ${ms.length?`<div class="stmslist">${ms.map(msCard).join("")}</div>`:`<p class="muted">아직 원고가 없습니다. 「새 원고」로 첫 원고를 만들어 보세요.</p>`}
+    </div>
+    <div class="sth-l2">
+      <div class="row" style="align-items:baseline"><p class="sth2">최근에 연 글</p><span class="spacer"></span>${rec.length>=6?`<button class="btn small ghost" onclick="ST_REC_MORE=!ST_REC_MORE;render()">${ST_REC_MORE?"줄이기":"더 보기"}</button>`:""}</div>
+      <div class="strec2">${rec.map(w=>{ const wm=liveMs().find(x=>!x.rule&&(x.items||[]).includes(w.id)), path=wm?msPath(wm,w.id).join(" › "):"";
+        return `<button class="strc2" onclick="stOpen('w:${w.id}')">${wm?`<span class="stown g-${esc(wm.genre||"free")}"><span class="stlogo sm g-${esc(wm.genre||"free")}">${esc(G(wm).ic)}</span><span>${esc(wm.title)}</span></span>`:`<span class="stown free"><span>원고 밖 · ${esc(wTag(w))}</span></span>`}
+          <b>${esc(w.title||"(제목 없음)")}</b><span class="strc2-p">${esc(pv(w,60))}</span><small>${path?esc(path)+" · ":""}${stAgo(w.updated||w.date)}</small></button>`; }).join("")||`<p class="muted">아직 쓴 글이 없습니다.</p>`}</div>
+      ${thHomeCard()}
+    </div>
   </section>`; }
+const msTouched=m=>msList(m).reduce((a,w)=>{ const t=w.updated||w.date||""; return t>a?t:a; },m.updated||m.created||"");   // 원고를 마지막으로 손댄 때
+// 원고 홈의 메모 띠: 그 원고에서 떠오른 생각·할 일 (글방 홈에는 두지 않음)
+function msMemoHtml(m){ const seeds=(m.seeds||[]).filter(x=>!x.done), n=seeds.length;
+  return `<div class="msmemo"><div class="row" style="align-items:baseline;gap:6px"><p class="sthl" style="margin:0">메모${n?` <small class="muted">${n}</small>`:""}</p><span class="spacer"></span><button class="btn small" onclick="stOpen('memo');setTimeout(()=>$('#memoin')?.focus(),60)">＋ 새 메모</button>${n?`<button class="btn small ghost" onclick="stOpen('memo')">모두 보기</button>`:""}</div>
+    ${n?`<div class="stickies small">${seeds.slice(0,6).map(stickyHtml.bind(null,m)).join("")}</div>`:""}</div>`; }
 // 포스트잇 메모: 원고 안 m.seeds=[{id,t,c,done,at,u}] (칸 단위 병합·묘비는 mergeInner)
 const STICKY_C={y:"#fdf0a6",p:"#fbd3dc",g:"#d2efc6",b:"#cfe4fb"};
 // ───────── 원고 전체 찾아 바꾸기 ─────────
@@ -6903,7 +6988,8 @@ function viewNote(m,V){ const g=G(m), novel=m.genre==="novel", it=g.item;
     plot:`<b>이야기의 구조</b> — 각 ${esc(it)}이 발단·전개… 어느 단계를 맡는지 놓아 봅니다. 책의 순서(목차)는 그대로이고, 아직 안 쓴 ${esc(it)}도 제목·요약만으로 계획 카드를 놓을 수 있습니다.`,
     check:`<b>설정이 글에서 쓰였나</b> — 만들어 둔 인물·장소·복선이 실제 글에 나오는지, 장면 계획대로 썼는지 기계로 셉니다. 어긋남은 ✦ AI로 대조할 수 있습니다(누를 때만).`,
     board:`<b>얼마나 썼나</b> — 씨앗 → 초고 → 다듬는 중 → 완성.`,scriv:`<b>통째로 읽기</b> — 원고 전체를 한 장처럼 읽고 그 자리에서 고칩니다.`}[V];
-  return t?`<div class="vnote">${tog}<span>${t}</span></div>`:""; }
+  if(!t) return ""; const k=t.indexOf(" — "), head=k>0?t.slice(0,k):t, rest=k>0?t.slice(k+3).replace(/<[^>]+>/g,""):"";   // 굵은 이름만 보이고 긴 설명은 「?」 안으로
+  return `<div class="vnote">${tog}<span>${head}${rest?tipHtml(rest):""}</span></div>`; }
 async function wSum(wid){ const w=S.writings.find(x=>x.id===wid); if(!w) return; const t=await askText(`「${w.title||"(제목 없음)"}」 한 줄 요약 — 카드·플롯·PDF 머리에 쓰입니다`,w.summary||""); if(t==null) return; w.summary=t.trim(); w.updated=new Date().toISOString(); save(); render(); }
 function msPageHtml(m){ const g=G(m), ws=msList(m), chs=msChars(m), pages=msPages(m), td=roomToday(m), am=msAmount(m);
   const dd=m.due?Math.round((new Date(m.due+"T00:00")-new Date(today()+"T00:00"))/864e5):null;
@@ -6932,6 +7018,7 @@ function msPageHtml(m){ const g=G(m), ws=msList(m), chs=msChars(m), pages=msPage
     <div class="stviews">${views.map(([k,n])=>`<button class="${(["research","cork"].includes(ROOM_VIEW)?"binder":ROOM_VIEW)===k?"on":""}" onclick="roomSetView('${k==="binder"&&ROOM_VIEW==="cork"?"cork":k}')">${n}</button>`).join("")}</div>
     ${viewNote(m,ROOM_VIEW==="research"?"binder":ROOM_VIEW)}
     ${msBodyHtml(m,ROOM_VIEW==="research"?"binder":ROOM_VIEW)}
+    ${msMemoHtml(m)}
     ${m.review?`<div class="revall"><p class="label" style="margin:0 0 4px">원고 검토 <small class="hint" style="display:inline">· ${esc((m.review.at||"").slice(0,10))}</small></p><p class="sub" style="margin:0;white-space:pre-line">${m.review.outline?"<b>전체 구조</b> — ":""}${esc(m.review.overall||"")}</p></div>`:""}</section>`; }
 // 끌어 옮기기 연결 (목차·코르크보드: 순서, 상태 보드: 상태)
 function roomDnd(){
@@ -9434,7 +9521,7 @@ function pomoCardHtml(){
         <div class="pctl">${pomoPlayBtn()}${act?pomoIcoBtn("pomoSkip()","건너뛰기",PI_SKIP)+pomoIcoBtn("pomoStop()","그만",PI_STOP):""}${pomoIcoBtn("pomoStageOpen()","집중 화면 (화면 가득)",PI_FULL)}</div>
         ${!act?`<div class="pills plen">${lens.map(n=>`<button class="pill ${c.focus===n?"on":""}" onclick="pomoSetSave('focus',${n})">${n}분</button>`).join("")}</div>`:""}
       </div></div>
-    <p class="hint" style="margin:10px 0 0">${P.phase==="focus"?`${c.focus}분 집중하고 ${c.short}분 쉽니다. ${c.rounds}번째 뒤에는 ${c.long}분.`:"쉬는 동안은 눈을 감거나 창밖을 보세요."} 시계를 누르면 화면 가득 집중 화면이 열립니다.${c.dnd?" 집중하는 동안 방해금지가 켜집니다.":` <a href="#" onclick="go('settings');setTimeout(()=>{ const d=document.querySelector('.setitem[data-k=quiet]'); if(d){ d.open=true; $('#pomoset')?.scrollIntoView({block:'center'}); } },200);return false">맥 방해금지 함께 켜기</a>`}</p>`;
+    <p class="hint pomotip" style="margin:10px 0 0">${tipHtml((P.phase==="focus"?`${c.focus}분 집중하고 ${c.short}분 쉽니다. ${c.rounds}번째 뒤에는 ${c.long}분.`:"쉬는 동안은 눈을 감거나 창밖을 보세요.")+" 시계를 누르면 화면 가득 집중 화면이 열립니다."+(c.dnd?" 집중하는 동안 방해금지가 켜집니다.":""),"도움말")}${c.dnd?"":` <a href="#" onclick="go('settings');setTimeout(()=>{ const d=document.querySelector('.setitem[data-k=quiet]'); if(d){ d.open=true; $('#pomoset')?.scrollIntoView({block:'center'}); } },200);return false">맥 방해금지 함께 켜기</a>`}</p>`;
 }
 // ───────── 집중 섬: 읽기·쓰기 중에는 화면 위 가운데의 작은 유리 알약 하나 (누르면 펼쳐 조작, 글을 쓰는 동안은 더 작고 옅게) ─────────
 let PI=null, PI_OPEN=false;
