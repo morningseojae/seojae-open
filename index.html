@@ -931,6 +931,17 @@ details.keybox>summary{cursor:pointer;color:var(--ink-soft);font-size:14px}
 .dwlist.tight .dw-slip .hls{grid-column:1/-1;margin-top:0} .dwlist.tight .dw-slip .dhl{-webkit-line-clamp:1;font-size:13.5px} .dwlist.tight .dw-slip .dhl+.dhl,.dwlist.tight .dw-slip .hlauto{display:none}
 .dwlist.tight{gap:5px} .dwlist.tight .dw-slip{grid-template-columns:auto 1fr;align-items:baseline;gap:8px;padding:5px 12px} .dwlist.tight .dw-slip .ex{display:none} .dwlist.tight .dw-slip b{font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .dw-more{justify-self:start;border:1px dashed var(--edge);background:none;border-radius:999px;padding:4px 12px;font:12.5px var(--ui-font,sans-serif);color:var(--ink-soft);cursor:pointer;margin-top:2px} .dw-more:hover{color:var(--ink);border-color:var(--ink-soft)}
+.newsview{position:fixed;inset:0;z-index:140;background:rgba(40,28,16,.32);display:flex;align-items:center;justify-content:center;padding:max(16px,env(safe-area-inset-top)) 16px max(16px,env(safe-area-inset-bottom));animation:askin .16s ease-out}
+.newscard{width:min(560px,100%);max-height:min(86vh,900px);overflow:auto;background:var(--paper) var(--grain);color:var(--ink);border:1px solid var(--edge);border-top:5px solid #d08a2a;border-radius:12px;box-shadow:0 26px 60px -22px rgba(0,0,0,.55);padding:20px 22px 16px;font-family:var(--ui-font,sans-serif)}
+.newsk{font:700 13px/1 var(--ui-font,sans-serif);letter-spacing:.14em;color:#a0620f;margin:0 0 6px}
+.newsdate{font-size:13px;color:var(--ink-soft);margin:0}
+.newst{font-family:"Gamja Flower",cursive;font-weight:400;font-size:30px;line-height:1.2;margin:2px 0 12px;color:var(--ink);text-wrap:balance}
+.newslist{list-style:none;margin:0;padding:0;display:grid;gap:14px}
+.newslist li{display:grid;grid-template-columns:40px 1fr;gap:12px;align-items:start}
+.newsic{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;font-size:19px;background:color-mix(in srgb,#f2c066 28%,var(--paper));color:#8a5410}
+.newslist b{font-size:17px;line-height:1.4} .newslist p{margin:3px 0 0;font-size:16px;line-height:1.6;color:var(--ink)} .newslist p.newshint{font-size:14px;color:var(--ink-soft)}
+.newsacts{display:flex;justify-content:flex-end;margin-top:16px} .newsok{min-height:48px;padding:0 26px;font-size:17px}
+.newsfoot{font-size:13px;color:var(--faint);margin:10px 0 0;text-align:right}
 .dslipview{position:fixed;inset:0;z-index:115;background:rgba(40,28,16,.28);display:flex;align-items:center;justify-content:center;padding:24px 16px;animation:askin .14s ease-out}
 .dslipcard{width:min(620px,100%);max-height:min(82vh,860px);overflow:auto;background:#fffdf6 var(--grain);color:#2a241d;border:1px solid var(--edge);border-radius:3px 10px 10px 3px;border-left:4px solid var(--deco);box-shadow:0 26px 60px -22px rgba(0,0,0,.55);padding:22px 26px 16px;transform:rotate(-.4deg);display:grid;gap:10px}
 html[data-theme="dark"] .dslipcard{background:var(--paper) var(--grain);color:var(--ink)}
@@ -2496,7 +2507,7 @@ async function pushSave(){
 // ───────── 새 버전 자동 새로 고침 ─────────
 // 올릴 때마다 version.json 의 번호가 바뀝니다. 앱이 열릴 때·다시 화면에 올라올 때·5분마다 확인해서,
 // 쓰는 중인 글이 없고 저장이 끝났을 때 새 버전으로 새로 고칩니다.
-const APP_BUILD="6e375a6d1f";
+const APP_BUILD="9a65a6faaa";
 let NEW_BUILD=null, UPDATE_NOTICED=false;
 async function checkUpdate(){
   if(APP_BUILD.startsWith("__")) return;                 // 원본 파일로 열었을 때(고치는 중)는 건너뜁니다
@@ -2965,6 +2976,7 @@ function setGroups(){ const R=S.reminder||{}, rOn=!!(R.on&&R.clock!==false), p=S
   const cm=(cmtLoad()?.files||[]).filter(f=>!f.hidden).length, sf=S.settings.streakFrom;
   return [
    {id:"help",t:"도움",ic:"?",acc:"var(--sepia)",rows:[
+     {k:"news",ic:"✉",t:"새 소식",st:"",sum:NEWS[0]?`${esc(NEWS[0].date)} · ${esc(NEWS[0].title)}`:"아직 없음",body:newsSection()},
      {k:"manual",ic:"❧",t:"사용 설명서",st:"",sum:"간단 매뉴얼 · 상세 매뉴얼(책) — 웹으로 보기 · PDF 받기",body:manualSection()}]},
    {id:"morning",t:"아침",ic:"☀︎",acc:"var(--bible)",rows:[
      {k:"plan",ic:"✚",t:"성경 통독",st:"",sum:`${esc(cur.name)} · ${p.mode==="date"?"달력대로":"이어 읽기"} · ${(p.day||0)+1}일째`,body:planSettings()},
@@ -2992,6 +3004,28 @@ function setGroups(){ const R=S.reminder||{}, rOn=!!(R.on&&R.clock!==false), p=S
      {k:"backup",ic:"☁",t:"자동 백업 · 간직된 곳",st:LOCALMODE?(fileBkOld()?"need":"ok"):GAS||SERVER?"ok":"need",pill:LOCALMODE?(fileBkOld()?"백업 받을 때":"이 기기"):"켜짐",sum:bkSum(),body:backupSection()}]}]; }
 // 사용 설명서 두 권 (매뉴얼 원고 → 매뉴얼/build.py 가 웹·PDF로 만들어 manual/ 폴더에 둠). 새 창으로 열어 쓰던 화면은 그대로
 const MANUALS=[["quick","간단 매뉴얼","읽자마자 바로 써 보는 한 장 — 시작하기·하루 한 바퀴·메뉴 한눈에·단축키"],["book","상세 매뉴얼","책 한 권 — 사용법과 함께 묵상·일기·독서·글쓰기를 배우는 교과서 (갈래별 전문가 수업·AI와 함께 쓰기)"]];
+// ───────── 새 소식 (공개판, 2026-10-31 팀장님): 중요한 고침은 앱을 열 때 한 번만 쉬운 말로 알림 ─────────
+// 새 소식을 더할 때: NEWS 맨 앞에 넣고 id 는 날짜(같은 날 둘째는 2026-11-02b 처럼 — 글자 순서로 새것이 뒤). 본 소식 id 는 이 기기에만(seojae-open.newsSeen)
+const NEWS=[
+ {id:"2026-10-31",date:"2026년 10월 31일",title:"아침 서재가 이렇게 새로워졌어요",items:[
+  ["✦","열쇠 없이 AI를 써요","글쓰기 도우미·고른 곳 다듬기·맞춤법 뒷검사 같은 AI를 이제 열쇠를 넣지 않아도 씁니다. 처음 쓸 때 한 번만 동의를 여쭙니다. 일기는 AI로 보내지 않습니다.","내 AI 열쇠를 넣으면 더 깊고 넉넉한 답을 받습니다 — 설정 → 쓰기 → AI 열쇠"],
+  ["♪","찬송가·CCM을 앱 안에서 들어요","묵상 화면 「찬송가 ○장」 옆 ▶를 누르면 앱 안 작은 창에서 바로 들립니다. 「CCM」을 누르면 오늘 말씀과 어울리는 찬양을 골라 드립니다.","붐비는 날에는 ▶ 대신 「♪ ↗」가 보이고, 누르면 유튜브뮤직에서 찾아 드립니다"],
+  ["☁","한 번 이으면 다음부터 저절로","구글로 시작하신 분은 화면 위 「구글 드라이브에 잇기」를 한 번만 누르시면, 다음부터는 앱을 열 때 다시 묻지 않습니다.",""],
+  ["✎","일기장이 저녁 공책처럼","날씨와 기분을 두 개씩 고를 수 있고, 그날 쓴 글의 형광펜 구절이 일기장에 함께 보입니다. 글이 길어지면 글씨가 알맞게 작아집니다.",""]]}
+];
+const newsSeen=()=>{ try{ return localStorage.getItem("seojae-open.newsSeen")||""; }catch(_){ return ""; } };
+const newsMark=()=>{ try{ localStorage.setItem("seojae-open.newsSeen",NEWS[0]?.id||""); }catch(_){} };
+function newsCheck(){ if(NEED_CONNECT||AUTH_FAIL||!NEWS.length) return; const seen=newsSeen();
+  if(!seen&&!(live().length||Object.keys(S.diary||{}).length||(S.books||[]).length||(S.notes||[]).length)) return newsMark();   // 처음 쓰는 분: 이미 들어 있는 기능이라 알리지 않음
+  if(seen>=NEWS[0].id) return; newsOpen(NEWS.filter(n=>n.id>seen)); }
+function newsHtml(n){ return `<p class="newsdate">${esc(n.date)}</p><h3 class="newst">${esc(n.title)}</h3><ul class="newslist">${n.items.map(([ic,t,b,h])=>`<li><span class="newsic" aria-hidden="true">${ic}</span><div><b>${esc(t)}</b><p>${esc(b)}</p>${h?`<p class="newshint">${esc(h)}</p>`:""}</div></li>`).join("")}</ul>`; }
+function newsOpen(list){ list=(list&&list.length?list:NEWS.slice(0,1)); $("#newsview")?.remove(); const ov=document.createElement("div"); ov.id="newsview"; ov.className="newsview";
+  ov.innerHTML=`<article class="newscard" role="dialog" aria-modal="true" aria-labelledby="newsh"><p class="newsk" id="newsh">새 소식</p>${list.map(newsHtml).join('<hr class="dash">')}<div class="newsacts"><button class="btn ink newsok" data-x>확인했어요</button></div><p class="newsfoot">이 소식은 설정 맨 앞 「도움 → 새 소식」에서 다시 볼 수 있습니다.</p></article>`;
+  document.body.appendChild(ov); const close=()=>{ newsMark(); ov.remove(); removeEventListener("keydown",k,true); }, k=e=>{ if(e.key==="Escape"){ e.preventDefault(); e.stopImmediatePropagation(); close(); } };
+  ov.onclick=e=>{ if(e.target===ov||e.target.closest("[data-x]")) close(); }; addEventListener("keydown",k,true); setTimeout(()=>{ ov.querySelector(".newsok")?.focus({preventScroll:true}); const c=ov.querySelector(".newscard"); if(c) c.scrollTop=0; },50); }   // 첫머리부터 보이게
+function newsSection(){ return `<section class="sheet tape c compact"><p class="label">새 소식</p><p class="sub">중요한 고침이 올라가면 앱을 열 때 한 번 알려 드립니다. 지난 소식도 여기서 다시 봅니다.</p>
+  <div class="row" style="margin:6px 0 10px"><button class="btn small ink" onclick="newsOpen(NEWS)">새 소식 모두 보기</button></div>
+  ${NEWS.map(n=>`<p class="hint" style="margin:4px 0">· ${esc(n.date)} — ${esc(n.title)}</p>`).join("")}</section>`; }
 function manualSection(){ return `<section class="sheet tape c compact"><p class="label">사용 설명서</p>
   <p class="sub">처음이라면 간단 매뉴얼부터, 더 깊이 알고 싶을 때 상세 매뉴얼을 펴 보세요. 둘 다 새 창으로 열립니다.</p>
   <div class="mancards">${MANUALS.map(([k,n,d])=>`<div class="mancard"><b>${n}</b><span>${d}</span><div class="row" style="gap:6px;flex-wrap:wrap"><a class="btn small ink" href="manual/${k}.html" target="_blank" rel="noopener" title="${n}을 웹 페이지로 엽니다 (차례·검색·밝게/어둡게)">웹으로 보기 ↗</a><a class="btn small" href="manual/${k}.pdf" target="_blank" rel="noopener" download title="${n}을 PDF 책으로 받습니다 (인쇄용)">PDF 받기</a></div></div>`).join("")}</div>
@@ -9473,7 +9507,7 @@ function ensurePlan(){
   const offset=BIBLE.slice(0,b.idx).reduce((a,x)=>a+x[1],0)+b.ch-1;
   st.plan={id:"seq",perDay:b.perDay||3,day:Math.floor(offset/(b.perDay||3)),mode:"pace",start:today(),done:{},checks:[],last:null};
 }
-load().then(()=>{ ensurePlan(); ensureMs(); render(); setTimeout(checkUpdate,1500); });
+load().then(()=>{ ensurePlan(); ensureMs(); render(); setTimeout(checkUpdate,1500); setTimeout(newsCheck,1800); });
 </script>
 <script>
 /* 앱 안 브라우저(카카오톡·네이버·인스타그램 등) 안내 (2026-10-30): 여기서는 설치·구글 로그인이 막히고 저장 공간이 지워지기 쉬움
