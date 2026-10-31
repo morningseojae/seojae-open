@@ -2033,7 +2033,7 @@ details.more[open]>summary{margin-bottom:var(--sp-1)}
   <nav id="nav"></nav>
 </div><div class="navline"></div></header>
 <main class="wrap" id="main"></main>
-<footer class="appfoot" id="appfoot" aria-label="저작권·판">© 2026 임요한 목사 · 아침 서재 <b class="af-beta">베타판</b> <span id="afver"></span> · <span class="af-warn">배포 금지</span></footer>
+<footer class="appfoot" id="appfoot" aria-label="저작권·판">© 2026 임요한 목사 · 아침 서재 <b class="af-beta">베타</b> <span id="afver"></span> · <span class="af-warn">배포 금지</span></footer>
 <script>/* 맨 아래 카피라이트·판 번호(APP_VER, 1.0 → 1.1 … 1.9 → 2.0). 마우스를 올리면 올린 날·build */
 addEventListener("DOMContentLoaded",function(){ var d=new Date(document.lastModified), ok=!isNaN(d)&&d.getFullYear()>2025, v=document.getElementById("afver");
   if(v) v.textContent=typeof APP_VER==="string"?APP_VER:""; v&&(v.title=(ok?"올린 날 "+d.getFullYear()+"."+(d.getMonth()+1)+"."+d.getDate():"")+(typeof APP_BUILD==="string"?" · build "+APP_BUILD:"")); });</script>
@@ -2591,7 +2591,7 @@ async function pushSave(){
 // ───────── 새 버전 자동 새로 고침 ─────────
 // 올릴 때마다 version.json 의 번호가 바뀝니다. 앱이 열릴 때·다시 화면에 올라올 때·5분마다 확인해서,
 // 쓰는 중인 글이 없고 저장이 끝났을 때 새 버전으로 새로 고칩니다.
-const APP_BUILD="3003c45b59"; const APP_VER="1.1";   // 판 번호: 배포할 때마다 도구/판올리기.py 가 0.1씩 올림 (1.9 다음은 2.0) — 손으로 고치지 말 것
+const APP_BUILD="3b633858ea"; const APP_VER="1.2";   // 판 번호: 배포할 때마다 도구/판올리기.py 가 0.1씩 올림 (1.9 다음은 2.0) — 손으로 고치지 말 것
 let NEW_BUILD=null, UPDATE_NOTICED=false;
 async function checkUpdate(){
   if(APP_BUILD.startsWith("__")) return;                 // 원본 파일로 열었을 때(고치는 중)는 건너뜁니다
@@ -3098,7 +3098,7 @@ const NEWS=[
   ["⇄","화면이 부드럽게 넘어가요","메뉴를 옮기면 지난 화면이 서서히 사라지고 새 화면이 서서히 떠올라요. 기기에서 「동작 줄이기」를 켜 두셨으면 바로 바뀌어요.",""],
   ["🎨","종이 색이 앱 전체에 들어요","설정 → 화면 꾸미기 → 「종이 색」을 고르면 이제 글 쓰는 공책뿐 아니라 모든 화면의 카드와 바탕이 그 색이 돼요. 「검은 종이」는 어두운 화면으로 바꿔요.",""],
   ["▦","글방과 묵상이 한결 여유로워졌어요","글방 홈의 「새 원고」·「자유 글」이 가운데 네모 두 장이 되었고, 「끄적이기」 색은 둘레와 어울리게 옅어졌어요. 묵상은 성경 본문과 쓰는 칸 사이를 넓히고 옅은 가로선을 그었어요.",""],
-  ["1.0","맨 아래에 판 번호","화면 맨 아래 작은 글씨에 「베타판 1.0」처럼 판 번호가 보여요. 고칠 때마다 0.1씩 올라가고, 1.9 다음은 2.0이에요.",""]]},
+  ["1.0","맨 아래에 판 번호","화면 맨 아래 작은 글씨에 「베타 1.0」처럼 판 번호가 보여요. 고칠 때마다 0.1씩 올라가고, 1.9 다음은 2.0이에요.",""]]},
  {id:"2026-10-31b",date:"2026년 10월 31일",title:"더 단정하고 쉬워졌어요",items:[
   ["✓","읽은 표시를 풀 수 있어요","「오늘의 말씀」에서 잘못 눌렀으면 그 분량을 한 번 더 누르거나, 도장 옆 「읽음 풀기」를 누르면 됩니다.",""],
   ["?","화면이 한결 단정해졌어요","오늘 화면의 묻기 상자를 빼고, 긴 설명은 작은 「?」 단추 안에 넣었어요. 묵상의 「개역개정」 같은 성경 이름은 점선 글자를 누르면 열리고, 일기 칸은 옅은 종이 바탕이 되었어요.","궁금할 때 「?」를 누르면 짧은 도움말이 떠요"],
