@@ -165,6 +165,21 @@ main.wrap{padding:34px 16px 80px}
 .sheet.tape.b::before{background:var(--tape-b);transform:rotate(2deg);left:24px}
 .sheet.tape.c::before{background:repeating-linear-gradient(90deg,var(--tape-c) 0 6px,transparent 6px 10px),var(--tape-c);transform:rotate(-1.5deg);left:auto;right:28px}
 .grid{display:grid;gap:26px;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));align-items:start}
+@media (min-width:1000px){ .tgrid1{align-items:stretch} .tgrid2>.trec{grid-column:span 2} }
+.tdood{position:absolute;right:18px;bottom:12px;width:60px;color:var(--deco);opacity:.85;pointer-events:none} .tdood svg{width:100%;height:auto;display:block}
+.tweek .wkrow{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin:12px 0 10px}
+.wkd{display:grid;justify-items:center;gap:4px;font:12.5px var(--ui-font,sans-serif);color:var(--ink-soft)}
+.wkd i{font-style:normal}
+.wkd b{display:grid;place-items:center;width:34px;height:34px;border-radius:50%;border:1.5px dashed color-mix(in srgb,var(--deco) 80%,transparent);font:600 10.5px var(--ui-font,sans-serif);color:var(--faint)}
+.wkd b svg{width:24px;height:24px}
+.wkd.on b{border-style:solid;border-color:color-mix(in srgb,var(--stamp) 45%,transparent);background:color-mix(in srgb,var(--stamp) 7%,var(--paper));transform:rotate(-4deg)}
+.wkd.now b{border-style:solid;border-color:var(--sepia);color:var(--sepia)} .wkd.now i{color:var(--ink);font-weight:700}
+.wkd.fut b{opacity:.45} .wkd.rest b{border-style:dotted}
+.wkn{margin:2px 0 0;font-size:14.5px;color:var(--ink-soft)} .wkn b{color:var(--ink);font-size:17px}
+.wkfoot{display:flex;align-items:flex-end;justify-content:space-between;gap:10px;margin-top:14px;padding-top:12px;border-top:1px dashed var(--edge)}
+.wkline{font-family:"Gamja Flower",cursive;font-size:22px;line-height:1.3;color:var(--sepia)}
+.wkdood{width:58px;flex:none;color:var(--deco)} .wkdood svg{width:100%;height:auto;display:block}
+@media (max-width:700px){ .wkd b{width:30px;height:30px} .wkline{font-size:19px} }
 .sheet.wide{grid-column:1 / -1}
 .lookgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(300px,100%),1fr));gap:4px 32px;margin-top:4px}
 .lookgrid .setrow{margin-top:12px;align-items:flex-start} .lookgrid .setrow>.k{min-width:96px;padding-top:4px}
@@ -269,9 +284,10 @@ ol.toc{margin:6px 0 4px;padding-left:20px;font-size:13.5px;line-height:1.6;color
 
 /* 도움말 · 단계 */
 .hint{display:block;font-size:13.5px;line-height:1.55;color:var(--faint);margin-top:4px}
-.pgghost{position:fixed;inset:0;z-index:4;pointer-events:none;overflow:hidden;opacity:1;transition:opacity .26s ease-in}
+.pgghost{position:fixed;inset:0;z-index:4;pointer-events:none;overflow:hidden;opacity:1;transition:opacity .34s ease-in}
 .pgghost.out{opacity:0}
-#main.pgin{animation:pgin .38s cubic-bezier(.2,.7,.3,1) both}
+#main.pgin{animation:pgin .5s cubic-bezier(.2,.7,.3,1) both}
+#main.pgin.pgwait{animation-delay:.34s}   /* 지난 화면이 다 사라진 뒤에 떠오름 (겹치지 않게) */
 @keyframes pgin{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 @media (prefers-reduced-motion:reduce){ .pgghost{display:none} #main.pgin{animation:none} }
 .appfoot{text-align:center;font:11.5px/1.6 var(--ui-font,-apple-system,sans-serif);color:var(--faint);opacity:.8;margin:34px auto 14px;padding:0 16px;letter-spacing:.01em}
@@ -2017,7 +2033,7 @@ details.more[open]>summary{margin-bottom:var(--sp-1)}
   <nav id="nav"></nav>
 </div><div class="navline"></div></header>
 <main class="wrap" id="main"></main>
-<footer class="appfoot" id="appfoot" aria-label="저작권·판">© 2026 임요한 목사 · 아침 서재 <b class="af-beta">베타</b> <span id="afver"></span> · <span class="af-warn">배포 금지</span></footer>
+<footer class="appfoot" id="appfoot" aria-label="저작권·판">© 2026 임요한 목사 · 아침 서재 <b class="af-beta">베타판</b> <span id="afver"></span> · <span class="af-warn">배포 금지</span></footer>
 <script>/* 맨 아래 카피라이트·판 번호(APP_VER, 1.0 → 1.1 … 1.9 → 2.0). 마우스를 올리면 올린 날·build */
 addEventListener("DOMContentLoaded",function(){ var d=new Date(document.lastModified), ok=!isNaN(d)&&d.getFullYear()>2025, v=document.getElementById("afver");
   if(v) v.textContent=typeof APP_VER==="string"?APP_VER:""; v&&(v.title=(ok?"올린 날 "+d.getFullYear()+"."+(d.getMonth()+1)+"."+d.getDate():"")+(typeof APP_BUILD==="string"?" · build "+APP_BUILD:"")); });</script>
@@ -2575,7 +2591,7 @@ async function pushSave(){
 // ───────── 새 버전 자동 새로 고침 ─────────
 // 올릴 때마다 version.json 의 번호가 바뀝니다. 앱이 열릴 때·다시 화면에 올라올 때·5분마다 확인해서,
 // 쓰는 중인 글이 없고 저장이 끝났을 때 새 버전으로 새로 고칩니다.
-const APP_BUILD="a32f724c45"; const APP_VER="1.0";   // 판 번호: 배포할 때마다 도구/판올리기.py 가 0.1씩 올림 (1.9 다음은 2.0) — 손으로 고치지 말 것
+const APP_BUILD="3003c45b59"; const APP_VER="1.1";   // 판 번호: 배포할 때마다 도구/판올리기.py 가 0.1씩 올림 (1.9 다음은 2.0) — 손으로 고치지 말 것
 let NEW_BUILD=null, UPDATE_NOTICED=false;
 async function checkUpdate(){
   if(APP_BUILD.startsWith("__")) return;                 // 원본 파일로 열었을 때(고치는 중)는 건너뜁니다
@@ -3075,11 +3091,14 @@ const MANUALS=[["quick","간단 매뉴얼","읽자마자 바로 써 보는 한 �
 // ───────── 새 소식 (공개판, 2026-10-31 팀장님): 중요한 고침은 앱을 열 때 한 번만 쉬운 말로 알림 ─────────
 // 새 소식을 더할 때: NEWS 맨 앞에 넣고 id 는 날짜(같은 날 둘째는 2026-11-02b 처럼 — 글자 순서로 새것이 뒤). 본 소식 id 는 이 기기에만(seojae-open.newsSeen)
 const NEWS=[
+ {id:"2026-10-31d",date:"2026년 10월 31일",title:"오늘 화면이 아기자기해졌어요",items:[
+  ["☕","오늘 화면이 아기자기해졌어요","「이번 주의 아침」 카드에 월요일부터 아침을 연 날마다 도장이 찍히고, 날마다 바뀌는 손글씨 한 줄이 보여요. 컴퓨터에서는 카드 아래 빈자리에 작은 그림도 그려져요.",""],
+  ["⇄","화면 넘김이 더 천천히","지난 화면이 다 사라진 뒤에 새 화면이 떠올라요. 두 화면이 겹쳐 보이지 않아요.",""]]},
  {id:"2026-10-31c",date:"2026년 10월 31일",title:"화면이 부드럽게 넘어가요",items:[
   ["⇄","화면이 부드럽게 넘어가요","메뉴를 옮기면 지난 화면이 서서히 사라지고 새 화면이 서서히 떠올라요. 기기에서 「동작 줄이기」를 켜 두셨으면 바로 바뀌어요.",""],
   ["🎨","종이 색이 앱 전체에 들어요","설정 → 화면 꾸미기 → 「종이 색」을 고르면 이제 글 쓰는 공책뿐 아니라 모든 화면의 카드와 바탕이 그 색이 돼요. 「검은 종이」는 어두운 화면으로 바꿔요.",""],
   ["▦","글방과 묵상이 한결 여유로워졌어요","글방 홈의 「새 원고」·「자유 글」이 가운데 네모 두 장이 되었고, 「끄적이기」 색은 둘레와 어울리게 옅어졌어요. 묵상은 성경 본문과 쓰는 칸 사이를 넓히고 옅은 가로선을 그었어요.",""],
-  ["1.0","맨 아래에 판 번호","화면 맨 아래 작은 글씨의 판 번호가 1.0부터 시작해요. 고칠 때마다 0.1씩 올라가고, 1.9 다음은 2.0이에요.",""]]},
+  ["1.0","맨 아래에 판 번호","화면 맨 아래 작은 글씨에 「베타판 1.0」처럼 판 번호가 보여요. 고칠 때마다 0.1씩 올라가고, 1.9 다음은 2.0이에요.",""]]},
  {id:"2026-10-31b",date:"2026년 10월 31일",title:"더 단정하고 쉬워졌어요",items:[
   ["✓","읽은 표시를 풀 수 있어요","「오늘의 말씀」에서 잘못 눌렀으면 그 분량을 한 번 더 누르거나, 도장 옆 「읽음 풀기」를 누르면 됩니다.",""],
   ["?","화면이 한결 단정해졌어요","오늘 화면의 묻기 상자를 빼고, 긴 설명은 작은 「?」 단추 안에 넣었어요. 묵상의 「개역개정」 같은 성경 이름은 점선 글자를 누르면 열리고, 일기 칸은 옅은 종이 바탕이 되었어요.","궁금할 때 「?」를 누르면 짧은 도움말이 떠요"],
@@ -3732,9 +3751,9 @@ function fadeGhost(){ const m=$("#main"); if(!m||!m.firstElementChild||document.
   c.querySelectorAll("w-ed").forEach(e=>{ const d=document.createElement("div"); d.className=e.className; d.innerHTML=e.innerHTML; e.replaceWith(d); });
   c.querySelectorAll("iframe,video,audio,canvas,[contenteditable]").forEach(e=>e.tagName==="CANVAS"||e.tagName==="IFRAME"||e.tagName==="VIDEO"||e.tagName==="AUDIO"?e.remove():e.removeAttribute("contenteditable"));
   c.style.cssText=`position:absolute;left:${r.left}px;top:${r.top}px;width:${r.width}px;margin:0;box-sizing:border-box`; g.appendChild(c); return g; }
-function fadeRun(g){ const m=$("#main"); if(!m) return; m.classList.remove("pgin"); void m.offsetWidth; m.classList.add("pgin"); clearTimeout(fadeRun.t); fadeRun.t=setTimeout(()=>m.classList.remove("pgin"),420);
+function fadeRun(g){ const m=$("#main"); if(!m) return; m.classList.remove("pgin","pgwait"); void m.offsetWidth; m.classList.add("pgin"); if(g) m.classList.add("pgwait"); clearTimeout(fadeRun.t); fadeRun.t=setTimeout(()=>m.classList.remove("pgin","pgwait"),g?900:560);
   document.querySelectorAll(".pgghost").forEach(x=>x.remove());
-  if(g){ document.body.appendChild(g); requestAnimationFrame(()=>g.classList.add("out")); setTimeout(()=>g.remove(),320); } }
+  if(g){ document.body.appendChild(g); void g.offsetWidth; g.classList.add("out"); setTimeout(()=>g.remove(),380); } }
 function render(){
   const fk=fadeKey(), fade=FADE_K!=null&&fk!==FADE_K&&!NEED_CONNECT&&!matchMedia("(prefers-reduced-motion:reduce)").matches; FADE_K=fk;
   let ghost=null; if(fade){ try{ ghost=fadeGhost(); }catch(_){ ghost=null; } }
@@ -4539,7 +4558,7 @@ today(){
   <div class="dateline"><span class="d">${d.getMonth()+1}.${String(d.getDate()).padStart(2,"0")}</span><span class="w">${"일월화수목금토"[d.getDay()]}요일 ${dayPart()}, 말씀과 책 앞에서</span>
     ${(()=>{ const L=S.log[t]||{}; const items=[["성경 읽기",!!(L.read||(L.bible||[]).length),"rtGoBible()","오늘의 말씀으로"],["묵상",tw.some(w=>w.track==="bible"),"go('write',{track:'bible'})","묵상 쓰기로"],["책 읽기",!!(L.book||Object.keys(L.books||{}).length),"go('shelf')","책장으로"],["일기",!!(S.diary?.[t]?.line||"").trim(),"diaryDate=today();go('diary')","오늘 일기로"]];
       return `<span class="routine">${items.map(([n,on,fn,dest])=>`<button type="button" class="${on?"on":""}" onclick="${fn}" title="${on?"오늘 했습니다":"아직입니다"} — 누르면 ${dest}" aria-label="${n} ${on?"했음":"아직"} — ${dest} 가기">${tickSvg(on)}${n}<span class="rt-go" aria-hidden="true">›</span></button>`).join("")}</span>`; })()}</div>
-  <div class="grid">
+  <div class="grid tgrid1">
     ${todayBibleCard()}
     <section class="sheet tape b">
       <p class="label book">읽고 있는 책</p>
@@ -4555,8 +4574,8 @@ today(){
     </section>
     <section class="sheet pomocard" id="pomocard">${pomoCardHtml()}</section>
   </div>
-  <div class="grid" style="margin-top:30px">
-    <section class="sheet">
+  <div class="grid tgrid2" style="margin-top:30px">
+    <section class="sheet trec">
       <p class="label">오늘의 기록</p>
       
       <div class="sub" style="margin-top:12px">오늘 밑줄 ${tn.length}개 · 글 ${tw.length}편 · ${tw.reduce((a,w)=>a+chars(w.body),0).toLocaleString()}자</div>
@@ -4565,6 +4584,7 @@ today(){
       <div class="row" style="margin-top:14px"><button class="btn ink" onclick="go('write',{track:'bible'})">묵상 쓰기</button><button class="btn ink" onclick="go('room')">글방으로</button></div>
       <div class="row" style="margin-top:10px"><button class="btn" onclick="diaryDate=today();go('diary')">${ICO.diary}오늘의 독서 일기 꾸미기</button></div>
     </section>
+    ${weekCard()}
     ${(()=>{ const past=S.notes.filter(n=>n.date&&daysBetween(n.date,t)>=7); if(!past.length) return ""; const n=pick(past,1,t+"n")[0];
       return `<section class="sheet tape c"><p class="label ${n.track}">다시 만나는 밑줄</p><div class="quote ${n.track}">${esc(n.text)}</div><div class="muted" style="margin-top:6px">${esc(noteSrc(n))} · ${n.date}</div>
         ${grownFrom(n.id).length?"":`<div class="row" style="margin-top:10px"><button class="btn small" onclick="growNote('${n.id}')">${ICO.pen}오늘 이 문장으로 쓰기</button></div>`}</section>`; })()}
@@ -4752,7 +4772,7 @@ const AFTER={
   write(){ if($("#aipanel")){ if(AI_KEY!==aiKeyNow()) aiLoad(); aiDraw(); } READVIEW=false; EDIT_BASE=editId?(S.writings.find(x=>x.id===editId)?.updated||null):null; EDIT_WARNED=false; grow(); countW(); restoreDraft(); stDraftPaint(); paintPalette(); stkFitAll(); paintSu(); keepAwake(true); },
   drawer(){ if(drawerSub==="all") renderArchive(); },
   room(){ roomDnd(); },
-  today(){ pomoPaint(); },
+  today(){ pomoPaint(); todayDeco(); setTimeout(todayDeco,700); setTimeout(todayDeco,1600); },   // 표지 그림·글꼴이 늦게 와 높이가 바뀌면 다시 셈
   settings(){
     if(CONF.notion&&CONF.local!==false) checkNotion();
     try{ const nav=document.querySelectorAll(".setnav a"); const io=new IntersectionObserver(es=>{ es.forEach(e=>{ if(e.isIntersecting) nav.forEach(a=>a.classList.toggle("on",a.dataset.g===e.target.id.slice(5))); }); },{rootMargin:"-20% 0px -70% 0px"}); document.querySelectorAll(".setgrp").forEach(g=>io.observe(g)); }catch(_){}
@@ -4840,6 +4860,27 @@ function tipShow(b){ const o=document.getElementById("tippop"), same=o&&o._b===b
   p.style.left=Math.max(12,Math.min(innerWidth-w-12,r.left+r.width/2-w/2))+"px"; p.style.top=(r.bottom+8+scrollY)+"px"; }
 document.addEventListener("pointerdown",e=>{ const o=document.getElementById("tippop"); if(o&&!e.target.closest("#tippop,.tipbtn")) o.remove(); },true);
 document.addEventListener("keydown",e=>{ if(e.key==="Escape") document.getElementById("tippop")?.remove(); });
+// 오늘 화면의 아기자기한 것들 (2026-10-31 팀장님: PC에서 여백이 너무 많다) — 이번 주 아침 도장 · 날마다 바뀌는 손글씨 한 줄 · 카드 아래 빈자리의 작은 손그림
+const DOODLE={   // 잉크 선으로 그린 작은 그림 (색은 currentColor)
+  cup:`<svg viewBox="0 0 64 56" aria-hidden="true"><path d="M14 22h30v12c0 9-6 15-15 15s-15-6-15-15z" fill="var(--paper)" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M44 26c6-1 9 2 8 6s-5 6-9 5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="M8 50h44" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M22 16c-3-4 3-6 0-10M30 16c-3-4 3-6 0-10M38 16c-3-4 3-6 0-10" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" opacity=".6"/></svg>`,
+  pot:`<svg viewBox="0 0 64 64" aria-hidden="true"><path d="M20 40h24l-3 18H23z" fill="var(--paper)" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M18 40h28" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="M32 40V18" stroke="var(--book)" stroke-width="1.6" stroke-linecap="round"/><path d="M32 30c-8 0-12-5-12-11 7 0 12 4 12 11zM32 24c7 0 11-5 11-10-6 0-11 4-11 10z" fill="color-mix(in srgb,var(--book) 18%,transparent)" stroke="var(--book)" stroke-width="1.4" stroke-linejoin="round"/></svg>`,
+  pencil:`<svg viewBox="0 0 72 48" aria-hidden="true"><path d="M8 40l40-30 8 9-40 30H8z" fill="var(--paper)" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M42 14l8 9M8 40l8 9" stroke="currentColor" stroke-width="1.3"/><path d="M50 8l6 9 4-3c2-2 1-5-1-7s-5-2-7 0z" fill="color-mix(in srgb,var(--bible) 25%,transparent)" stroke="currentColor" stroke-width="1.4"/><path d="M20 46c10-2 22-1 44-3" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-dasharray="2 3" opacity=".6"/></svg>`,
+  sun:`<svg viewBox="0 0 64 48" aria-hidden="true"><path d="M14 40a18 18 0 0 1 36 0" fill="color-mix(in srgb,var(--sepia) 14%,transparent)" stroke="currentColor" stroke-width="1.6"/><path d="M32 12v6M14 20l4 4M50 20l-4 4M6 34h6M52 34h6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M4 42h56" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>`};
+const DAY_LINES=["천천히, 그러나 날마다","오늘의 한 줄이 내일의 한 장","말씀 한 줄, 커피 한 잔","쓰는 사람은 앉는 사람","작은 아침이 쌓여 한 권이 됩니다","읽은 만큼 깊어지고, 쓴 만큼 자랍니다","오늘도 이 자리에서","서두르지 않아도 괜찮아요","한 문장이면 충분한 아침"];
+function weekCard(){ const t=today(), d0=new Date(t+"T00:00"), back=(d0.getDay()+6)%7; d0.setDate(d0.getDate()-back);   // 월요일부터
+  const act=k=>{ const l=S.log[k]; return !!(l&&(l.read||l.book||l.note||l.write)); };
+  const days=[...Array(7)].map((_,i)=>{ const d=new Date(d0); d.setDate(d0.getDate()+i); return dkey(d); });
+  const n=days.filter(k=>k<=t&&act(k)).length, line=pick(DAY_LINES,1,t+"w")[0];
+  return `<section class="sheet tweek" aria-label="이번 주의 아침"><p class="label">이번 주의 아침</p>
+    <div class="wkrow">${days.map(k=>{ const dd=new Date(k+"T00:00"), on=act(k), fut=k>t, rest=!isReadDay(k)&&!on;
+      return `<span class="wkd ${on?"on":""} ${k===t?"now":""} ${fut?"fut":""} ${rest?"rest":""}" title="${dd.getMonth()+1}월 ${dd.getDate()}일${on?" — 아침을 열었습니다":fut?"":rest?" — 쉬는 날":""}"><i>${WEEK[dd.getDay()]}</i><b>${on?tickSvg(true):k===t?"오늘":rest?"쉼":""}</b></span>`; }).join("")}</div>
+    <p class="wkn">이번 주 <b>${n}</b>번의 아침${n>=5?" — 잘하고 계세요":n?"":" — 오늘 첫 도장을 찍어 보세요"}</p>
+    <div class="wkfoot"><span class="wkline">${esc(line)}</span><span class="wkdood">${DOODLE.cup}</span></div></section>`; }
+function todayDeco(){ if(tab!=="today") return; document.querySelectorAll(".tdood").forEach(x=>x.remove()); if(innerWidth<1000) return;
+  const cards=[...document.querySelectorAll(".tgrid1>.sheet")], pics=["pot","sun","pencil"];
+  cards.forEach((c,i)=>{ const kids=[...c.children].filter(x=>!x.classList.contains("tdood")); const last=kids.reduce((m,x)=>Math.max(m,x.getBoundingClientRect().bottom),0), free=c.getBoundingClientRect().bottom-last;
+    if(free<66) return; const d=document.createElement("span"); d.className="tdood"; d.setAttribute("aria-hidden","true"); d.innerHTML=DOODLE[pics[i%3]]; c.appendChild(d); }); }
+addEventListener("resize",()=>{ clearTimeout(todayDeco.t); todayDeco.t=setTimeout(todayDeco,200); });
 function tickSvg(on){ // 손으로 그린 동그라미와 체크
   return `<svg viewBox="0 0 28 28" width="24" height="24" aria-hidden="true"><path d="M14 2.6c6.5-.3 11.3 4.6 11.1 11.2-.2 6.4-5.3 11.4-11.6 11.1C7.2 24.6 2.8 19.6 3 13.4 3.2 7.3 8 2.9 14 2.6z" fill="none" stroke="currentColor" stroke-width="1.6" opacity=".55"/>${on?`<path d="M8 14.5l4.2 4.3L21 8.6" fill="none" stroke="var(--stamp)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>`:""}</svg>`;
 }
