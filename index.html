@@ -125,6 +125,19 @@ nav button{font:inherit;font-size:15px;color:var(--ink-soft);background:var(--pa
 nav button:hover{transform:translateY(0)}
 nav button.on{background:var(--paper) var(--grain);color:var(--ink);font-weight:700;transform:translateY(1px);box-shadow:0 -2px 0 var(--sepia) inset}
 /* 글쓰기(글방): 다른 탭과 떨어진 먹빛 탭 — 펜 그림, 손글씨 이름 */
+/* 오늘 = 집(홈): 아침 햇살 빛깔 · 서랍 = 꺼내 쓰는 보관함: 탭이 아니라 서랍 앞판(네모·손잡이), 하루 메뉴와 살짝 떨어짐 (팀장님 2026-10-31) */
+@media (min-width:701px){
+  nav button.navhome,nav button.navdrawer{display:flex;align-items:center;gap:6px}
+  nav button.navhome .nvi,nav button.navdrawer .nvi{display:block;width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+  nav button.navhome{background:linear-gradient(180deg,#fcebc8,#f4d79f);color:#8a5a14;border-color:#e2bf80}
+  nav button.navhome.on{background:linear-gradient(180deg,#f8dc9e,#eec170);color:#5f3a06;box-shadow:0 -2px 0 #c07a1e inset}
+  nav button.navdrawer{position:relative;align-self:center;margin-left:12px;border:1px solid var(--edge);border-radius:6px;padding:6px 15px 10px;transform:translateY(-1px);background:linear-gradient(180deg,var(--paper-2),color-mix(in srgb,var(--edge) 40%,var(--paper-2)));box-shadow:0 2px 0 color-mix(in srgb,var(--edge) 85%,#000)}
+  nav button.navdrawer::after{content:"";position:absolute;left:50%;bottom:3px;width:24px;height:3px;margin-left:-12px;border-radius:2px;background:color-mix(in srgb,var(--ink-soft) 60%,transparent)}
+  nav button.navdrawer:hover{transform:translateY(-3px)}
+  nav button.navdrawer.on{background:var(--paper) var(--grain);color:var(--ink);font-weight:700;box-shadow:0 2px 0 var(--sepia)}
+  :root[data-theme="dark"] nav button.navhome{background:linear-gradient(180deg,#4d3c22,#3f311b);color:#f1cf8f;border-color:#6b5430}
+  :root[data-theme="dark"] nav button.navhome.on{background:linear-gradient(180deg,#5e4826,#4b3a1f);color:#ffe2a8}
+}
 nav button.navroom{margin-left:auto;display:flex;align-items:center;gap:6px;background:linear-gradient(180deg,#2f3b52,#253045);color:#efe6d4;border-color:#1d2536;font-family:"Nanum Pen Script";font-size:21px;line-height:1;padding:7px 18px 6px;letter-spacing:.02em}
 nav button.navroom .ico{width:16px;height:16px;stroke:#d9b779}
 nav button.navroom:hover{color:#fff}
@@ -695,6 +708,11 @@ hr.dash{border:0;border-top:1px dashed var(--edge);margin:18px 0}
   nav .nvt{line-height:1.15}
   nav button.on:not(.navroom):not(.navai){background:transparent;color:var(--sepia);font-weight:800}
   nav button.on .nvi{background:var(--sepia);stroke:var(--paper);box-shadow:0 3px 8px -4px color-mix(in srgb,var(--sepia) 80%,transparent)}
+  nav button.navhome:not(.on) .nvi{background:color-mix(in srgb,#f2c066 30%,transparent);stroke:#a8650f}   /* 오늘 = 집: 늘 햇살색 */
+  nav button.navhome.on .nvi{background:#d08a2a;stroke:#fffaf0;box-shadow:0 3px 8px -4px rgba(208,138,42,.8)}
+  nav button.navhome.on:not(.navroom){color:#a0620f}
+  nav button.navdrawer .nvi{border-radius:8px}   /* 서랍: 동그라미 대신 네모 손잡이 판 */
+  nav button.navdrawer:not(.on) .nvi{box-shadow:inset 0 0 0 1.5px color-mix(in srgb,var(--ink-soft) 35%,transparent)}
   nav button:not(.on):active .nvi{background:color-mix(in srgb,var(--sepia) 16%,transparent);transform:scale(.94)}
   nav button.navroom,nav button.navai{box-shadow:0 3px 10px -5px rgba(20,25,40,.6)}
   nav button.navroom{flex-direction:column;gap:2px;font-size:16px} nav button.navroom .ico{width:20px;height:20px}
@@ -869,8 +887,15 @@ details.keybox>summary{cursor:pointer;color:var(--ink-soft);font-size:14px}
 .dhead .dd{font-family:"Nanum Pen Script";font-size:56px;line-height:.9;color:var(--ink)}
 .dhead .dw{font-family:"Nanum Myeongjo";font-size:15px;color:var(--ink-soft);letter-spacing:.15em}
 .dmood{display:flex;gap:2px;flex-wrap:wrap;margin:4px 0 14px}
-.dmood button{font-size:20px;background:none;border:1px solid transparent;border-radius:50%;width:36px;height:36px;cursor:pointer;opacity:.35;filter:grayscale(.6)}
-.dmood button.on{opacity:1;filter:none;border-color:var(--deco);background:var(--paper-2)}
+.dmood button{background:none;border:1.6px solid transparent;border-radius:48% 52% 50% 46%/52% 46% 54% 48%;width:34px;height:34px;padding:0;display:grid;place-items:center;cursor:pointer;color:var(--ink-soft);opacity:.5;transition:opacity .15s,transform .15s,color .15s}
+.dmood button:hover{opacity:.9}
+.dmood button.on{opacity:1;color:var(--c);border-color:color-mix(in srgb,var(--c) 70%,transparent);background:color-mix(in srgb,var(--c) 15%,transparent);transform:rotate(-4deg)}
+.dhead .dwrow{display:inline-flex;align-items:flex-end;gap:10px;flex-wrap:nowrap;min-width:0}   /* 요일과 날씨·기분 그림은 늘 한 줄(좁으면 날짜 아래로 함께 내려감) */
+.dhead .dhico{display:inline-flex;gap:4px;margin-bottom:-4px;flex:none}
+.dhead .dwrow .dw{white-space:nowrap} @media (max-width:420px){ .dhead .dwrow{gap:7px} .dhead .dwrow .dw{letter-spacing:.08em} .dhead .dhico{gap:2px} .dhead .dhico .dico{width:25px;height:25px} }
+.dhead .dhico .dico{width:27px;height:27px;fill:none;stroke:var(--c);stroke-width:1.55;stroke-linecap:round;stroke-linejoin:round;display:block}
+.dmood .dico{width:21px;height:21px;fill:none;stroke:currentColor;stroke-width:1.55;stroke-linecap:round;stroke-linejoin:round}
+.dli .dm .dico{width:18px;height:18px;fill:none;stroke:var(--c);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;vertical-align:-3px;margin-right:1px}
 .dsec{margin:18px 0 0}
 .dsec>.dl{font-family:"Nanum Pen Script";font-size:23px;color:var(--sepia);margin:0 0 6px}
 .dsec ul{margin:0;padding-left:18px}
@@ -878,7 +903,7 @@ details.keybox>summary{cursor:pointer;color:var(--ink-soft);font-size:14px}
 .dquote{font-family:"Nanum Myeongjo";border-left:2px solid var(--deco);padding:2px 0 2px 12px;margin:8px 0;line-height:1.75}
 /* 일기장 = 스크롤 없는 공책 (PC): 책 크기 고정, 쪽은 넘치지 않게 (dFit 이 쪽지·밑줄을 접고 글씨를 줄임) */
 @media (min-width:701px){ body:has(.dbook) main.wrap{padding-bottom:16px} .dbook>.diary{height:clamp(520px,calc(100vh - 270px),980px);min-height:0!important} .dbook>.diary>.pg{overflow:hidden;box-sizing:border-box} .dqs .dquote{display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden;cursor:pointer} }
-.crayon .dline{font-size:calc(25px * var(--dls,1));line-height:calc(34px * var(--dls,1));min-height:calc(238px * var(--dls,1));background:repeating-linear-gradient(transparent 0 calc(34px * var(--dls,1) - 2px),color-mix(in srgb,var(--crayon,#e4714a) 28%,transparent) calc(34px * var(--dls,1) - 2px) calc(34px * var(--dls,1) - 1px),transparent calc(34px * var(--dls,1) - 1px) calc(34px * var(--dls,1)))!important;background-attachment:local!important}
+.crayon .dline{font-size:calc(25px * var(--dls,1));line-height:calc(34px * var(--dls,1));min-height:0;height:238px;overflow:hidden;background:repeating-linear-gradient(transparent 0 calc(34px * var(--dls,1) - 2px),color-mix(in srgb,var(--crayon,#e4714a) 28%,transparent) calc(34px * var(--dls,1) - 2px) calc(34px * var(--dls,1) - 1px),transparent calc(34px * var(--dls,1) - 1px) calc(34px * var(--dls,1)))!important;background-attachment:local!important}
 /* 끼워 둔 쪽지 */
 .dwlist{display:grid;gap:10px;margin-top:6px}
 .dw-slip{display:grid;gap:2px;text-align:left;width:100%;border:1px solid color-mix(in srgb,var(--edge) 70%,transparent);border-left:3px solid var(--deco);background:color-mix(in srgb,#fffdf6 70%,var(--paper));border-radius:2px 8px 8px 2px;padding:9px 13px 10px;cursor:pointer;color:var(--ink);font:inherit;box-shadow:0 1px 0 rgba(0,0,0,.04),0 6px 12px -10px rgba(60,40,20,.5);transform:rotate(var(--rot,0deg));transition:transform .18s,box-shadow .18s}
@@ -889,6 +914,13 @@ details.keybox>summary{cursor:pointer;color:var(--ink-soft);font-size:14px}
 .dw-slip .ex{font:13px/1.55 "Gowun Batang",serif;color:var(--ink-soft);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .dw-slip[hidden],.dquote[hidden],.dw-more[hidden]{display:none!important}
 .dqs.tight .dquote{-webkit-line-clamp:2;margin:5px 0;line-height:1.6} .dqs.tight .dquote .muted{display:none}
+.dw-slip .hls{display:grid;gap:4px;margin-top:3px}
+.dw-slip .dhl{display:block;font:14.5px/1.6 "Gowun Batang",serif;color:var(--ink);quotes:"“" "”";word-break:keep-all;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.dw-slip .dhl:not(.auto){background:linear-gradient(transparent 52%,color-mix(in srgb,var(--hc,#f7d65c) 55%,transparent) 52%,color-mix(in srgb,var(--hc,#f7d65c) 55%,transparent) 92%,transparent 92%);padding:0 2px;-webkit-box-decoration-break:clone;box-decoration-break:clone}
+.dw-slip .dhl.hl-y{--hc:#f7d65c} .dw-slip .dhl.hl-g{--hc:#96cd78} .dw-slip .dhl.hl-p{--hc:#f096af} .dw-slip .dhl.hl-b{--hc:#82b9f0}
+.dw-slip .dhl.auto{color:var(--ink-soft);font-style:italic;border-left:2px solid color-mix(in srgb,var(--deco) 70%,transparent);padding-left:8px}
+.dw-slip .hlauto{font:11.5px/1.3 var(--ui-font,sans-serif);color:var(--faint)}
+.dwlist.tight .dw-slip .hls{grid-column:1/-1;margin-top:0} .dwlist.tight .dw-slip .dhl{-webkit-line-clamp:1;font-size:13.5px} .dwlist.tight .dw-slip .dhl+.dhl,.dwlist.tight .dw-slip .hlauto{display:none}
 .dwlist.tight{gap:5px} .dwlist.tight .dw-slip{grid-template-columns:auto 1fr;align-items:baseline;gap:8px;padding:5px 12px} .dwlist.tight .dw-slip .ex{display:none} .dwlist.tight .dw-slip b{font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .dw-more{justify-self:start;border:1px dashed var(--edge);background:none;border-radius:999px;padding:4px 12px;font:12.5px var(--ui-font,sans-serif);color:var(--ink-soft);cursor:pointer;margin-top:2px} .dw-more:hover{color:var(--ink);border-color:var(--ink-soft)}
 .dslipview{position:fixed;inset:0;z-index:115;background:rgba(40,28,16,.28);display:flex;align-items:center;justify-content:center;padding:24px 16px;animation:askin .14s ease-out}
@@ -909,6 +941,7 @@ html[data-theme="dark"] .dslipcard{background:var(--paper) var(--grain);color:va
 .crayon .dline::placeholder{color:var(--faint)}
 .dsec>.dl.cr{color:var(--crayon,#e4714a)}
 .crayon .dline:focus{outline:none}
+.crayon .dline.dscroll{overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;padding-right:4px}   /* 가장 작은 글씨에서도 넘치면 칸 안에서만 스크롤 */
 .diary .cover{width:54px;height:78px;font-size:10px}
 .bkwhen{background:var(--paper-2);border:1px solid var(--edge);border-radius:8px;padding:10px 12px;margin:0 0 10px}
 .dnav{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:14px}
@@ -2022,10 +2055,28 @@ const DRV_API="https://www.googleapis.com/drive/v3", DRV_UP="https://www.googlea
 const needLogin=()=>Object.assign(new Error("구글 드라이브에 다시 이어 주세요"),{needLogin:true});
 function gisLoad(){ return GIS_P||(GIS_P=new Promise((ok,no)=>{ if(window.google?.accounts?.oauth2) return ok();
   const sc=document.createElement("script"); sc.src="https://accounts.google.com/gsi/client"; sc.async=true; sc.onload=()=>ok(); sc.onerror=()=>{ GIS_P=null; no(new Error("구글 로그인 부품을 불러오지 못했습니다 — 인터넷을 확인해 주세요")); }; document.head.appendChild(sc); })); }
+// 자동 잇기(2026-10-31): 한 번 로그인하면 「새로 받기 열쇠」(refresh token)를 이 기기에만 두고, 열 때마다 공개 창구(gTok)가 새 이용 열쇠로 바꿔 줌 → 다시 누르지 않아도 열림.
+// 창구에 앱 비밀이 아직 없으면(gTok ready=false) 예전처럼 한 시간짜리 열쇠만(다시 열면 「구글 드라이브에 잇기」 한 번).
+const RT_KEY="seojae-open.drive.rt", rtGet=()=>{ try{ return localStorage.getItem(RT_KEY)||""; }catch(_){ return ""; } };
+let GTOK_OK=(()=>{ try{ return localStorage.getItem("seojae-open.gtokOk")==="1"; }catch(_){ return false; } })(), DTOK_P=null;
+function gtokCheck(){ gwCall("gTok",[{op:"ready"}]).then(r=>{ GTOK_OK=!!r?.ready; try{ localStorage.setItem("seojae-open.gtokOk",GTOK_OK?"1":"0"); }catch(_){} }).catch(()=>{}); }
+async function drvRefresh(){ const rt=rtGet(); if(!rt) return null;
+  return DTOK_P||(DTOK_P=gwCall("gTok",[{op:"refresh",rt}]).then(r=>{ DTOK=r.access_token; DTOK_EXP=Date.now()+(+r.expires_in||3600)*1000; return DTOK; })
+    .catch(e=>{ if(/invalid_grant/.test(e.message)){ try{ localStorage.removeItem(RT_KEY); }catch(_){} } return null; })
+    .finally(()=>{ DTOK_P=null; })); }
+function drvCode(){   // 「코드」 방식 로그인 창 → 창구가 열쇠 두 개(이용·새로 받기)로 바꿈
+  return new Promise((ok,no)=>{ const c=google.accounts.oauth2.initCodeClient({client_id:GCLIENT,scope:"https://www.googleapis.com/auth/drive.file",ux_mode:"popup",login_hint:DRV?.email||undefined,select_account:!DRV?.email,
+    callback:async r=>{ if(r.error||!r.code) return no(new Error(r.error==="access_denied"?"구글이 허락을 받지 못했습니다 — 「허용」을 눌러야 내 드라이브에 간직할 수 있습니다":"구글 로그인이 끝나지 않았습니다 ("+(r.error||"알 수 없음")+")"));
+      if(r.scope&&!/auth\/drive\.file/.test(r.scope)) return no(new Error("구글 허락 화면에서 「Google Drive 파일」 칸에 체크해야 내 드라이브에 간직할 수 있습니다 — 다시 눌러 체크해 주세요"));
+      try{ const t=await gwCall("gTok",[{op:"code",code:r.code}]); if(t.refresh_token){ try{ localStorage.setItem(RT_KEY,t.refresh_token); }catch(_){} }
+        DTOK=t.access_token; DTOK_EXP=Date.now()+(+t.expires_in||3600)*1000; ok(DTOK); }catch(e){ no(e); } },
+    error_callback:e=>no(new Error(e?.type==="popup_closed"?"로그인 창을 닫았습니다":e?.type==="popup_failed_to_open"?"로그인 창이 막혔습니다 — 브라우저의 팝업 차단을 풀어 주세요":"구글 로그인 창을 열지 못했습니다")) });
+    c.requestCode(); }); }
 async function drvToken(ask){   // ask: 사람이 누른 때만 로그인 창을 엽니다(브라우저가 그 밖의 창은 막음)
   if(DTOK&&Date.now()<DTOK_EXP-60000) return DTOK;
-  if(!ask) throw needLogin();
+  if(!ask){ if(rtGet()){ const t=await drvRefresh(); if(t) return t; } throw needLogin(); }
   await gisLoad();
+  if(GTOK_OK) return drvCode();
   return new Promise((ok,no)=>{ const c=google.accounts.oauth2.initTokenClient({client_id:GCLIENT,scope:"https://www.googleapis.com/auth/drive.file",hint:DRV?.email||undefined,
     callback:r=>{ if(r.error||!r.access_token) return no(new Error(r.error==="access_denied"?"구글이 허락을 받지 못했습니다 — 「허용」을 눌러야 내 드라이브에 간직할 수 있습니다":"구글 로그인이 끝나지 않았습니다 ("+(r.error||"알 수 없음")+")"));
       if(google.accounts.oauth2.hasGrantedAllScopes&&!google.accounts.oauth2.hasGrantedAllScopes(r,"https://www.googleapis.com/auth/drive.file")) return no(new Error("구글 허락 화면에서 「Google Drive 파일」 칸에 체크해야 내 드라이브에 간직할 수 있습니다 — 다시 눌러 체크해 주세요"));   // 권한마다 고르는 화면에서 체크를 빼먹은 때
@@ -2036,7 +2087,7 @@ async function drvToken(ask){   // ask: 사람이 누른 때만 로그인 창을
 async function drvFetch(url,opt={},raw){
   const t=await drvToken(false);
   const r=await fetch(url,{...opt,headers:{...(opt.headers||{}),Authorization:"Bearer "+t}});
-  if(r.status===401){ DTOK=null; throw needLogin(); }
+  if(r.status===401){ DTOK=null; if(!opt._again&&rtGet()) return drvFetch(url,{...opt,_again:1},raw); throw needLogin(); }   // 열쇠가 끝났으면 새로 받아 한 번 더
   if(!r.ok){ let m=""; try{ m=(await r.json()).error?.message||""; }catch(_){} throw Object.assign(new Error("구글 드라이브가 답하지 않습니다 ("+r.status+(m?" · "+m:"")+")"),{status:r.status}); }
   return raw?r:r.status===204?null:r.json();
 }
@@ -2166,8 +2217,8 @@ async function drvStart(btn){   // 연결 화면 「구글로 시작하기」·�
   catch(e){ toast(e.message); if(btn){ btn.disabled=false; btn.textContent=btn.dataset.t||"구글로 시작하기"; } }
 }
 function drvLogout(){ if(!confirm("이 기기에서 구글 드라이브 잇기를 끊을까요? 글은 구글 드라이브 「아침 서재」 폴더에 그대로 남습니다. 이 기기의 사본은 지웁니다.")) return;
-  try{ if(DTOK&&window.google?.accounts?.oauth2) google.accounts.oauth2.revoke(DTOK,()=>{}); }catch(_){}
-  localStorage.removeItem(DRV_KEY); localStorage.removeItem(LKEY); localStorage.removeItem("seojae-open.dirty"); location.reload(); }
+  try{ const rt=rtGet(); if(window.google?.accounts?.oauth2&&(rt||DTOK)) google.accounts.oauth2.revoke(rt||DTOK,()=>{}); else if(rt) fetch("https://oauth2.googleapis.com/revoke?token="+encodeURIComponent(rt),{method:"POST"}).catch(()=>{}); }catch(_){}   // 새로 받기 열쇠를 거두면 그 기기의 잇기가 모두 끝남
+  localStorage.removeItem(RT_KEY); localStorage.removeItem(DRV_KEY); localStorage.removeItem(LKEY); localStorage.removeItem("seojae-open.dirty"); location.reload(); }
 function connectWith(text){ // 연결 링크나 연결 코드를 붙여 넣었을 때
   const code=(text||"").trim().replace(/^.*#connect=/,"");
   try{ const c=JSON.parse(atob(code.replace(/-/g,"+").replace(/_/g,"/"))); if(!validConn(c)||!askReplace(c)) throw 0;
@@ -2233,6 +2284,7 @@ function dedupeWritings(){
   setTimeout(()=>{ toast(`같은 글 ${drop.length}편을 휴지통으로 옮겼습니다 (서랍 → 휴지통에서 확인)`); save(); if(tab!=="write") render(); },800);
 }
 async function load(){
+  gtokCheck();   // 자동 잇기가 준비됐는지(창구) — 다음 「구글로 시작하기」 때 코드 방식을 쓸지
   if(NEED_CONNECT) return;
   if(LOCALMODE) askPersist();   // 브라우저가 이 기기 기록을 저절로 지우지 않게 부탁(허락은 브라우저가 정함)
   if(GAS){
@@ -2436,7 +2488,7 @@ async function pushSave(){
 // ───────── 새 버전 자동 새로 고침 ─────────
 // 올릴 때마다 version.json 의 번호가 바뀝니다. 앱이 열릴 때·다시 화면에 올라올 때·5분마다 확인해서,
 // 쓰는 중인 글이 없고 저장이 끝났을 때 새 버전으로 새로 고칩니다.
-const APP_BUILD="ff29fde5ec";
+const APP_BUILD="529c59b0b0";
 let NEW_BUILD=null, UPDATE_NOTICED=false;
 async function checkUpdate(){
   if(APP_BUILD.startsWith("__")) return;                 // 원본 파일로 열었을 때(고치는 중)는 건너뜁니다
@@ -3508,7 +3560,7 @@ setInterval(()=>{ const d=today(), p=dayPart(); if(d===SHOWN_DAY&&p===SHOWN_PART
 let AUTOKEEP_ON=false, SCRIV_EDIT=null, SCRIV_T=0, SCRIV_PREV=false, SCRIV_BASE=null;   // 이어 읽기 「고치기」 (아래 scrivHtml)
 let AI_MODE="write";   // 오른쪽 AI 창: write 글쓰기 도우미 · research 조사 도우미 (아래 「AI 조사 도우미」)
 const NAV_ICO={today:'<path d="M3.5 17.5h17M7 17.5a5 5 0 0 1 10 0M12 5.5v2.2M5.7 9.2l1.5 1.5M18.3 9.2l-1.5 1.5M3.5 13.8h2.2M18.3 13.8h2.2"/>',qt:'<path d="M12 6.8C10 5.3 7 5 4 5.8v12.4c3-.8 6-.5 8 1 2-1.5 5-1.8 8-1V5.8c-3-.8-6-.5-8 1zM12 6.8v12.4"/>',diary:'<path d="M6.5 3.5h11a1.5 1.5 0 0 1 1.5 1.5v14a1.5 1.5 0 0 1-1.5 1.5h-11zM9.5 3.5v17M12.5 8h3.5M12.5 11.5h2.5"/>',drawer:'<path d="M4.5 4.5h15v15h-15zM4.5 12h15M10 8.2h4M10 15.8h4"/>',shelf:'<path d="M5 4.5h3.2v15H5zM9.6 6.5h3.2v13H9.6zM14.4 5.6l3-.8 3.2 13.9-3 .8zM3.5 19.5h17"/>'};
-const TABS=[["today","오늘"],["qt","묵상"],["diary","일기"],["drawer","서랍"],["shelf","책장"],["write","글방"]];   // 글쓰기(글방)는 따로 떨어진 특별한 방 — 맨 오른쪽, 다른 모양   // 묵상 = 말씀 글(묵상·설교), 글쓰기 = 책 글·자유 글. 둘 다 같은 쓰기 화면(track 만 다름). 설정은 오른쪽 위 톱니
+const TABS=[["today","오늘"],["qt","묵상"],["shelf","책장"],["diary","일기"],["drawer","서랍"],["write","글방"]];   // 순서(팀장님 2026-10-31): 오늘(집) · 묵상 · 책장 · 일기 · 서랍(보관함, 서랍 모양)   // 글쓰기(글방)는 따로 떨어진 특별한 방 — 맨 오른쪽, 다른 모양   // 묵상 = 말씀 글(묵상·설교), 글쓰기 = 책 글·자유 글. 둘 다 같은 쓰기 화면(track 만 다름). 설정은 오른쪽 위 톱니
 // 손으로 그린 듯 조금씩 다른 톱니 — 놋쇠 열쇠 같은 아날로그 느낌
 function gearSvg(){
   const n=9, cx=24, cy=24, pts=[];
@@ -3549,7 +3601,7 @@ function render(){
   // 같은 쓰기 화면을 다시 그릴 때(말씀/책 바꾸기, 합친 뒤 등) 쓰던 제목·본문을 그대로 지켜 줍니다
   const keep=!NAV&&tab==="write"&&$("#wbody")?{e:editId,t:$("#wtitle").value,b:$("#wbody").value,p:$("#wpassage")?.value}:null;
   const gb=$("#gearbtn"); if(gb){ if(!gb.firstChild) gb.innerHTML=gearSvg(); gb.classList.toggle("on",tab==="settings"); }
-  $("#nav").innerHTML=TABS.map(([k,n])=>`<button class="${k==="write"?"navroom ":""}${(k==="qt"?tab==="write"&&track==="bible":k==="write"?tab==="room"||(tab==="write"&&track!=="bible"):k===tab)?"on":""}" onclick="${k==="qt"?"go('write',{track:'bible'})":k==="write"?"go('room')":`go('${k}')`}">${k==="write"?`${ICO.pen}<span>${n}</span>`:NAV_ICO[k]?`<svg class="nvi" viewBox="0 0 24 24" aria-hidden="true">${NAV_ICO[k]}</svg><span class="nvt">${n}</span>`:n}</button>`).join("")+`<button class="navai ${AI_MODE==="research"&&$("#aipanel")?"on":""}" onclick="rsToggle()" title="AI 조사 도우미 — 오른쪽 창에서 대화하며 자료를 찾습니다">✦<span>AI</span></button>`;
+  $("#nav").innerHTML=TABS.map(([k,n])=>`<button class="${k==="write"?"navroom ":k==="today"?"navhome ":k==="drawer"?"navdrawer ":""}${(k==="qt"?tab==="write"&&track==="bible":k==="write"?tab==="room"||(tab==="write"&&track!=="bible"):k===tab)?"on":""}" onclick="${k==="qt"?"go('write',{track:'bible'})":k==="write"?"go('room')":`go('${k}')`}">${k==="write"?`${ICO.pen}<span>${n}</span>`:NAV_ICO[k]?`<svg class="nvi" viewBox="0 0 24 24" aria-hidden="true">${NAV_ICO[k]}</svg><span class="nvt">${n}</span>`:n}</button>`).join("")+`<button class="navai ${AI_MODE==="research"&&$("#aipanel")?"on":""}" onclick="rsToggle()" title="AI 조사 도우미 — 오른쪽 창에서 대화하며 자료를 찾습니다">✦<span>AI</span></button>`;
   paintStreak();
   if(NEED_CONNECT||AUTH_FAIL){ $("#main").innerHTML=connectView(); return; }
   $("#main").innerHTML=(DRV_NEED?`<div class="notice">구글 드라이브와 잠시 떨어져 이 기기의 사본을 보여 드립니다. 쓰는 글은 이 기기에 남아 있다가, 이으면 드라이브로 갑니다. <button class="btn small ink" onclick="drvStart(this)">구글 드라이브에 잇기</button></div>`:SERVER?"":GAS?`<div class="notice">구글 서버에 아직 닿지 못해 이 기기의 사본을 보여 드립니다. 인터넷을 확인한 뒤 <a href="#" onclick="fetchFresh(false);return false">다시 시도</a></div>`:location.protocol==="file:"?`<div class="notice">파일로 직접 연 상태라 저장이 되지 않습니다. 아침 서재 주소(인터넷)로 열어 주세요.</div>`:"")+locNudge()+VIEWS[tab]();
@@ -3949,9 +4001,30 @@ function stSideCount(){ const b=$("#stjotn"); if(b) b.textContent=(S.jots||[]).l
 // ───────── 독서 일기: 그날 읽은 분량과 쓴 글을 한 장에 ─────────
 let diaryDate=null;
 const WEATHER=["☀️","⛅","☁️","🌧️","❄️","🌫️"], MOODS=["😊","🙂","😌","🥲","🔥","🙏"];
+// 날씨·기분은 저장 값(이모지) 그대로 두고, 화면에는 펜으로 그린 듯한 선 그림으로 (팀장님 2026-10-31: 아날로그 느낌) — [이름, 고를 때 색, 그림]
+const FACE='<path d="M12 3.9c4.6-.1 8.2 3.5 8.1 8.1 0 4.5-3.7 8.1-8.2 8-4.4 0-8-3.7-7.9-8.1.1-4.4 3.6-7.9 8-8z"/>', CLOUD='<path d="M6.4 18.6h10.9c2 0 3.6-1.5 3.5-3.4-.1-1.8-1.7-3.2-3.5-3.1-.6-2.5-2.7-4-5.1-3.8-2.2.2-3.9 1.9-4.2 4-1.8.1-3.1 1.4-3 3.2.1 1.7 1.6 3.1 3.4 3.1z"/>';
+const DSHAPES=[["맑음","#d9962c",'<path d="M12 8.2c2.2-.1 3.9 1.6 3.8 3.9-.1 2.1-1.8 3.7-3.9 3.6-2.1 0-3.7-1.8-3.6-3.9.1-2 1.6-3.5 3.7-3.6z"/><path d="M12 3.3v2M12.1 18.7v2M3.4 12.1h2M18.6 11.9h2M6 5.9l1.4 1.5M16.7 16.7l1.4 1.4M5.9 18.1l1.4-1.3M16.8 7.3l1.4-1.4"/>'],
+ ["구름 조금","#c98f3a",'<path d="M8.6 3.6v1.3M4.4 7.7h1.3M5.5 4.8l.9.9M11.8 4.8l-.9.9M6.4 10.3c-.3-1.9 1.1-3.6 3-3.7 1.2-.1 2.2.5 2.8 1.4"/><path d="M8 19.3h9.4c1.9 0 3.3-1.4 3.2-3.1-.1-1.6-1.5-2.9-3.2-2.8-.5-2.2-2.4-3.6-4.6-3.4-2 .2-3.5 1.7-3.8 3.6-1.6.1-2.8 1.3-2.7 2.9.1 1.6 1.4 2.8 3 2.8z"/>'],
+ ["흐림","#7f8b98",CLOUD+'<path d="M15.6 6.6c.9-1.4 2.6-2 4.1-1.3"/>'],
+ ["비","#4f80b5",'<path d="M6.5 14.4h10.6c1.8 0 3.3-1.4 3.2-3.1-.1-1.6-1.5-2.9-3.2-2.8-.5-2.3-2.5-3.7-4.7-3.5-2 .2-3.6 1.8-3.9 3.7-1.7.1-2.9 1.3-2.8 2.9.1 1.6 1.4 2.8 2.8 2.8z"/><path d="M8.5 17.4l-.9 2.4M12.4 17.4l-.9 2.4M16.3 17.4l-.9 2.4"/>'],
+ ["눈","#6d9cc1",'<path d="M12 3.6v16.8M4.8 7.9l14.5 8.3M4.8 16.1l14.4-8.3M10.3 5 12 6.5l1.7-1.4M10.3 19 12 17.5l1.7 1.5M5.6 10.2l2.1-.5-.6-2.1M18.4 13.8l-2.1.5.6 2.1"/>'],
+ ["안개","#8f8d80",'<path d="M4 8.4c2.2-1.2 3.8 1.1 6 0s3.9-1.2 6 0 2.6.6 4-.2M4 12.5c2.2-1.2 3.8 1.1 6 0s3.9-1.2 6 0 2.6.6 4-.2M5.6 16.6c2-1.1 3.4.9 5.4 0s3.6-1 5.4 0"/>'],
+ ["기쁨","#d9962c",FACE+'<path d="M8.3 10.2c.5-.9 1.6-.9 2.1 0M13.6 10.2c.5-.9 1.6-.9 2.1 0M7.9 13.6c1.9 3.4 6.4 3.4 8.2 0"/>'],
+ ["좋음","#bf8a3c",FACE+'<path d="M9.2 9.8v.5M14.8 9.8v.5M8.8 14.5c1.8 1.7 4.6 1.7 6.4 0"/>'],
+ ["평안","#6f9a62",FACE+'<path d="M8 10.3c.6.8 1.6.8 2.2 0M13.8 10.3c.6.8 1.6.8 2.2 0M10 15c1.2.7 2.8.7 4 0"/>'],
+ ["울컥함","#5f88b8",FACE+'<path d="M9.2 9.8v.5M14.8 9.8v.5M9.2 15.5c1.6-1 4-1 5.6 0M8.6 12c-.6.9-.8 1.6-.4 2 .4.4 1 .2 1-.4 0-.4-.3-.9-.6-1.6z"/>'],
+ ["뜨거움","#d0602f",'<path d="M12 3.6c.4 2.4 2.2 3.6 3.5 5.4 1.4 1.9 1.8 4.2.9 6.3-.9 2.2-3 3.4-4.6 3.4-2.5 0-4.8-2-4.9-4.7-.1-1.9.8-3.3 1.8-4.4.1 1.3.7 2.2 1.6 2.6-.4-2.6.2-5 1.7-8.6z"/><path d="M12.2 13.2c1.3 1 1.8 2.2 1.3 3.3-.4.8-1.1 1.2-1.6 1.2-.9 0-1.7-.8-1.6-1.8.1-1 .8-1.7 1.9-2.7z"/>'],
+ ["감사·기도","#9c7a4e",'<path d="M12 20.2V9.5c0-2 .3-3.9 1.1-5.2.9 1.4 1.7 3.4 1.9 5.6l.6 4.4 2.6 2.2-1.6 3.2M12 20.2V9.5c0-2-.3-3.9-1.1-5.2-.9 1.4-1.7 3.4-1.9 5.6l-.6 4.4-2.6 2.2 1.6 3.2"/>']];
+const DICO=Object.fromEntries([...WEATHER,...MOODS].map((k,i)=>[k,DSHAPES[i]]));
+const dIco=k=>{ const d=DICO[k]; return d?`<svg class="dico" viewBox="0 0 24 24" aria-hidden="true" style="--c:${d[1]}">${d[2]}</svg>`:esc(k||""); };
+const dIcoBtn=(kind,k,on)=>{ const d=DICO[k]||[k,"var(--sepia)"]; return `<button class="${on?"on":""}" style="--c:${d[1]}" onclick="dSet('${kind}','${k}')" title="${d[0]}" aria-label="${d[0]}" aria-pressed="${on}">${dIco(k)}</button>`; };
 function dEntry(d,make){ if(!S.diary) S.diary={}; if(make&&!S.diary[d]) S.diary[d]={}; return S.diary[d]||{}; }
 function dTouch(d){ dEntry(d,true).t=new Date().toISOString(); save(); }
-function dSet(k,v){ const d=diaryDate, e=dEntry(d,true); const cur=dCur(); if(cur!=null){ clearTimeout(dLineT); e.line=cur; } e[k]=e[k]===v?null:v; dTouch(d); render(); }
+// 날씨·기분은 갈래마다 두 개까지(팀장님 2026-10-31). 저장은 예전처럼 글자 하나에 고른 차례대로 이어 붙임(예: "⛅🌧️") — 하나만 고른 옛 기록도 그대로 읽힘
+const dPick=(k,v)=>{ v=String(v||""); return (k==="weather"?WEATHER:MOODS).map(x=>[x,v.indexOf(x)]).filter(a=>a[1]>=0).sort((a,b)=>a[1]-b[1]).map(a=>a[0]); };
+function dSet(k,v){ const d=diaryDate, e=dEntry(d,true); const cur=dCur(); if(cur!=null){ clearTimeout(dLineT); e.line=cur; }
+  let L=dPick(k,e[k]); if(L.includes(v)) L=L.filter(x=>x!==v); else { L.push(v); if(L.length>2) L.shift(); }   // 세 번째를 고르면 먼저 고른 것이 빠짐
+  e[k]=L.length?L.join(""):null; dTouch(d); render(); }
 let dLineT; function dLine(v){ const d=diaryDate; clearTimeout(dLineT); dLineT=setTimeout(()=>{ dEntry(d,true).line=v; dTouch(d); },600); }
 function dGo(n){ const x=new Date((diaryDate||today())+"T00:00"); x.setDate(x.getDate()+n); dOpen(dkey(x),n>0?"next":"prev"); }
 // 그날 일기로: 책장을 넘기듯 지금 장이 접히고 새 장이 펼쳐집니다
@@ -4004,17 +4077,17 @@ function dListHtml(){
   const days=[...new Set([...Object.keys(S.diary||{}).filter(dHas),...Object.keys(S.log||{}).filter(dSome),...live().map(w=>w.date)])].filter(k=>k<=today()&&k>=dMin()).sort().reverse();
   if(!days.length) return `<p class="muted">아직 일기가 없습니다. 날마다 한 줄이면 충분합니다.</p>`;
   return `<div class="dlist">${days.map(k=>{ const e=S.diary?.[k]||{}, ws=live().filter(w=>w.date===k), L=S.log?.[k]||{}, x=new Date(k+"T00:00");
-    return `<a href="#" class="dli" onclick="dOpen('${k}');return false"><span class="dd pen">${x.getMonth()+1}.${String(x.getDate()).padStart(2,"0")}</span><span class="dw">${WEEK[x.getDay()]}</span><span class="dm">${esc((e.weather||"")+(e.mood||""))}</span>
+    return `<a href="#" class="dli" onclick="dOpen('${k}');return false"><span class="dd pen">${x.getMonth()+1}.${String(x.getDate()).padStart(2,"0")}</span><span class="dw">${WEEK[x.getDay()]}</span><span class="dm">${[...dPick("weather",e.weather),...dPick("mood",e.mood)].map(dIco).join("")}</span>
       <span class="dt">${(e.line||"").trim()?`<span class="pen" style="font-size:19px">${esc(biStrip(stripMk(e.line)).trim().slice(0,60))}</span>`:`<span class="muted">${ws.length?ws.map(w=>"["+esc(wTag(w))+"] "+esc(w.title||w.passage||"")).join(" · "):L.read||(L.bible||[]).length?"말씀을 읽은 날":Object.keys(L.books||{}).length?"책을 읽은 날":""}</span>`}</span>
       <span class="dn muted">${[ws.length?"글 "+ws.length:"",(e.stickers||[]).length?"스티커 "+(e.stickers||[]).length:""].filter(Boolean).join(" · ")}</span></a>`; }).join("")}</div>`;
 }
 function diaryPage(){
-  setTimeout(()=>{ const t=$(".dline"); if(t) dGrow(t); dFit(); },0); setTimeout(dFit,350);
+  setTimeout(()=>{ const t=$(".dline"); if(t){ dGrow(t); dBoxFit(t); } dFit(); },0); setTimeout(()=>{ dBoxFit(); dFit(); },350);
   if(diaryDate&&diaryDate<dMin()) diaryDate=dMin();
   const d=diaryDate=diaryDate||today(), x=new Date(d+"T00:00"), L=S.log[d]||{}, e=dEntry(d); dcalY=x.getFullYear(); dcalM=x.getMonth();
-  const notes=S.notes.filter(n=>n.date===d), ws=live().filter(w=>w.date===d);
+  const notes=S.notes.filter(n=>n.date===d), ws=live().filter(w=>w.date===d), DW=d===today()?"오늘":"이날";
   const bible=(L.bible||[]).map(b=>`<div class="muted">${esc(b.plan)} · ${b.day}일째</div><ul>${b.portions.map(p=>`<li><a href="#" onclick="openBible(${jsArg(p)});return false">${esc(p)}</a></li>`).join("")}</ul>`).join("")
-    || (L.read?`<p class="sub">말씀을 읽었습니다 ✓</p>`:`<p class="muted">이날은 읽은 말씀 기록이 없습니다.</p>`);
+    || (L.read?`<p class="sub">말씀을 읽었습니다 ✓</p>`:`<p class="muted">이날은 말씀을 읽은 기록이 아직 없어요. 「오늘」이나 「묵상」에서 말씀을 읽고 표시하면 여기에 함께 남아요.</p>`);
   const books=Object.entries(L.books||{}).map(([id,v])=>{ const b=S.books.find(y=>y.id===id);
     const u=pgUnit(b); return `<div class="row" style="gap:12px;align-items:center;margin:6px 0">${b?coverHtml(b,"cover"):""}<div><b class="myeongjo">${esc(v.title)}</b><div class="muted">${v.from}${u} → ${v.to}${u} · ${Math.max(0,v.to-v.from)}${u} 읽음</div></div></div>`; }).join("");
   const nav=`<div class="dnav"><button class="btn small" onclick="dGo(-1)" ${d<=dMin()?"disabled title=\"일기장 첫날입니다 (1일째)\"":""}>‹ 전날</button><button class="btn small" onclick="dGo(1)" ${d>=today()?"disabled":""}>다음 날 ›</button>
@@ -4029,24 +4102,37 @@ function diaryPage(){
     <div class="diary">
     ${stkLayer("diary:"+d)}
     <div class="pg l"><div class="dfolio">${pn*2-1}</div>
-      <div class="dhead"><span class="dd">${x.getMonth()+1}.${String(x.getDate()).padStart(2,"0")}</span><span class="dw">${x.getFullYear()} · ${WEEK[x.getDay()]}요일</span></div>
-      <div class="dmood">${WEATHER.map(w=>`<button class="${e.weather===w?"on":""}" onclick="dSet('weather','${w}')">${w}</button>`).join("")}<span style="width:10px"></span>${MOODS.map(m=>`<button class="${e.mood===m?"on":""}" onclick="dSet('mood','${m}')">${m}</button>`).join("")}</div>
-      <div class="dsec"><p class="dl">오늘 읽은 말씀</p>${bible}</div>
-      <div class="dsec"><p class="dl">오늘 읽은 책</p>${books||`<p class="muted">${L.read&&!L.bible?"":"이날은 쪽수 기록이 없습니다."}</p>`}</div>
+      <div class="dhead"><span class="dd">${x.getMonth()+1}.${String(x.getDate()).padStart(2,"0")}</span><span class="dwrow"><span class="dw">${x.getFullYear()} · ${WEEK[x.getDay()]}요일</span>${(()=>{ const ic=[...dPick("weather",e.weather),...dPick("mood",e.mood)]; return ic.length?`<span class="dhico">${ic.map(k=>`<span title="${esc(DICO[k]?.[0]||"")}">${dIco(k)}</span>`).join("")}</span>`:""; })()}</span></div>
+      <div class="dmood" title="날씨와 기분을 두 개까지 고를 수 있습니다 — 한 번 더 누르면 빠집니다">${WEATHER.map(w=>dIcoBtn("weather",w,dPick("weather",e.weather).includes(w))).join("")}<span style="width:8px"></span>${MOODS.map(m=>dIcoBtn("mood",m,dPick("mood",e.mood).includes(m))).join("")}</div>
+      <div class="dsec"><p class="dl">${DW} 읽은 말씀</p>${bible}</div>
+      <div class="dsec"><p class="dl">${DW} 읽은 책</p>${books||`<p class="muted">${L.read&&!L.bible?"":"이날은 책을 읽은 기록이 아직 없어요. 「책장」에서 「여기까지 읽음」을 남기면 여기에 차곡차곡 쌓여요."}</p>`}</div>
       ${notes.length?`<div class="dsec dqs"><p class="dl">밑줄</p>${notes.map(n=>`<div class="dquote" onclick="dSlipNotes('${d}')" title="눌러서 이날 밑줄을 모두 펼쳐 봅니다">${esc(n.text)}<div class="muted">${esc(noteSrc(n))}</div></div>`).join("")}<button type="button" class="dw-more" hidden onclick="dSlipNotes('${d}')"></button></div>`:""}
     </div>
     <div class="pg r">
-      <div class="dsec" style="margin-top:0"><p class="dl cr">오늘 일기</p>
+      <div class="dsec" style="margin-top:0"><p class="dl cr">${DW} 일기</p>
         ${dDecoBar()}
-        <div class="crayon"><div class="dline dedit" contenteditable="true" spellcheck="false" role="textbox" aria-multiline="true" aria-label="오늘 일기" data-ph="오늘 아침, 짧게라도 진짜 일기를…" oninput="dInput(this)" onkeydown="dKey(event)" onpaste="dPaste(event)">${dHtmlChars(dParse(e.line||""))}</div></div></div>
-      <div class="dsec"><p class="dl">오늘 쓴 글</p>
-        ${ws.length?`<div class="dwlist">${ws.map((w,i)=>`<button type="button" class="dw-slip ${w.track}" style="--rot:${[-.6,.5,-.3,.7][i%4]}deg" onclick="dSlip('${w.id}')" title="눌러서 이 글을 펼쳐 봅니다"><span class="k">[${esc(wTag(w))}]${w.passage?" "+esc(w.passage):""}</span><b>${esc(w.title||"(제목 없음)")}</b><span class="ex">${esc(pv(w,160))}</span></button>`).join("")}<button type="button" class="dw-more" hidden onclick="dSlipList('${d}')"></button></div>`
-          :`<p class="muted">이날 쓴 글이 없습니다.</p>`}</div>
+        <div class="crayon"><div class="dline dedit" contenteditable="true" spellcheck="false" role="textbox" aria-multiline="true" aria-label="${DW} 일기" data-ph="${d===today()?"오늘 하루는 어땠나요? 마음에 남은 장면 하나, 편하게 적어 보세요. 한 줄이어도 충분해요.":"그날의 마음을 떠올리며 한 줄 적어 보세요."}" oninput="dInput(this)" onkeydown="dKey(event)" onpaste="dPaste(event)">${dHtmlChars(dParse(e.line||""))}</div></div></div>
+      <div class="dsec"><p class="dl">${DW} 쓴 글</p>
+        ${ws.length?`<div class="dwlist">${ws.map((w,i)=>`<button type="button" class="dw-slip ${w.track}" style="--rot:${[-.6,.5,-.3,.7][i%4]}deg" onclick="dSlip('${w.id}')" title="눌러서 이 글을 펼쳐 봅니다"><span class="k">[${esc(wTag(w))}]${w.passage?" "+esc(w.passage):""}</span><b>${esc(w.title||"(제목 없음)")}</b>${dHlHtml(w)}</button>`).join("")}<button type="button" class="dw-more" hidden onclick="dSlipList('${d}')"></button></div>`
+          :`<p class="muted">이날 쓴 묵상·글이 아직 없어요. 「묵상」이나 「글방」에서 글을 쓰면 여기에 쪽지처럼 끼워져요.</p>`}</div>
       <div class="dfolio">${pn*2}</div>
     </div>
   </div></div>`;
 }
 // 달력 팝업: 「달력」 단추 아래 떠서 날짜를 고르면 닫힘. 바깥 클릭·Esc로도 닫힘
+// 일기장 「쓴 글」 쪽지의 하이라이트: 글 안 형광펜 구절(색 그대로, 두 개까지) → 없으면 글에서 마음이 담긴 문장 하나를 저절로 골라 「✦ 골라 본 문장」
+const HL_GRAB=/==(?:([ygpb]):)?([^=\n]+?)==/g;
+function wHigh(w,n=2){ const b=mkMask(w.body||""), out=[]; let m; HL_GRAB.lastIndex=0;
+  while((m=HL_GRAB.exec(b))&&out.length<n){ const t=stripMk(mkUnmask(m[2])).replace(/\s+/g," ").trim(); if(t) out.push({t,c:m[1]||"y"}); }
+  if(out.length) return {list:out,auto:false};
+  const txt=stripMk(w.body||"").replace(/^\s*(#+|■|▣|[-*>•]|\d+[.)])\s*/gm,"");
+  const ss=txt.split(/(?<=[.!?…])\s+|\n+/).map(x=>x.trim()).filter(x=>x.length>=14&&x.length<=90&&!/^(본문|제목|찬송|기도|날짜)\s*[:：]/.test(x)&&!/https?:|\[\^/.test(x));
+  if(!ss.length) return {list:[],auto:true};
+  const W=/(하나님|주님|예수|성령|은혜|감사|사랑|소망|믿음|마음|고백|깨달|기도|평안|위로|용서|기쁨|눈물|오늘|나는|내가|우리)/g;
+  const score=x=>(x.match(W)||[]).length*3+(/[다요][.!]?$/.test(x)?2:0)-Math.abs(x.length-45)/15;
+  return {list:[ss.slice().sort((a,b)=>score(b)-score(a))[0]].map(t=>({t,c:""})),auto:true}; }
+function dHlHtml(w){ const H=wHigh(w); if(!H.list.length) return `<span class="ex">${esc(pv(w,160))}</span>`;
+  return `<span class="hls">${H.list.map(h=>`<q class="dhl ${h.c?"hl-"+h.c:"auto"}">${esc(h.t)}</q>`).join("")}${H.auto?`<small class="hlauto" title="형광펜을 칠한 구절이 없어서 글에서 한 문장을 골라 보았습니다 — 글에 형광펜을 칠하면 그 구절이 여기 보입니다">✦ 골라 본 문장</small>`:""}</span>`; }
 function dCalToggle(){ const p=$("#dcalpop"); if(!p) return; if(p.style.display!=="none"){ p.style.display="none"; return; } if(STK_OPEN){ STK_OPEN=false; STK_SEL=null; paintStk(); } p.innerHTML=dCalHtml(); p.style.display=""; }
 function dCalClose(){ document.querySelectorAll("#dcalpop,#dfcalpop").forEach(p=>p.style.display="none"); }
 const dCalOpenNow=()=>[...document.querySelectorAll("#dcalpop,#dfcalpop")].find(p=>p.style.display!=="none");
@@ -4099,7 +4185,12 @@ document.addEventListener("selectionchange",()=>{ const ed=dEd(); if(!ed||docume
   let n=sel.anchorNode, o=sel.anchorOffset; if(!ed.contains(n)) return; const el=(n.nodeType===1?n:n.parentElement)?.closest?.("mark,u"); if(!el||!ed.contains(el)) return;
   const r=document.createRange(); r.selectNodeContents(el); const atS=r.comparePoint(n,o)===0&&(()=>{ const t=document.createRange(); t.setStart(el,0); t.setEnd(n,o); return !t.toString().length; })(), atE=(()=>{ const t=document.createRange(); t.setStart(n,o); t.setEnd(el,el.childNodes.length); return !t.toString().length; })();
   if(!atS&&!atE) return; const z=document.createTextNode("​"); if(atE) el.after(z); else el.before(z); const c=document.createRange(); c.setStart(z,atE?1:0); c.collapse(true); sel.removeAllRanges(); sel.addRange(c); });
-function dInput(ed){ dLine(dSerChars(dWalk(ed,{},[]))); dGrow(ed); dFitSoon(); }
+function dInput(ed){ dLine(dSerChars(dWalk(ed,{},[]))); dGrow(ed); dBoxFit(ed); dFitSoon(); }
+// 일기 칸 맞추기: 칸(크레파스 테두리) 크기는 그대로 두고, 글이 넘치면 글씨를 한 단계씩 작게(DL_SCALE, 가장 작게 66%) → 그래도 넘치면 칸 안에서만 스크롤
+function dBoxFit(ed){ ed=ed||$(".crayon .dline"); if(!ed) return; ed.classList.remove("dscroll"); ed.style.setProperty("--dls",1);
+  const over=()=>ed.scrollHeight>ed.clientHeight+1;
+  for(const k of DL_SCALE){ if(!over()) break; ed.style.setProperty("--dls",k); }
+  if(over()) ed.classList.add("dscroll"); }
 // ───── 일기장은 스크롤 없는 공책: 책 크기를 고정하고, 쪽에 넘치면 ① 끼워 둔 쪽지·밑줄을 「＋n 더」로 접고 ② 일기 글씨를 손으로 쓰듯 조금씩 작게 (PC·책만 보기) ─────
 let DFIT_RAF=0; function dFitSoon(){ if(!DFIT_RAF) DFIT_RAF=requestAnimationFrame(()=>{ DFIT_RAF=0; dFit(); }); }
 const DL_SCALE=[1,.92,.85,.78,.72,.66];
@@ -4109,7 +4200,7 @@ function dFit(){ const D=$(".dbook>.diary"); if(!D) return; const pages=[...D.qu
   pages.forEach(pg=>{ const over=()=>pg.scrollHeight>pg.clientHeight+1;
     // 다시 처음부터: 모두 보이고 글씨 원래대로
     pg.querySelectorAll(".dw-slip,.dquote").forEach(x=>x.hidden=false); pg.querySelectorAll(".dw-more").forEach(x=>x.hidden=true); pg.querySelector(".dwlist")?.classList.remove("tight"); pg.querySelector(".dqs")?.classList.remove("tight");
-    const dl=pg.querySelector(".dline"); if(dl) dl.style.removeProperty("--dls");
+    const dl=null;   // 일기 글씨 크기는 dBoxFit 이 칸 안에서 맞춤(칸 높이는 늘지 않음)
     if(!fix) return;
     // 순서: 쪽지·밑줄을 하나만 남기고 접기 → 일기 글씨 조금(85%까지) → 마지막 하나도 접기 → 글씨 더 작게
     const fold=(items,more,unit,keep)=>{ if(!more) return; const vis=()=>items.filter(x=>!x.hidden);
