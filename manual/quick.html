@@ -182,6 +182,7 @@ code{background:var(--paper-2);padding:.05em .35em;border-radius:3px}
 .pdf-dl{margin:1.2em 0 0}
 .pdf-dl a.btn{font-family:var(--sans);font-size:13px;text-decoration:none;display:inline-block;padding:5px 12px}
 @media (max-width:420px){body.deploy.detail .top-logo{display:none}}
+@media (max-width:480px){body.detail .top-logo{display:none}}
 .fig-media[role="button"]{cursor:zoom-in}
 #lightbox{position:fixed;inset:0;z-index:90;background:rgba(0,0,0,.82);display:none;align-items:center;justify-content:center;padding:16px;cursor:zoom-out}
 #lightbox.show{display:flex}
@@ -310,7 +311,7 @@ h2.s-h{font-weight:800;font-size:22px;line-height:1.4;margin:1.2em 0 .7em;paddin
 <ul>
 <li>톱니를 한 번 더 누르면 설정에 오기 전 화면과 자리로 돌아갑니다.</li>
 <li>목록의 글·원고·책에서 오른쪽 버튼을 누르면 메뉴가 나옵니다. 휴대폰에서는 길게 누릅니다.</li>
-<li>설정 맨 앞 「도움 <span class="arr">→</span> 사용 설명서」에서 이 매뉴얼과 상세 매뉴얼(책)을 언제든 다시 엽니다.</li>
+<li>설정 맨 앞 「도움 <span class="arr">→</span> 사용 설명서」에서 이 매뉴얼과 책 『쓰는 사람의 아침』(상세 안내)을 언제든 다시 엽니다.</li>
 </ul>
 </section>
 <section class="s-sec c7"><h2 class="s-h">꼭 알아 둘 것</h2>
@@ -439,6 +440,11 @@ if(lb){var lbIn=lb.querySelector('.lb-in'),last=null;
  lb.addEventListener('click',lbClose);
  d.addEventListener('keydown',function(e){if(e.key==='Escape'&&lb.classList.contains('show'))lbClose()});}
 if(!d.body.classList.contains('detail'))return;
+/* 표지가 보이는 동안은 머리글 띠를 숨긴다 */
+var cov=d.getElementById('cover');
+if(cov&&'IntersectionObserver' in window){new IntersectionObserver(function(es){es.forEach(function(en){
+ d.body.classList.toggle('at-cover',en.isIntersecting&&en.intersectionRatio>=.55)})},{threshold:[0,.55,1]}).observe(cov)}
+else d.body.classList.remove('at-cover');
 var toc=d.getElementById('toc'),btn=d.getElementById('tocBtn'),scrim=d.getElementById('scrim'),q=d.getElementById('q');
 var narrow=window.matchMedia('(max-width:1099px)');
 function openToc(o){toc.classList.toggle('open',o);scrim.classList.toggle('show',o);btn.setAttribute('aria-expanded',o?'true':'false');

@@ -276,6 +276,7 @@ function coWrite_(body) {
   if ((body || {}).mode === "feedback") return feedback_(body);
   if ((body || {}).mode === "setcheck") return setCheck_(body);
   if ((body || {}).mode === "worldsync") return worldSync_(body);
+  if ((body || {}).mode === "dayline") return dayLine_(body);
   return safe_(() => {
     const d = (body || {}).doc || {}, msgs = ((body || {}).messages || []).filter(m => m && m.text).slice(-12);
     if (!msgs.length) throw new Error("물어볼 말이 없습니다");
@@ -365,6 +366,29 @@ function alts_(body) {
     a = a.map(x => String(x || "").trim()).filter(x => x && x !== text); a = a.filter((x, i) => a.indexOf(x) === i).slice(0, 4);
     if (!a.length) throw new Error("다른 표현을 찾지 못했습니다 — 다시 눌러 보세요");
     return { alts: a, ai: r.ai || "" };
+  });
+}
+
+const DAYLINE_ICONS_ = ["cup", "sun2", "partly", "cloud", "rain", "snow", "fog", "pot", "pencil", "sun"];
+
+function dayLine_(body) {
+  return safe_(() => {
+    const d = body || {}, clip = (x, n) => String(x == null ? "" : x).replace(/[\r\n<>]/g, " ").slice(0, n);
+    const seed = String(d.date || "").replace(/\D/g, "");
+    const topics = ["아침 빛", "따뜻한 차", "창밖 바람", "펼친 책", "천천히 걷기", "기도", "쉼", "작은 감사", "첫 문장", "연필", "새소리", "고요", "한 걸음", "기다림", "씨앗", "편지", "등불", "물 한 잔"];
+    const hint = topics[(+seed.slice(-3) || 0) % topics.length];
+    const prompt = "아침마다 말씀을 읽고 묵상과 글을 쓰는 사람의 다이어리 앱입니다. 오늘 화면 귀퉁이에 손글씨로 적힐 한 문장을 씁니다."
+      + "\n오늘: " + clip(d.date, 10) + " (" + clip(d.season, 4) + ") · 오늘의 주제 씨앗: " + hint + " (꼭 이 낱말을 쓰지 않아도 됨)"
+      + (d.avoid ? "\n어제 문장과 겹치지 않게: " + clip(d.avoid, 60) : "")
+      + "\n\n조건: 말씀 앞에 앉거나 한 줄을 쓰려는 사람에게 건네는 따뜻한 한 문장. 18~30자, 존댓말(~요/~세요/~입니다), 한국어."
+      + " 성경 구절·인용·사람 이름·숫자는 넣지 않습니다. 이모지·따옴표 없이. 설교하지 말고 다정하게. 날마다 다른 느낌으로."
+      + "\n그리고 문장에 어울리는 그림 하나를 이 가운데서 고릅니다: " + DAYLINE_ICONS_.join(", ") + " (cup=찻잔, sun2=해, partly=해와 구름, cloud=구름, rain=비, snow=눈, fog=안개, pot=새싹 화분, pencil=연필, sun=떠오르는 해)"
+      + '\n답은 JSON 하나만: {"line":"문장","icon":"그림 이름"}';
+    const r = aiText_(prompt, { json: true, maxTokens: 300, temperature: 1.0, kind: "오늘의 한 줄" });
+    let t = "", ic = ""; try { const o = jsonOf_(r.text, "{", "}"); t = String(o.line || ""); ic = String(o.icon || ""); } catch (e) { t = String(r.text || ""); }
+    t = t.replace(/["“”「」『』]/g, "").replace(/\s+/g, " ").trim().slice(0, 40);
+    if (!t) throw new Error("한 줄을 받지 못했습니다");
+    return { line: t, icon: DAYLINE_ICONS_.indexOf(ic) >= 0 ? ic : "cup", ai: r.ai || "" };
   });
 }
 

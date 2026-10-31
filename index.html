@@ -178,7 +178,8 @@ main.wrap{padding:34px 16px 80px}
 .wkn{margin:2px 0 0;font-size:14.5px;color:var(--ink-soft)} .wkn b{color:var(--ink);font-size:17px}
 .wkfoot{display:flex;align-items:flex-end;justify-content:space-between;gap:10px;margin-top:14px;padding-top:12px;border-top:1px dashed var(--edge)}
 .wkline{font-family:"Gamja Flower",cursive;font-size:22px;line-height:1.3;color:var(--sepia)}
-.wkdood{width:58px;flex:none;color:var(--deco)} .wkdood svg{width:100%;height:auto;display:block}
+.wkdood{width:60px;flex:none;color:var(--deco)} .wkdood svg{width:100%;height:auto;display:block}
+.wkline.ai::after{content:" ✦";font-size:.6em;color:var(--faint);vertical-align:super}
 @media (max-width:700px){ .wkd b{width:30px;height:30px} .wkline{font-size:19px} }
 .sheet.wide{grid-column:1 / -1}
 .lookgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(300px,100%),1fr));gap:4px 32px;margin-top:4px}
@@ -1102,7 +1103,16 @@ body.dfull .dbook>.diary>.pg>.dfolio{position:static;order:99;margin-top:auto;pa
 .modeband.g-sermon{border-color:#2f3b52} .modeband.g-essay{border-color:#6b7a3a} .modeband.g-novel{border-color:#7a3b2e} .modeband.g-poem{border-color:#6a4b7a} .modeband.g-selfhelp{border-color:#b86a2a} .modeband.g-paper{border-color:#4a6274}
 .calfold>summary{cursor:pointer;font-family:"Gamja Flower";font-size:21px;color:var(--sepia);padding:4px 2px;list-style:none} .calfold>summary::before{content:"▸ "} .calfold[open]>summary::before{content:"▾ "}
 .calfold[open]>summary{margin-bottom:4px}
-.sidetabs{margin-top:14px} .stabs{display:flex;gap:2px;border-bottom:1px solid var(--edge)}
+.sidetabs{margin-top:14px} .sidetabs.qtnote{margin:6px 0 18px}
+/* 묵상: 캘린더 아래 탭 — 누를 때마다 그 항목의 글이 메모지 한 장 위에 (2026-10-31 팀장님) */
+.qtnote .spanel{position:relative;margin-top:12px;background:#fdf6d8;background-image:repeating-linear-gradient(transparent 0 25px,rgba(150,120,60,.16) 25px 26px);border:1px solid rgba(160,130,60,.25);border-radius:3px 3px 10px 3px;padding:24px 14px 14px;box-shadow:0 8px 18px -12px rgba(80,60,20,.5);transform:rotate(-.4deg);color:#3b3020;animation:qtflip .28s ease-out}
+.qtnote .spanel::before{content:"";position:absolute;left:50%;top:-9px;width:74px;height:18px;transform:translateX(-50%) rotate(-2deg);background:rgba(212,190,150,.65);border-radius:2px}
+.qtnote .spanel .hint{color:rgba(60,48,30,.72)} .qtnote .spanel textarea,.qtnote .spanel input{background:rgba(255,255,255,.65)}
+@keyframes qtflip{from{opacity:.25;transform:rotate(-.4deg) translateY(4px)}to{opacity:1;transform:rotate(-.4deg)}}
+:root[data-theme="dark"] .qtnote .spanel{background:#3a3424;background-image:repeating-linear-gradient(transparent 0 25px,rgba(255,240,200,.08) 25px 26px);color:#efe6cc;border-color:#5a4f33} :root[data-theme="dark"] .qtnote .spanel .hint{color:#c9bd9d}
+@media (prefers-reduced-motion:reduce){.qtnote .spanel{animation:none}}
+.qtnote .spanel .jotbox{margin:0!important;padding:0;background:none;border:0;box-shadow:none} .qtnote .spanel .jotbox::before,.qtnote .spanel .jotbox::after{display:none}   /* 메모지 안에서는 끄적이기 상자를 한 겹으로 */
+.stabs{display:flex;gap:2px;border-bottom:1px solid var(--edge)}
 .stabs button{flex:1;font:inherit;font-size:14px;padding:7px 4px;border:0;border-bottom:2px solid transparent;background:none;color:var(--ink-soft);cursor:pointer}
 .stabs button.on{color:var(--ink);font-weight:700;border-bottom-color:var(--sepia)}
 .spanel{padding-top:10px} .spanel .jotbox{margin-top:10px!important}
@@ -2591,7 +2601,7 @@ async function pushSave(){
 // ───────── 새 버전 자동 새로 고침 ─────────
 // 올릴 때마다 version.json 의 번호가 바뀝니다. 앱이 열릴 때·다시 화면에 올라올 때·5분마다 확인해서,
 // 쓰는 중인 글이 없고 저장이 끝났을 때 새 버전으로 새로 고칩니다.
-const APP_BUILD="3b633858ea"; const APP_VER="1.2";   // 판 번호: 배포할 때마다 도구/판올리기.py 가 0.1씩 올림 (1.9 다음은 2.0) — 손으로 고치지 말 것
+const APP_BUILD="482108573e"; const APP_VER="1.3";   // 판 번호: 배포할 때마다 도구/판올리기.py 가 0.1씩 올림 (1.9 다음은 2.0) — 손으로 고치지 말 것
 let NEW_BUILD=null, UPDATE_NOTICED=false;
 async function checkUpdate(){
   if(APP_BUILD.startsWith("__")) return;                 // 원본 파일로 열었을 때(고치는 중)는 건너뜁니다
@@ -3061,7 +3071,7 @@ function setGroups(){ const R=S.reminder||{}, rOn=!!(R.on&&R.clock!==false), p=S
   return [
    {id:"help",t:"도움",ic:"?",acc:"var(--sepia)",rows:[
      {k:"news",ic:"✉",t:"새 소식",st:"",sum:NEWS[0]?`${esc(NEWS[0].date)} · ${esc(NEWS[0].title)}`:"아직 없음",body:newsSection()},
-     {k:"manual",ic:"❧",t:"사용 설명서",st:"",sum:"간단 매뉴얼 · 상세 매뉴얼(책) — 웹으로 보기 · PDF 받기",body:manualSection()}]},
+     {k:"manual",ic:"❧",t:"사용 설명서",st:"",sum:"간단 매뉴얼 · 책 『쓰는 사람의 아침』(상세 안내) — 웹으로 보기 · PDF 받기",body:manualSection()}]},
    {id:"morning",t:"아침",ic:"☀︎",acc:"var(--bible)",rows:[
      {k:"plan",ic:"✚",t:"성경 통독",st:"",sum:`${esc(cur.name)} · ${p.mode==="date"?"달력대로":"이어 읽기"} · ${(p.day||0)+1}일째`,body:planSettings()},
      {k:"devo",ic:"❦",t:"오늘의 묵상 자료",st:"",sum:`${esc(devoSrc().name)} · 갈아 끼울 수 있음`,body:devoSection()},
@@ -3087,10 +3097,14 @@ function setGroups(){ const R=S.reminder||{}, rOn=!!(R.on&&R.clock!==false), p=S
    {id:"keep",t:"기록 지키기",ic:"☁︎",acc:"var(--book)",rows:[
      {k:"backup",ic:"☁",t:"자동 백업 · 간직된 곳",st:LOCALMODE?(fileBkOld()?"need":"ok"):GAS||SERVER?"ok":"need",pill:LOCALMODE?(fileBkOld()?"백업 받을 때":"이 기기"):"켜짐",sum:bkSum(),body:backupSection()}]}]; }
 // 사용 설명서 두 권 (매뉴얼 원고 → 매뉴얼/build.py 가 웹·PDF로 만들어 manual/ 폴더에 둠). 새 창으로 열어 쓰던 화면은 그대로
-const MANUALS=[["quick","간단 매뉴얼","읽자마자 바로 써 보는 한 장 — 시작하기·하루 한 바퀴·메뉴 한눈에·단축키"],["book","상세 매뉴얼","책 한 권 — 사용법과 함께 묵상·일기·독서·글쓰기를 배우는 교과서 (갈래별 전문가 수업·AI와 함께 쓰기)"]];
+const MANUALS=[["quick","간단 매뉴얼","읽자마자 바로 써 보는 한 장 — 시작하기·하루 한 바퀴·메뉴 한눈에·단축키"],["book","책 『쓰는 사람의 아침』","말씀과 책과 한 줄로 작가가 되어 가는 날들 — 자기계발·글쓰기 책에 「아침 서재」 사용 안내를 함께 담았습니다 (상세 안내서)"]];
 // ───────── 새 소식 (공개판, 2026-10-31 팀장님): 중요한 고침은 앱을 열 때 한 번만 쉬운 말로 알림 ─────────
 // 새 소식을 더할 때: NEWS 맨 앞에 넣고 id 는 날짜(같은 날 둘째는 2026-11-02b 처럼 — 글자 순서로 새것이 뒤). 본 소식 id 는 이 기기에만(seojae-open.newsSeen)
 const NEWS=[
+ {id:"2026-10-31e",date:"2026년 10월 31일",title:"사용 설명서가 책이 되었어요",items:[
+  ["📖","사용 설명서가 책이 되었어요","상세 매뉴얼이 책 『쓰는 사람의 아침』으로 새로 태어났어요. 표지부터 책처럼 펼쳐지고, 장마다 여는 글과 닫는 한 문장이 있어요. 단추를 누르는 차례는 그대로 담았어요.","설정 → 도움 → 사용 설명서에서 펴 보세요"],
+  ["✐","묵상 곁의 메모·자료·노트·AI","묵상 화면 오른쪽 「묵상 캘린더」 바로 아래로 옮겼어요. 하나를 누를 때마다 메모지 한 장 위에 그 내용이 보여요.",""],
+  ["✦","날마다 다른 오늘의 한 줄","「이번 주의 아침」의 손글씨 한 줄을 AI가 날마다 다른 주제로 써 주고, 옆 그림도 그 문장에 맞게 바뀌어요.",""]]},
  {id:"2026-10-31d",date:"2026년 10월 31일",title:"오늘 화면이 아기자기해졌어요",items:[
   ["☕","오늘 화면이 아기자기해졌어요","「이번 주의 아침」 카드에 월요일부터 아침을 연 날마다 도장이 찍히고, 날마다 바뀌는 손글씨 한 줄이 보여요. 컴퓨터에서는 카드 아래 빈자리에 작은 그림도 그려져요.",""],
   ["⇄","화면 넘김이 더 천천히","지난 화면이 다 사라진 뒤에 새 화면이 떠올라요. 두 화면이 겹쳐 보이지 않아요.",""]]},
@@ -3124,7 +3138,7 @@ function newsSection(){ return `<section class="sheet tape c compact"><p class="
   <div class="row" style="margin:6px 0 10px"><button class="btn small ink" onclick="newsOpen(NEWS)">새 소식 모두 보기</button></div>
   ${NEWS.map(n=>`<p class="hint" style="margin:4px 0">· ${esc(n.date)} — ${esc(n.title)}</p>`).join("")}</section>`; }
 function manualSection(){ return `<section class="sheet tape c compact"><p class="label">사용 설명서</p>
-  <p class="sub">처음이라면 간단 매뉴얼부터, 더 깊이 알고 싶을 때 상세 매뉴얼을 펴 보세요. 둘 다 새 창으로 열립니다.</p>
+  <p class="sub">처음이라면 간단 매뉴얼부터, 더 깊이 알고 싶을 때 책 『쓰는 사람의 아침』을 펴 보세요. 둘 다 새 창으로 열립니다.</p>
   <div class="mancards">${MANUALS.map(([k,n,d])=>`<div class="mancard"><b>${n}</b><span>${d}</span><div class="row" style="gap:6px;flex-wrap:wrap"><a class="btn small ink" href="manual/${k}.html" target="_blank" rel="noopener" title="${n}을 웹 페이지로 엽니다 (차례·검색·밝게/어둡게)">웹으로 보기 ↗</a><a class="btn small" href="manual/${k}.pdf" target="_blank" rel="noopener" download title="${n}을 PDF 책으로 받습니다 (인쇄용)">PDF 받기</a></div></div>`).join("")}</div>
   <p class="hint">프로그램이 바뀌면 설명서도 함께 고쳐집니다. 단추 위에 마우스를 올리면 뜨는 도움말(설정 → 화면·기기 → 화면 꾸미기 → 도움말 모드)도 함께 쓰세요.</p><div class="betanote"><b>베타판입니다.</b> 아직 시험 중인 프로그램이라 기능이 바뀌거나 오류가 날 수 있습니다. 중요한 글은 따로 사본을 남겨 두세요.<br><b>⚠ 배포 금지</b> — 만든 사람의 허락 없이 이 프로그램(주소·코드)을 다른 사람에게 퍼뜨리거나 배포하지 마세요.</div><p class="madeby">아침 서재 베타판 · <b>임요한 목사</b>(좋은나무교회 담임목사)가 만들었습니다. 매일성경 묵상을 나누는 YouTube <a href="https://www.youtube.com/@%EA%B5%BF%ED%8A%B8%EB%A6%AC%EC%94%A8" target="_blank" rel="noopener" title="YouTube 굿트리씨[매일성경묵상] 채널을 새 창으로 엽니다">「굿트리씨」 채널 ↗</a>을 운영합니다. 만든 사람의 허락 없이 배포하지 마세요.</p></section>`; }
 // ───────── 자동 백업: 구글 드라이브 「아침 서재/백업」(모든 기기, 서버가 날마다) + 이 PC 폴더(설정한 PC만, 휴대폰은 구글만) ─────────
@@ -4665,6 +4679,7 @@ write0(){
     </div>
     <aside>
       ${(()=>{ let o=track==="bible"; try{ const v=localStorage.getItem("seojae-open.calfold."+track); if(v!=null) o=v==="1"; }catch(_){} return `<details class="calfold" ${o?"open":""} ontoggle="try{localStorage.setItem('seojae-open.calfold.${track}',this.open?'1':'0')}catch(_){}"><summary>${track==="bible"?"묵상 캘린더":"글쓰기 캘린더"}</summary>${calHtml()}</details>`; })()}
+      ${track==="bible"?sideTabs(w):""}
       <div class="card-index ${track}${w&&isNovelW(w)?" nv":""}"><div class="nvhide">
         <p class="step"><span class="num">1</span>무엇에 대한 글인가요?</p>
         ${track==="bible"
@@ -4700,7 +4715,7 @@ write0(){
         ${w?snapHtml(w):""}
         ${canSync()?"":`<p class="muted" style="margin-top:10px">노션이 아직 연결되지 않아 ${PLACE()}에만 간직됩니다. <a href="#" onclick="go('settings');return false">연결하기</a></p>`}
       </div>
-      ${sideTabs(w)}
+      ${track==="bible"?"":sideTabs(w)}
     </aside>
   </div>`;
 },
@@ -4772,7 +4787,7 @@ const AFTER={
   write(){ if($("#aipanel")){ if(AI_KEY!==aiKeyNow()) aiLoad(); aiDraw(); } READVIEW=false; EDIT_BASE=editId?(S.writings.find(x=>x.id===editId)?.updated||null):null; EDIT_WARNED=false; grow(); countW(); restoreDraft(); stDraftPaint(); paintPalette(); stkFitAll(); paintSu(); keepAwake(true); },
   drawer(){ if(drawerSub==="all") renderArchive(); },
   room(){ roomDnd(); },
-  today(){ pomoPaint(); todayDeco(); setTimeout(todayDeco,700); setTimeout(todayDeco,1600); },   // 표지 그림·글꼴이 늦게 와 높이가 바뀌면 다시 셈
+  today(){ pomoPaint(); dayLinePaint(); todayDeco(); setTimeout(todayDeco,700); setTimeout(todayDeco,1600); },   // 표지 그림·글꼴이 늦게 와 높이가 바뀌면 다시 셈
   settings(){
     if(CONF.notion&&CONF.local!==false) checkNotion();
     try{ const nav=document.querySelectorAll(".setnav a"); const io=new IntersectionObserver(es=>{ es.forEach(e=>{ if(e.isIntersecting) nav.forEach(a=>a.classList.toggle("on",a.dataset.g===e.target.id.slice(5))); }); },{rootMargin:"-20% 0px -70% 0px"}); document.querySelectorAll(".setgrp").forEach(g=>io.observe(g)); }catch(_){}
@@ -4865,6 +4880,13 @@ const DOODLE={   // 잉크 선으로 그린 작은 그림 (색은 currentColor)
   cup:`<svg viewBox="0 0 64 56" aria-hidden="true"><path d="M14 22h30v12c0 9-6 15-15 15s-15-6-15-15z" fill="var(--paper)" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M44 26c6-1 9 2 8 6s-5 6-9 5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="M8 50h44" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M22 16c-3-4 3-6 0-10M30 16c-3-4 3-6 0-10M38 16c-3-4 3-6 0-10" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" opacity=".6"/></svg>`,
   pot:`<svg viewBox="0 0 64 64" aria-hidden="true"><path d="M20 40h24l-3 18H23z" fill="var(--paper)" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M18 40h28" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="M32 40V18" stroke="var(--book)" stroke-width="1.6" stroke-linecap="round"/><path d="M32 30c-8 0-12-5-12-11 7 0 12 4 12 11zM32 24c7 0 11-5 11-10-6 0-11 4-11 10z" fill="color-mix(in srgb,var(--book) 18%,transparent)" stroke="var(--book)" stroke-width="1.4" stroke-linejoin="round"/></svg>`,
   pencil:`<svg viewBox="0 0 72 48" aria-hidden="true"><path d="M8 40l40-30 8 9-40 30H8z" fill="var(--paper)" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M42 14l8 9M8 40l8 9" stroke="currentColor" stroke-width="1.3"/><path d="M50 8l6 9 4-3c2-2 1-5-1-7s-5-2-7 0z" fill="color-mix(in srgb,var(--bible) 25%,transparent)" stroke="currentColor" stroke-width="1.4"/><path d="M20 46c10-2 22-1 44-3" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-dasharray="2 3" opacity=".6"/></svg>`,
+  sun2:`<svg viewBox="0 0 64 56" aria-hidden="true"><circle cx="32" cy="28" r="11" fill="color-mix(in srgb,#e8b04a 30%,transparent)" stroke="currentColor" stroke-width="1.6"/><path d="M32 6v7M32 43v7M10 28h7M47 28h7M16.5 12.5l5 5M42.5 38.5l5 5M47.5 12.5l-5 5M21.5 38.5l-5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>`,
+  partly:`<svg viewBox="0 0 64 56" aria-hidden="true"><circle cx="38" cy="20" r="9" fill="color-mix(in srgb,#e8b04a 28%,transparent)" stroke="currentColor" stroke-width="1.5"/><path d="M38 4v5M54 20h-5M49.5 8.5l-3.5 3.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M14 44h30a8 8 0 0 0 0-16 11 11 0 0 0-21-2 8 8 0 0 0-9 18z" fill="var(--paper)" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>`,
+  cloud:`<svg viewBox="0 0 64 56" aria-hidden="true"><path d="M14 42h34a9 9 0 0 0 0-18 13 13 0 0 0-25-3 9 9 0 0 0-9 21z" fill="var(--paper)" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M20 49h22" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" opacity=".5"/></svg>`,
+  rain:`<svg viewBox="0 0 64 56" aria-hidden="true"><path d="M14 34h34a9 9 0 0 0 0-18 13 13 0 0 0-25-3 9 9 0 0 0-9 21z" fill="var(--paper)" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M22 40l-3 7M32 40l-3 7M42 40l-3 7" stroke="color-mix(in srgb,#4a7fb5 75%,currentColor)" stroke-width="1.7" stroke-linecap="round"/></svg>`,
+  snow:`<svg viewBox="0 0 64 56" aria-hidden="true"><path d="M14 32h34a9 9 0 0 0 0-18 13 13 0 0 0-25-3 9 9 0 0 0-9 21z" fill="var(--paper)" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M22 40v8M18.5 42l7 4M18.5 46l7-4M40 40v8M36.5 42l7 4M36.5 46l7-4" stroke="color-mix(in srgb,#7fa6c9 80%,currentColor)" stroke-width="1.3" stroke-linecap="round"/></svg>`,
+  fog:`<svg viewBox="0 0 64 56" aria-hidden="true"><path d="M8 18h40M14 28h44M6 38h38M16 48h34" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-dasharray="1 5 18 4" opacity=".8"/></svg>`,
+  storm:`<svg viewBox="0 0 64 56" aria-hidden="true"><path d="M14 32h34a9 9 0 0 0 0-18 13 13 0 0 0-25-3 9 9 0 0 0-9 21z" fill="var(--paper)" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M33 34l-6 10h7l-4 9" fill="none" stroke="color-mix(in srgb,#d4a017 85%,currentColor)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
   sun:`<svg viewBox="0 0 64 48" aria-hidden="true"><path d="M14 40a18 18 0 0 1 36 0" fill="color-mix(in srgb,var(--sepia) 14%,transparent)" stroke="currentColor" stroke-width="1.6"/><path d="M32 12v6M14 20l4 4M50 20l-4 4M6 34h6M52 34h6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M4 42h56" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>`};
 const DAY_LINES=["천천히, 그러나 날마다","오늘의 한 줄이 내일의 한 장","말씀 한 줄, 커피 한 잔","쓰는 사람은 앉는 사람","작은 아침이 쌓여 한 권이 됩니다","읽은 만큼 깊어지고, 쓴 만큼 자랍니다","오늘도 이 자리에서","서두르지 않아도 괜찮아요","한 문장이면 충분한 아침"];
 function weekCard(){ const t=today(), d0=new Date(t+"T00:00"), back=(d0.getDay()+6)%7; d0.setDate(d0.getDate()-back);   // 월요일부터
@@ -4875,7 +4897,23 @@ function weekCard(){ const t=today(), d0=new Date(t+"T00:00"), back=(d0.getDay()
     <div class="wkrow">${days.map(k=>{ const dd=new Date(k+"T00:00"), on=act(k), fut=k>t, rest=!isReadDay(k)&&!on;
       return `<span class="wkd ${on?"on":""} ${k===t?"now":""} ${fut?"fut":""} ${rest?"rest":""}" title="${dd.getMonth()+1}월 ${dd.getDate()}일${on?" — 아침을 열었습니다":fut?"":rest?" — 쉬는 날":""}"><i>${WEEK[dd.getDay()]}</i><b>${on?tickSvg(true):k===t?"오늘":rest?"쉼":""}</b></span>`; }).join("")}</div>
     <p class="wkn">이번 주 <b>${n}</b>번의 아침${n>=5?" — 잘하고 계세요":n?"":" — 오늘 첫 도장을 찍어 보세요"}</p>
-    <div class="wkfoot"><span class="wkline">${esc(line)}</span><span class="wkdood">${DOODLE.cup}</span></div></section>`; }
+    <div class="wkfoot"><span class="wkline" id="wkline">${esc(dlCached()?.t||line)}</span><span class="wkdood" id="wkdood" aria-hidden="true">${DOODLE[dlIcon()]}</span></div></section>`; }
+// 오늘의 한 줄 (2026-10-31 팀장님: 「그날그날 랜덤으로 한 문장」 — 날씨·위치는 쓰지 않음)
+// AI(서버 coWrite mode dayline)가 날마다 다른 주제로 한 문장 + 어울리는 그림 하나를 고름 → 이 기기에 그날 하루 기억. AI가 없으면 날짜로 고른 손글씨 문장과 그림
+const DL_ICONS=["cup","sun2","partly","cloud","rain","snow","fog","pot","pencil","sun"];
+const seasonOf=d=>{ const m=d.getMonth()+1; return m>=3&&m<=5?"봄":m>=6&&m<=8?"여름":m>=9&&m<=11?"가을":"겨울"; };
+const dlCached=()=>{ try{ return JSON.parse(localStorage.getItem("seojae-open.dayline."+today())||"null"); }catch(_){ return null; } };
+const dlIcon=()=>{ const c=dlCached(); return c&&DL_ICONS.includes(c.icon)?c.icon:pick(["cup","pot","pencil","sun"],1,today()+"i")[0]; };
+function dlAiOk(){ if(typeof aiMode==="function"){ const m=aiMode(); if(m==="own") return true; if(m==="shared"){ try{ return localStorage.getItem("seojae-open.aiShareOk")==="1"; }catch(_){ return false; } } return false; } return !!(GAS&&SERVER&&CONF.ai); }   // 공개판: 함께 쓰는 AI는 동의한 기기에서만(저절로 동의 창을 띄우지 않게)
+async function dayLinePaint(){ if(tab!=="today"||!$("#wkline")) return; const c=dlCached();
+  if(c){ $("#wkline").textContent=c.t; $("#wkline").classList.toggle("ai",!!c.ai); const d=$("#wkdood"); if(d) d.innerHTML=DOODLE[dlIcon()]; return; }
+  if(!dlAiOk()||dayLinePaint.busy) return; dayLinePaint.busy=true;
+  let avoid=""; try{ const y=new Date(); y.setDate(y.getDate()-1); avoid=(JSON.parse(localStorage.getItem("seojae-open.dayline.prev")||"null")||{}).t||""; }catch(_){}
+  try{ const r=await gcall("coWrite",{mode:"dayline",date:today(),season:seasonOf(new Date()),avoid,callName:callName()});
+    if(r&&r.line){ const v={t:r.line,icon:DL_ICONS.includes(r.icon)?r.icon:"cup",ai:1}; try{ localStorage.setItem("seojae-open.dayline."+today(),JSON.stringify(v)); localStorage.setItem("seojae-open.dayline.prev",JSON.stringify(v));
+        for(let i=localStorage.length-1;i>=0;i--){ const k=localStorage.key(i); if(/^seojae-open\.(wx|dayline)\.\d{4}-/.test(k||"")&&!k.endsWith(today())) localStorage.removeItem(k); } }catch(_){}
+      const l=$("#wkline"), d=$("#wkdood"); if(l){ l.textContent=r.line; l.classList.add("ai"); } if(d) d.innerHTML=DOODLE[v.icon]; } }catch(_){}
+  finally{ dayLinePaint.busy=false; } }
 function todayDeco(){ if(tab!=="today") return; document.querySelectorAll(".tdood").forEach(x=>x.remove()); if(innerWidth<1000) return;
   const cards=[...document.querySelectorAll(".tgrid1>.sheet")], pics=["pot","sun","pencil"];
   cards.forEach((c,i)=>{ const kids=[...c.children].filter(x=>!x.classList.contains("tdood")); const last=kids.reduce((m,x)=>Math.max(m,x.getBoundingClientRect().bottom),0), free=c.getBoundingClientRect().bottom-last;
@@ -7152,7 +7190,7 @@ function sideTabs(w){ const m=wMs(w), g=G(m), cx=w?codexIn(w.body+" "+(w.title||
   const sl=!PUB&&!!(w&&(w.slides||/설교/.test(w.type||"")||g.item==="설교"||/^\s*(🎬|▣\s*슬라이드)/m.test(w.body||"")));
   const tabs=[["memo","메모"],...(sl?[["slides","슬라이드"+(w.slides?" "+w.slides.n:"")]]:[]),["res","자료"+(m&&(m.research||[]).length?" "+m.research.length:"")],["notes","노트"+(cx.length?" "+cx.length:"")],["ai","AI"+(w?.review?.notes?.length?" "+w.review.notes.length:"")]];
   const cur=tabs.some(t=>t[0]===SIDE_TAB)?SIDE_TAB:"memo";
-  return `<div class="sidetabs"><div class="stabs">${tabs.map(([k,n])=>`<button type="button" data-k="${k}" class="${k===cur?"on":""}" onclick="sideTab('${k}')">${n}</button>`).join("")}</div>
+  return `<div class="sidetabs${track==="bible"?" qtnote":""}"><div class="stabs">${tabs.map(([k,n])=>`<button type="button" data-k="${k}" class="${k===cur?"on":""}" onclick="sideTab('${k}')">${n}</button>`).join("")}</div>
     ${[["memo",memo],...(sl?[["slides",slideTabHtml(w)]]:[]),["res",res],["notes",notes],["ai",ai]].map(([k,h])=>`<div class="spanel" data-k="${k}" ${k===cur?"":"hidden"}>${h}</div>`).join("")}</div>`; }
 function wSideRoom(w){ const m=wMs(w), cx=w?codexIn(w.body+" "+(w.title||"")):[], rv=w&&(m||w.type==="설교초안"); if(!m&&!cx.length&&!rv) return "";
   return `<div class="card-index roomside">
