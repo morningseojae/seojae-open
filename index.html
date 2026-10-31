@@ -285,6 +285,8 @@ ol.toc{margin:6px 0 4px;padding-left:20px;font-size:13.5px;line-height:1.6;color
 
 /* 도움말 · 단계 */
 .hint{display:block;font-size:13.5px;line-height:1.55;color:var(--faint);margin-top:4px}
+.instbox{margin-top:14px;padding-top:12px;border-top:1px dashed var(--edge)} .ib-h{margin:0 0 8px;font-weight:700} .ib-h small{font-weight:400;font-size:12.5px;color:var(--faint);margin-left:6px}
+.ib-tabs{flex-wrap:wrap;gap:6px;margin-bottom:6px} .ib-tabs small{font-size:11px;opacity:.75}
 .pgghost{position:fixed;inset:0;z-index:4;pointer-events:none;overflow:hidden;opacity:1;transition:opacity .34s ease-in}
 .pgghost.out{opacity:0}
 #main.pgin{animation:pgin .5s cubic-bezier(.2,.7,.3,1) both}
@@ -2608,7 +2610,7 @@ async function pushSave(){
 // ───────── 새 버전 자동 새로 고침 ─────────
 // 올릴 때마다 version.json 의 번호가 바뀝니다. 앱이 열릴 때·다시 화면에 올라올 때·5분마다 확인해서,
 // 쓰는 중인 글이 없고 저장이 끝났을 때 새 버전으로 새로 고칩니다.
-const APP_BUILD="bf67db6593"; const APP_VER="1.7";   // 판 번호: 배포할 때마다 도구/판올리기.py 가 0.1씩 올림 (1.9 다음은 2.0) — 손으로 고치지 말 것
+const APP_BUILD="08466a4274"; const APP_VER="1.8";   // 판 번호: 배포할 때마다 도구/판올리기.py 가 0.1씩 올림 (1.9 다음은 2.0) — 손으로 고치지 말 것
 let NEW_BUILD=null, UPDATE_NOTICED=false;
 async function checkUpdate(){
   if(APP_BUILD.startsWith("__")) return;                 // 원본 파일로 열었을 때(고치는 중)는 건너뜁니다
@@ -3078,6 +3080,7 @@ function setGroups(){ const R=S.reminder||{}, rOn=!!(R.on&&R.clock!==false), p=S
   return [
    {id:"help",t:"도움",ic:"?",acc:"var(--sepia)",rows:[
      {k:"news",ic:"✉",t:"새 소식",st:"",sum:NEWS[0]?`${esc(NEWS[0].date)} · ${esc(NEWS[0].title)}`:"아직 없음",body:newsSection()},
+     {k:"app",ic:"▢",t:"앱으로 설치하기",st:isApp()?"ok":"off",pill:isApp()?"설치됨":"선택",sum:isApp()?"이 기기는 앱으로 쓰는 중 · PC·안드로이드·아이폰 설치법":"PC·크롬·안드로이드·아이폰 사파리 — 기기마다 설치하는 법",body:appSection()},
      {k:"manual",ic:"❧",t:"사용 설명서",st:"",sum:"간단 매뉴얼 · 상세 매뉴얼 — 웹으로 보기 · PDF 받기",body:manualSection()}]},
    {id:"morning",t:"아침",ic:"☀︎",acc:"var(--bible)",rows:[
      {k:"plan",ic:"✚",t:"성경 통독",st:"",sum:`${esc(cur.name)} · ${p.mode==="date"?"달력대로":"이어 읽기"} · ${(p.day||0)+1}일째`,body:planSettings()},
@@ -3094,7 +3097,6 @@ function setGroups(){ const R=S.reminder||{}, rOn=!!(R.on&&R.clock!==false), p=S
      {k:"vr",ic:"✎",t:"AI가 따를 것 — 규칙·말투",st:"",sum:rules||voice?`규칙 ${rules}개 · 말투 기준 ${voice}문장`:"아직 규칙 없음",body:vrSection()}]},
    {id:"device",t:"화면·기기",ic:"◐",acc:"var(--ink-soft)",rows:[
      {k:"look",ic:"◐",t:"화면 꾸미기",st:"",sum:`${theme==="dark"?"어두운 화면":theme==="auto"?"기기 설정 따라":"밝은 종이"} · 글자 ${fs?fs+"px":"보통"} · 이 기기만`,body:lookSection()},
-     {k:"app",ic:"▢",t:"앱으로 쓰기",st:isApp()?"ok":"off",pill:isApp()?"설치됨":"선택",sum:isApp()?"앱 창으로 열려 있음":"아직 설치 안 함 — 주소창 없는 창으로 쓸 수 있어요",body:appSection()},
      {k:"conn",ic:"⇄",t:LOCALMODE?"다른 기기에서 쓰기 · 구글로 잇기":GAS?"다른 기기 연결":"휴대폰에서 쓰기",st:LOCALMODE?"need":GAS?"ok":CONF.phoneUrl?"":"need",pill:LOCALMODE?"이 기기에만":"연결됨",sum:LOCALMODE?"지금은 이 기기에만 — 구글로 이으면 휴대폰을 잃어도 글이 남습니다":DRV?`구글 드라이브에 이음 · ${esc(DRV.email||"내 구글 계정")}`:GAS?"이 기기 연결됨 · 구글 드라이브의 같은 기록":"같은 와이파이에서 QR로 열기",body:phoneSection()}]},
    ...(PUB?[]:[{id:"link",t:"바깥 연결",ic:"⛓",acc:"var(--book)",rows:[
      {k:"notion",ic:"N",t:"노션",st:CONF.notion?"ok":"off",pill:CONF.notion?"연결됨":"선택",sum:CONF.notion?`연결됨 · 묵상 자동 싣기 ${S.settings.autoSync?"켜짐":"꺼짐"}`:"연결 안 됨",body:notionSection()},
@@ -3108,6 +3110,8 @@ const MANUALS=[["quick","간단 매뉴얼","읽자마자 바로 써 보는 한 �
 // ───────── 새 소식 (공개판, 2026-10-31 팀장님): 중요한 고침은 앱을 열 때 한 번만 쉬운 말로 알림 ─────────
 // 새 소식을 더할 때: NEWS 맨 앞에 넣고 id 는 날짜(같은 날 둘째는 2026-11-02b 처럼 — 글자 순서로 새것이 뒤). 본 소식 id 는 이 기기에만(seojae-open.newsSeen)
 const NEWS=[
+ {id:"2026-10-31i",date:"2026년 10월 31일",title:"앱으로 설치하는 법을 한곳에",items:[
+  ["⤓","앱으로 설치하는 법을 한곳에","설정 맨 앞 「도움 → 앱으로 설치하기」에 PC·맥·안드로이드·아이폰(사파리·크롬)마다 설치하는 법을 모았어요. 지금 쓰는 기기의 설명이 먼저 펼쳐져요.","아이폰은 공유(□↑) → 「홈 화면에 추가」로 설치해요"]]},
  {id:"2026-10-31h",date:"2026년 10월 31일",title:"한국 책도 잘 찾아져요",items:[
   ["◫","책장에서 한국 책이 잘 찾아져요","책 이름이나 ISBN을 넣고 찾으면 표지와 출판사까지 바로 나와요. 따로 열쇠를 넣지 않아도 됩니다.",""]]},
  {id:"2026-10-31g",date:"2026년 10월 31일",title:"함께 만든 사람",items:[
@@ -5649,6 +5653,20 @@ function installEnv(){ const ua=navigator.userAgent||"", ios=/iPhone|iPad|iPod/.
   const br=/SamsungBrowser/.test(ua)?"samsung":/EdgiOS|EdgA|Edg\//.test(ua)?"edge":/CriOS/.test(ua)?"chrome-ios":/FxiOS|Firefox/.test(ua)?"firefox":/Whale/.test(ua)?"whale":/Chrome/.test(ua)?"chrome":/Safari/.test(ua)?"safari":"etc";
   return {ios,android,inapp,br,mobile:ios||android}; }
 function appCopyUrl(){ const u=location.href.split("#")[0].split("?")[0]; navigator.clipboard?.writeText(u).then(()=>toast("주소를 복사했습니다 — 크롬이나 사파리 주소창에 붙여 넣으세요"),()=>prompt("이 주소를 복사하세요",u)); }
+// 기기마다 설치하는 법 한곳에 (2026-10-31 팀장님: 「PC, 크롬, 안드로이드, 아이폰 사파리에서 다운로드할 수 있는 방법을 한 섹션으로」) — 지금 기기의 탭이 먼저 펼쳐짐
+const INST_GUIDES=[["pc","PC · 크롬·엣지"],["mac","맥 · 사파리"],["android","안드로이드 · 크롬"],["ios","아이폰 · 사파리"],["iosc","아이폰 · 크롬"]];
+function instHow(k){ const b=x=>`<b>${x}</b>`;
+  return {pc:`<ol class="steps sub"><li>크롬이나 엣지로 아침 서재를 엽니다.</li><li>주소창 오른쪽 끝의 ${b("설치")} 아이콘(모니터에 ↓, 엣지는 ⊞)을 누릅니다.</li><li>아이콘이 없으면 오른쪽 위 ${b("⋮")} → ${b("전송, 저장, 공유 → 페이지를 앱으로 설치")}(엣지는 ${b("⋯ → 앱 → 이 사이트를 앱으로 설치")}).</li><li>${b("설치")}를 누르면 작업 표시줄·바탕 화면(맥은 Dock·응용 프로그램)에 「아침 서재」가 생깁니다.</li></ol>`,
+    mac:`<ol class="steps sub"><li>사파리로 아침 서재를 엽니다.</li><li>위쪽 메뉴 ${b("파일 → Dock에 추가…")}를 누릅니다(또는 공유 단추 → ${b("Dock에 추가")}).</li><li>이름 「아침 서재」 그대로 ${b("추가")}. Dock의 아이콘으로 엽니다.</li></ol>`,
+    android:`<ol class="steps sub"><li>크롬으로 아침 서재를 엽니다.</li><li>오른쪽 위 ${b("⋮")} 메뉴를 누릅니다.</li><li>${b("앱 설치")}(또는 ${b("홈 화면에 추가 → 설치")})를 누릅니다.</li><li>홈 화면에 「아침 서재」 아이콘이 생깁니다. 삼성 인터넷은 아래 ${b("≡")} → ${b("현재 페이지 추가 → 홈 화면")}.</li></ol>`,
+    ios:`<ol class="steps sub"><li>사파리로 아침 서재를 엽니다(카카오톡 안에서 열렸으면 ${b("Safari로 열기")}).</li><li>${b("공유")} 단추(□↑)를 누릅니다. 주소창이 아래에 있으면 아래 가운데, 위에 있으면 위 오른쪽입니다. 안 보이면 주소창 옆 ${b("⋯")} → ${b("공유")}.</li><li>목록을 조금 내려 ${b("홈 화면에 추가")}를 누릅니다.</li><li>이름 「아침 서재」 그대로 오른쪽 위 ${b("추가")}. 홈 화면의 아이콘으로 엽니다.</li></ol><p class="hint">아이폰은 애플 정책으로 단추 한 번 설치가 없어, 이렇게 손으로 추가합니다.</p>`,
+    iosc:`<ol class="steps sub"><li>크롬으로 아침 서재를 엽니다.</li><li>주소창 오른쪽의 ${b("공유")} 단추(□↑)를 누릅니다(안 보이면 ${b("⋯")} 메뉴 안).</li><li>${b("홈 화면에 추가")}를 누르고 ${b("추가")}.</li><li>목록에 없으면 iOS가 오래된 것입니다 — 사파리로 열어 「아이폰 · 사파리」 순서로 해 주세요.</li></ol>`}[k]||""; }
+const instCur=E=>E.ios?(E.br==="safari"?"ios":"iosc"):E.android?"android":E.br==="safari"?"mac":"pc";
+function instGuides(E){ const cur=instCur(E);
+  return `<div class="instbox"><p class="ib-h">기기마다 설치하는 법 <small>다른 기기에 설치할 때도 여기를 보세요</small></p>
+    <div class="pills ib-tabs" role="tablist">${INST_GUIDES.map(([k,n])=>`<button type="button" class="pill ${k===cur?"on":""}" data-ik="${k}" role="tab" aria-selected="${k===cur}" onclick="instPick('${k}',this)">${n}${k===cur&&!isApp()?" <small>(이 기기)</small>":""}</button>`).join("")}</div>
+    ${INST_GUIDES.map(([k])=>`<div class="instpane" data-ik="${k}" ${k===cur?"":"hidden"}>${instHow(k)}</div>`).join("")}</div>`; }
+function instPick(k,btn){ const box=btn.closest(".instbox"); box.querySelectorAll("[data-ik]").forEach(x=>{ if(x.classList.contains("pill")){ x.classList.toggle("on",x.dataset.ik===k); x.setAttribute("aria-selected",x.dataset.ik===k); } else x.hidden=x.dataset.ik!==k; }); }
 function appSection(){
   const E=installEnv(), b=x=>`<b>${x}</b>`, again=typeof drvCall==="function"?"「구글로 시작하기」를 한 번 더 눌러 주세요":"이 화면 아래 「연결 링크 복사」로 복사해 둔 링크를 붙여 넣어 한 번 더 연결해 주세요";
   const note=`<p class="hint">설치한 앱은 브라우저와 저장 공간이 따로입니다. 처음 열면 ${again}. 기록은 구글 드라이브에 있으니 그대로 이어집니다.</p>`;
@@ -5667,7 +5685,8 @@ function appSection(){
     <p class="label">앱으로 쓰기</p>
     ${isApp()?`<div class="okline"><span class="stamp ok">앱 창</span><span class="muted">주소창 없는 앱 창으로 열려 있습니다</span></div>`
     :`<p class="sub">주소창·탭 없이 <b>다이어리처럼 따로 열리는 창</b>으로 쓸 수 있습니다. 한 번만 설치하면 ${E.mobile?"홈 화면":"Dock·작업 표시줄"}의 아이콘으로 엽니다.</p>
-    ${INSTALL&&!E.inapp?`<button class="btn ink" onclick="installApp()">이 기기에 앱으로 설치</button><p class="hint">단추가 안 되면 아래 길로도 됩니다.</p>`:""}${how}${E.inapp?"":note}`}
+    ${INSTALL&&!E.inapp?`<button class="btn ink" onclick="installApp()">이 기기에 앱으로 설치</button><p class="hint">단추가 안 되면 아래 길로도 됩니다.</p>`:""}${E.inapp||["samsung","firefox"].includes(E.br)?how:""}${E.inapp?"":note}`}
+    ${instGuides(E)}
   </section>`;
 }
 matchMedia("(prefers-color-scheme: dark)").addEventListener?.("change",()=>applyTheme());
