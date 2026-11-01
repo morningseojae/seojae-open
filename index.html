@@ -646,6 +646,16 @@ details.stmenu>summary::-webkit-details-marker{display:none}
 .bookc .pickbtn{margin-top:6px;font:inherit;font-size:12px;padding:2px 9px;border:1px solid var(--edge);border-radius:999px;background:var(--paper);color:var(--ink-soft);cursor:pointer}
 .bookc .pickbtn:hover{border-color:var(--sepia);color:var(--ink)}
 .nowbook .cover{width:86px;height:124px;flex:0 0 auto}
+/* 오늘 「읽고 있는 책」 표지 = 3D 책 (2026-11-01 팀장님): 마우스를 올리면(휴대폰은 누르면) 살짝 돌아 책배(종이 옆면)가 보임. 앞표지·책배·뒤표지를 겹쳐 세움 */
+.book3d{--bw:86px;--bh:124px;--bd:15px;flex:0 0 auto;width:var(--bw);height:var(--bh);perspective:620px;position:relative;-webkit-tap-highlight-color:transparent}
+.book3d .b3in{position:relative;width:100%;height:100%;transform-style:preserve-3d;transform:rotateY(0deg);transition:transform .75s cubic-bezier(.2,.75,.25,1)}
+.nowbook .book3d .cover{position:absolute;inset:0;width:100%;height:100%;margin:0;transform:translateZ(calc(var(--bd) / 2));-webkit-backface-visibility:hidden;backface-visibility:hidden}
+.book3d .b3pg{position:absolute;top:2.5%;height:95%;width:calc(var(--bd) - 1px);left:calc((var(--bw) - var(--bd)) / 2);transform:rotateY(90deg) translateZ(calc(var(--bw) / 2 - 3px));background:repeating-linear-gradient(90deg,#fbf6ea 0 1px,#e9dfca 1px 2px);box-shadow:inset 0 0 5px rgba(80,60,30,.28),inset -3px 0 4px rgba(0,0,0,.12)}
+.book3d .b3bk{position:absolute;inset:0;transform:translateZ(calc(var(--bd) / -2)) rotateY(180deg);background:linear-gradient(90deg,#4a3324,#6b4a33);border-radius:5px 2px 2px 5px}
+.book3d::after{content:"";position:absolute;left:4%;right:-10%;bottom:-9px;height:12px;border-radius:50%;background:radial-gradient(closest-side,rgba(40,25,10,.32),transparent);opacity:0;transform:scaleX(.7);transition:opacity .75s,transform .75s;pointer-events:none}
+@media (hover:hover){.book3d:hover .b3in{transform:rotateY(-34deg) rotateX(5deg) translateY(-3px)}.book3d:hover::after{opacity:1;transform:scaleX(1)}}
+.book3d.turn .b3in{transform:rotateY(-34deg) rotateX(5deg) translateY(-3px)}.book3d.turn::after{opacity:1;transform:scaleX(1)}
+@media (prefers-reduced-motion:reduce){.book3d .b3in,.book3d::after{transition:none}}
 
 .timer{font-family:"Nanum Myeongjo";font-weight:800;font-size:40px;letter-spacing:2px}
 /* 집중 시간 (뽀모도로) */
@@ -827,7 +837,7 @@ hr.dash{border:0;border-top:1px dashed var(--edge);margin:18px 0}
   .plancards{grid-template-columns:1fr}
   .shelf{gap:14px;padding:14px 10px 0}
   .bookc,.cover{width:92px} .cover{height:134px}
-  .nowbook .cover{width:76px;height:110px}
+  .nowbook .cover{width:76px;height:110px} .book3d{--bw:76px;--bh:110px;--bd:13px}
   .results{grid-template-columns:repeat(2,1fr);gap:12px}
   .result img,.result .cover{height:160px}
   .timer{font-size:34px}
@@ -2958,7 +2968,7 @@ async function pushSave(){
 // ───────── 새 버전 자동 새로 고침 ─────────
 // 올릴 때마다 version.json 의 번호가 바뀝니다. 앱이 열릴 때·다시 화면에 올라올 때·5분마다 확인해서,
 // 쓰는 중인 글이 없고 저장이 끝났을 때 새 버전으로 새로 고칩니다.
-const APP_BUILD="a5af6f8c4e"; const APP_VER="3.0";   // 판 번호: 배포할 때마다 도구/판올리기.py 가 0.1씩 올림 (1.9 다음은 2.0) — 손으로 고치지 말 것
+const APP_BUILD="b94c3e19d6"; const APP_VER="3.1";   // 판 번호: 배포할 때마다 도구/판올리기.py 가 0.1씩 올림 (1.9 다음은 2.0) — 손으로 고치지 말 것
 let NEW_BUILD=null, UPDATE_NOTICED=false;
 async function checkUpdate(){
   if(APP_BUILD.startsWith("__")) return;                 // 원본 파일로 열었을 때(고치는 중)는 건너뜁니다
@@ -3117,6 +3127,7 @@ function mark(k){ const d=today(); (S.log[d]=S.log[d]||{})[k]=true; }
 function pick(arr,n,seed){ let h=0; for(const c of seed) h=(h*31+c.charCodeAt(0))>>>0; const a=[...arr]; for(let i=a.length-1;i>0;i--){ h=(h*1103515245+12345)>>>0; const j=h%(i+1); [a[i],a[j]]=[a[j],a[i]]; } return a.slice(0,n); }
 function download(name,text,type="text/plain"){ const a=document.createElement("a"); a.href=URL.createObjectURL(new Blob([text],{type})); a.download=name; a.click(); setTimeout(()=>URL.revokeObjectURL(a.href),500); }
 const curBook=()=>S.books.find(b=>b.id===S.settings.currentBook&&b.status!=="완료")||S.books.find(b=>b.status!=="완료");   // 다 읽은 책은 「읽고 있는 책」에 남지 않음
+function book3dTap(el){ if(matchMedia("(hover:hover)").matches) return; el.classList.add("turn"); clearTimeout(el._t); el._t=setTimeout(()=>el.classList.remove("turn"),1800); }   // 휴대폰: 누르면 잠깐 돌았다가 제자리
 const coverHtml=(b,cls="cover")=>b?.cover&&/^(https?:|data:image\/)/.test(b.cover)?`<img class="${cls}" src="${esc(b.cover)}" alt="" loading="lazy" data-fallback="${esc(b.title||"")}">`:`<div class="${cls} blank">${esc(b?.title||"")}</div>`;
 // 표지를 못 불러오면 책 제목 글자로 대신합니다 (제목은 글자로만 넣어 코드가 실행될 틈이 없게)
 document.addEventListener("error",e=>{ const t=e.target;
@@ -5104,7 +5115,7 @@ today(){
     ${todayBibleCard()}
     <section class="sheet tape b">
       <p class="label book">읽고 있는 책</p>
-      ${b?`<div class="nowbook">${coverHtml(b)}<div style="flex:1;min-width:0">
+      ${b?`<div class="nowbook"><div class="book3d" onclick="book3dTap(this)" title="${esc(b.title)}"><div class="b3in">${coverHtml(b)}<i class="b3pg" aria-hidden="true"></i><i class="b3bk" aria-hidden="true"></i></div></div><div style="flex:1;min-width:0">
         <div class="big" style="font-size:19px">${esc(b.title)}</div><div class="sub">${esc((b.authors||[]).join(", "))}</div>
         ${b.total?`<div class="progress"><i style="width:${Math.min(100,b.page/b.total*100)}%"></i></div><div class="muted">${b.unit==="pct"?`${b.page||0}%`:`${b.page} / ${b.total}쪽`}</div>`:`<div class="muted">${pgText(b,b.page)}까지</div>`}
         <div class="row" style="margin-top:8px"><input id="pg" type="number" placeholder="${b.unit==="pct"?"몇 %까지?":"몇 쪽까지?"}" style="width:120px" inputmode="numeric" ${b.unit==="pct"?'max="100"':""}><button class="btn small" onclick="updatePage()">여기까지 읽음</button></div>
