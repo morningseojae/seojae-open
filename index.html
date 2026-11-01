@@ -1122,6 +1122,12 @@ button.rtc:hover{border-color:var(--sepia)} button.rtc.r:hover{filter:brightness
 @media (pointer:coarse) and (max-width:900px){ .pconly{display:none!important} }   /* 휴대폰·태블릿에서는 되지 않는 PC 전용 단추(위에 띄우기 등) */
 @media (max-width:440px){ .sunav .su-today{display:none} .sunav .fsbtn{min-width:36px;min-height:36px} }
 .qtstamp{font-family:"Gamja Flower",cursive;font-size:14px;line-height:1;color:var(--stamp);border:1.6px solid currentColor;border-radius:50%;width:26px;height:26px;display:inline-grid;place-items:center;transform:rotate(-10deg);opacity:.85;box-shadow:inset 0 0 0 1.5px var(--paper),inset 0 0 0 2.4px currentColor}
+.manview .mancardx{display:flex;flex-direction:column;width:min(760px,100%);height:min(90vh,980px);padding:16px 16px 12px;border-top-color:var(--sepia)}
+.manhead{display:flex;align-items:flex-start;justify-content:space-between;gap:10px} .mant{font-family:"Gamja Flower",cursive;font-weight:400;font-size:26px;line-height:1.2;margin:0 0 2px}
+.mansub{font:13.5px/1.5 var(--ui-font,sans-serif);color:var(--ink-soft);margin:0 0 8px}
+.manframe{flex:1;min-height:0;width:100%;border:1px solid var(--edge);border-radius:10px;background:#fff}
+.manacts{display:flex;gap:8px;justify-content:flex-end;align-items:center;flex-wrap:wrap;margin-top:10px} .manacts .btn.ink{min-height:44px;padding:0 22px}
+@media (max-width:520px){ .manview{padding:8px} .manview .mancardx{height:calc(100vh - 16px);height:calc(100dvh - 16px);padding:12px 10px 10px} .mant{font-size:22px} }
 .qtnew{font:13px/1.5 var(--ui-font,sans-serif);color:var(--sepia);background:color-mix(in srgb,var(--sepia) 9%,transparent);border-radius:8px;padding:5px 10px;margin-top:6px;display:inline-block}
 .dslipview{position:fixed;inset:0;z-index:115;background:rgba(40,28,16,.28);display:flex;align-items:center;justify-content:center;padding:24px 16px;animation:askin .14s ease-out}
 .dslipcard{width:min(620px,100%);max-height:min(82vh,860px);overflow:auto;background:#fffdf6 var(--grain);color:#2a241d;border:1px solid var(--edge);border-radius:3px 10px 10px 3px;border-left:4px solid var(--deco);box-shadow:0 26px 60px -22px rgba(0,0,0,.55);padding:22px 26px 16px;transform:rotate(-.4deg);display:grid;gap:10px}
@@ -2475,7 +2481,7 @@ async function drvStart(btn){   // 연결 화면 「구글로 시작하기」·�
   try{ await drvToken(true); await drvSetup(); GAS=true; NEED_CONNECT=false; DRV_NEED=false; AUTH_FAIL=false;
     if(fromLocal){ try{ await snapPut("구글 잇기 전",await locRead()); }catch(_){} LOCALMODE=false; try{ localStorage.removeItem(LOC_KEY); }catch(_){} setDirty(true); READY=false; CACHED_REV=null; }   // 이 기기 글을 드라이브 기록과 합쳐 올림(덮지 않음)
     toast(fromLocal?"이 기기의 글을 구글 드라이브 「아침 서재」 폴더로 합쳐 올립니다":DRV.email?DRV.email+" 드라이브의 「아침 서재」 폴더에 간직합니다":"내 구글 드라이브 「아침 서재」 폴더에 간직합니다");
-    await fetchFresh(fresh); if(fresh&&SERVER){ ensurePlan(); ensureMs(); render(); } }
+    await fetchFresh(fresh); if(fresh&&SERVER){ ensurePlan(); ensureMs(); render(); } if(fresh) setTimeout(manualFirst,900); }
   catch(e){ toast(e.message); if(btn){ btn.disabled=false; btn.textContent=btn.dataset.t||"구글로 시작하기"; } }
 }
 function drvLogout(){ if(!confirm("이 기기에서 구글 드라이브 잇기를 끊을까요? 글은 구글 드라이브 「아침 서재」 폴더에 그대로 남습니다. 이 기기의 사본은 지웁니다.")) return;
@@ -2707,6 +2713,12 @@ function mergeFrom(other){
       if(Array.isArray(pm.checks)||Array.isArray(pt.checks)){ const seen=new Set(), c=[]; [...(pt.checks||[]),...(pm.checks||[])].forEach(x=>{ const j=JSON.stringify(x); if(!seen.has(j)){ seen.add(j); c.push(x); } }); P.checks=c; }
       const la=pm.last?.date||"", lb=pt.last?.date||""; if(P.mode!=="date"&&(la||lb)){ const w=lb>la||(lb===la&&(pt.day||0)>(pm.day||0))?pt:pm; P.last=w.last; P.day=w.day; }
       out.plan=P; }
+    // 성경읽기표 장마다 기록(2026-11-01 팀장님 「합쳐 주세요」): 같은 읽기표면 장마다 더 나중에 바꾼 쪽, 어느 기기든 전체 초기화(chsR) 앞의 것은 버림
+    if(pm&&pt&&pm.id===pt.id&&out.plan&&(pm.chs||pt.chs||pm.chsT||pt.chsT)){ const P=Object.assign({},out.plan), R=Math.max(pm.chsR||0,pt.chsR||0), C={}, T={};
+      const keys=new Set([...Object.keys(pm.chs||{}),...Object.keys(pt.chs||{}),...Object.keys(pm.chsT||{}),...Object.keys(pt.chsT||{})]);
+      for(const k of keys){ const ta=(pm.chsT||{})[k]||0, tb=(pt.chsT||{})[k]||0, w=tb>ta?pt:pm, t=Math.max(ta,tb); if(t<R||(!t&&R)) continue; if(t) T[k]=t; if(w.chs&&k in w.chs) C[k]=w.chs[k]; }
+      if(Object.keys(C).length) P.chs=C; else delete P.chs; if(Object.keys(T).length) P.chsT=T; else delete P.chsT; if(R) P.chsR=R; else delete P.chsR;
+      out.plan=P; }
     S.settings=Object.assign(blank().settings,out); S.settingsTs=outTs; if(newer) S.settingsT=other.settingsT;
     // 주석 켜기·책 정하기는 통째 교체하지 않고 합칩니다 (겹치면 더 나중에 바꾼 쪽)
     const w=newer?theirs:mine, l=newer?mine:theirs;
@@ -2750,7 +2762,7 @@ async function pushSave(){
 // ───────── 새 버전 자동 새로 고침 ─────────
 // 올릴 때마다 version.json 의 번호가 바뀝니다. 앱이 열릴 때·다시 화면에 올라올 때·5분마다 확인해서,
 // 쓰는 중인 글이 없고 저장이 끝났을 때 새 버전으로 새로 고칩니다.
-const APP_BUILD="b47da569a9"; const APP_VER="2.0";   // 판 번호: 배포할 때마다 도구/판올리기.py 가 0.1씩 올림 (1.9 다음은 2.0) — 손으로 고치지 말 것
+const APP_BUILD="11e2a7fb6a"; const APP_VER="2.1";   // 판 번호: 배포할 때마다 도구/판올리기.py 가 0.1씩 올림 (1.9 다음은 2.0) — 손으로 고치지 말 것
 let NEW_BUILD=null, UPDATE_NOTICED=false;
 async function checkUpdate(){
   if(APP_BUILD.startsWith("__")) return;                 // 원본 파일로 열었을 때(고치는 중)는 건너뜁니다
@@ -3252,6 +3264,9 @@ const MANUALS=[["quick","간단 매뉴얼","읽자마자 바로 써 보는 한 �
 // ───────── 새 소식 (공개판, 2026-10-31 팀장님): 중요한 고침은 앱을 열 때 한 번만 쉬운 말로 알림 ─────────
 // 새 소식을 더할 때: NEWS 맨 앞에 넣고 id 는 날짜(같은 날 둘째는 2026-11-02b 처럼 — 글자 순서로 새것이 뒤). 본 소식 id 는 이 기기에만(seojae-open.newsSeen)
 const NEWS=[
+ {id:"2026-11-01c",date:"2026년 11월 1일",title:"기기마다 체크한 장이 합쳐져요",items:[
+  ["⇄","기기마다 체크한 장이 합쳐져요","휴대폰과 컴퓨터에서 따로 체크한 성경읽기표의 장이 이제 모두 합쳐져 남아요. 같은 장을 두 기기에서 다르게 바꿨으면 나중에 바꾼 쪽을 따르고, 한쪽에서 「전체 초기화」를 했으면 그 전 체크는 되살아나지 않아요.",""],
+  ["📖","처음 오신 분께 간단 매뉴얼","아침 서재를 처음 여는 분께는 간단 매뉴얼이 앱 안 창으로 한 번 저절로 열려요. 이미 쓰시던 분이 새 기기에서 로그인할 때는 뜨지 않아요.","언제든 설정 → 도움 → 「사용 설명서」에서 다시 볼 수 있어요"]]},
  {id:"2026-11-01b",date:"2026년 11월 1일",title:"성경읽기표에서 바로 체크해요",items:[
   ["◉","장을 누르면 바로 체크","성경읽기표에서 장을 누르면 도장이 찍히고, 한 번 더 누르면 풀려요. 오늘 분량이 아니어도 어느 장이든 체크할 수 있고, 오늘 분량의 장을 다 채우면 「오늘의 말씀」도 저절로 읽음이 돼요.","잘못 눌렀으면 아래 「되돌리기」를 누르세요"],
   ["▦","책 지도와 진행 원","맨 위 책 지도는 읽은 만큼 색이 차오르고, 누르면 그 책으로 바로 가요. 오른쪽 둥근 원에는 전체 몇 %를 읽었는지 보여요.",""],
@@ -3296,8 +3311,22 @@ const NEWS=[
 ];
 const newsSeen=()=>{ try{ return localStorage.getItem("seojae-open.newsSeen")||""; }catch(_){ return ""; } };
 const newsMark=()=>{ try{ localStorage.setItem("seojae-open.newsSeen",NEWS[0]?.id||""); }catch(_){} };
+// 처음 쓰는 분께 간단 매뉴얼(2026-11-01 팀장님): 기록이 하나도 없는 기기에서 처음 한 번 — 앱 안 창(manual/quick.html), 이 기기에 본 표시(PRE.manualShown)
+// 이미 기록이 있는 분(새 기기에서 로그인)에게는 띄우지 않고 본 것으로만 둠. 다시 보기는 설정 → 도움 → 사용 설명서
+const hasRecords=()=>!!(live().length||Object.keys(S.diary||{}).length||(S.books||[]).length||(S.notes||[]).length||(S.jots||[]).length);
+function manualFirst(){ if(NEED_CONNECT||AUTH_FAIL) return; let seen=""; try{ seen=localStorage.getItem("seojae-open.manualShown")||""; }catch(_){} if(seen) return;
+  try{ localStorage.setItem("seojae-open.manualShown",today()); }catch(_){}
+  if(hasRecords()) return; if($("#newsview")||$("#manview")) return; manualOpen(true); }
+function manualOpen(first){ $("#manview")?.remove(); const ov=document.createElement("div"); ov.id="manview"; ov.className="newsview manview";
+  ov.innerHTML=`<article class="newscard mancardx" role="dialog" aria-modal="true" aria-labelledby="manh"><div class="manhead"><div><p class="newsk" id="manh">${first?"처음 오셨군요":"간단 매뉴얼"}</p><h3 class="mant">아침 서재 간단 매뉴얼</h3>${first?`<p class="mansub">5분이면 다 읽어요. 닫아도 설정 → 도움 → 「사용 설명서」에서 다시 볼 수 있어요.</p>`:""}</div><button type="button" class="rtx" data-x aria-label="닫기" title="닫기 (Esc)">✕</button></div>
+    <iframe class="manframe" src="manual/quick.html" title="아침 서재 간단 매뉴얼" loading="eager"></iframe>
+    <div class="manacts"><a class="btn small ghost" href="manual/quick.html" target="_blank" rel="noopener">새 창으로 ↗</a><a class="btn small ghost" href="manual/quick.pdf" target="_blank" rel="noopener" download>PDF 받기</a><button type="button" class="btn ink" data-x>${first?"시작하기":"닫기"}</button></div></article>`;
+  document.body.appendChild(ov); const close=()=>{ ov.remove(); removeEventListener("keydown",k,true); }, k=e=>{ if(e.key==="Escape"){ e.preventDefault(); e.stopImmediatePropagation(); close(); } };
+  ov.onclick=e=>{ if(e.target===ov||e.target.closest("[data-x]")) close(); }; addEventListener("keydown",k,true);
+  const fr=ov.querySelector(".manframe"); fr.onload=()=>{ try{ if(!/\/manual\//.test(fr.contentWindow.location.pathname)) close(); }catch(_){} };   // 매뉴얼 안 「← 아침 서재로」를 누르면 창을 닫음(앱이 창 안에 또 열리지 않게)
+}
 function newsCheck(){ if(NEED_CONNECT||AUTH_FAIL||!NEWS.length) return; const seen=newsSeen();
-  if(!seen&&!(live().length||Object.keys(S.diary||{}).length||(S.books||[]).length||(S.notes||[]).length)) return newsMark();   // 처음 쓰는 분: 이미 들어 있는 기능이라 알리지 않음
+  if(!seen&&!(live().length||Object.keys(S.diary||{}).length||(S.books||[]).length||(S.notes||[]).length)){ newsMark(); return manualFirst(); }   // 처음 쓰는 기기: 이미 들어 있는 기능이라 알리지 않고, 간단 매뉴얼을 엶
   if(seen>=NEWS[0].id) return; newsOpen(NEWS.filter(n=>n.id>seen)); }
 function newsHtml(n){ return `<p class="newsdate">${esc(n.date)}</p><h3 class="newst">${esc(n.title)}</h3><ul class="newslist">${n.items.map(([ic,t,b,h])=>`<li><span class="newsic" aria-hidden="true">${ic}</span><div><b>${esc(t)}</b><p>${esc(b)}</p>${h?`<p class="newshint">${esc(h)}</p>`:""}</div></li>`).join("")}</ul>`; }
 function newsOpen(list){ list=(list&&list.length?list:NEWS.slice(0,1)); $("#newsview")?.remove(); const ov=document.createElement("div"); ov.id="newsview"; ov.className="newsview";
@@ -5073,8 +5102,10 @@ const rtChRead=ch=>rtChSt(ch)==="r";
 // 그 날(d)·그 조각(k)에 든 장들
 function rtPortionChs(d,k){ const T=rtBuild(), tr=T.tracks[T.lab?k:0], out=[]; if(!tr) return out; tr.blocks.forEach(B=>B.list.forEach(ch=>{ if(ch.refs.some(r=>r.d===d&&(k==null||r.k===k))) out.push(ch); })); return out; }
 // 오늘 카드로 읽음을 표시·해제하면 그 조각 장들의 따로 고친 기록은 지움(진도대로 보이게)
-function rtClearPortion(d,k){ const c=S.settings.plan.chs; if(!c) return; rtPortionChs(d,k).forEach(ch=>{ delete c[ch.key]; }); if(!Object.keys(c).length) delete S.settings.plan.chs; }
-function rtSet(ch,v){ const p=S.settings.plan; (p.chs=p.chs||{})[ch.key]=v?1:0; }
+// 장마다 바꾼 시각 p.chsT{열쇠: ms}(지운 것도 시각을 남김) · 전체 초기화 시각 p.chsR — 두 기기 기록을 합칠 때 장마다 나중 것(mergeFrom)
+function rtDel(key){ const p=S.settings.plan; if(p.chs&&key in p.chs){ delete p.chs[key]; (p.chsT=p.chsT||{})[key]=Date.now(); } if(p.chs&&!Object.keys(p.chs).length) delete p.chs; }
+function rtClearPortion(d,k){ if(!S.settings.plan.chs) return; rtPortionChs(d,k).forEach(ch=>rtDel(ch.key)); }
+function rtSet(ch,v){ const p=S.settings.plan; (p.chs=p.chs||{})[ch.key]=v?1:0; (p.chsT=p.chsT||{})[ch.key]=Date.now(); }
 function rtBlk(B){ const ti=todayIdx(), st=B.list.map(rtChSt), read=st.filter(x=>x==="r").length; return {read,total:B.list.length,done:read===B.list.length,cur:B.list.some(ch=>ch.refs.some(x=>x.d===ti))}; }
 const rtUnit=b=>b===18?"편":"장";
 function rtOpen(){ const T=rtBuild(); if(!T.tracks.some(t=>t.blocks.length)) return toast("이 통독 방법은 읽기표를 만들 수 없습니다");
@@ -5119,27 +5150,28 @@ function rtUndo(){ const L=RT_LAST; if(!L) return; RT_LAST=null; rtChAct(L.i,L.c
 function rtResetAll(){ const p=S.settings.plan, name=planObj().name;
   if(!confirm(`「${name}」 성경읽기표의 체크를 모두 지우고 1일째부터 다시 시작할까요?\n잘못 눌렀으면 읽기표 맨 아래 「되살리기」로 바로 돌아옵니다. (읽은 날 기록·글·일기는 그대로)`)) return;
   S.settings.planBak={at:new Date().toISOString(),plan:JSON.parse(JSON.stringify(p))};
-  S.settings.plan={id:p.id,...freshPlan(),perDay:p.perDay,mode:p.mode,start:today()};
+  S.settings.plan={id:p.id,...freshPlan(),perDay:p.perDay,mode:p.mode,start:today(),chsR:Date.now()};   // chsR: 다른 기기의 그 전 체크가 합치기로 되살아나지 않게
   RT_LAST=null; RT_OPS=new Set(); _days.key=""; save(); render(); rtPaint(true); toast("읽기표를 처음부터 시작합니다 — 맨 아래 「되살리기」로 돌아갈 수 있습니다"); }
 function rtRestore(){ const b=S.settings.planBak; if(!b||b.plan?.id!==S.settings.plan.id) return;
-  S.settings.plan=b.plan; S.settings.planBak=null; RT_LAST=null; _days.key=""; save(); render(); rtPaint(true); toast("초기화하기 전으로 되살렸습니다"); }
+  const P=b.plan, now=Date.now(); if(P.chs){ P.chsT=P.chsT||{}; for(const k in P.chs) P.chsT[k]=now; }   // 되살린 체크가 다른 기기의 초기화보다 나중이 되게
+  S.settings.plan=P; S.settings.planBak=null; RT_LAST=null; _days.key=""; save(); render(); rtPaint(true); toast("초기화하기 전으로 되살렸습니다"); }
 const rtBakOk=()=>{ const b=S.settings.planBak; return !!(b&&b.plan&&b.plan.id===S.settings.plan.id); };
 function rtJumpBk(i){ RT_OPS.add(RT_TAB+":"+i); RT_OPS.delete(RT_TAB+":"+i+"x"); rtPaint(); const ov=$("#rtview"), L=ov?.querySelector(".rtlist"), d=L?.querySelector(`.rtbk[data-i="${i}"]`); if(L&&d){ d.open=true; L.scrollTo({top:Math.max(0,d.offsetTop-L.offsetTop-6),behavior:matchMedia("(prefers-reduced-motion:reduce)").matches?"auto":"smooth"}); } }
 // 장 하나 읽음·풀기(v: 1·0, null = 진도대로). 오늘 분량의 장이면 오늘 카드 표시와 맞춤: 조각의 장이 다 읽히면 그 조각에 표시(다 되면 「오늘 읽음」), 하나라도 풀면 그 조각 표시를 풂
 // 달력대로 읽는 지난날은 그날 장이 다 읽히면 그날도 읽음으로
 function rtChAct(i,c,v,quiet){ const T=rtBuild(), B=(T.tracks[RT_TAB]||T.tracks[0]).blocks[i], ch=B&&B.list.find(x=>x.c===c); if(!ch) return; const p=S.settings.plan, ti=todayIdx();
   const before=new Map(ch.refs.filter(r=>r.d===ti).map(r=>[r.k,rtPortionChs(ti,r.k).map(x=>[x,rtChRead(x)])]));   // 오늘 조각 장들의 바뀌기 전 상태
-  if(v==null){ if(p.chs){ delete p.chs[ch.key]; if(!Object.keys(p.chs).length) delete p.chs; } } else rtSet(ch,v);
+  if(v==null) rtDel(ch.key); else rtSet(ch,v);
   let done=false;
   for(const [k,list] of before){ const all=list.every(([x])=>rtChRead(x)), on=doneToday()||(p.checks||[]).includes(k);
-    if(all&&!on){ p.checks=[...(p.checks||[]),k]; list.forEach(([x])=>{ if(p.chs) delete p.chs[x.key]; }); if(p.checks.length>=(planDays()[ti]||[]).length){ RT_SEL=null; completeDay(); done=true; break; } }
+    if(all&&!on){ p.checks=[...(p.checks||[]),k]; list.forEach(([x])=>rtDel(x.key)); if(p.checks.length>=(planDays()[ti]||[]).length){ RT_SEL=null; completeDay(); done=true; break; } }
     else if(!all&&on){ list.forEach(([x,was])=>{ if(x!==ch&&was) rtSet(x,1); }); if(doneToday()){ const keep=p.chs; uncompleteDay(k); if(keep) p.chs=keep; } else p.checks=(p.checks||[]).filter(x=>x!==k); } }
   if(!done&&date0(p)){ ch.refs.filter(r=>r.d<ti).forEach(r=>{ if(!p.done[r.d]&&rtPortionChs(r.d,null).every(rtChRead)){ p.done[r.d]=true; rtClearPortion(r.d,null); } }); }
   if(p.chs&&!Object.keys(p.chs).length) delete p.chs;
   if(!done){ save(); render(); if(!quiet) toast(v==null?"진도대로 보입니다":v?`${BIBLE[B.b][0]} ${c}${rtUnit(B.b)}을 읽음으로 표시했습니다`:`${BIBLE[B.b][0]} ${c}${rtUnit(B.b)} 읽음을 풀었습니다`); }
   RT_SEL=null; rtPaint(); }
 const date0=p=>p.mode==="date";
-function rtClearRange(a,b){ const c=S.settings.plan.chs; if(!c) return; const T=rtBuild(); T.tracks.forEach(t=>t.blocks.forEach(B=>B.list.forEach(ch=>{ if(ch.refs.some(r=>r.d>=a&&r.d<b)) delete c[ch.key]; }))); if(!Object.keys(c).length) delete S.settings.plan.chs; }
+function rtClearRange(a,b){ if(!S.settings.plan.chs) return; const T=rtBuild(); T.tracks.forEach(t=>t.blocks.forEach(B=>B.list.forEach(ch=>{ if(ch.refs.some(r=>r.d>=a&&r.d<b)) rtDel(ch.key); }))); }
 function rtAct(a,d,k){ const p=S.settings.plan, ti=todayIdx();
   if(a==="mark"){ if(d!==ti) return; togglePortion(k); }
   else if(a==="catch") catchUp(d);
@@ -9835,7 +9867,7 @@ function setPlan(id){
 function resetPlan(){
   const p=S.settings.plan, name=planObj().name;
   if(!confirm(`「${name}」의 진도를 지우고 1일째부터 다시 시작할까요?\n(다른 통독 방법의 진도와 읽은 날 기록은 그대로 남습니다)`)) return;
-  S.settings.plan={id:p.id,...freshPlan(),perDay:p.perDay,mode:p.mode,start:p.mode==="date"?p.start:today()};
+  S.settings.plan={id:p.id,...freshPlan(),perDay:p.perDay,mode:p.mode,start:p.mode==="date"?p.start:today(),chsR:Date.now()};
   planChanged(`「${name}」를 처음부터 다시 시작합니다`);
 }
 function setMode(m){ const p=S.settings.plan; if(p.mode===m) return; const i=todayIdx(), was=doneToday();   // 읽던 자리와 오늘 읽음 도장은 그대로 두고 방식만 바꿉니다
@@ -10053,7 +10085,7 @@ function ensurePlan(){
   const offset=BIBLE.slice(0,b.idx).reduce((a,x)=>a+x[1],0)+b.ch-1;
   st.plan={id:"seq",perDay:b.perDay||3,day:Math.floor(offset/(b.perDay||3)),mode:"pace",start:today(),done:{},checks:[],last:null};
 }
-load().then(()=>{ ensurePlan(); ensureMs(); render(); setTimeout(checkUpdate,1500); setTimeout(newsCheck,1800); setTimeout(streakBreakCheck,2600); });
+load().then(()=>{ ensurePlan(); ensureMs(); render(); setTimeout(checkUpdate,1500); setTimeout(newsCheck,1800); setTimeout(manualFirst,2200); setTimeout(streakBreakCheck,2600); });
 </script>
 <script>
 /* 앱 안 브라우저(카카오톡·네이버·인스타그램 등) 안내 (2026-10-30): 여기서는 설치·구글 로그인이 막히고 저장 공간이 지워지기 쉬움
