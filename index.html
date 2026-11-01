@@ -592,6 +592,11 @@ body.focus main.wrap{padding-top:40px}
 .result{background:var(--paper-2);padding:10px;border-radius:4px;border:1px solid var(--edge);display:flex;flex-direction:column;gap:6px}
 .result img,.result .cover{width:100%;height:190px;object-fit:contain;background:var(--paper)}
 .result .t{font-weight:700;font-size:14px;line-height:1.4}
+.result.pick{cursor:pointer;transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease,background-color .18s ease}
+.result.pick img,.result.pick .cover{transition:filter .18s ease}
+@media (hover:hover){.result.pick:hover{transform:translateY(-3px);border-color:var(--ink-soft);background:var(--paper);box-shadow:0 12px 24px -14px rgba(40,25,10,.45),0 0 0 1px var(--ink-soft)}.result.pick:hover img,.result.pick:hover .cover{filter:brightness(1.04) saturate(1.05)}}
+.result.pick:active{transform:translateY(-1px)}
+@media (prefers-reduced-motion:reduce){.result.pick,.result.pick:hover,.result.pick:active{transform:none}}
 .bkcount{margin:14px 0 -4px;font-size:13.5px;color:var(--ink-soft)}
 .pager{display:flex;align-items:center;justify-content:center;gap:6px;flex-wrap:wrap;margin:18px 0 6px}
 .pager button{min-width:38px;height:38px;padding:0 10px;border-radius:10px;border:1px solid var(--edge);background:var(--paper-2);color:var(--ink);font:inherit;font-weight:700;cursor:pointer;box-shadow:0 1px 0 var(--edge)}
@@ -2968,7 +2973,7 @@ async function pushSave(){
 // ───────── 새 버전 자동 새로 고침 ─────────
 // 올릴 때마다 version.json 의 번호가 바뀝니다. 앱이 열릴 때·다시 화면에 올라올 때·5분마다 확인해서,
 // 쓰는 중인 글이 없고 저장이 끝났을 때 새 버전으로 새로 고칩니다.
-const APP_BUILD="b94c3e19d6"; const APP_VER="3.1";   // 판 번호: 배포할 때마다 도구/판올리기.py 가 0.1씩 올림 (1.9 다음은 2.0) — 손으로 고치지 말 것
+const APP_BUILD="d6e6697291"; const APP_VER="3.2";   // 판 번호: 배포할 때마다 도구/판올리기.py 가 0.1씩 올림 (1.9 다음은 2.0) — 손으로 고치지 말 것
 let NEW_BUILD=null, UPDATE_NOTICED=false;
 async function checkUpdate(){
   if(APP_BUILD.startsWith("__")) return;                 // 원본 파일로 열었을 때(고치는 중)는 건너뜁니다
@@ -6475,7 +6480,7 @@ async function searchBook(page){
     if(q!==BK.q) return;   // 그사이 다른 것을 찾기 시작함
     Object.assign(BK,{page:r.page||BK.page,pages:r.pages||(found.length?1:0),total:r.total||found.length,src:r.src||BK.src});
     const sug=r.few?`<div id="bksugbox"><p class="bksug-wait">비슷한 이름도 찾아보는 중…</p></div>`:"";   // 거의 없으면 찾은 책을 먼저 보이고 후보는 뒤이어
-    box.innerHTML=found.length?`${BK.pages>1?`<p class="bkcount">「${esc(q)}」 ${BK.total>=600?"600권 넘게":BK.total.toLocaleString()+"권"} · ${BK.page} / ${BK.pages}쪽</p>`:""}<div class="results">${found.map((b,i)=>`<div class="result">${b.cover?`<img src="${esc(b.cover)}" alt="" loading="lazy">`:`<div class="cover blank" style="width:100%">${esc(b.title)}</div>`}<div class="t">${esc(b.title)}</div><div class="muted">${esc((b.authors||[]).join(", "))}${b.publisher?" · "+esc(b.publisher):""}</div><button class="btn small ink" onclick="addBook(${i})">이 책 꽂기</button>${storeLinks(b.title)}</div>`).join("")}</div>${bkPagerHtml()}${sug}`
+    box.innerHTML=found.length?`${BK.pages>1?`<p class="bkcount">「${esc(q)}」 ${BK.total>=600?"600권 넘게":BK.total.toLocaleString()+"권"} · ${BK.page} / ${BK.pages}쪽</p>`:""}<div class="results">${found.map((b,i)=>`<div class="result pick" onclick="bkCardGo(event,${i})" title="누르면 이 책을 책장에 꽂습니다">${b.cover?`<img src="${esc(b.cover)}" alt="" loading="lazy">`:`<div class="cover blank" style="width:100%">${esc(b.title)}</div>`}<div class="t">${esc(b.title)}</div><div class="muted">${esc((b.authors||[]).join(", "))}${b.publisher?" · "+esc(b.publisher):""}</div><button class="btn small ink" onclick="addBook(${i})">이 책 꽂기</button>${storeLinks(b.title)}</div>`).join("")}</div>${bkPagerHtml()}${sug}`
       :`<p class="muted" style="margin-top:12px">찾지 못했습니다. ${esc((r.errors||[]).join(" / "))}</p>${sug}<button class="btn small" onclick="addBook(-1)">“${esc(q)}” 제목으로 직접 꽂기</button> ${storeLinks(q)}`;
     if(r.few) bkSugLoad(q,!found.length);
     if(!fresh) box.scrollIntoView({block:"start",behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth"});
@@ -6490,6 +6495,7 @@ function bkPagerHtml(){ const n=BK.pages, c=BK.page; if(n<2) return ""; const ne
 function bkPgKey(e){ if(e.key==="ArrowLeft"&&BK.page>1){ e.preventDefault(); searchBook(BK.page-1).then(()=>$(".pager .pgn.on")?.focus()); } else if(e.key==="ArrowRight"&&BK.page<BK.pages){ e.preventDefault(); searchBook(BK.page+1).then(()=>$(".pager .pgn.on")?.focus()); } }
 // 비슷한 이름: 찾은 책이 거의 없을 때 서버가 고친 검색어 후보(실제 책이 있는 것만)를 줌 → 누르면 그 이름으로 다시 찾기
 function bkSugHtml(list,none){ if(!list.length) return ""; return `<div class="bksug"><p class="bksug-h">${none?"혹시 이 책을 찾으셨나요?":"비슷한 이름도 있어요"}</p><div class="bksug-l">${list.map(x=>`<button class="bksug-b" onclick="bkSugGo(${esc(JSON.stringify(x.q))})"><b>「${esc(x.q)}」</b><span>${(+x.n||0).toLocaleString()}권${x.t?` · 예: ${esc(x.t)}${x.a?" ("+esc(x.a)+")":""}`:""}</span></button>`).join("")}</div></div>`; }
+function bkCardGo(e,i){ if(e.target.closest("a,button,details,summary,input,label,.stpop")) return; if(String(getSelection?.()||"").trim()) return; addBook(i); }   // 찾은 책 카드 어디를 눌러도 꽂기(안의 바로가기·메뉴는 그대로)
 function bkSugGo(q){ $("#bq").value=q; searchBook(); }
 async function bkSugLoad(q,none){ let list=[]; try{ list=(await apiGet("/api/books/suggest",{q})).suggest||[]; }catch(_){}
   const el=$("#bksugbox"); if(!el||q!==BK.q) return; el.innerHTML=bkSugHtml(list,none); }
