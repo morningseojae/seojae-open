@@ -601,115 +601,95 @@ body.focus main.wrap{padding-top:40px}
 @media (hover:hover){.result.pick:hover{transform:translateY(-3px);border-color:var(--ink-soft);background:var(--paper);box-shadow:0 12px 24px -14px rgba(40,25,10,.45),0 0 0 1px var(--ink-soft)}.result.pick:hover img,.result.pick:hover .cover{filter:brightness(1.04) saturate(1.05)}}
 .result.pick:active{transform:translateY(-1px)}
 @media (prefers-reduced-motion:reduce){.result.pick,.result.pick:hover,.result.pick:active{transform:none}}
-/* 클래식 도서관 책장 (공통, 2026-11-01 · 2판 — 디자인·사서 전문가 의견): 기름 먹인 호두·참나무(무광, 결·물관 구멍·은빛 무늬, 판자 이음) · 몰딩 처마(둥근 단·얼굴판·이빨 장식) · 세로 홈 기둥 ·
-   선반 앞 물결 가죽 먼지막이(금박 선·놋쇠 못) · 오래된 놋쇠 이름판(서가 기호·분류번호) · 옛 제본 책등(띠 4~5줄·제목 조각·청구기호 종이표) · 창빛. 결 무늬는 그림 파일 없이 SVG 노이즈 */
-.libcase{--w0:#1a0e06;--w1:#2a180c;--w2:#3d2516;--w3:#5b3a22;--w4:#6e4a2c;--w5:#8a6440;--oak:#7a5634;--br1:#c9a868;--br2:#b08d4f;--br3:#8a6a35;--br4:#5e4520;--gold:#c8a656;--gv:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='260'%3E%3Cfilter id='f' x='0' y='0'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9 0.015' numOctaves='3' seed='7' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.1  0 0 0 0 0.055  0 0 0 0 0.022  0 0 0 1.0 -0.420'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url%28%23f%29'/%3E%3C/svg%3E");--gv2:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='260'%3E%3Cfilter id='f' x='0' y='0'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.35 0.006' numOctaves='3' seed='19' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.09  0 0 0 0 0.05  0 0 0 0 0.02  0 0 0 1.3 -0.546'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url%28%23f%29'/%3E%3C/svg%3E");--gh:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='260'%3E%3Cfilter id='f' x='0' y='0'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.015 0.9' numOctaves='3' seed='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.1  0 0 0 0 0.055  0 0 0 0 0.022  0 0 0 1.0 -0.420'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url%28%23f%29'/%3E%3C/svg%3E");--gh2:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='260'%3E%3Cfilter id='f' x='0' y='0'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.006 0.35' numOctaves='3' seed='23' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.09  0 0 0 0 0.05  0 0 0 0 0.02  0 0 0 1.3 -0.546'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url%28%23f%29'/%3E%3C/svg%3E");--pv:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='260'%3E%3Cfilter id='p' x='0' y='0'%3E%3CfeTurbulence type='turbulence' baseFrequency='1.8 0.08' numOctaves='1' seed='11' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.1  0 0 0 0 0.055  0 0 0 0 0.024  0 0 0 1 0'/%3E%3CfeComponentTransfer%3E%3CfeFuncA type='discrete' tableValues='0 0 0 0 0 0 .9'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url%28%23p%29'/%3E%3C/svg%3E");--ph:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='260'%3E%3Cfilter id='p' x='0' y='0'%3E%3CfeTurbulence type='turbulence' baseFrequency='0.08 1.8' numOctaves='1' seed='13' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.1  0 0 0 0 0.055  0 0 0 0 0.024  0 0 0 1 0'/%3E%3CfeComponentTransfer%3E%3CfeFuncA type='discrete' tableValues='0 0 0 0 0 0 .9'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url%28%23p%29'/%3E%3C/svg%3E");--rv:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='260'%3E%3Cfilter id='r' x='0' y='0'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.04 0.7' numOctaves='2' seed='31' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1  0 0 0 0 .9  0 0 0 0 .75  0 0 0 3 -1.9'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url%28%23r%29'/%3E%3C/svg%3E");--lt:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='l' x='0' y='0'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.2 1.2' numOctaves='2' seed='5' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1.2 -.45'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url%28%23l%29'/%3E%3C/svg%3E");
-  position:relative;margin:4px 0 30px;padding:0 18px 0;border-radius:4px 4px 3px 3px;isolation:isolate;
-  background:
-    repeating-linear-gradient(90deg,#c39b6a 0 1px,var(--w4) 1px 3px,var(--w1) 3px 4px,var(--w3) 4px 6px) 0 0/16px 100% no-repeat,
-    repeating-linear-gradient(90deg,#c39b6a 0 1px,var(--w4) 1px 3px,var(--w1) 3px 4px,var(--w3) 4px 6px) 100% 0/16px 100% no-repeat,
-    var(--gv) 0 0/260px 260px,var(--gv2) 0 0/300px 560px,var(--pv) 0 0/260px 260px,var(--rv) 0 0/260px 260px,
-    repeating-linear-gradient(90deg,rgba(255,240,210,.03) 0 112px,rgba(0,0,0,.35) 112px 113px,rgba(0,0,0,.04) 113px 230px,rgba(0,0,0,.35) 230px 231px),
-    linear-gradient(180deg,var(--w4),var(--w3) 40%,#4f311c);
-  border:1px solid var(--w0);box-shadow:inset 16px 0 0 -15px rgba(0,0,0,.6),inset -16px 0 0 -15px rgba(0,0,0,.6),0 24px 40px -26px rgba(25,12,4,.85),0 2px 0 rgba(0,0,0,.15)}
-.libcase::after{content:"";position:absolute;inset:0;z-index:5;pointer-events:none;border-radius:inherit;background:radial-gradient(120% 90% at 18% 0%,rgba(255,214,150,.10),transparent 60%)}
-.libcrown{margin:0 -18px 6px;height:44px;display:flex;align-items:center;justify-content:center;position:relative;padding:4px 0 6px;box-sizing:border-box;border-radius:4px 4px 0 0;
-  background:linear-gradient(var(--w5),var(--w5)) 0 0/100% 3px no-repeat,linear-gradient(180deg,#8a6440,#6e4a2c 40%,#3d2516) 0 3px/100% 10px no-repeat,
-    repeating-linear-gradient(90deg,var(--w3) 0 5px,var(--w1) 5px 9px) 0 100%/100% 6px no-repeat,
-    var(--gh) 0 0/520px 90px,var(--ph) 0 0/260px 260px,linear-gradient(180deg,var(--w3),#4a2d18);
-  border-bottom:1px solid var(--w0);box-shadow:inset 0 13px 0 -12px rgba(0,0,0,.6),0 3px 4px rgba(0,0,0,.45)}
-.libcrown span{position:relative;top:2px;font-family:"Nanum Myeongjo","Gowun Batang",serif;font-weight:800;font-size:11.5px;letter-spacing:.38em;color:var(--gold);text-shadow:0 -.5px 0 rgba(0,0,0,.6),0 .5px 0 rgba(255,240,200,.2);padding:0 10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:80%}
-.libshelf{position:relative;padding:16px 4px 0;scroll-margin-top:80px}
-.libplate{position:relative;z-index:3;display:inline-flex;gap:7px;align-items:baseline;margin:0 0 -4px 10px;padding:3px 14px 3px 12px;border-radius:2px;
-  background:linear-gradient(180deg,var(--br2),var(--br3) 60%,var(--br4));color:#2a1a0c;font-family:"Nanum Myeongjo","Gowun Batang",serif;font-weight:800;font-size:13px;letter-spacing:.05em;
-  border:1px solid #3e2c12;box-shadow:inset 0 1px 0 rgba(255,235,190,.35),0 2px 3px rgba(0,0,0,.55);text-shadow:0 1px 0 rgba(255,230,180,.3)}
-.libplate::before,.libplate::after{content:"";position:absolute;top:50%;width:4px;height:4px;margin-top:-2px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#e2c88e,var(--br4) 70%);box-shadow:0 0 0 1px rgba(40,25,8,.5)}
-.libplate::before{left:4px}.libplate::after{right:4px}
-.libplate .lbay{display:inline-grid;place-items:center;min-width:18px;height:18px;margin-right:1px;border-radius:50%;background:#2a1a0c;color:var(--gold);font-size:11px;font-weight:800;letter-spacing:0;text-shadow:none;box-shadow:inset 0 0 0 1px rgba(200,166,86,.5)}
-.libplate .lnum{font-size:11px;font-weight:700;letter-spacing:.02em;opacity:.8}
-.libplate small{font-weight:400;font-size:11px;letter-spacing:.02em;opacity:.78}
-.libord{position:relative;z-index:3;margin-left:8px;font:11.5px var(--ui-font,inherit);color:var(--br1);opacity:.85;vertical-align:1px}
+/* 책장 (공통, 2026-11-01 · 3판 — 팀장님이 보낸 실제 도서관 책장 사진을 따라: 장식 없이 단정한 중간 갈색 참나무, 은은한 결, 얇고 곧은 선반,
+   황갈 송아지 가죽·양피지 책(가는 금박 줄 여러 겹·작은 제목표), 선반 아래 옅은 그늘. 앱의 종이·세피아 톤과 이어지게 — 강한 대비·광택·금속 장식은 쓰지 않음) */
+.libcase{--o1:#8a5d38;--o2:#76502f;--o3:#5f3f24;--o4:#4a311c;--back:#5a3b22;--edge:#9a6c44;--gold:#d2b277;--gv:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='f' x='0' y='0'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.55 0.012' numOctaves='3' seed='7' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .22  0 0 0 0 .13  0 0 0 0 .06  0 0 0 0.55 -0.248'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url%28%23f%29'/%3E%3C/svg%3E");--gh:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='f' x='0' y='0'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.012 0.55' numOctaves='3' seed='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .22  0 0 0 0 .13  0 0 0 0 .06  0 0 0 0.55 -0.248'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url%28%23f%29'/%3E%3C/svg%3E");--lt:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='l' x='0' y='0'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9 .9' numOctaves='2' seed='5' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .15  0 0 0 0 .08  0 0 0 0 .03  0 0 0 .9 -.38'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url%28%23l%29'/%3E%3C/svg%3E");
+  position:relative;margin:6px 0 30px;padding:0 12px 0;border-radius:6px;isolation:isolate;
+  background:var(--gv) 0 0/300px 300px,linear-gradient(90deg,var(--o3),var(--o2) 6%,var(--o2) 94%,var(--o3));
+  box-shadow:0 1px 0 rgba(255,255,255,.35) inset,0 18px 34px -22px rgba(60,35,15,.55),0 2px 6px -2px rgba(60,35,15,.25)}
+.libcrown{margin:0 -12px 0;height:26px;display:flex;align-items:center;justify-content:center;border-radius:6px 6px 0 0;
+  background:var(--gh) 0 0/600px 120px,linear-gradient(180deg,var(--edge),var(--o1) 30%,var(--o2));box-shadow:inset 0 -1px 0 rgba(0,0,0,.25),0 2px 3px rgba(40,22,8,.25)}
+.libcrown span{font-family:"Nanum Myeongjo","Gowun Batang",serif;font-weight:700;font-size:11.5px;letter-spacing:.3em;color:rgba(250,238,214,.85);text-shadow:0 1px 0 rgba(60,35,15,.45);padding:0 10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:80%}
+.libshelf{position:relative;padding:10px 0 0;scroll-margin-top:80px}
+/* 칸 이름표: 선반 앞에 꽂은 종이 카드(앱의 종이 톤) */
+.libplate{position:relative;z-index:3;display:inline-flex;gap:6px;align-items:baseline;margin:0 0 -2px 8px;padding:2px 10px;border-radius:2px;
+  background:linear-gradient(180deg,#f8f1e1,#ede1c6);color:#4a3018;font-family:"Nanum Myeongjo","Gowun Batang",serif;font-weight:700;font-size:12.5px;letter-spacing:.03em;
+  border:1px solid #b89466;box-shadow:0 1px 2px rgba(40,22,8,.35)}
+.libplate .lbay{display:inline-grid;place-items:center;min-width:16px;height:16px;border-radius:50%;background:#7a4a26;color:#f8efd9;font-size:10.5px;font-weight:700;letter-spacing:0}
+.libplate .lnum{font-size:10.5px;font-weight:700;color:#8a5a2b}
+.libplate small{font-weight:400;font-size:10.5px;color:#7a5a3a}
+.libord{position:relative;z-index:3;margin-left:8px;font:11.5px var(--ui-font,inherit);color:rgba(250,238,214,.75);vertical-align:1px}
 .librow{position:relative}
-.libbooks{--fl:0px;--fr:0px;display:flex;align-items:flex-end;gap:1px;overflow-x:auto;overflow-y:hidden;padding:24px 12px 0;min-height:176px;scrollbar-width:none;scroll-snap-type:x proximity;scroll-padding-inline:12px;overscroll-behavior-x:contain;
-  background:linear-gradient(180deg,rgba(0,0,0,.55),rgba(0,0,0,.25) 18px,rgba(0,0,0,.1) 60px),linear-gradient(90deg,rgba(0,0,0,.35),transparent 30px,transparent calc(100% - 30px),rgba(0,0,0,.35)),
-    repeating-linear-gradient(90deg,transparent 0 59px,rgba(0,0,0,.4) 59px 60px),var(--gv) 0 0/260px 260px,var(--pv) 0 0/260px 260px,#24160c;
+/* 칸 안: 따뜻한 뒤판, 위 선반이 드리운 옅은 그늘, 아주 옅은 판자 이음 */
+.libbooks{--fl:0px;--fr:0px;display:flex;align-items:flex-end;gap:0;overflow-x:auto;overflow-y:hidden;padding:18px 10px 0;min-height:172px;scrollbar-width:none;scroll-snap-type:x proximity;scroll-padding-inline:10px;overscroll-behavior-x:contain;
+  background:linear-gradient(180deg,rgba(30,16,6,.5),rgba(30,16,6,.18) 22px,rgba(30,16,6,.05) 70%,rgba(30,16,6,.12)),linear-gradient(90deg,rgba(30,16,6,.28),transparent 22px,transparent calc(100% - 22px),rgba(30,16,6,.28)),
+    repeating-linear-gradient(90deg,transparent 0 119px,rgba(30,16,6,.18) 119px 120px),var(--gv) 0 0/300px 300px,var(--back);
   -webkit-mask-image:linear-gradient(90deg,transparent 0,#000 var(--fl),#000 calc(100% - var(--fr)),transparent 100%);mask-image:linear-gradient(90deg,transparent 0,#000 var(--fl),#000 calc(100% - var(--fr)),transparent 100%)}
 .libbooks::-webkit-scrollbar{display:none}
-.librow.can-l .libbooks{--fl:34px}.librow.can-r .libbooks{--fr:34px}
-/* 선반널(가로결·닳은 앞 모서리) + 그 아래 물결 가죽 먼지막이 */
-.librow::after{content:"";display:block;height:15px;margin:0 -6px;position:relative;z-index:1;border-radius:1px;
-  background:linear-gradient(180deg,#9a7450 0,var(--w5) 2px,transparent 3px),var(--gh) 0 0/520px 60px,var(--gh2) 0 0/480px 90px,var(--ph) 0 0/260px 260px,linear-gradient(180deg,var(--oak),var(--w4) 45%,var(--w3) 80%,var(--w2));
-  box-shadow:inset 0 -1px 0 rgba(0,0,0,.4),0 2px 2px rgba(0,0,0,.5)}
-.librow::before{content:"";position:absolute;left:-6px;right:-6px;bottom:-8px;height:8px;z-index:2;pointer-events:none;
-  background:radial-gradient(circle at 50% 50%,#c9a868 0 1px,#7a5a2a 1.6px,transparent 2.2px) 24px 1px/48px 5px repeat-x,linear-gradient(rgba(184,145,74,.6),rgba(184,145,74,.6)) 0 2px/100% 1px no-repeat,var(--lt) 0 0/120px 120px,linear-gradient(180deg,#5a271c,#4a1f17 60%,#3a170f);
-  -webkit-mask:linear-gradient(#000,#000) 0 0/100% 4px no-repeat,radial-gradient(circle at 50% 4px,#000 4.6px,transparent 5px) 0 0/12px 8px repeat-x;mask:linear-gradient(#000,#000) 0 0/100% 4px no-repeat,radial-gradient(circle at 50% 4px,#000 4.6px,transparent 5px) 0 0/12px 8px repeat-x;filter:drop-shadow(0 2px 1px rgba(0,0,0,.5))}
-.libbase{height:16px;margin:10px -18px 0;border-radius:0 0 3px 3px;background:linear-gradient(var(--w5),var(--w5)) 0 0/100% 2px no-repeat,var(--gh) 0 0/520px 60px,linear-gradient(180deg,var(--w3),var(--w2) 60%,var(--w1));box-shadow:inset 0 -2px 0 var(--w0)}
-.libnav{position:absolute;top:calc(50% - 22px);z-index:4;width:32px;height:32px;border-radius:50%;border:1px solid #3e2c12;background:radial-gradient(circle at 35% 30%,#d8bd84,var(--br2) 55%,var(--br4));color:#2a1a0c;font:800 18px/1 "Nanum Myeongjo",serif;display:none;place-items:center;cursor:pointer;box-shadow:0 3px 8px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,235,190,.4);padding:0}
-.libnav.l{left:0}.libnav.r{right:0}
+.librow.can-l .libbooks{--fl:30px}.librow.can-r .libbooks{--fr:30px}
+/* 선반: 얇고 곧은 판(윗면 밝게, 앞면, 아래 옅은 그늘) */
+.librow::after{content:"";display:block;height:11px;margin:0 -4px;position:relative;z-index:1;
+  background:linear-gradient(180deg,#a87a50 0,#a87a50 2px,var(--o1) 2px,var(--o2) 9px,var(--o3)),var(--gh) 0 0/600px 120px;background-blend-mode:normal;
+  box-shadow:0 4px 6px -2px rgba(30,16,6,.45)}
+.librow::before{content:none}
+.libbase{height:12px;margin:8px -12px 0;border-radius:0 0 6px 6px;background:var(--gh) 0 0/600px 120px,linear-gradient(180deg,var(--o2),var(--o3))}
+.libnav{position:absolute;top:calc(50% - 20px);z-index:4;width:30px;height:30px;border-radius:50%;border:1px solid #b89466;background:linear-gradient(180deg,#fbf6ea,#eadcbf);color:#5a3a20;font:700 17px/1 "Nanum Myeongjo",serif;display:none;place-items:center;cursor:pointer;box-shadow:0 2px 6px rgba(30,16,6,.45);padding:0}
+.libnav.l{left:2px}.libnav.r{right:2px}
 .librow.can-l .libnav.l,.librow.can-r .libnav.r{display:grid}
 .libnav:active{transform:translateY(1px)}
 .libempty{align-items:center;justify-content:center}
-.libempty p{margin:0 0 34px;color:var(--gold);opacity:.75;font-family:"Nanum Myeongjo",serif;font-size:14px;text-align:center}
-/* 옛 제본 책등: 무광 원통 그늘 + 가죽 결 + 띠 4~5줄(제본 끈) + 둘째 칸 가죽 제목 조각(분류 색) + 아래 청구기호 종이표 */
-.lsp{--bg:#8b5a2b;--lab:#6b1e1a;flex:0 0 auto;position:relative;border:0;padding:0;margin:0;cursor:pointer;border-radius:3px 3px 1px 1px;scroll-snap-align:start;
-  background:linear-gradient(180deg,rgba(255,230,190,.12) 0 3px,transparent 3px calc(100% - 3px),rgba(255,230,190,.1) calc(100% - 3px)),
-    linear-gradient(90deg,rgba(0,0,0,.38) 0,rgba(255,255,255,.05) 28%,rgba(255,255,255,.09) 42%,rgba(0,0,0,.08) 72%,rgba(0,0,0,.42) 100%),var(--lt) 0 0/120px 120px,var(--bg);
-  box-shadow:0 3px 5px -3px rgba(0,0,0,.75),1px 0 0 rgba(0,0,0,.3);transition:transform .28s cubic-bezier(.2,.7,.3,1),box-shadow .28s}
-.lsp .bd{position:absolute;left:0;right:0;height:3px;background:linear-gradient(180deg,rgba(255,235,200,.28),rgba(0,0,0,.05) 40%,rgba(0,0,0,.4));box-shadow:0 -1px 0 rgba(184,145,74,.75),0 1px 0 rgba(184,145,74,.75)}
-.lsp .lsl{position:absolute;left:2px;right:2px;top:16%;bottom:36%;display:flex;justify-content:center;background:linear-gradient(90deg,rgba(0,0,0,.3),transparent 30%,transparent 70%,rgba(0,0,0,.35)),var(--lab);border-radius:1px;box-shadow:inset 0 0 0 1px rgba(184,145,74,.45),0 0 1px rgba(0,0,0,.6);overflow:hidden}
-.lsp .lst{writing-mode:vertical-rl;text-orientation:mixed;font-family:"Nanum Myeongjo","Gowun Batang",serif;font-weight:800;font-size:11px;line-height:1.05;letter-spacing:.02em;color:var(--gold);
-  text-shadow:0 -.5px 0 rgba(0,0,0,.55),0 .5px 0 rgba(255,240,200,.2);padding:4px 0;max-height:100%;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
-.lsp.old .lst{opacity:.72}
-.lsp.vel{--lab:transparent}.lsp.vel .lsl{box-shadow:none}.lsp.vel .lst{color:#4a3220;text-shadow:none}.lsp.vel .bd{background:linear-gradient(180deg,rgba(255,255,255,.4),rgba(0,0,0,.18));box-shadow:none}
-.lsp .lcn{position:absolute;left:2px;right:2px;bottom:6px;display:flex;flex-direction:column;align-items:center;padding:2px 0 1px;background:linear-gradient(180deg,#f3ead2,#e6d9b8);border-radius:1px;box-shadow:0 0 0 .5px rgba(60,40,20,.5),0 1px 1px rgba(0,0,0,.3);font:700 10px/1.05 var(--ui-font,inherit);color:#3a2a18;letter-spacing:-.02em}
+.libempty p{margin:0 0 30px;color:rgba(250,238,214,.8);font-family:"Nanum Myeongjo",serif;font-size:14px;text-align:center}
+/* 책등: 무광 송아지 가죽(원통 그늘은 아주 옅게) · 가는 금박 줄 두 겹씩 · 작은 가죽 제목표 · 낡은 위아래 끝 */
+.lsp{--bg:#a0703f;--lab:#2f4a3a;flex:0 0 auto;position:relative;border:0;padding:0;margin:0 0 0 1px;cursor:pointer;border-radius:2px 2px 1px 1px;scroll-snap-align:start;
+  background:linear-gradient(180deg,rgba(255,236,205,.14) 0 2px,transparent 2px calc(100% - 3px),rgba(30,16,6,.25) calc(100% - 3px)),
+    linear-gradient(90deg,rgba(30,16,6,.32) 0,rgba(255,240,215,.06) 30%,rgba(255,240,215,.08) 45%,rgba(30,16,6,.06) 70%,rgba(30,16,6,.34) 100%),var(--lt) 0 0/140px 140px,var(--bg);
+  box-shadow:-1px 0 0 rgba(30,16,6,.35),0 2px 3px -2px rgba(30,16,6,.6);transition:transform .25s ease,box-shadow .25s ease}
+.lsp .bd{position:absolute;left:2px;right:2px;height:5px;background:linear-gradient(180deg,var(--gold) 0 1px,transparent 1px 4px,var(--gold) 4px 5px);opacity:.78}
+.lsp.old .bd{opacity:.55}
+.lsp .lsl{position:absolute;left:3px;right:3px;top:13%;bottom:46%;display:flex;justify-content:center;background:linear-gradient(90deg,rgba(30,16,6,.25),transparent 35%,transparent 65%,rgba(30,16,6,.3)),color-mix(in srgb,var(--lab) 72%,var(--bg));border-radius:1px;box-shadow:inset 0 0 0 1px rgba(210,178,119,.55);overflow:hidden}
+.lsp .lst{writing-mode:vertical-rl;text-orientation:mixed;font-family:"Nanum Myeongjo","Gowun Batang",serif;font-weight:700;font-size:11px;line-height:1.05;letter-spacing:.02em;color:var(--gold);text-shadow:0 1px 0 rgba(0,0,0,.35);padding:4px 0;max-height:100%;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.lsp.old .lst{opacity:.8}
+.lsp.nolab .lst{color:#f3dfa8;text-shadow:0 1px 1px rgba(20,10,4,.75),0 0 2px rgba(20,10,4,.35)}
+.lsp.nolab .lsl{background:none;box-shadow:inset 0 1px 0 rgba(210,178,119,.5),inset 0 -1px 0 rgba(210,178,119,.5)}   /* 사진처럼 몇 권은 제목표 없이 가죽에 바로 금박 */
+.lsp.vel{--lab:transparent}.lsp.vel .lsl{box-shadow:none}.lsp.vel .lst{color:#3a2412;text-shadow:0 1px 0 rgba(255,250,235,.5);opacity:1!important}.lsp.vel .bd{background:linear-gradient(180deg,rgba(120,85,45,.5) 0 1px,transparent 1px 4px,rgba(120,85,45,.5) 4px 5px)}
+.lsp .lcn{position:absolute;left:4px;right:4px;bottom:8px;display:flex;flex-direction:column;align-items:center;padding:1px 0;background:rgba(232,220,192,.62);border-radius:1px;box-shadow:0 0 0 .5px rgba(60,40,20,.25);font:600 9px/1.05 var(--ui-font,inherit);color:#4a3420;letter-spacing:-.03em}   /* 청구기호표: 바랜 종이색으로 작게(옛 책에 덧붙인 표처럼) */
 .lsp .lcn b{font-weight:400}
-.lsp .rib{position:absolute;top:-9px;width:4px;height:16px;border-radius:0 0 1px 1px;clip-path:polygon(0 0,100% 0,100% 100%,50% 80%,0 100%);box-shadow:0 1px 1px rgba(0,0,0,.4)}
-@media (hover:hover){.lsp:hover{transform:translateY(-6px);box-shadow:0 10px 12px -6px rgba(0,0,0,.8)}}
-.lsp:focus-visible{outline:2px solid var(--br1);outline-offset:2px}
-.lsp.on{transform:translateY(-14px) rotate(-3deg);box-shadow:0 14px 16px -6px rgba(0,0,0,.85),0 0 0 1px var(--br1)}
-@media (prefers-reduced-motion:reduce){.lsp,.lsp:hover,.lsp.on{transition:none;transform:none}.lsp.on{box-shadow:0 0 0 2px var(--br1),0 10px 14px -6px rgba(0,0,0,.85)}}
-/* 앞을 보는 칸(읽는 중 — 열람대) */
-.libcase.front .libbooks{gap:20px;padding:28px 16px 0;min-height:200px}
+.lsp .rib{position:absolute;top:-8px;width:4px;height:14px;border-radius:0 0 1px 1px;clip-path:polygon(0 0,100% 0,100% 100%,50% 80%,0 100%)}
+@media (hover:hover){.lsp:hover{transform:translateY(-5px);box-shadow:-1px 0 0 rgba(30,16,6,.35),0 8px 10px -6px rgba(30,16,6,.7)}}
+.lsp:focus-visible{outline:2px solid #f3e3b4;outline-offset:2px}
+.lsp.on{transform:translateY(-12px);box-shadow:0 0 0 2px #f3e3b4,0 12px 14px -6px rgba(30,16,6,.75)}
+@media (prefers-reduced-motion:reduce){.lsp,.lsp:hover,.lsp.on{transition:none;transform:none}}
+/* 앞을 보는 칸(읽는 중 — 열람대): 표지를 세워 둠. 「지금 읽는 중」 쪽지가 잘리지 않게 위를 넉넉히 */
+.libcase.front .libbooks{gap:22px;padding:36px 16px 0;min-height:0}
 .libcase.front .bookc{scroll-snap-align:start}
-.libcase .bookc .t{color:var(--gold);opacity:.9;font-family:"Nanum Myeongjo",serif}
-.libcase .bookc .progress{background:rgba(255,255,255,.12)}
-.libcase .bookc .pickbtn{background:linear-gradient(180deg,#d8bd84,var(--br2));border-color:#3e2c12;color:#2a1a0c;margin-bottom:4px}
-.libcase .bookc .nowtag{top:-16px}
-/* 한 칸에 나란히 꽂은 작은 분류들: 분류마다 작은 이름판, 사이에 놋쇠 북엔드 */
-.libshelf.packed{padding-top:10px}
+.libcase .bookc .t{color:#f3e7cf;opacity:.95;font-family:"Nanum Myeongjo",serif;font-size:13px}
+.libcase .bookc .progress{background:rgba(255,255,255,.18);margin-bottom:8px!important}
+.libcase .bookc .pickbtn{background:#f8f1e1;border-color:#b89466;color:#5a3a20;margin-bottom:8px}
+.libcase .bookc .nowtag{top:-14px}
+/* 한 칸에 나란히 꽂은 작은 분류들 — 분류마다 작은 이름표, 사이에 나무 북엔드 */
+.libshelf.packed{padding-top:8px}
 .libshelf.packed .libbooks{align-items:stretch}
 .libseg{display:flex;flex-direction:column;justify-content:space-between;align-items:flex-start;flex:0 0 auto;scroll-margin-top:80px;scroll-snap-align:start}
-.libsegb{display:flex;align-items:flex-end;gap:1px}
-.libplate.sm{margin:0 0 8px 0;padding:2px 11px 2px 10px;font-size:12px;letter-spacing:.04em}
-.libplate.sm small,.libplate.sm .lnum{font-size:10.5px}
-.libplate.sm .lbay{min-width:16px;height:16px;font-size:10px}
-.libend{flex:0 0 auto;align-self:flex-end;width:11px;height:92px;margin:0 9px 0 7px;border-radius:2px 7px 1px 1px;background:linear-gradient(90deg,#3e2c12,#c9a868 30%,var(--br2) 55%,var(--br4));box-shadow:2px 3px 5px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,235,190,.4)}
-.libmore{position:relative;z-index:3;margin:0 0 -4px 8px;vertical-align:2px;border:1px solid rgba(201,168,104,.5);border-radius:999px;background:rgba(0,0,0,.3);color:var(--br1);font:700 12px/1 var(--ui-font,inherit);padding:5px 10px;cursor:pointer}
-.libmore:hover{background:rgba(0,0,0,.45)}
-.libshelf.open .libbooks{--rh:166px;flex-wrap:wrap;align-content:flex-start;row-gap:18px;overflow:visible;-webkit-mask-image:none;mask-image:none;background-origin:content-box,border-box,border-box,border-box,border-box,border-box;
-  background-image:repeating-linear-gradient(180deg,transparent 0 var(--rh),#9a7450 var(--rh),var(--w4) calc(var(--rh) + 2px),var(--w3) calc(var(--rh) + 12px),var(--w1) calc(var(--rh) + 18px)),linear-gradient(180deg,rgba(0,0,0,.55),rgba(0,0,0,.25) 18px,rgba(0,0,0,.1) 60px),repeating-linear-gradient(90deg,transparent 0 59px,rgba(0,0,0,.4) 59px 60px),var(--gv),var(--pv),linear-gradient(#24160c,#24160c);
-  background-size:auto,auto,auto,260px 260px,260px 260px,auto}
+.libsegb{display:flex;align-items:flex-end}
+.libplate.sm{margin:0 0 8px 0;padding:1px 8px;font-size:11.5px}
+.libplate.sm .lbay{min-width:14px;height:14px;font-size:9.5px}
+.libend{flex:0 0 auto;align-self:flex-end;width:9px;height:86px;margin:0 8px 0 6px;border-radius:2px 6px 0 0;background:linear-gradient(90deg,var(--o3),#a87a50 40%,var(--o2));box-shadow:2px 2px 4px rgba(30,16,6,.45)}
+.libmore{position:relative;z-index:3;margin:0 0 -2px 6px;vertical-align:1px;border:1px solid #b89466;border-radius:999px;background:#f8f1e1;color:#5a3a20;font:700 11.5px/1 var(--ui-font,inherit);padding:4px 9px;cursor:pointer}
+.libmore:hover{background:#fff}
+.libshelf.open .libbooks{--rh:160px;flex-wrap:wrap;align-content:flex-start;row-gap:15px;overflow:visible;-webkit-mask-image:none;mask-image:none;background-origin:content-box,border-box,border-box,border-box,border-box;
+  background-image:repeating-linear-gradient(180deg,transparent 0 var(--rh),#a87a50 var(--rh),var(--o1) calc(var(--rh) + 2px),var(--o2) calc(var(--rh) + 9px),var(--o3) calc(var(--rh) + 11px),rgba(30,16,6,.35) calc(var(--rh) + 11px),transparent calc(var(--rh) + 15px)),linear-gradient(90deg,rgba(30,16,6,.28),transparent 22px,transparent calc(100% - 22px),rgba(30,16,6,.28)),repeating-linear-gradient(90deg,transparent 0 119px,rgba(30,16,6,.18) 119px 120px),var(--gv),linear-gradient(var(--back),var(--back));
+  background-size:auto,auto,auto,300px 300px,auto}
 .libshelf.open .lsp{height:var(--rh)!important}
 .libshelf.open .libnav{display:none!important}
 /* 서가 색인: 도서관 색인 카드 */
 .libindex{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:0 0 10px}
 .libidxk{font-size:12px;color:var(--ink-soft);margin-right:2px;font-family:var(--ui-font,inherit)}
-.libindex button{display:inline-flex;gap:5px;align-items:baseline;font-family:"Nanum Myeongjo","Gowun Batang",serif;font-size:13px;font-weight:700;padding:4px 11px;border:1px solid #b89a60;border-radius:2px;color:#3a2610;cursor:pointer;
-  background-image:linear-gradient(180deg,rgba(253,248,234,.96),rgba(241,229,198,.96)),repeating-linear-gradient(180deg,transparent 0 9px,rgba(180,60,40,.18) 9px 10px);box-shadow:inset 0 1px 0 #fff,0 1px 2px rgba(60,40,10,.25)}
-.libindex button b{font-weight:800;color:#6b1e1a;margin-right:1px}
+.libindex button{display:inline-flex;gap:5px;align-items:baseline;font-family:"Nanum Myeongjo","Gowun Batang",serif;font-size:13px;font-weight:700;padding:4px 11px;border:1px solid #c9ad80;border-radius:2px;color:#4a3018;cursor:pointer;
+  background-image:linear-gradient(180deg,rgba(253,248,234,.96),rgba(243,233,208,.96)),repeating-linear-gradient(180deg,transparent 0 9px,rgba(180,60,40,.14) 9px 10px);box-shadow:0 1px 2px rgba(60,40,10,.18)}
+.libindex button b{font-weight:800;color:#8a5a2b;margin-right:1px}
 .libindex button small{font-weight:400;font-size:11px;opacity:.7}
-.libindex button:hover{border-color:#8d6a2a}
-@media (max-width:600px){
-  .libcase{padding:0 10px;background-size:8px 100%,8px 100%,260px 260px,300px 560px,260px 260px,260px 260px,auto,auto}
-  .libcase{background-image:linear-gradient(90deg,var(--w2),var(--w4) 40%,var(--w2)),linear-gradient(90deg,var(--w2),var(--w4) 60%,var(--w2)),var(--gv),var(--gv2),var(--pv),var(--rv),repeating-linear-gradient(90deg,rgba(255,240,210,.03) 0 112px,rgba(0,0,0,.35) 112px 113px,rgba(0,0,0,.04) 113px 230px,rgba(0,0,0,.35) 230px 231px),linear-gradient(180deg,var(--w4),var(--w3) 40%,#4f311c)}
-  .libcrown{margin:0 -10px 4px;height:30px;padding:3px 0 2px;background-size:100% 3px,100% 8px,0 0,520px 90px,260px 260px,auto}
-  .libcrown span{font-size:10.5px;letter-spacing:.3em;top:1px}
-  .libbase{margin:8px -10px 0}
-  .libbooks{padding:22px 8px 0}
-  .libcase.front .libbooks{gap:14px}
-  .librow::before{height:6px;bottom:-6px;-webkit-mask-size:100% 3px,9px 6px;mask-size:100% 3px,9px 6px}
-  .libord{display:none}
-}
+.libindex button:hover{border-color:#8a5a2b}
+@media (max-width:600px){.libcase{padding:0 8px}.libcrown{margin:0 -8px 0;height:22px}.libcrown span{font-size:10.5px}.libbase{margin:8px -8px 0}.libbooks{padding:16px 6px 0}.libcase.front .libbooks{gap:14px;padding-top:34px}.libord{display:none}}
 /* 독후감 서가(글방 공통 창고) */
 .rlibwrap .rlhead{display:flex;gap:12px;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;margin-bottom:10px}
 .rlq{width:min(280px,100%);font-size:16px}
@@ -3118,7 +3098,7 @@ async function pushSave(){
 // ───────── 새 버전 자동 새로 고침 ─────────
 // 올릴 때마다 version.json 의 번호가 바뀝니다. 앱이 열릴 때·다시 화면에 올라올 때·5분마다 확인해서,
 // 쓰는 중인 글이 없고 저장이 끝났을 때 새 버전으로 새로 고칩니다.
-const APP_BUILD="b23821090e"; const APP_VER="3.4";   // 판 번호: 배포할 때마다 도구/판올리기.py 가 0.1씩 올림 (1.9 다음은 2.0) — 손으로 고치지 말 것
+const APP_BUILD="173a701459"; const APP_VER="3.5";   // 판 번호: 배포할 때마다 도구/판올리기.py 가 0.1씩 올림 (1.9 다음은 2.0) — 손으로 고치지 말 것
 let NEW_BUILD=null, UPDATE_NOTICED=false;
 async function checkUpdate(){
   if(APP_BUILD.startsWith("__")) return;                 // 원본 파일로 열었을 때(고치는 중)는 건너뜁니다
@@ -3638,6 +3618,9 @@ const MANUALS=[["quick","간단 매뉴얼","읽자마자 바로 써 보는 한 �
 // ───────── 새 소식 (공개판, 2026-10-31 팀장님): 중요한 고침은 앱을 열 때 한 번만 쉬운 말로 알림 ─────────
 // 새 소식을 더할 때: NEWS 맨 앞에 넣고 id 는 날짜(같은 날 둘째는 2026-11-02b 처럼 — 글자 순서로 새것이 뒤). 본 소식 id 는 이 기기에만(seojae-open.newsSeen)
 const NEWS=[
+ {id:"2026-11-01n",date:"2026년 11월 1일",title:"책장을 더 진짜 책장처럼",items:[
+  ["📚","실제 도서관 책장처럼","장식을 걷어 내고, 단정한 참나무 책장에 황갈색 가죽·양피지 책이 꽂힌 모습으로 다시 꾸몄어요. 앱의 종이색과도 잘 어울려요.","칸 이름표는 선반 앞에 꽂은 종이 카드예요"],
+  ["✦","읽기 쉬운 책등","책등의 금박 제목이 또렷해졌고, 양피지 책은 갈색 잉크로 적혀요. 「지금 읽는 중」 쪽지도 잘리지 않아요.",""]]},
  {id:"2026-11-01m",date:"2026년 11월 1일",title:"책장이 옛 도서관 책장이 되었어요",items:[
   ["🏛","도서관 책장","책장이 거친 나무결의 클래식 도서관 책장이 되었어요. 위 「열람대」에는 읽는 책이 서고, 아래 「서고」에는 다 읽은 책이 칸마다 꽂혀요.","칸마다 놋쇠 이름판에 서가 기호(가·나·다)·분류 번호·권수가 붙어요"],
   ["📚","분류 차례와 청구기호","분류별로 보면 성경·신학·목회·영성 책이 맨 앞, 그다음 도서관 분류(KDC) 차례로 서요. 한 칸 안은 지은이 가나다순이고, 책등 아래에 「813 / 김」 같은 작은 이름표가 붙어요.",""],
@@ -7957,18 +7940,18 @@ function stSide(cur){ const ms=liveMs(), m=ms.find(x=>x.id===ROOM_MS)||ms[0]||nu
 const LIB_CATS=[["성경·주석","233"],["신학","231"],["목회·설교","234"],["신앙·영성·묵상","232"],["총류","000"],["컴퓨터·AI","004"],["철학","100"],["심리·상담","180"],["자기계발","199"],["종교(기타)","200"],["사회·정치","300"],["경제·투자","320"],["경영·리더십","325"],["교육·자녀","370"],["자연과학","400"],["기술·공학","500"],["건강·의학","510"],["생활·취미","590"],["예술","600"],["언어·글쓰기","700"],["인문·교양","800"],["시·에세이","810"],["소설","813"],["역사","900"],["미정",""]];
 const libCatIdx=c=>{ const i=LIB_CATS.findIndex(x=>x[0]===c); return i<0?LIB_CATS.length:i; };
 const libCatNum=c=>(LIB_CATS.find(x=>x[0]===c)||[])[1]||"";
-const libCatName=c=>c==="미정"||!c?"정리 대기":c;
+const libCatName=c=>c==="미정"||!c?"정리 대기":c;   // 사서: 분류 없는 책은 서가가 아닌 「정리 대기」
 const LIB_BAY="가나다라마바사아자차카타파하";
 const libBay=i=>i<LIB_BAY.length?LIB_BAY[i]:String(i+1);
 // 제목 조각 색 = 큰 갈래(사서: 색이 뜻을 전하게) — 특별 장서 소혈색 · 총류·철학 검정 · 사회 남 · 자연·기술 병 초록 · 예술 자두 · 언어·문학 짙은 밤 · 역사 황토 밤 · 정리 대기 회색
-function libLab(c){ const n=libCatNum(c), h=n[0]; if(/^23/.test(n)) return "#6b1e1a"; if(!n) return "#3a3633"; return {"0":"#1d1a17","1":"#1d1a17","2":"#4a2a1a","3":"#26304a","4":"#2e4a36","5":"#2e4a36","6":"#4a2040","7":"#3b1f14","8":"#3b1f14","9":"#4a3514"}[h]||"#1d1a17"; }
+function libLab(c){ const n=libCatNum(c), h=n[0]; if(/^23/.test(n)) return "#5e2a20"; if(!n) return "#3e3128"; return {"0":"#2a1f17","1":"#2a1f17","2":"#4a2c1a","3":"#2a3448","4":"#2f4636","5":"#2f4636","6":"#4a2c38","7":"#2f4636","8":"#3a2418","9":"#4a2c1a"}[h]||"#2a1f17"; }   // 제목표 색 = 큰 갈래 — 순검정은 피하고 짙은 밤색·초록·남·붉은 밤색
 // 옛 제본 가죽 색(디자인: 갈색 송아지 가죽이 6할 넘게) — 황갈·짙은 송아지·모로코 붉은·병 초록·남·황토·양피지
-const LIB_LEATHER=["#8b5a2b","#a0703f","#5a3420","#7a4a26","#6b3f22","#93633a","#6e1f1c","#2e4a36","#26304a","#9c7a3c","#e3d4ae","#5a3420","#8b5a2b"];
+const LIB_LEATHER=["#a0703f","#93633a","#b0804e","#8a5a34","#7a4e2c","#a87445","#9a6a3c","#6e4426","#c4996a","#e6d8b8","#e2d2ae","#8b5a2b","#5e3b22","#a0703f","#b98a58"];   // 3판: 사진처럼 황갈·밤색 송아지 가죽이 대부분, 양피지 몇
 const libAuth=b=>{ const a=String((b.authors||[])[0]||"").trim(); return a?(/^[a-z]/i.test(a)?a[0].toUpperCase():a[0]):""; };
-function libSpine(b,o={}){ const h=strHash(b.title), bg=LIB_LEATHER[h%LIB_LEATHER.length], vel=bg==="#e3d4ae", w=o.w||28, ht=o.h||[166,148,136][(h>>5)%3], c=bookCat(b)||"미정",
-    nb=w<26?3:((h>>3)%2?5:4), bands=(nb===3?[7,64,77]:nb===4?[6,12,64,76]:[6,12,64,70,77]).map(t=>`<i class="bd" style="top:${t}%" aria-hidden="true"></i>`).join(""),
+function libSpine(b,o={}){ const h=strHash(b.title), bg=LIB_LEATHER[h%LIB_LEATHER.length], vel=["#e6d8b8","#e2d2ae","#e3d4ae"].includes(bg), tan=["#c4996a","#b98a58","#b0804e","#a87445"].includes(bg), w=o.w||28, ht=o.h||[166,148,136][(h>>>5)%3], c=bookCat(b)||"미정",
+    nb=w<26?3:((h>>>3)%2?5:4), bands=(nb===3?[6,60,80]:nb===4?[5,58,70,82]:[5,9,58,70,82]).map(t=>`<i class="bd" style="top:${t}%" aria-hidden="true"></i>`).join(""),
     num=libCatNum(c), au=libAuth(b), rib=(o.rib||0)?[0,1,2].slice(0,o.rib).map(k=>`<i class="rib" style="left:${4+k*6}px;background:${["#8a1f1f","#2e4a36","#b8914a"][k]}" aria-hidden="true"></i>`).join(""):"";
-  return `<button type="button" class="lsp${vel?" vel":""}${h%5===0?" old":""}${o.on?" on":""}" style="--bg:${bg};--lab:${libLab(c)};width:${w}px;height:${ht}px" onclick="${o.click}"${o.on!=null?` aria-pressed="${!!o.on}"`:""} title="${o.title||esc(b.title)}">${rib}${bands}<span class="lsl"><span class="lst">${esc(b.title)}</span></span>${num||au?`<span class="lcn" aria-hidden="true">${num?`<span>${num}</span>`:""}${au?`<b>${esc(au)}</b>`:""}</span>`:""}</button>`; }
+  return `<button type="button" class="lsp${vel?" vel":""}${h%5===0?" old":""}${!vel&&!tan&&h%4===1&&h%5?" nolab":""}${o.on?" on":""}" style="--bg:${bg};${vel?"":`--lab:${libLab(c)};`}width:${w}px;height:${ht}px" onclick="${o.click}"${o.on!=null?` aria-pressed="${!!o.on}"`:""} title="${o.title||esc(b.title)}">${rib}${bands}<span class="lsl"><span class="lst">${esc(b.title)}</span></span>${num||au?`<span class="lcn" aria-hidden="true">${num?`<span>${num}</span>`:""}${au?`<b>${esc(au)}</b>`:""}</span>`:""}</button>`; }
 function libCase(o){ const id=o.id||"lib", gs=o.groups.filter(g=>g.items.length);
   // 책이 적은 분류(8권까지)는 한 칸에 나란히 — 사이에 놋쇠 북엔드, 분류마다 작은 이름판. 많은 분류는 한 칸을 다 씀
   const rows=[]; let cur=null;
