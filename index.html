@@ -1083,7 +1083,9 @@ button.rtc:hover{border-color:var(--sepia)} button.rtc:active{transform:translat
 .rtc.r::after{content:none}
 .rtc.h{border-style:solid;background:linear-gradient(135deg,color-mix(in srgb,var(--bible) 35%,var(--paper)) 50%,transparent 50%)}
 .rtc.t{border:2px solid #d08a2a;color:var(--ink);font-weight:800}
-.rtc.r.t{box-shadow:0 0 0 2px var(--paper),0 0 0 4px #d08a2a}
+.rtc.r.t{box-shadow:0 0 0 2px var(--paper),0 0 0 4px #d08a2a;color:var(--paper)}   /* 오늘 분량: 읽었으면 도장 위 흰 숫자, 아직이면 옅은 금빛 바탕에 진한 갈색 숫자 */
+.rtc.u.t,.rtc.h.t{background:color-mix(in srgb,#f2c066 26%,var(--paper));color:#7a4708;border-style:solid}
+.rtlegend i.rtc.u.t{background:color-mix(in srgb,#f2c066 26%,var(--paper))}
 .rtc.just{animation:rtstamp .32s cubic-bezier(.2,1.4,.4,1)}
 @keyframes rtstamp{0%{transform:scale(1.35) rotate(-14deg);opacity:.4}100%{transform:scale(1) rotate(-6deg);opacity:1}}
 .rtc.u.just,.rtc.h.just{animation:none}
@@ -1091,6 +1093,31 @@ button.rtc:hover{border-color:var(--sepia)} button.rtc:active{transform:translat
 button.rtc:hover{border-color:var(--sepia)} button.rtc.r:hover{filter:brightness(1.08)}
 .rtbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:space-between;margin:10px 0 0;padding:8px 10px;border-radius:12px;background:var(--paper-2);border:1px solid var(--edge);font:14px/1.4 var(--ui-font,sans-serif)}
 .rtbt b{font-family:"Nanum Myeongjo",serif} .rtba{display:flex;gap:6px;flex-wrap:wrap}
+/* 책 고르기 단추·창 */
+.rtpickbtn{display:flex;align-items:center;gap:10px;width:100%;margin:10px 0 8px;padding:10px 14px;min-height:48px;border-radius:12px;cursor:pointer;text-align:left;
+  font:14px/1.3 var(--ui-font,sans-serif);color:var(--ink);background:var(--paper);border:1.5px solid color-mix(in srgb,var(--bible) 38%,var(--edge));
+  box-shadow:0 2px 0 color-mix(in srgb,var(--ink) 12%,transparent)}
+.rtpickbtn .ico{width:17px;height:17px} .rtpk-l{display:inline-flex;align-items:center;gap:6px;font-weight:800;color:var(--bible);white-space:nowrap}
+.rtpk-c{flex:1;min-width:0;color:var(--ink-soft);white-space:nowrap;overflow:hidden;text-overflow:ellipsis} .rtpk-c b{color:var(--ink);font-family:"Nanum Myeongjo",serif}
+.rtpk-a{font-size:12.5px;font-weight:800;color:var(--bible);white-space:nowrap}
+.rtpickbtn:active{transform:translateY(1px);box-shadow:none}
+.rtpickbtn.on{background:var(--bible);border-color:var(--bible)} .rtpickbtn.on .rtpk-l,.rtpickbtn.on .rtpk-a,.rtpickbtn.on .rtpk-c,.rtpickbtn.on .rtpk-c b{color:var(--paper)}
+.rtlist.picking{border-top:0}
+.rtptabs{display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:0 0 8px;background:var(--paper)}
+.rttest button{min-height:42px} .rttest button small{display:inline;margin:0 0 0 6px}
+.rtptabs button{min-height:50px;border-radius:12px;border:1px solid var(--edge);background:var(--paper-2);cursor:pointer;font:800 16px/1.2 var(--ui-font,sans-serif);color:var(--ink-soft)}
+.rtptabs button small{display:block;font-weight:400;font-size:11.5px;margin-top:2px}
+.rtptabs button.on{background:var(--bible);color:var(--paper);border-color:var(--bible)}
+.rtpg{margin:4px 0 12px} .rtpgn{font:800 12px/1 var(--ui-font,sans-serif);letter-spacing:.14em;color:var(--bible);margin:10px 2px 7px;display:flex;align-items:center;gap:8px}
+.rtpgn::after{content:"";flex:1;border-top:1px dashed var(--deco)}
+.rtpgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(66px,1fr));gap:6px}
+.rtpk{--f:0;min-height:54px;padding:5px 3px;border-radius:11px;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;color:var(--ink);
+  border:1px solid color-mix(in srgb,var(--bible) 22%,var(--edge));background:linear-gradient(to top,color-mix(in srgb,var(--bible) 24%,var(--paper)) calc(var(--f)*100%),var(--paper) 0)}
+.rtpk b{font:700 16px/1.1 "Nanum Myeongjo",serif} .rtpk small{font:10.5px/1.2 var(--ui-font,sans-serif);color:var(--ink-soft);max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rtpk.done{background:var(--bible);color:var(--paper);border-color:var(--bible)} .rtpk.done small{color:color-mix(in srgb,var(--paper) 82%,transparent)}
+.rtpk.cur{outline:2.5px solid #d08a2a;outline-offset:1px}
+.rtpk:hover{border-color:var(--sepia)} .rtpk:active{transform:translateY(1px)}
+@media (max-width:360px){ .rtpgrid{grid-template-columns:repeat(auto-fill,minmax(56px,1fr));gap:5px} .rtpk{min-height:50px} .rtpk b{font-size:15px} }
 .rtfoot{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:8px}
 .rtreset,.rtrestore{border:0;background:none;cursor:pointer;font:12px/1.4 var(--ui-font,sans-serif);padding:6px 4px;border-radius:6px}
 .rtreset{color:var(--faint);text-decoration:underline dotted;text-underline-offset:3px} .rtreset:hover{color:#a0402c}
@@ -2762,7 +2789,7 @@ async function pushSave(){
 // ───────── 새 버전 자동 새로 고침 ─────────
 // 올릴 때마다 version.json 의 번호가 바뀝니다. 앱이 열릴 때·다시 화면에 올라올 때·5분마다 확인해서,
 // 쓰는 중인 글이 없고 저장이 끝났을 때 새 버전으로 새로 고칩니다.
-const APP_BUILD="11e2a7fb6a"; const APP_VER="2.1";   // 판 번호: 배포할 때마다 도구/판올리기.py 가 0.1씩 올림 (1.9 다음은 2.0) — 손으로 고치지 말 것
+const APP_BUILD="95a36d8ecd"; const APP_VER="2.2";   // 판 번호: 배포할 때마다 도구/판올리기.py 가 0.1씩 올림 (1.9 다음은 2.0) — 손으로 고치지 말 것
 let NEW_BUILD=null, UPDATE_NOTICED=false;
 async function checkUpdate(){
   if(APP_BUILD.startsWith("__")) return;                 // 원본 파일로 열었을 때(고치는 중)는 건너뜁니다
@@ -3264,6 +3291,9 @@ const MANUALS=[["quick","간단 매뉴얼","읽자마자 바로 써 보는 한 �
 // ───────── 새 소식 (공개판, 2026-10-31 팀장님): 중요한 고침은 앱을 열 때 한 번만 쉬운 말로 알림 ─────────
 // 새 소식을 더할 때: NEWS 맨 앞에 넣고 id 는 날짜(같은 날 둘째는 2026-11-02b 처럼 — 글자 순서로 새것이 뒤). 본 소식 id 는 이 기기에만(seojae-open.newsSeen)
 const NEWS=[
+ {id:"2026-11-01d",date:"2026년 11월 1일",title:"성경 권을 쉽게 골라요",items:[
+  ["▦","구약·신약 탭과 책 고르기","성경읽기표 「책 고르기」 바로 아래 「구약 | 신약」 탭이 생겼어요. 고른 쪽 책만 율법서·역사서·시가서·선지서(신약은 복음서·서신서…) 묶음으로 보여 목록이 짧아져요. 「책 고르기」를 누르면 큼직한 책 칸에서 바로 골라요.","책 칸은 읽은 만큼 색이 차올라요"],
+  ["◉","오늘 읽을 장이 잘 보여요","오늘 분량의 장은 금빛 바탕에 진한 숫자로, 이미 읽은 오늘 장은 도장 위 흰 숫자로 보여요. 시편처럼 긴 책은 오늘 장이 있는 줄로 저절로 내려가요.",""]]},
  {id:"2026-11-01c",date:"2026년 11월 1일",title:"기기마다 체크한 장이 합쳐져요",items:[
   ["⇄","기기마다 체크한 장이 합쳐져요","휴대폰과 컴퓨터에서 따로 체크한 성경읽기표의 장이 이제 모두 합쳐져 남아요. 같은 장을 두 기기에서 다르게 바꿨으면 나중에 바꾼 쪽을 따르고, 한쪽에서 「전체 초기화」를 했으면 그 전 체크는 되살아나지 않아요.",""],
   ["📖","처음 오신 분께 간단 매뉴얼","아침 서재를 처음 여는 분께는 간단 매뉴얼이 앱 안 창으로 한 번 저절로 열려요. 이미 쓰시던 분이 새 기기에서 로그인할 때는 뜨지 않아요.","언제든 설정 → 도움 → 「사용 설명서」에서 다시 볼 수 있어요"]]},
@@ -5109,14 +5139,27 @@ function rtSet(ch,v){ const p=S.settings.plan; (p.chs=p.chs||{})[ch.key]=v?1:0; 
 function rtBlk(B){ const ti=todayIdx(), st=B.list.map(rtChSt), read=st.filter(x=>x==="r").length; return {read,total:B.list.length,done:read===B.list.length,cur:B.list.some(ch=>ch.refs.some(x=>x.d===ti))}; }
 const rtUnit=b=>b===18?"편":"장";
 function rtOpen(){ const T=rtBuild(); if(!T.tracks.some(t=>t.blocks.length)) return toast("이 통독 방법은 읽기표를 만들 수 없습니다");
-  RT_SEL=null; RT_LAST=null; RT_OPS=new Set();
+  RT_SEL=null; RT_LAST=null; RT_OPS=new Set(); RT_PICK=false; RT_PT=null;
   if(RT_TAB>=T.tracks.length) RT_TAB=0;
   $("#rtview")?.remove(); const ov=document.createElement("div"); ov.id="rtview"; ov.className="newsview rtview"; document.body.appendChild(ov);
   const close=()=>{ ov.remove(); removeEventListener("keydown",kd,true); }, kd=e=>{ if(e.key==="Escape"){ e.preventDefault(); e.stopImmediatePropagation(); close(); } };
   ov.onclick=e=>{ if(e.target===ov||e.target.closest("[data-x]")) close(); }; addEventListener("keydown",kd,true);
   ov.addEventListener("toggle",e=>{ const d=e.target.closest?.("details.rtbk"); if(!d) return; const id=RT_TAB+":"+d.dataset.i; if(d.open) RT_OPS.add(id); else RT_OPS.delete(id); },true);
   rtPaint(true); }
-let RT_MAPX=null, RT_LAST=null;   // 책 지도 옆 스크롤 자리 · 방금 누른 장 {tab,i,c,read} — 아래 띠에 「되돌리기·본문 읽기」
+let RT_MAPX=null, RT_LAST=null, RT_PICK=false, RT_PT=null;   // RT_PICK: 책 고르기 창을 폈는가 · RT_PT: 구약(ot)/신약(nt) 탭
+// 책 고르기(2026-11-01 팀장님 「66권 고르기 어려움 → 구약/신약 구분 등 편하게」): 구약·신약 탭 + 갈래 묶음, 큼직한 책 칸(읽은 만큼 차오름)
+const RT_GROUPS=[["ot","율법서",0,5],["ot","역사서",5,17],["ot","시가서",17,22],["ot","대선지서",22,27],["ot","소선지서",27,39],["nt","복음서",39,43],["nt","역사서",43,44],["nt","바울 서신",44,57],["nt","일반 서신",57,65],["nt","예언서",65,66]];
+function rtPickerHtml(tr,tt){ const byB=new Map(); tr.blocks.forEach((B,i)=>{ const L=byB.get(B.b)||[]; L.push(i); byB.set(B.b,L); });
+  const info=b=>{ const is=byB.get(b); let r=0,n=0,cur=false; is.forEach(i=>{ const I=rtBlk(tr.blocks[i]); r+=I.read; n+=I.total; cur=cur||I.cur; }); return {r,n,cur,i:is.find(i=>rtBlk(tr.blocks[i]).cur)??is.find(i=>!rtBlk(tr.blocks[i]).done)??is[0]}; };
+  const bs=[...byB.keys()], hasOT=bs.some(b=>b<39), hasNT=bs.some(b=>b>=39), curB=tr.blocks.find(B=>rtBlk(B).cur)?.b;
+  const t=tt, tabs="";
+  const groups=RT_GROUPS.filter(g=>!t||g[0]===t).map(([,gn,a,z])=>{ const xs=[]; for(let b=a;b<z;b++) if(byB.has(b)) xs.push(b); if(!xs.length) return "";
+    return `<div class="rtpg"><p class="rtpgn">${gn}</p><div class="rtpgrid">${xs.map(b=>{ const x=info(b), f=x.n?x.r/x.n:0; return `<button type="button" class="rtpk${f>=1?" done":""}${x.cur?" cur":""}" style="--f:${f.toFixed(3)}" onclick="rtPickBook(${x.i})" title="${BIBLE[b][0]} · ${x.r} / ${x.n}${rtUnit(b)}" aria-label="${BIBLE[b][0]} ${x.r} / ${x.n}${rtUnit(b)}${x.cur?" · 지금 읽는 책":""}"><b>${BABBR[b]}</b><small>${BIBLE[b][0]}</small></button>`; }).join("")}</div></div>`; }).join("");
+  return `<div class="rtpicker">${tabs}${groups}</div>`; }
+function rtPickBook(i){ RT_PICK=false; rtJumpBk(i); }
+// 구약·신약 탭(책 고르기 단추 바로 아래): 장 목록·책 고르기 모두 고른 쪽만. 구약·신약이 함께 있는 방법에서만
+function rtTestOf(tr){ const bs=tr.blocks.map(B=>B.b), hasOT=bs.some(b=>b<39), hasNT=bs.some(b=>b>=39); if(!(hasOT&&hasNT)) return null; const cb=tr.blocks.find(B=>rtBlk(B).cur); let t=RT_PT||(cb&&cb.b>=39?"nt":"ot"); return t; }
+function rtTestTabs(tr,tt){ if(!tt) return ""; return `<div class="rtptabs rttest" role="tablist" aria-label="구약·신약">${[["ot","구약"],["nt","신약"]].map(([k,n])=>{ let r=0,c=0,nb=new Set(); tr.blocks.forEach(B=>{ if((B.b<39)!==(k==="ot")) return; const I=rtBlk(B); r+=I.read; c+=I.total; nb.add(B.b); }); return `<button type="button" role="tab" aria-selected="${tt===k}" class="${tt===k?"on":""}" onclick="RT_PT='${k}';RT_LAST=null;rtPaint(true)">${n}<small>${nb.size}권 · ${c?Math.round(r/c*100):0}%</small></button>`; }).join("")}</div>`; }   // 책 지도 옆 스크롤 자리 · 방금 누른 장 {tab,i,c,read} — 아래 띠에 「되돌리기·본문 읽기」
 // 종이 성경읽기표처럼(2026-11-01): 맨 위 책 지도(채운 만큼 차오름) → 책마다 장 동그라미. 장을 누르면 바로 도장(읽음), 한 번 더 누르면 풀림
 function rtPaint(first){ const ov=$("#rtview"); if(!ov) return; const T=rtBuild(), pl=planObj(), ti=todayIdx(), tr=T.tracks[RT_TAB]||T.tracks[0];
   const old=ov.querySelector(".rtlist"), top=old?old.scrollTop:0;
@@ -5124,9 +5167,10 @@ function rtPaint(first){ const ov=$("#rtview"); if(!ov) return; const T=rtBuild(
   let rAll=0,nAll=0; T.tracks.forEach(t=>t.blocks.forEach(B=>B.list.forEach(ch=>{ nAll++; if(rtChRead(ch)) rAll++; })));
   const pct=nAll?Math.round(rAll/nAll*1000)/10:0, L=RT_LAST&&RT_LAST.tab===RT_TAB?RT_LAST:null;
   const map=tr.blocks.map((B,i)=>{ const I=rtBlk(B); return `<button type="button" class="rtm${I.done?" done":""}${I.cur?" cur":""}" style="--f:${(I.read/I.total).toFixed(3)}" onclick="rtJumpBk(${i})" title="${BIBLE[B.b][0]} ${I.read}/${I.total}${rtUnit(B.b)}" aria-label="${BIBLE[B.b][0]} ${I.read}/${I.total}${rtUnit(B.b)}">${BABBR[B.b]}</button>`; }).join("");
-  const blocks=tr.blocks.map((B,i)=>{ const I=rtBlk(B), nm=BIBLE[B.b][0], u=rtUnit(B.b), id=RT_TAB+":"+i, open=RT_OPS.has(id)||(I.cur&&!RT_OPS.has(id+"x"));
+  const tt=rtTestOf(tr); let prevG=null;
+  const blocks=tr.blocks.map((B,i)=>{ if(tt&&(B.b<39)!==(tt==="ot")) return ""; const I=rtBlk(B), nm=BIBLE[B.b][0], u=rtUnit(B.b), id=RT_TAB+":"+i, open=RT_OPS.has(id)||(I.cur&&!RT_OPS.has(id+"x"));
     const chips=B.list.map(ch=>{ const st=rtChSt(ch), t=ch.refs.some(x=>x.d===ti), j=L&&L.i===i&&L.c===ch.c; return `<button type="button" class="rtc ${st}${t?" t":""}${j?" just":""}" onclick="rtPick(${i},${ch.c})" aria-pressed="${st==="r"}" title="${nm} ${ch.c}${u} · ${ch.refs.map(x=>x.d+1+"일째").join(", ")}${t?" · 오늘 분량":""}">${ch.c}</button>`; }).join("");
-    const sec=T.canon&&(i===0||(tr.blocks[i-1].b<39)!==(B.b<39))?`<p class="rtsec">${B.b<39?"구약":"신약"}</p>`:"";
+    const g=T.canon?RT_GROUPS.find(g=>B.b>=g[2]&&B.b<g[3]):null, sec=g&&g!==prevG?`<p class="rtsec">${g[1]}</p>`:""; if(g) prevG=g;
     return sec+`<details class="rtbk${I.done?" done":""}${I.cur?" cur":""}" data-i="${i}" ${open?"open":""}><summary><span class="rtnm">${nm}</span><span class="rtpb" aria-hidden="true"><i style="width:${Math.round(I.read/I.total*100)}%"></i></span><span class="rtct">${I.read} / ${I.total}${u}</span>${I.done?`<span class="rtstamp" aria-label="다 읽음">읽음</span>`:I.cur?`<span class="rtnow">지금</span>`:""}</summary><div class="rtchs">${chips}</div></details>`; }).join("");
   let bar=`<p class="rthint">장을 누르면 도장이 찍히고, 한 번 더 누르면 풀립니다. 오늘 분량의 장은 「오늘의 말씀」에도 저절로 체크됩니다.</p>`;
   if(L){ const B=tr.blocks[L.i], ch=B&&B.list.find(x=>x.c===L.c); if(ch){ const nm=BIBLE[B.b][0], u=rtUnit(B.b), p=S.settings.plan, d=ch.refs[0].d, ex=p.mode==="date"?"":d>ti&&L.read?`<button type="button" class="btn small ghost" onclick="rtAct('jump',${d+1})" title="이 장이 든 날까지 읽은 것으로 치고 다음 날부터">진도를 여기까지</button>`:d<ti&&!L.read?`<button type="button" class="btn small ghost" onclick="rtAct('back',${d})">여기부터 다시 읽기</button>`:"";
@@ -5135,14 +5179,16 @@ function rtPaint(first){ const ov=$("#rtview"); if(!ov) return; const T=rtBuild(
     <div class="rthead"><p class="newsk" id="rth">성경읽기표</p><button class="rtx" data-x aria-label="닫기" title="닫기 (Esc)">✕</button></div>
     <div class="rttop"><div><h3 class="rtt">${esc(pl.name)}</h3><p class="rtsum">오늘 ${ti+1}일째 · 읽은 장 <b>${rAll.toLocaleString()}</b> / ${nAll.toLocaleString()}</p></div>
       <div class="rtring" style="--p:${pct}" aria-label="${pct}% 읽음"><b>${pct<10?pct.toFixed(1):Math.floor(pct)}<small>%</small></b></div></div>
-    ${T.lab?`<div class="rttabs" role="tablist" style="--n:${T.tracks.length}">${T.tracks.map((t,i)=>`<button type="button" role="tab" aria-selected="${i===RT_TAB}" class="${i===RT_TAB?"on":""}" onclick="RT_TAB=${i};RT_LAST=null;rtPaint(true)">${esc(t.n)}<small>${esc(curName(t)||"—")}</small></button>`).join("")}</div>`:""}
-    <div class="rtmap" aria-label="책 지도 — 누르면 그 책으로">${map}</div>
-    <div class="rtlist">${blocks}</div>
+    ${T.lab?`<div class="rttabs" role="tablist" style="--n:${T.tracks.length}">${T.tracks.map((t,i)=>`<button type="button" role="tab" aria-selected="${i===RT_TAB}" class="${i===RT_TAB?"on":""}" onclick="RT_TAB=${i};RT_LAST=null;RT_PT=null;rtPaint(true)">${esc(t.n)}<small>${esc(curName(t)||"—")}</small></button>`).join("")}</div>`:""}
+    ${(()=>{ const cb=tr.blocks.find(B=>rtBlk(B).cur&&(!tt||(B.b<39)===(tt==="ot")))||tr.blocks.find(B=>rtBlk(B).cur), nb=new Set(tr.blocks.map(B=>B.b)).size; return `<button type="button" class="rtpickbtn${RT_PICK?" on":""}" onclick="RT_PICK=!RT_PICK;rtPaint(true)" aria-expanded="${RT_PICK}"><span class="rtpk-l">${ICO.book}책 고르기</span><span class="rtpk-c">${cb?`지금 <b>${BIBLE[cb.b][0]}</b>`:""}</span><span class="rtpk-a">${RT_PICK?"닫기 ▴":`${nb}권 ▾`}</span></button>`; })()}
+    ${rtTestTabs(tr,tt)}
+    <div class="rtlist${RT_PICK?" picking":""}">${RT_PICK?rtPickerHtml(tr,tt):blocks}</div>
     ${bar}
     <div class="rtfoot">${rtBakOk()?`<button type="button" class="rtrestore" onclick="rtRestore()" title="초기화하기 바로 전 체크와 진도로 돌아갑니다">↶ 초기화 전으로 되살리기 <small>${esc(bkWhen(S.settings.planBak.at))}</small></button>`:"<span></span>"}<button type="button" class="rtreset" onclick="rtResetAll()" title="이 통독 방법의 체크와 진도를 모두 지우고 1일째부터 (되살리기 가능)">전체 초기화</button></div></article>`;
   const Ls=ov.querySelector(".rtlist"); if(!Ls) return;
   const M=ov.querySelector(".rtmap"); if(M){ const mc=M.querySelector(".rtm.cur"); if(mc&&M.scrollWidth>M.clientWidth) M.scrollLeft=Math.max(0,mc.offsetLeft-M.offsetLeft-M.clientWidth/2+18); if(!first&&RT_MAPX!=null) M.scrollLeft=RT_MAPX; M.onscroll=()=>{ RT_MAPX=M.scrollLeft; }; }
-  if(first){ RT_MAPX=null; const c=Ls.querySelector(".rtbk.cur"); if(c) Ls.scrollTop=Math.max(0,c.offsetTop-Ls.offsetTop-8); } else Ls.scrollTop=top; }
+  if(RT_PICK){ Ls.scrollTop=0; return; }
+  if(first){ RT_MAPX=null; const c=Ls.querySelector(".rtbk.cur"); Ls.scrollTop=0; if(c){ Ls.scrollTop=Math.max(0,c.offsetTop-Ls.offsetTop-8); const t=c.querySelector(".rtc.t"), lb=Ls.getBoundingClientRect(); if(t){ const tb=t.getBoundingClientRect(); if(tb.bottom>lb.bottom-8) Ls.scrollTop+=tb.top-lb.top-lb.height/3; } } } else Ls.scrollTop=top; }   // 시편처럼 긴 책은 오늘 장이 보이게
 function rtPick(i,c){ const T=rtBuild(), B=(T.tracks[RT_TAB]||T.tracks[0]).blocks[i], ch=B&&B.list.find(x=>x.c===c); if(!ch) return; const was=rtChRead(ch);
   RT_OPS.add(RT_TAB+":"+i); RT_LAST={tab:RT_TAB,i,c,read:!was}; rtChAct(i,c,was?0:1,true); }
 function rtUndo(){ const L=RT_LAST; if(!L) return; RT_LAST=null; rtChAct(L.i,L.c,L.read?0:1,true); RT_LAST=null; rtPaint(); }
@@ -5156,7 +5202,7 @@ function rtRestore(){ const b=S.settings.planBak; if(!b||b.plan?.id!==S.settings
   const P=b.plan, now=Date.now(); if(P.chs){ P.chsT=P.chsT||{}; for(const k in P.chs) P.chsT[k]=now; }   // 되살린 체크가 다른 기기의 초기화보다 나중이 되게
   S.settings.plan=P; S.settings.planBak=null; RT_LAST=null; _days.key=""; save(); render(); rtPaint(true); toast("초기화하기 전으로 되살렸습니다"); }
 const rtBakOk=()=>{ const b=S.settings.planBak; return !!(b&&b.plan&&b.plan.id===S.settings.plan.id); };
-function rtJumpBk(i){ RT_OPS.add(RT_TAB+":"+i); RT_OPS.delete(RT_TAB+":"+i+"x"); rtPaint(); const ov=$("#rtview"), L=ov?.querySelector(".rtlist"), d=L?.querySelector(`.rtbk[data-i="${i}"]`); if(L&&d){ d.open=true; L.scrollTo({top:Math.max(0,d.offsetTop-L.offsetTop-6),behavior:matchMedia("(prefers-reduced-motion:reduce)").matches?"auto":"smooth"}); } }
+function rtJumpBk(i){ { const T=rtBuild(), B=(T.tracks[RT_TAB]||T.tracks[0]).blocks[i]; if(B&&rtTestOf(T.tracks[RT_TAB]||T.tracks[0])) RT_PT=B.b<39?"ot":"nt"; } RT_OPS.add(RT_TAB+":"+i); RT_OPS.delete(RT_TAB+":"+i+"x"); rtPaint(); const ov=$("#rtview"), L=ov?.querySelector(".rtlist"), d=L?.querySelector(`.rtbk[data-i="${i}"]`); if(L&&d){ d.open=true; L.scrollTo({top:Math.max(0,d.offsetTop-L.offsetTop-6),behavior:matchMedia("(prefers-reduced-motion:reduce)").matches?"auto":"smooth"}); } }
 // 장 하나 읽음·풀기(v: 1·0, null = 진도대로). 오늘 분량의 장이면 오늘 카드 표시와 맞춤: 조각의 장이 다 읽히면 그 조각에 표시(다 되면 「오늘 읽음」), 하나라도 풀면 그 조각 표시를 풂
 // 달력대로 읽는 지난날은 그날 장이 다 읽히면 그날도 읽음으로
 function rtChAct(i,c,v,quiet){ const T=rtBuild(), B=(T.tracks[RT_TAB]||T.tracks[0]).blocks[i], ch=B&&B.list.find(x=>x.c===c); if(!ch) return; const p=S.settings.plan, ti=todayIdx();
