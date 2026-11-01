@@ -592,6 +592,23 @@ body.focus main.wrap{padding-top:40px}
 .result{background:var(--paper-2);padding:10px;border-radius:4px;border:1px solid var(--edge);display:flex;flex-direction:column;gap:6px}
 .result img,.result .cover{width:100%;height:190px;object-fit:contain;background:var(--paper)}
 .result .t{font-weight:700;font-size:14px;line-height:1.4}
+.bkcount{margin:14px 0 -4px;font-size:13.5px;color:var(--ink-soft)}
+.pager{display:flex;align-items:center;justify-content:center;gap:6px;flex-wrap:wrap;margin:18px 0 6px}
+.pager button{min-width:38px;height:38px;padding:0 10px;border-radius:10px;border:1px solid var(--edge);background:var(--paper-2);color:var(--ink);font:inherit;font-weight:700;cursor:pointer;box-shadow:0 1px 0 var(--edge)}
+.pager button:hover:not(:disabled){border-color:var(--ink-soft)}
+.pager button:active:not(:disabled){transform:translateY(1px);box-shadow:none}
+.pager .pgn.on{background:var(--ink);color:var(--paper);border-color:var(--ink);cursor:default}
+.pager .pga{font-size:20px;line-height:1}
+.pager button:disabled{opacity:.35;cursor:default;box-shadow:none}
+.pager .pgdots{color:var(--ink-soft);padding:0 2px}
+@media (max-width:420px){.pager{gap:4px}.pager button{min-width:33px;height:36px;padding:0 6px}}
+.bksug{margin:14px 0;padding:12px 14px;border:1px dashed var(--edge);border-radius:10px;background:var(--paper-2)}
+.bksug-wait{margin:12px 0 0;font-size:13.5px;color:var(--ink-soft)}
+.bksug-h{margin:0 0 8px;font-weight:700;font-family:var(--ui-font,inherit)}
+.bksug-l{display:flex;flex-direction:column;gap:6px}
+.bksug-b{display:flex;flex-direction:column;align-items:flex-start;gap:2px;text-align:left;padding:8px 12px;border:1px solid var(--edge);border-radius:8px;background:var(--paper);color:var(--ink);font:inherit;cursor:pointer;box-shadow:0 1px 0 var(--edge);min-width:0;max-width:100%}
+.bksug-b:hover{border-color:var(--ink-soft)}
+.bksug-b span{font-size:13px;color:var(--ink-soft);overflow-wrap:anywhere}
 .progress{height:6px;border-radius:3px;background:var(--paper-2);overflow:hidden;margin:6px 0}
 .progress i{display:block;height:100%;background:var(--book)}
 .stars span{cursor:pointer;font-size:22px;color:var(--faint)} .stars span.on{color:#c9962e}
@@ -2476,7 +2493,7 @@ async function drvSave(json,baseRev){   // 서버판 saveData_ 와 같은 지킴
 const gwNl=()=>{ try{ return localStorage.getItem("seojae-open.gwNl")==="1"; }catch(_){ return false; } };   // 창구에 국립중앙도서관 열쇠가 있는지 (책을 찾을 때 창구가 알려 줌)
 const drvConf=()=>{ const m=aiMode(), k=aiKeys(); return {notion:false,kakao:true,nl:gwNl(),ai:m==="own"?(k.claude?"claude":"gemini"):m==="shared"?"gemini":"",aiKeys:{gemini:m==="shared"||(m==="own"&&!!k.gemini),claude:m==="own"&&!!k.claude},aiShared:m==="shared",cmtFolder:"",yt:true,claude:null,local:false,gas:true,drive:!LOCALMODE,devOnly:LOCALMODE,email:DRV?.email||"",driveUrl:LOCALMODE?"":"https://drive.google.com/drive/folders/"+(DRV?.root||"")}; };
 // 공개판 전용 창구(구글 앱스 스크립트, 4gospel — 개인 기록과 무관): 브라우저가 직접 닿지 못하는 성서유니온 「매일성경」을 대신 받아 줌. 로그인 없이 날짜만 보냄
-const PUB_GW="https://script.google.com/macros/s/AKfycbxRPmEN9s2BMkKZ4nQuEzCqalgn_SBqEztJT7b5Af5dXJdmOBsmmgUMlfpbxbB8DIYAAQ/exec", GW_FN=new Set(["dailyBible","dailyBibleNote","musicFind","searchBooks","bookDetail"]);   // 찬송가·CCM 찾기도 창구가 함께(창구의 유튜브 열쇠, 찾은 곡은 모두가 함께 기억)
+const PUB_GW="https://script.google.com/macros/s/AKfycbxRPmEN9s2BMkKZ4nQuEzCqalgn_SBqEztJT7b5Af5dXJdmOBsmmgUMlfpbxbB8DIYAAQ/exec", GW_FN=new Set(["bookSuggest","dailyBible","dailyBibleNote","musicFind","searchBooks","bookDetail"]);   // 찬송가·CCM 찾기도 창구가 함께(창구의 유튜브 열쇠, 찾은 곡은 모두가 함께 기억)
 async function gwCall(fn,args){
   const r=await fetch(PUB_GW,{method:"POST",body:JSON.stringify({fn,args}),signal:AbortSignal.timeout?AbortSignal.timeout(60000):undefined});
   let j; try{ j=await r.json(); }catch(_){ throw new Error("매일성경 창구가 알아볼 수 없는 답을 보냈습니다 ("+r.status+")"); }
@@ -2668,7 +2685,8 @@ async function apiGet(path,params){
     if(path==="/api/data") return JSON.parse(await gcall("getData"));
     if(path==="/api/config") return gcall("getConfig");
     if(path==="/api/notion/check") return gcall("notionCheck");
-    if(path==="/api/books") return gcall("searchBooks",params.q);
+    if(path==="/api/books") return gcall("searchBooks",params.q,params.page,params.src);
+    if(path==="/api/books/suggest") return gcall("bookSuggest",params.q);
     if(path==="/api/books/detail") return gcall("bookDetail",params.isbn);
   }
   const r=await fetch(path+(params?"?"+new URLSearchParams(params):""),{cache:"no-store"}); if(!r.ok) throw new Error(r.status); return r.json();
@@ -2918,7 +2936,7 @@ async function pushSave(){
 // ───────── 새 버전 자동 새로 고침 ─────────
 // 올릴 때마다 version.json 의 번호가 바뀝니다. 앱이 열릴 때·다시 화면에 올라올 때·5분마다 확인해서,
 // 쓰는 중인 글이 없고 저장이 끝났을 때 새 버전으로 새로 고칩니다.
-const APP_BUILD="3a0e378021"; const APP_VER="2.8";   // 판 번호: 배포할 때마다 도구/판올리기.py 가 0.1씩 올림 (1.9 다음은 2.0) — 손으로 고치지 말 것
+const APP_BUILD="9f8c1f5b5c"; const APP_VER="2.9";   // 판 번호: 배포할 때마다 도구/판올리기.py 가 0.1씩 올림 (1.9 다음은 2.0) — 손으로 고치지 말 것
 let NEW_BUILD=null, UPDATE_NOTICED=false;
 async function checkUpdate(){
   if(APP_BUILD.startsWith("__")) return;                 // 원본 파일로 열었을 때(고치는 중)는 건너뜁니다
@@ -3422,6 +3440,9 @@ const MANUALS=[["quick","간단 매뉴얼","읽자마자 바로 써 보는 한 �
 // ───────── 새 소식 (공개판, 2026-10-31 팀장님): 중요한 고침은 앱을 열 때 한 번만 쉬운 말로 알림 ─────────
 // 새 소식을 더할 때: NEWS 맨 앞에 넣고 id 는 날짜(같은 날 둘째는 2026-11-02b 처럼 — 글자 순서로 새것이 뒤). 본 소식 id 는 이 기기에만(seojae-open.newsSeen)
 const NEWS=[
+ {id:"2026-11-01k",date:"2026년 11월 1일",title:"책 찾기가 더 넉넉해졌어요",items:[
+  ["📚","쪽을 넘겨 더 보기","책장에서 「표지 찾기」를 누르면 한 쪽에 12권씩 나와요. 아래 쪽 번호나 ‹ › 화살표를 누르면 다음 책들을 볼 수 있어요.","키보드로는 ← → 로도 넘겨요"],
+  ["🔎","혹시 이 책을 찾으셨나요?","이름을 조금 잘못 적어 책이 거의 나오지 않으면 비슷한 이름을 찾아 알려 드려요. 누르면 그 이름으로 다시 찾아요.","실제로 책이 있는 이름만 보여 드려요"]]},
  {id:"2026-11-01j",date:"2026년 11월 1일",title:"상세 매뉴얼을 이북처럼 읽어요",items:[
   ["🖍","밑줄·메모","상세 매뉴얼을 웹으로 볼 때 글을 고르면 색 단추가 떠요. 색을 누르면 밑줄, 「메모」를 누르면 생각을 남겨요.","그은 밑줄을 다시 누르면 색을 바꾸거나 지울 수 있어요"],
   ["🔖","책갈피·이어 읽기","위 띠의 🔖를 누르면 지금 읽는 자리에 책갈피가 꽂혀요. 다시 열면 「지난번 읽던 곳」으로 이어 읽을 수 있어요.",""],
@@ -6391,18 +6412,36 @@ function copyW(){ navigator.clipboard?.writeText(($("#wtitle").value?$("#wtitle"
 async function resyncAll(){ const list=live().filter(w=>(autoNotion(w)&&(w.syncError||!w.notion?.page))||(!notionAutoKind(w)&&w.syncError&&w.notion?.page)); for(const w of list) await syncWriting(w,true,true); toast(`${list.length}편을 다시 보냈습니다`); render(); }   // 글방 글은 노션에 간 적 있는 것만
 
 // ───────── 동작: 책장 ─────────
-let found=[];
-async function searchBook(){
-  const q=$("#bq").value.trim(); if(!q) return;
-  $("#bresults").innerHTML=`<p class="muted" style="margin-top:12px">표지를 찾는 중…</p>`;
-  if(!SERVER){ $("#bresults").innerHTML=`<p class="muted">서버로 열어야 검색할 수 있습니다.</p>`; return; }
+let found=[], BK={q:"",page:1,pages:0,total:0,src:""};   // 책 찾기: 한 쪽 12권, 쪽 번호·화살표로 넘김(2026-11-01). src = 처음 찾은 곳(카카오·구글·오픈라이브러리) — 다음 쪽도 같은 곳에서
+async function searchBook(page){
+  const fresh=!page; if(fresh){ const q=$("#bq").value.trim(); if(!q) return; BK={q,page:1,pages:0,total:0,src:""}; } else BK.page=page;
+  const q=BK.q, box=$("#bresults"); if(!box) return;
+  box.innerHTML=`<p class="muted" style="margin-top:12px">${fresh?"표지를 찾는 중…":`${BK.page}쪽을 여는 중…`}</p>`;
+  if(!SERVER){ box.innerHTML=`<p class="muted">서버로 열어야 검색할 수 있습니다.</p>`; return; }
   try{
-    const r=await apiGet("/api/books",{q}); found=r.results||[];
+    const r=await apiGet("/api/books",{q,page:BK.page,src:BK.src}); found=r.results||[];
     if(typeof r.nl==="boolean"){ CONF.nl=r.nl; try{ localStorage.setItem("seojae-open.gwNl",r.nl?"1":"0"); }catch(_){} }   // 책 찾기는 공개 창구의 열쇠로 (따로 열쇠를 넣지 않아도 됨)
-    $("#bresults").innerHTML=found.length?`<div class="results">${found.map((b,i)=>`<div class="result">${b.cover?`<img src="${esc(b.cover)}" alt="" loading="lazy">`:`<div class="cover blank" style="width:100%">${esc(b.title)}</div>`}<div class="t">${esc(b.title)}</div><div class="muted">${esc((b.authors||[]).join(", "))}${b.publisher?" · "+esc(b.publisher):""}</div><button class="btn small ink" onclick="addBook(${i})">이 책 꽂기</button>${storeLinks(b.title)}</div>`).join("")}</div>`
-      :`<p class="muted" style="margin-top:12px">찾지 못했습니다. ${esc((r.errors||[]).join(" / "))}</p><button class="btn small" onclick="addBook(-1)">“${esc(q)}” 제목으로 직접 꽂기</button> ${storeLinks(q)}`;
-  }catch(e){ $("#bresults").innerHTML=`<p class="muted">검색하지 못했습니다.</p>`; }
+    if(q!==BK.q) return;   // 그사이 다른 것을 찾기 시작함
+    Object.assign(BK,{page:r.page||BK.page,pages:r.pages||(found.length?1:0),total:r.total||found.length,src:r.src||BK.src});
+    const sug=r.few?`<div id="bksugbox"><p class="bksug-wait">비슷한 이름도 찾아보는 중…</p></div>`:"";   // 거의 없으면 찾은 책을 먼저 보이고 후보는 뒤이어
+    box.innerHTML=found.length?`${BK.pages>1?`<p class="bkcount">「${esc(q)}」 ${BK.total>=600?"600권 넘게":BK.total.toLocaleString()+"권"} · ${BK.page} / ${BK.pages}쪽</p>`:""}<div class="results">${found.map((b,i)=>`<div class="result">${b.cover?`<img src="${esc(b.cover)}" alt="" loading="lazy">`:`<div class="cover blank" style="width:100%">${esc(b.title)}</div>`}<div class="t">${esc(b.title)}</div><div class="muted">${esc((b.authors||[]).join(", "))}${b.publisher?" · "+esc(b.publisher):""}</div><button class="btn small ink" onclick="addBook(${i})">이 책 꽂기</button>${storeLinks(b.title)}</div>`).join("")}</div>${bkPagerHtml()}${sug}`
+      :`<p class="muted" style="margin-top:12px">찾지 못했습니다. ${esc((r.errors||[]).join(" / "))}</p>${sug}<button class="btn small" onclick="addBook(-1)">“${esc(q)}” 제목으로 직접 꽂기</button> ${storeLinks(q)}`;
+    if(r.few) bkSugLoad(q,!found.length);
+    if(!fresh) box.scrollIntoView({block:"start",behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth"});
+  }catch(e){ box.innerHTML=`<p class="muted">검색하지 못했습니다.</p>${BK.page>1?bkPagerHtml():""}`; }
 }
+// 쪽 번호: ‹ 1 … 4 5 [6] 7 8 … 50 › — 지금 쪽 둘레만 보이고 처음·끝은 늘. 휴대폰 좁은 칸에서는 둘레를 하나씩만
+function bkPagerHtml(){ const n=BK.pages, c=BK.page; if(n<2) return ""; const near=innerWidth<420?1:2, set=new Set([1,n]); for(let i=c-near;i<=c+near;i++) if(i>=1&&i<=n) set.add(i);
+  for(const i of [...set]) if(set.has(i+2)&&!set.has(i+1)&&i+1<n) set.add(i+1);   // 숫자 하나만 숨게 되면 「…」 대신 그 숫자
+  const nums=[...set].sort((x,y)=>x-y); let out="", last=0;
+  for(const i of nums){ if(i-last>1) out+=`<span class="pgdots" aria-hidden="true">…</span>`; out+=i===c?`<button class="pgn on" aria-current="page" aria-label="${i}쪽 (지금)">${i}</button>`:`<button class="pgn" onclick="searchBook(${i})" aria-label="${i}쪽">${i}</button>`; last=i; }
+  return `<div class="pager" role="navigation" aria-label="찾은 책 쪽 넘기기" onkeydown="bkPgKey(event)"><button class="pga" ${c<=1?"disabled":""} onclick="searchBook(${c-1})" aria-label="앞 쪽" title="앞 쪽 (←)">‹</button>${out}<button class="pga" ${c>=n?"disabled":""} onclick="searchBook(${c+1})" aria-label="다음 쪽" title="다음 쪽 (→)">›</button></div>`; }   // <nav>로 하면 아래 메뉴의 nav button 모양이 덮음
+function bkPgKey(e){ if(e.key==="ArrowLeft"&&BK.page>1){ e.preventDefault(); searchBook(BK.page-1).then(()=>$(".pager .pgn.on")?.focus()); } else if(e.key==="ArrowRight"&&BK.page<BK.pages){ e.preventDefault(); searchBook(BK.page+1).then(()=>$(".pager .pgn.on")?.focus()); } }
+// 비슷한 이름: 찾은 책이 거의 없을 때 서버가 고친 검색어 후보(실제 책이 있는 것만)를 줌 → 누르면 그 이름으로 다시 찾기
+function bkSugHtml(list,none){ if(!list.length) return ""; return `<div class="bksug"><p class="bksug-h">${none?"혹시 이 책을 찾으셨나요?":"비슷한 이름도 있어요"}</p><div class="bksug-l">${list.map(x=>`<button class="bksug-b" onclick="bkSugGo(${esc(JSON.stringify(x.q))})"><b>「${esc(x.q)}」</b><span>${(+x.n||0).toLocaleString()}권${x.t?` · 예: ${esc(x.t)}${x.a?" ("+esc(x.a)+")":""}`:""}</span></button>`).join("")}</div></div>`; }
+function bkSugGo(q){ $("#bq").value=q; searchBook(); }
+async function bkSugLoad(q,none){ let list=[]; try{ list=(await apiGet("/api/books/suggest",{q})).suggest||[]; }catch(_){}
+  const el=$("#bksugbox"); if(!el||q!==BK.q) return; el.innerHTML=bkSugHtml(list,none); }
 // 도서관 분류(KDC 십진분류 큰 갈래): 국립중앙도서관 KDC 번호가 있으면 그것으로, 없으면 제목·출판사 낱말로 짐작합니다. 책 카드에서 직접 바꿀 수 있습니다
 const CATS=["성경·주석","신학","목회·설교","신앙·영성·묵상","종교(기타)","철학","심리·상담","자기계발","경영·리더십","경제·투자","교육·자녀","사회·정치","인문·교양","역사","자연과학","컴퓨터·AI","기술·공학","건강·의학","생활·취미","예술","언어·글쓰기","소설","시·에세이","총류"];
 const OLD_CAT={"종교(기독교)":"신앙·영성·묵상","철학·심리":"철학","사회과학":"사회·정치","기술과학":"기술·공학","문학":"소설","언어":"언어·글쓰기"};   // 예전 큰 갈래 이름 → 새 이름
