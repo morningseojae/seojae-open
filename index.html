@@ -2819,7 +2819,7 @@ async function pushSave(){
 // ───────── 새 버전 자동 새로 고침 ─────────
 // 올릴 때마다 version.json 의 번호가 바뀝니다. 앱이 열릴 때·다시 화면에 올라올 때·5분마다 확인해서,
 // 쓰는 중인 글이 없고 저장이 끝났을 때 새 버전으로 새로 고칩니다.
-const APP_BUILD="743602a368"; const APP_VER="2.3";   // 판 번호: 배포할 때마다 도구/판올리기.py 가 0.1씩 올림 (1.9 다음은 2.0) — 손으로 고치지 말 것
+const APP_BUILD="a4a4167f90"; const APP_VER="2.4";   // 판 번호: 배포할 때마다 도구/판올리기.py 가 0.1씩 올림 (1.9 다음은 2.0) — 손으로 고치지 말 것
 let NEW_BUILD=null, UPDATE_NOTICED=false;
 async function checkUpdate(){
   if(APP_BUILD.startsWith("__")) return;                 // 원본 파일로 열었을 때(고치는 중)는 건너뜁니다
@@ -3321,6 +3321,9 @@ const MANUALS=[["quick","간단 매뉴얼","읽자마자 바로 써 보는 한 �
 // ───────── 새 소식 (공개판, 2026-10-31 팀장님): 중요한 고침은 앱을 열 때 한 번만 쉬운 말로 알림 ─────────
 // 새 소식을 더할 때: NEWS 맨 앞에 넣고 id 는 날짜(같은 날 둘째는 2026-11-02b 처럼 — 글자 순서로 새것이 뒤). 본 소식 id 는 이 기기에만(seojae-open.newsSeen)
 const NEWS=[
+ {id:"2026-11-01f",date:"2026년 11월 1일",title:"뒤로가기로 앞 화면에",items:[
+  ["←","뒤로가기로 바로 앞 화면","휴대폰의 뒤로가기를 누르면 앱이 닫히지 않고 바로 앞 화면으로 돌아가요. 글방 안에서 원고 홈·목차를 옮겨 다닌 것도 한 칸씩 되돌아가요.","「오늘」 화면에서는 두 번 눌러야 앱을 나가요"],
+  ["✕","열린 창은 먼저 닫혀요","성경읽기표·새 소식·입력 창처럼 열린 창이 있으면, 뒤로가기는 그 창만 닫고 화면은 그대로예요.",""]]},
  {id:"2026-11-01e",date:"2026년 11월 1일",title:"여러 통독을 함께 읽어요",items:[
   ["⇄","읽기표에서 방법 바꾸기","성경읽기표 위 「⇄ 방법」을 누르면 모든 통독 방법이 보여요. 「이것으로 바꾸기」로 읽는 방법을 바꾸고, 지금 방법의 진도는 보관해 두었다가 다시 고르면 그 자리에서 이어져요.",""],
   ["＋","함께 읽기","「＋ 함께 읽기」로 맥체인과 신약 90일처럼 두 가지까지 더 읽을 수 있어요. 방법마다 진도와 장 체크가 따로 남고, 「오늘」 화면에 함께 읽는 통독 칸이 생겨요.","할 일 줄 「성경 읽기」는 모두 읽으면 체크되고, 일부만 읽으면 「1/2」처럼 보여요"],
@@ -4049,8 +4052,37 @@ function go(t,o={}){ hlClose(); const lvId=tab==="write"?editId:null; if(t!=="ro
     autoKeepNow(); if(writingUnsaved()){ saveDraft(); if(t!=="write") toast(track==="bible"?"쓰던 글은 임시로 보관했습니다. 「묵상」을 다시 열면 이어집니다":editId?"쓰던 글은 임시로 보관했습니다. 그 글을 다시 열면 이어집니다":"쓰던 새 글은 임시로 보관했습니다. 위 「✎ 쓰던 새 글」 탭에서 이어 씁니다"); }
   }
   NAV=true; try{ goInner(t,o); }finally{ NAV=false; }
+  sjPush(tab,o);
   if(lvId&&lvId!==editId) setTimeout(()=>chkLeave(lvId),400);   // 글을 떠나면: 계획한 시점·장소가 본문에 없을 때 한 줄
 }
+// ───────── 뒤로가기(2026-11-01 팀장님 「휴대폰에서 뒤로가기를 하면 앱이 나가짐 → 바로 이전 화면으로」) ─────────
+// 화면을 옮길 때마다(go·글방 안 stOpen) 브라우저 기록에 한 칸(history.pushState {sj,tab,o}). 뒤로가기(popstate):
+//   열린 창(읽기표·새 소식·입력 창·보기 크기·집중 모드·AI 창…)이 있으면 그 창만 닫고 제자리 / 없으면 바로 앞 화면 / 맨 처음이면 「오늘」로, 「오늘」이면 「한 번 더 누르면 나갑니다」(2.5초 안에 한 번 더 → 나감)
+// 맨 처음 기록 칸은 사람이 처음 누를 때 만든다(크롬은 누르기 전에 만든 기록 칸을 뒤로가기에서 건너뜀)
+let SJ=0, SJ_CUR=null, BACKNAV=false, BACK_WARN=0;
+const sjClean=o=>{ try{ return JSON.parse(JSON.stringify(o||{})); }catch(_){ return {}; } };
+function sjPush(t,o){ if(BACKNAV) return; sjRoot(); if(t==="room"&&!(o&&o.st)) o={...(o||{}),st:ST_ACT||"home"};   // 글방은 그때 보던 곳(원고 홈·목차·노트…)까지
+  const st={sj:++SJ,tab:t,o:sjClean(o)}, cur=history.state;
+  if(cur&&cur.sj&&cur.tab===st.tab&&JSON.stringify(cur.o)===JSON.stringify(st.o)) return;
+  try{ history.pushState(st,""); SJ_CUR=st; }catch(_){} }
+function sjRoot(){ if(history.state&&(history.state.sj||history.state.sjRoot)) return; try{ history.replaceState({sjRoot:1},""); const st={sj:++SJ,tab,o:{}}; history.pushState(st,""); SJ_CUR=st; }catch(_){} }
+["pointerdown","keydown"].forEach(ev=>addEventListener(ev,()=>sjRoot(),{once:true,capture:true}));
+function sjOverlay(){ const b=document.body.classList;
+  if(document.querySelector(".askview,.newsview,#vspop,#tippop,#dictpop,#rfcard,#sugcard")) return "esc";
+  if(b.contains("focus")) return "focus"; if(b.contains("dfull")) return "dfull"; if($("#aipanel")) return "ai"; if(document.querySelector("details.tgrp[open],details.stmore[open]")) return "menu"; return null; }
+function sjCloseOverlay(k){
+  if(k==="focus"){ try{ toggleFocus(); }catch(_){} return; } if(k==="dfull"){ try{ dFull(false); }catch(_){} return; } if(k==="ai"){ try{ aiClose(); }catch(_){} return; }
+  if(k==="menu"){ document.querySelectorAll("details.tgrp[open],details.stmore[open]").forEach(d=>d.open=false); return; }
+  const top=[...document.querySelectorAll(".askview,.newsview,#vspop,#tippop,#dictpop,#rfcard,#sugcard")].pop();
+  document.dispatchEvent(new KeyboardEvent("keydown",{key:"Escape",bubbles:true,cancelable:true}));   // 창마다 Esc 로 닫히는 길을 그대로
+  setTimeout(()=>{ if(top&&top.isConnected&&top.matches(".newsview,#vspop,#tippop,#dictpop")) top.remove(); },60); }
+addEventListener("popstate",e=>{ const st=e.state, ov=sjOverlay();
+  if(ov){ sjCloseOverlay(ov); try{ history.pushState(SJ_CUR||{sj:++SJ,tab,o:{}},""); }catch(_){} return; }   // 창만 닫고 제자리(기록 칸을 되돌려 놓음)
+  if(st&&st.sj){ BACKNAV=true; try{ if(st.tab==="room"&&st.o&&st.o.st) stOpen(st.o.st); else go(st.tab,st.o||{}); }finally{ BACKNAV=false; } SJ_CUR=st; return; }
+  // 맨 처음 칸까지 왔을 때
+  if(tab!=="today"){ BACKNAV=true; try{ go("today"); }finally{ BACKNAV=false; } const s2={sj:++SJ,tab:"today",o:{}}; try{ history.pushState(s2,""); SJ_CUR=s2; }catch(_){} return; }
+  if(Date.now()-BACK_WARN<2500){ history.back(); return; }   // 한 번 더 → 앱을 나감
+  BACK_WARN=Date.now(); toast("뒤로 한 번 더 누르면 앱을 나갑니다"); try{ history.pushState(SJ_CUR||{sj:++SJ,tab,o:{}},""); }catch(_){} });
 let TRACK_PICK=false;   // 메뉴(묵상/글쓰기)로 갈래를 정해 들어왔는가
 function goInner(t,o){ TRACK_PICK=!!o.track; if(editId&&FRESH[editId]!=null&&o.edit!==editId) dropFresh(editId); if(SCRIV_EDIT){ if($("#scta")) scrivAuto(true); SCRIV_EDIT=null; } if(NEW_BUILD&&t!=="write") setTimeout(tryReload,800); if(RF){ RF=null; $("#rfcard")?.remove(); } if(t!=="write"){ if(AI_MODE!=="research") aiClose(); keepAwake(false); if(document.fullscreenElement) document.exitFullscreen().catch(()=>{}); }   // 미뤄 둔 새 버전은 글 화면을 나갈 때 · 다듬기 상자·AI 창 닫기
   if(t==="write"&&!o.edit&&!o.fromNote&&!o.fromWriting&&!o.new){   // 쓰기로 들어오면 오늘 쓴 글이 있을 때 그 글을 이어서 (묵상 먼저). 새로 쓰려면 「새 글」
@@ -7410,7 +7442,7 @@ function stOpen(k){ document.body.classList.remove("stnav"); if(k!=="new") nmAut
   if(k.startsWith("w:")) return go('write',{edit:k.slice(2)});
   ROOM_NEW=k==="new"; ROOM_CODEX=k.startsWith("cx:")?k.slice(3):null; ROOM_MAP=k==="map"; ST_ACT=k;
   if(k.startsWith("ms:")){ ROOM_MS=k.slice(3); try{ localStorage.setItem("seojae-open.roomMs",ROOM_MS); }catch(_){} }
-  if(tab==="room") render(); else go('room'); }
+  if(tab==="room"){ render(); sjPush("room",{st:k}); } else go('room',{st:k}); }
 function stClose(k,e){ e?.stopPropagation();
   if(k==="draft"){ if(stCur()==="draft"){ const back=SEL_MS&&liveMs().some(m=>m.id===SEL_MS)?"ms:"+SEL_MS:STUDIO_TABS[STUDIO_TABS.length-1]||"home"; return stOpen(back); }   // 쓰는 중인 새 글: 닫으면 떠나기와 같음 (쓴 만큼 간직, 짧으면 임시 보관)
     const d=bookDraft(); if(d&&!confirm(`쓰던 새 글${d.title?` 「${d.title}」`:""}${d.title?jp(d.title,"을","를"):"을"} 버릴까요?\n버린 글은 되살릴 수 없습니다.`)) return; dropBookDraft(); const bar=$(".sttabs"); if(bar) bar.outerHTML=stTabs(stCur()); toast("쓰던 새 글을 버렸습니다"); return; }
