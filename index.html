@@ -603,6 +603,28 @@ body.focus main.wrap{padding-top:40px}
 .pager .pgdots{color:var(--ink-soft);padding:0 2px}
 @media (max-width:420px){.pager{gap:4px}.pager button{min-width:33px;height:36px;padding:0 6px}}
 .bksug{margin:14px 0;padding:12px 14px;border:1px dashed var(--edge);border-radius:10px;background:var(--paper-2)}
+.stlinks{display:inline-flex;gap:4px;align-items:center;flex-wrap:wrap}
+details.stmenu{position:relative;display:inline-block}
+details.stmenu>summary{list-style:none;cursor:pointer;white-space:nowrap}
+details.stmenu>summary::-webkit-details-marker{display:none}
+.stpop{position:absolute;z-index:60;top:calc(100% + 4px);left:0;width:min(260px,calc(100vw - 24px));background:var(--paper) var(--grain);border:1px solid var(--edge);border-radius:12px;box-shadow:0 14px 30px -12px rgba(0,0,0,.45);padding:6px;display:grid;gap:1px}
+.stpop.r{left:auto;right:0}
+.stpop.up{top:auto;bottom:calc(100% + 4px)}
+.stg{margin:6px 10px 2px;font-size:12px;color:var(--ink-soft);font-weight:700;font-family:var(--ui-font,inherit)}
+.stpop a,.stpop button{display:flex;flex-direction:column;align-items:flex-start;gap:1px;width:100%;text-align:left;padding:7px 10px;border-radius:8px;color:var(--ink);text-decoration:none;background:none;border:0;font:inherit;cursor:pointer;box-sizing:border-box}
+.stpop a:hover,.stpop button:hover,.stpop a:focus-visible,.stpop button:focus-visible{background:var(--paper-2)}
+.stpop b{font-size:14px;font-weight:700}.stpop span{font-size:12px;color:var(--ink-soft);line-height:1.45}
+.hlimp{width:min(640px,100%);max-height:calc(100dvh - 32px);overflow:auto}
+.hlimp textarea{min-height:120px;font-size:16px;line-height:1.6;padding:10px 12px;border:1px solid var(--edge);border-radius:10px;background:var(--field-bg,var(--paper-2));color:var(--ink);width:100%;box-sizing:border-box;resize:vertical}
+.hlopt{gap:8px;align-items:center;flex-wrap:wrap}
+.hlsum{margin:0!important}
+.hllist{list-style:none;margin:0;padding:0;display:grid;gap:6px;max-height:42vh;overflow:auto}
+.hllist li{display:grid;grid-template-columns:24px minmax(0,1fr) 60px;gap:8px;align-items:start;border:1px solid var(--edge);border-radius:10px;padding:8px;background:var(--paper-2)}
+.hllist li.off{opacity:.5}
+.hlck input{width:18px;height:18px;margin:3px 0 0}
+.hltx p{margin:0;font-size:15px;line-height:1.6;overflow-wrap:anywhere}
+.hltx .hlth{font-size:12.5px;color:var(--ink-soft);margin-top:2px}
+.hlpg input{width:100%;font-size:16px;padding:4px 6px;box-sizing:border-box}
 .bksug-wait{margin:12px 0 0;font-size:13.5px;color:var(--ink-soft)}
 .bksug-h{margin:0 0 8px;font-weight:700;font-family:var(--ui-font,inherit)}
 .bksug-l{display:flex;flex-direction:column;gap:6px}
@@ -2936,7 +2958,7 @@ async function pushSave(){
 // ───────── 새 버전 자동 새로 고침 ─────────
 // 올릴 때마다 version.json 의 번호가 바뀝니다. 앱이 열릴 때·다시 화면에 올라올 때·5분마다 확인해서,
 // 쓰는 중인 글이 없고 저장이 끝났을 때 새 버전으로 새로 고칩니다.
-const APP_BUILD="9f8c1f5b5c"; const APP_VER="2.9";   // 판 번호: 배포할 때마다 도구/판올리기.py 가 0.1씩 올림 (1.9 다음은 2.0) — 손으로 고치지 말 것
+const APP_BUILD="a5af6f8c4e"; const APP_VER="3.0";   // 판 번호: 배포할 때마다 도구/판올리기.py 가 0.1씩 올림 (1.9 다음은 2.0) — 손으로 고치지 말 것
 let NEW_BUILD=null, UPDATE_NOTICED=false;
 async function checkUpdate(){
   if(APP_BUILD.startsWith("__")) return;                 // 원본 파일로 열었을 때(고치는 중)는 건너뜁니다
@@ -3106,7 +3128,22 @@ const jsArg=v=>esc(JSON.stringify(v));
 const bookQ=t=>encodeURIComponent(String(t||"").replace(/\s*[(\[].*?[)\]]\s*/g," ").replace(/\s*[:：-]\s.*$/,"").trim());
 const millieUrl=t=>"https://www.millie.co.kr/v3/search/result/"+bookQ(t);
 const welaaaUrl=t=>"https://www.welaaa.com/search-result?search="+bookQ(t);
-const storeLinks=t=>`<a class="btn small ghost" href="${esc(millieUrl(t))}" target="_blank" rel="noopener" title="밀리의 서재에 있는지 보기 (로그인 필요)">밀리 ↗</a><a class="btn small ghost" href="${esc(welaaaUrl(t))}" target="_blank" rel="noopener" title="윌라에 전자책·오디오북이 있는지 보기">윌라 ↗</a>`;
+// 전자책 서점 바로가기 (2026-11-01 팀장님: 「우리나라에서 잘 쓰는 이북 검색으로, 너무 많이 나열되면 지저분하니」): 자주 쓰는 한 곳만 바로 보이고(마지막에 누른 곳, 이 기기), 나머지는 「전자책 ▾」 안에 구독·구매로 묶음
+const STORES=[{k:"millie",n:"밀리의 서재",s:"밀리",g:"구독",d:"무제한 구독 · 로그인하면 결과가 보여요",u:millieUrl},
+  {k:"welaaa",n:"윌라",s:"윌라",g:"구독",d:"오디오북·전자책 구독",u:welaaaUrl},
+  {k:"ridi",n:"리디",s:"리디",g:"구매",d:"낱권 구매 · 리디셀렉트 구독",u:t=>"https://ridibooks.com/search?q="+bookQ(t)},
+  {k:"kyobo",n:"교보문고 eBook",s:"교보",g:"구매",d:"낱권 구매 · sam 구독",u:t=>"https://search.kyobobook.co.kr/search?keyword="+bookQ(t)+"&target=ebook"},
+  {k:"yes24",n:"예스24 eBook",s:"예스24",g:"구매",d:"낱권 구매 · 크레마클럽 구독",u:t=>"https://www.yes24.com/Product/Search?domain=EBOOK&query="+bookQ(t)},
+  {k:"aladin",n:"알라딘 eBook",s:"알라딘",g:"구매",d:"낱권 구매",u:t=>"https://www.aladin.co.kr/search/wsearchresult.aspx?SearchTarget=EBook&SearchWord="+bookQ(t)}];
+const storeFav=()=>{ let k=""; try{ k=localStorage.getItem("seojae-open.storeFav")||""; }catch(_){} return STORES.find(x=>x.k===k)||STORES[0]; };
+function storeUse(k){ try{ localStorage.setItem("seojae-open.storeFav",k); }catch(_){} document.querySelectorAll("details.stmenu[open]").forEach(d=>d.open=false); }
+function storeGo(k,q){ q=(q||"").trim(); if(!q) return toast("책 이름을 먼저 적어 주세요"); const x=STORES.find(y=>y.k===k); if(!x) return; storeUse(k); window.open(x.u(q),"_blank","noopener"); }
+function storeMenu(t,o={}){ const item=x=>o.live?`<button type="button" role="menuitem" onclick="storeGo('${x.k}',$('#bq').value)"><b>${esc(x.n)} ↗</b><span>${esc(x.d)}</span></button>`
+    :`<a role="menuitem" href="${esc(x.u(t))}" target="_blank" rel="noopener" onclick="storeUse('${x.k}')"><b>${esc(x.n)} ↗</b><span>${esc(x.d)}</span></a>`;
+  return `<details class="stmenu" ontoggle="stPlace(this)"><summary class="btn ${o.big?"":"small "}ghost" title="우리나라 전자책 서비스에서 같은 책 찾기">${esc(o.label||"전자책")} ▾</summary><div class="stpop" role="menu"><p class="stg">구독해서 읽기</p>${STORES.filter(x=>x.g==="구독").map(item).join("")}<p class="stg">사서 읽기</p>${STORES.filter(x=>x.g==="구매").map(item).join("")}</div></details>`; }
+function stPlace(d){ if(!d.open) return; document.querySelectorAll("details.stmenu[open]").forEach(x=>{ if(x!==d) x.open=false; }); const p=d.querySelector(".stpop"); p.classList.remove("r","up"); requestAnimationFrame(()=>{ const r=p.getBoundingClientRect(), top=d.getBoundingClientRect().top; if(r.right>innerWidth-8) p.classList.add("r"); if(r.bottom>innerHeight-76&&top-r.height-8>8) p.classList.add("up"); }); }   // 오른쪽·아래가 모자라면 왼쪽·위로
+document.addEventListener("click",e=>{ document.querySelectorAll("details.stmenu[open]").forEach(d=>{ if(!d.contains(e.target)) d.open=false; }); });
+const storeLinks=t=>{ const f=storeFav(); return `<span class="stlinks"><a class="btn small ghost" href="${esc(f.u(t))}" target="_blank" rel="noopener" onclick="storeUse('${f.k}')" title="${esc(f.n)}에서 이 책 찾기 (자주 쓰는 곳 — 「전자책 ▾」에서 다른 곳을 누르면 바뀝니다)">${esc(f.s)} ↗</a>${storeMenu(t)}</span>`; };
 function openStore(url,q){ q=(q||"").trim(); if(!q) return toast("책 이름을 먼저 적어 주세요"); window.open(url(q),"_blank","noopener"); }
 // 맥·아이폰의 '암호 자동 완성'이 쪽수·검색 칸에 뜨지 않게: 모든 입력 칸을 '로그인 칸 아님'으로 표시
 function noFill(root){ (root.matches?.("input,textarea")?[root]:root.querySelectorAll?.("input,textarea")||[]).forEach(el=>{
@@ -3440,6 +3477,9 @@ const MANUALS=[["quick","간단 매뉴얼","읽자마자 바로 써 보는 한 �
 // ───────── 새 소식 (공개판, 2026-10-31 팀장님): 중요한 고침은 앱을 열 때 한 번만 쉬운 말로 알림 ─────────
 // 새 소식을 더할 때: NEWS 맨 앞에 넣고 id 는 날짜(같은 날 둘째는 2026-11-02b 처럼 — 글자 순서로 새것이 뒤). 본 소식 id 는 이 기기에만(seojae-open.newsSeen)
 const NEWS=[
+ {id:"2026-11-01l",date:"2026년 11월 1일",title:"전자책 밑줄을 한꺼번에 옮겨요",items:[
+  ["📋","전자책 밑줄 붙여넣기","리디·교보·밀리의 서재·알라딘·예스24에서 밑줄을 「복사」해 책 정보의 「📋 전자책 밑줄 붙여넣기」에 붙여 넣으면, 문장만 골라 한꺼번에 밑줄로 넣어 드려요.","킨들은 My Clippings.txt 파일을 고르면 돼요. 이미 있는 밑줄은 빼 드려요"],
+  ["📖","전자책 서점 바로가기","찾은 책 아래 「전자책 ▾」를 누르면 밀리의 서재·윌라(구독)와 리디·교보·예스24·알라딘(구매)에서 같은 책을 찾아요.","자주 쓰는 곳 하나만 바로 보이게 했어요"]]},
  {id:"2026-11-01k",date:"2026년 11월 1일",title:"책 찾기가 더 넉넉해졌어요",items:[
   ["📚","쪽을 넘겨 더 보기","책장에서 「표지 찾기」를 누르면 한 쪽에 12권씩 나와요. 아래 쪽 번호나 ‹ › 화살표를 누르면 다음 책들을 볼 수 있어요.","키보드로는 ← → 로도 넘겨요"],
   ["🔎","혹시 이 책을 찾으셨나요?","이름을 조금 잘못 적어 책이 거의 나오지 않으면 비슷한 이름을 찾아 알려 드려요. 누르면 그 이름으로 다시 찾아요.","실제로 책이 있는 이름만 보여 드려요"]]},
@@ -4215,10 +4255,10 @@ function sjRoot(){ if(history.state&&(history.state.sj||history.state.sjRoot)) r
 ["pointerdown","keydown"].forEach(ev=>addEventListener(ev,()=>sjRoot(),{once:true,capture:true}));
 function sjOverlay(){ const b=document.body.classList;
   if(document.querySelector(".askview,.newsview,#vspop,#tippop,#dictpop,#rfcard,#sugcard")) return "esc";
-  if(b.contains("focus")) return "focus"; if(b.contains("dfull")) return "dfull"; if($("#aipanel")) return "ai"; if(document.querySelector("details.tgrp[open],details.stmore[open]")) return "menu"; return null; }
+  if(b.contains("focus")) return "focus"; if(b.contains("dfull")) return "dfull"; if($("#aipanel")) return "ai"; if(document.querySelector("details.tgrp[open],details.stmore[open],details.stmenu[open]")) return "menu"; return null; }
 function sjCloseOverlay(k){
   if(k==="focus"){ try{ toggleFocus(); }catch(_){} return; } if(k==="dfull"){ try{ dFull(false); }catch(_){} return; } if(k==="ai"){ try{ aiClose(); }catch(_){} return; }
-  if(k==="menu"){ document.querySelectorAll("details.tgrp[open],details.stmore[open]").forEach(d=>d.open=false); return; }
+  if(k==="menu"){ document.querySelectorAll("details.tgrp[open],details.stmore[open],details.stmenu[open]").forEach(d=>d.open=false); return; }
   const top=[...document.querySelectorAll(".askview,.newsview,#vspop,#tippop,#dictpop,#rfcard,#sugcard")].pop();
   document.dispatchEvent(new KeyboardEvent("keydown",{key:"Escape",bubbles:true,cancelable:true}));   // 창마다 Esc 로 닫히는 길을 그대로
   setTimeout(()=>{ if(top&&top.isConnected&&top.matches(".newsview,#vspop,#tippop,#dictpop")) top.remove(); },60); }
@@ -5232,7 +5272,7 @@ shelf(){
   return `<div class="row" style="margin-bottom:18px"><h2>책장</h2><span class="muted" style="font-size:14px">읽는 중 ${S.books.filter(b=>b.status!=="완료").length}권 · 다 읽은 책 ${S.books.filter(b=>b.status==="완료").length}권</span></div>
   <section class="sheet tape" style="margin-bottom:30px">
     <p class="label book">새 책 꽂기</p>
-    <div class="row"><input id="bq" placeholder="책 이름, 저자, 또는 ISBN" style="flex:1" onkeydown="if(event.key==='Enter'&&!event.isComposing)searchBook()"><button class="btn ink" onclick="searchBook()">표지 찾기</button><button class="btn" onclick="if(!$('#bq').value.trim()) return toast('책 이름을 먼저 적어 주세요'); addBook(-1)" title="검색 없이 적은 제목 그대로 꽂습니다">제목만으로 꽂기</button><button class="btn" onclick="openStore(millieUrl,$('#bq').value)" title="같은 이름으로 밀리의 서재를 검색합니다 (밀리에 로그인되어 있어야 결과가 보입니다)">밀리의 서재</button><button class="btn" onclick="openStore(welaaaUrl,$('#bq').value)" title="같은 이름으로 윌라(전자책·오디오북)를 검색합니다">윌라</button></div>
+    <div class="row"><input id="bq" placeholder="책 이름, 저자, 또는 ISBN" style="flex:1" onkeydown="if(event.key==='Enter'&&!event.isComposing)searchBook()"><button class="btn ink" onclick="searchBook()">표지 찾기</button><button class="btn" onclick="if(!$('#bq').value.trim()) return toast('책 이름을 먼저 적어 주세요'); addBook(-1)" title="검색 없이 적은 제목 그대로 꽂습니다">제목만으로 꽂기</button>${storeMenu("",{live:true,big:true,label:"전자책에서 찾기"})}</div>
 
     <div id="bresults"></div>
   </section>
@@ -6533,6 +6573,96 @@ function copyBookNotes(id){ const b=S.books.find(x=>x.id===id); const t=bookNote
   navigator.clipboard?.writeText(`${b?.title||""}\n\n${t}`).then(()=>toast("이 책 밑줄을 복사했습니다")); }
 function bookNotesHtml(id,open){ const ns=bookNotes(id); if(!ns.length) return ""; const b=S.books.find(x=>x.id===id);
   return `<details class="more" ${open?"open":""}><summary>이 책 밑줄 ${ns.length}개</summary>${ns.map(n=>`<div class="dquote">${esc(n.text)}<div class="muted">${n.page?(b?.unit==="pct"?n.page+"%":"p."+n.page)+" · ":""}${esc(n.date||"")}${n.thought?` · ✎ ${esc(n.thought)}`:""}</div></div>`).join("")}<button class="btn small" onclick="copyBookNotes('${id}')">밑줄 모두 복사</button></details>`; }
+// ───────── 전자책 밑줄 붙여넣기 (2026-11-01 팀장님): 리디·교보·밀리·알라딘·예스24·윌라에서 복사한 밑줄, 킨들 My Clippings.txt → 이 책 밑줄(S.notes)로 한꺼번에 ─────────
+// 서비스마다 복사 모양이 달라 한 모양에 기대지 않음: 덩어리(빈 줄 또는 줄)마다 문장만 남기고 책 이름·지은이·서비스 이름·링크·해시태그는 걸러 내며, 쪽·%·날짜·메모는 따로 읽음.
+// 넣기 전에 미리 보기에서 고르고 쪽을 고칠 수 있음. 이미 있는 밑줄(띄어쓰기·문장부호를 빼고 같은 것)은 처음부터 빼 둠. 저장은 손으로 남긴 밑줄과 같은 모양.
+const HL_SVC=/밀리의\s*서재|millie|리디\s*북스|리디|ridi|교보\s*e?북|교보\s*eBook|kyobo|알라딘|aladin|예스\s*24|yes24|윌라|welaaa|크레마|crema|킨들|kindle|구글\s*플레이\s*북|google\s*play\s*books|e-?book|이북/i;
+const hlNorm=t=>String(t||"").toLowerCase().replace(/[\s"'“”‘’「」『』《》〈〉<>()\[\]{}.,·…!?~\-—–―:;]/g,"");
+const hlStripQ=t=>String(t||"").trim().replace(/^[“"'‘「『《〈]+/,"").replace(/[”"'’」』》〉]+$/,"").trim();
+function hlMeta(line,it){   // 쪽·%·날짜를 읽어 it 에 넣고, 남은 글을 돌려줌
+  let s=line;
+  s=s.replace(/(20\d\d)\s*[.\-/년]\s*(\d{1,2})\s*[.\-/월]\s*(\d{1,2})\s*일?(?:\s*\([^)]*\))?(?:\s*(?:오전|오후|AM|PM)?\s*\d{1,2}:\d{2}(?::\d{2})?)?/i,(m,y,mo,d)=>{ it.date=`${y}-${String(mo).padStart(2,"0")}-${String(d).padStart(2,"0")}`; return " "; });
+  s=s.replace(/(\d{1,3}(?:\.\d+)?)\s*%/,(m,n)=>{ if(+n<=100){ it.page=String(Math.round(+n)); it.pct=true; return " "; } return m; });
+  s=s.replace(/(?:^|[\s(\[|·,])(?:p\.?|P\.?|pp\.?)\s*(\d{1,4})(?![\d.])/,(m,n)=>{ it.page=n; return " "; });
+  s=s.replace(/(\d{1,4})\s*(?:쪽|페이지|page)(?![가-힣a-z])/i,(m,n)=>{ it.page=n; return " "; });
+  s=s.replace(/\bpage\s+(\d{1,4})\b/i,(m,n)=>{ it.page=n; return " "; });
+  return s.replace(/\s{2,}/g," ").trim();
+}
+function hlIsNoise(line,b){ const l=line.trim(), n=hlNorm(l), tn=hlNorm(b?.title), an=(b?.authors||[]).map(hlNorm).filter(Boolean);
+  if(!l) return true;
+  if(/^https?:\/\/\S+$/i.test(l)||/^(?:#\S+\s*)+$/.test(l)) return true;   // 링크·해시태그만
+  if(HL_SVC.test(l)&&l.length<60&&!/[.!?。…]\s*$/.test(l)) return true;   // 「밀리의 서재에서 공유」 같은 꼬리
+  if(tn&&n&&(n===tn||(n.includes(tn)&&n.length<=tn.length+an.join("").length+12))) return true;   // 책 이름(+지은이) 줄
+  if(an.length&&an.includes(n)) return true;   // 지은이만
+  if(/^(?:하이라이트|밑줄|highlight|북마크|bookmark|공유하기|더 보기|출처)\s*:?$/i.test(l)) return true;
+  return false; }
+function hlCutAttr(line,b){   // 한 줄에 「"문장" — 『책』 지은이 | 교보eBook」처럼 붙은 꼬리 자르기
+  const tail=x=>HL_SVC.test(x)||(b?.title&&hlNorm(x).includes(hlNorm(b.title)));
+  const m=line.match(/^([“"'‘「『].+?[”"'’」』])\s*(?:[-—–―|]\s*)?(.+)$/);
+  if(m&&tail(m[2])) return m[1];
+  const k=line.search(/\s[-—–―|]\s*\S/); if(k>0&&tail(line.slice(k))) return line.slice(0,k);
+  return line; }
+function hlKindle(t,b){   // 킨들 My Clippings.txt: 「책 (지은이)」 / 「- … 하이라이트 | 위치 … | 추가된 날짜 …」 / 빈 줄 / 문장 / ==========
+  const out=[], tn=hlNorm(b?.title); let other=0;
+  for(const ch of t.split(/^=+\s*$/m)){ const L=ch.replace(/^﻿/,"").split("\n").map(x=>x.trim()); while(L.length&&!L[0]) L.shift(); if(L.length<2) continue;
+    const head=L[0], meta=L[1], body=L.slice(2).join("\n").trim();
+    if(/bookmark|북마크/i.test(meta)||!body) continue;
+    if(tn&&!hlNorm(head).includes(tn)&&!tn.includes(hlNorm(head.replace(/\s*\([^)]*\)\s*$/,"")))){ other++; continue; }
+    const it={text:"",page:"",date:""}; hlMeta(meta.replace(/위치\s*[\d-]+|location\s*[\d-]+/ig," "),it); it.loc=(meta.match(/(?:위치|location)\s*(\d+)(?:-(\d+))?/i)||[]).slice(1).filter(Boolean).pop()||"";
+    if(/\bnote\b|메모/i.test(meta)){ const prev=[...out].reverse().find(x=>x.loc&&x.loc===it.loc)||out[out.length-1]; if(prev){ prev.thought=(prev.thought?prev.thought+"\n":"")+body; continue; } }
+    it.text=body; out.push(it); }
+  return {items:out,other,kind:"킨들"}; }
+function hlParse(raw,b,mode){
+  const t=String(raw||"").replace(/\r\n?/g,"\n").replace(/ /g," ").trim(); if(!t) return {items:[],other:0,kind:""};
+  if(/^=+\s*$/m.test(t)&&/highlight|note|하이라이트|메모|위치|location/i.test(t)) return hlKindle(t,b);
+  const blocks=mode==="line"?t.split("\n"):t.split(/\n\s*\n+/), out=[];
+  for(const blk of blocks){ const it={text:"",page:"",date:"",thought:""}, keep=[];
+    for(let line of blk.split("\n")){ line=line.trim(); if(!line) continue;
+      const memo=line.match(/^(?:\[?(?:메모|노트|내\s*메모|생각|note)\]?\s*[:：]|✎|📝)\s*(.*)$/i); if(memo){ it.thought=(it.thought?it.thought+"\n":"")+memo[1].trim(); continue; }
+      line=hlCutAttr(line,b); const rest=hlMeta(line,it);
+      if(!rest||/^[\s·|,()[\]-]*$/.test(rest)) continue;   // 쪽·날짜만 있던 줄
+      if(hlIsNoise(rest,b)) continue;
+      keep.push(rest.replace(/^[-•·▪︎●○◦]\s+/,"")); }
+    const text=hlStripQ(keep.join("\n"));
+    if(!text){ if(it.thought&&out.length) out[out.length-1].thought=(out[out.length-1].thought?out[out.length-1].thought+"\n":"")+it.thought; else if(it.page&&out.length&&!out[out.length-1].page) out[out.length-1].page=it.page; continue; }
+    it.text=text; out.push(it); }
+  return {items:out,other:0,kind:""}; }
+let HLIMP=null;   // {id, items:[{text,page,thought,date,on,dup}], mode}
+function hlImpOpen(id){ const b=S.books.find(x=>x.id===id); if(!b) return; document.querySelector(".askview")?.remove();
+  HLIMP={id,items:[],mode:"block",other:0,kind:""};
+  const ov=document.createElement("div"); ov.className="askview"; ov.id="hlimpview";
+  ov.innerHTML=`<section class="asksheet hlimp" role="dialog" aria-modal="true" aria-labelledby="hlimph"><p class="label" id="hlimph">전자책 밑줄 붙여넣기</p>
+    <p class="hint">『${esc(b.title)}』 — 리디북스·교보eBook·밀리의 서재·알라딘·예스24에서 밑줄을 「복사」나 「공유 → 복사」한 글을 아래에 붙여 넣으세요. 여러 개를 한꺼번에 붙여도 됩니다. 킨들은 「My Clippings.txt」 파일을 고르세요.</p>
+    <textarea id="hlraw" class="myeongjo" placeholder="여기에 붙여 넣기"></textarea>
+    <div class="row hlopt"><span class="muted">나누기</span><span class="pills"><button class="pill on" data-mode="block" title="빈 줄로 띄운 덩어리를 밑줄 하나로">빈 줄마다</button><button class="pill" data-mode="line" title="한 줄을 밑줄 하나로">줄마다</button></span><span class="spacer"></span><label class="btn small" style="margin:0" title="킨들 My Clippings.txt 같은 글자 파일">파일 고르기<input type="file" accept=".txt,text/plain" hidden id="hlfile"></label></div>
+    <div id="hlprev" aria-live="polite"></div>
+    <div class="row"><span class="spacer"></span><button class="btn ghost" data-no>그만</button><button class="btn ink" data-ok disabled>넣기</button></div></section>`;
+  document.body.appendChild(ov);
+  const ta=ov.querySelector("#hlraw"), close=()=>{ ov.remove(); HLIMP=null; };
+  let tm=null; ta.oninput=()=>{ clearTimeout(tm); tm=setTimeout(hlImpParse,250); };
+  ov.querySelectorAll("[data-mode]").forEach(x=>x.onclick=()=>{ HLIMP.mode=x.dataset.mode; ov.querySelectorAll("[data-mode]").forEach(y=>y.classList.toggle("on",y===x)); hlImpParse(); });
+  ov.querySelector("#hlfile").onchange=async e=>{ const f=e.target.files?.[0]; if(!f) return; if(f.size>8e6) return toast("파일이 너무 큽니다(8MB까지)"); ta.value=await f.text(); hlImpParse(); };
+  ov.querySelector("[data-no]").onclick=close; ov.onmousedown=e=>{ if(e.target===ov&&!ta.value.trim()) close(); };
+  ov.querySelector("[data-ok]").onclick=hlImpDo;
+  ov.onkeydown=e=>{ if(e.isComposing) return; if(e.key==="Escape"){ e.preventDefault(); e.stopPropagation(); close(); } else if(e.key==="Enter"&&(e.metaKey||e.ctrlKey)){ e.preventDefault(); hlImpDo(); } };
+  setTimeout(()=>ta.focus(),30); }
+function hlImpParse(){ if(!HLIMP) return; const b=S.books.find(x=>x.id===HLIMP.id), r=hlParse($("#hlraw")?.value,b,HLIMP.mode);
+  const have=new Set(S.notes.filter(n=>n.bookId===HLIMP.id).map(n=>hlNorm(n.text)));
+  const seen=new Set(); HLIMP.items=r.items.map(it=>{ const k=hlNorm(it.text), dup=have.has(k)||seen.has(k); seen.add(k); return Object.assign(it,{on:!dup&&k.length>1,dup}); });
+  HLIMP.other=r.other; HLIMP.kind=r.kind; hlImpPaint(); }
+function hlImpPaint(){ const box=$("#hlprev"), ok=document.querySelector("#hlimpview [data-ok]"); if(!box||!HLIMP) return; const b=S.books.find(x=>x.id===HLIMP.id), u=b?.unit==="pct"?"%":"쪽";
+  const its=HLIMP.items, n=its.filter(x=>x.on).length;
+  if(ok){ ok.disabled=!n; ok.textContent=n?`밑줄 ${n}개 넣기`:"넣기"; }
+  if(!its.length){ box.innerHTML=$("#hlraw").value.trim()?`<p class="hint" style="margin:0">밑줄을 알아보지 못했습니다. 「줄마다」로 바꿔 보세요.${HLIMP.other?` (다른 책 밑줄 ${HLIMP.other}개는 뺐습니다)`:""}</p>`:""; return; }
+  box.innerHTML=`<p class="hint hlsum">${HLIMP.kind?HLIMP.kind+" 파일 · ":""}${its.length}개를 알아봤습니다${its.some(x=>x.dup)?` · 이미 있는 ${its.filter(x=>x.dup).length}개는 뺐어요`:""}${HLIMP.other?` · 다른 책 밑줄 ${HLIMP.other}개는 뺐어요`:""}</p>
+    <ol class="hllist">${its.map((x,i)=>`<li class="${x.on?"":"off"}"><label class="hlck"><input type="checkbox" ${x.on?"checked":""} onchange="HLIMP.items[${i}].on=this.checked;hlImpPaint()" aria-label="이 밑줄 넣기"></label>
+      <div class="hltx"><p class="myeongjo">${esc(x.text.length>220?x.text.slice(0,220)+"…":x.text)}</p>${x.thought?`<p class="hlth">✎ ${esc(x.thought)}</p>`:""}${x.dup?`<p class="hlth">이미 있는 밑줄</p>`:""}</div>
+      <label class="hlpg"><input type="number" inputmode="numeric" min="0" value="${esc(x.pct&&u==="쪽"?"":x.page||"")}" placeholder="${u}" onchange="HLIMP.items[${i}].page=this.value" aria-label="${u}"></label></li>`).join("")}</ol>`; }
+async function hlImpDo(){ if(!HLIMP) return; const id=HLIMP.id, b=S.books.find(x=>x.id===id), pick=HLIMP.items.filter(x=>x.on); if(!b||!pick.length) return;
+  const made=pick.map(x=>({id:uid(),date:x.date&&x.date<=today()?x.date:today(),track:"book",text:x.text.trim(),thought:(x.thought||"").trim(),tags:[],bookId:id,page:x.pct&&b.unit!=="pct"?"":(x.page||"")}));
+  S.notes.push(...made); save(); document.getElementById("hlimpview")?.remove(); HLIMP=null;
+  toast(`밑줄 ${made.length}개를 『${b.title}』에 넣었습니다`); render(); openBook(id);
+  for(const n of made){ await syncNote(n); await new Promise(r=>setTimeout(r,350)); } }   // 노션 독서 노트에도 하나씩(노션이 이어진 기기만)
 function openBook(id){
   const b=S.books.find(x=>x.id===id); if(!b) return;
   if(!$("#bookdetail")) go("shelf");
@@ -6541,6 +6671,7 @@ function openBook(id){
     <div class="big">${esc(b.title)}</div><div class="sub">${esc((b.authors||[]).join(", "))}${b.publisher?" · "+esc(b.publisher):""}${b.isbn?" · ISBN "+esc(b.isbn):""}</div>
     <div class="muted">${[b.pubDate,b.unit==="pct"?"전자책":(b.total?b.total+"쪽":"")].filter(Boolean).map(esc).join(" · ")}${b.pubDate||b.total?"<br>":""}밑줄 ${notes}개 · 글 ${essays}편 ${b.notionId?"· 노션 독서 목록 ✓":""}${bookPace(b)?`<br>${bookPace(b)}`:""}</div>
     ${REVIEW_OPEN===b.id?"":bookNotesHtml(b.id)}
+    <div class="row" style="margin-top:6px"><button class="btn small" onclick="hlImpOpen('${b.id}')" title="리디·교보·밀리·알라딘·예스24에서 복사한 밑줄, 킨들 My Clippings.txt를 이 책 밑줄로 한꺼번에 넣습니다">📋 전자책 밑줄 붙여넣기</button></div>
     <div class="row" style="gap:6px;margin-top:6px;align-items:center"><span class="muted" style="font-size:13px">분류</span><select style="width:auto;font-size:13px;padding:2px 6px" onchange="setCat('${b.id}',this.value)"><option value="">${esc(bookCat(b)||"미정")}${b.catMan?"":" (자동)"}</option>${CATS.map(c=>`<option value="${c}" ${b.catMan===c?"selected":""}>${c}</option>`).join("")}</select>${b.kdc?`<span class="muted" style="font-size:12px">KDC ${esc(b.kdc)}</span>`:""}
       <span class="muted" style="font-size:13px;margin-left:8px">읽는 방식</span><span class="pills"><button class="pill ${b.unit==="pct"?"":"on"}" onclick="setUnit('${b.id}','page')" data-tip="읽은 곳을 쪽수로 적습니다">종이책(쪽)</button><button class="pill ${b.unit==="pct"?"on":""}" onclick="setUnit('${b.id}','pct')" data-tip="밀리·윌라 같은 전자책은 읽은 곳을 %로 적습니다">전자책(%)</button></span></div>
     ${b.description?`<details class="more"><summary>책 소개</summary><p class="sub pre" style="margin:6px 0">${esc(b.description)}</p>${safeUrl(b.link)?`<a class="muted" href="${esc(safeUrl(b.link))}" rel="noopener" target="_blank">자세히 보기 ↗</a>`:""}</details>`:""}
