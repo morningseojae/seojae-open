@@ -502,7 +502,7 @@ body.aiopen #aitog{background:#7a5aa8;color:#fff;border-color:#7a5aa8}
 body.readmode .writegrid{grid-template-columns:1fr} body.readmode .writegrid>aside,body.readmode .sucard{display:none}
 body.readmode .notebook{padding:40px 64px 48px 96px} body.readmode .readview{font-size:calc(var(--note-fs,17px) + 1px);line-height:calc(var(--note-lh,34px) + 2px)}
 @media (max-width:700px){ body.readmode .notebook{padding:24px 18px 30px 40px} }
-:is(textarea,w-ed).page.grid{background-image:repeating-linear-gradient(to bottom,transparent 0 17px,var(--rule) 17px 18px),repeating-linear-gradient(to right,transparent 0 17px,var(--rule) 17px 18px)}
+:is(textarea,w-ed).page.grid{--gs:var(--note-lh,36px);background-image:repeating-linear-gradient(to bottom,transparent 0 calc(var(--gs) - 1px),var(--rule) calc(var(--gs) - 1px) var(--gs)),repeating-linear-gradient(to right,transparent 0 calc(var(--gs) - 1px),color-mix(in srgb,var(--rule) 60%,transparent) calc(var(--gs) - 1px) var(--gs))}   /* 모눈 한 칸 = 글줄 높이(2026-11-02 팀장님 「모눈이 글과 어긋남」 — 예전 18px 칸은 글줄 가운데를 가로질렀음). 가로줄은 줄 노트와 같은 자리, 세로줄은 조금 옅게 */
 :is(textarea,w-ed).page.blank{background-image:none}
 .notebook .margin{position:absolute;top:0;bottom:0;left:70px;width:1px;background:var(--margin)}
 .notebook.blank .margin{display:none}
@@ -528,8 +528,11 @@ body.readmode .notebook{padding:40px 64px 48px 96px} body.readmode .readview{fon
 .jotbox textarea#jotin:focus{outline:0;box-shadow:none}
 .jotlines{margin-top:8px;background-image:repeating-linear-gradient(to bottom,transparent 0 29px,rgba(110,140,170,.22) 29px 30px);background-position:0 7px}
 .jot{padding:0 2px 6px;margin:0;border:0;background:transparent;position:relative}
-.jot .jt{font-family:"Gamja Flower";font-size:21px;line-height:30px;color:var(--ink);white-space:pre-wrap;padding-left:18px;text-indent:-18px}
-.jot .jt::before{content:"✎ ";opacity:.45}
+.jot .jt{font-family:"Gamja Flower";font-size:21px;line-height:30px;color:var(--ink);white-space:pre-wrap;padding-left:24px;text-indent:-24px}
+.jot .jtpen{display:inline-grid;place-items:center;width:22px;height:22px;margin:0 4px 0 -2px;padding:0;vertical-align:2px;text-indent:0;border:1px solid color-mix(in srgb,var(--ink) 18%,transparent);border-radius:50%;background:color-mix(in srgb,var(--paper) 70%,transparent);color:var(--ink-soft);font:15px/1 sans-serif;cursor:pointer;transition:transform .15s,background .15s,color .15s,border-color .15s}
+.jot .jtpen:hover,.jot .jtpen:focus-visible{color:var(--paper);background:var(--sepia);border-color:var(--sepia);transform:rotate(-14deg) scale(1.12);box-shadow:0 2px 6px -2px rgba(0,0,0,.35)} .jot .jtpen:active{transform:rotate(-14deg) scale(.96)}
+.jot.editing .jtpen{color:var(--paper);background:var(--sepia);border-color:var(--sepia)} .jot.editing .jtx{outline:none;background:color-mix(in srgb,var(--paper) 85%,transparent);box-shadow:0 0 0 2px color-mix(in srgb,var(--sepia) 45%,transparent);border-radius:4px;cursor:text}
+@media (prefers-reduced-motion:reduce){ .jot .jtpen{transition:none} .jot .jtpen:hover{transform:none} }   /* 끄적임 연필 = 고치기 단추: 테두리는 늘 보이고, 올리면 세피아로 기울어 「누르면 고치겠구나」 */
 .jot:nth-child(3n+1) .jt{color:#2e2721;transform:rotate(-.4deg)} .jot:nth-child(3n+2) .jt{color:#24427a;transform:rotate(.3deg)} .jot:nth-child(3n) .jt{color:#5a3a2a;transform:rotate(-.2deg)}
 :root[data-theme="dark"] .jot:nth-child(3n+1) .jt{color:#ece2d2} :root[data-theme="dark"] .jot:nth-child(3n+2) .jt{color:#9fc0ea} :root[data-theme="dark"] .jot:nth-child(3n) .jt{color:#e0b98f}
 .jot .row{opacity:.55;transition:opacity .15s} .jot:hover .row{opacity:1}
@@ -962,6 +965,7 @@ hr.dash{border:0;border-top:1px dashed var(--edge);margin:18px 0}
   .notebook .title-in{font-size:22px}
   :is(textarea,w-ed).page{font-size:var(--note-fs,17px);line-height:var(--note-lh,34px);min-height:55vh}
   :is(textarea,w-ed).page.lined{background-image:repeating-linear-gradient(to bottom,transparent 0 calc(var(--note-lh,34px) - 1px),var(--rule) calc(var(--note-lh,34px) - 1px) var(--note-lh,34px))}
+  :is(textarea,w-ed).page.grid{--gs:var(--note-lh,34px)}   /* 휴대폰 글줄 높이와 같게 */
   .readview{font-size:var(--note-fs,17px);line-height:var(--note-lh,34px)}
   .seal{width:100px;height:100px}
   .plancards{grid-template-columns:1fr}
@@ -3115,7 +3119,7 @@ async function pushSave(){
 // ───────── 새 버전 자동 새로 고침 ─────────
 // 올릴 때마다 version.json 의 번호가 바뀝니다. 앱이 열릴 때·다시 화면에 올라올 때·5분마다 확인해서,
 // 쓰는 중인 글이 없고 저장이 끝났을 때 새 버전으로 새로 고칩니다.
-const APP_BUILD="20576adf2a"; const APP_VER="4.0";   // 판 번호: 배포할 때마다 도구/판올리기.py 가 0.1씩 올림 (1.9 다음은 2.0) — 손으로 고치지 말 것
+const APP_BUILD="5b20502c26"; const APP_VER="4.1";   // 판 번호: 배포할 때마다 도구/판올리기.py 가 0.1씩 올림 (1.9 다음은 2.0) — 손으로 고치지 말 것
 let NEW_BUILD=null, UPDATE_NOTICED=false;
 async function checkUpdate(){
   if(APP_BUILD.startsWith("__")) return;                 // 원본 파일로 열었을 때(고치는 중)는 건너뜁니다
@@ -3663,6 +3667,9 @@ const MANUALS=[["quick","간단 매뉴얼","읽자마자 바로 써 보는 한 �
 // ───────── 새 소식 (공개판, 2026-10-31 팀장님): 중요한 고침은 앱을 열 때 한 번만 쉬운 말로 알림 ─────────
 // 새 소식을 더할 때: NEWS 맨 앞에 넣고 id 는 날짜(같은 날 둘째는 2026-11-02b 처럼 — 글자 순서로 새것이 뒤). 본 소식 id 는 이 기기에만(seojae-open.newsSeen)
 const NEWS=[
+ {id:"2026-11-02f",date:"2026년 11월 2일",title:"끄적임은 연필로 고치고, 모눈은 글줄에 맞게",items:[
+  ["✎","연필을 누르면 고쳐요","끄적임 앞 연필에 마우스를 올리면 색이 바뀌며 살짝 기울어요. 누르면 그 자리에서 고치고, 칸 밖을 누르거나 Esc를 누르면 간직돼요.","다 지우면 그 끄적임이 지워져요"],
+  ["▦","모눈 종이가 글줄에 맞아요","쓰기 화면을 「모눈」으로 바꾸면 이제 글 한 줄이 모눈 한 칸 안에 들어가요. 줄이 글자를 가로지르지 않아요.",""]]},
  {id:"2026-11-02e",date:"2026년 11월 2일",title:"찬송가·CCM을 고르고, 해설은 「해설 듣기」로",items:[
   ["♪","찬송가 줄에서 바로 골라요","묵상 화면 「찬송가 ○장」 옆 「찬송가 | CCM」에서 먼저 고르고 「▶ 듣기」를 누르세요. 고른 쪽 곡이 나와요.","다른 쪽을 고르면 듣던 곡은 멈춰요"],
   ["🎧","「해설 듣기」","「해설 보기」 옆 「듣기」가 「해설 듣기」가 되었어요. 매일성경 해설을 앱 안 작은 재생기로 들어요. 찬송가 듣기와 헷갈리지 않아요.",""]]},
@@ -4857,10 +4864,17 @@ function jotBox(){
 }
 function jotList(){
   const q=JOT_Q.trim().toLowerCase(); let L=jots().filter(j=>!q||j.t.toLowerCase().includes(q)); const total=L.length; if(!JOT_ALL&&!q) L=L.slice(0,6);
-  return (L.map(j=>`<div class="jot" id="jot-${j.id}"><div class="jt">${esc(j.t)}</div><div class="row" style="gap:6px;margin-top:2px"><span class="muted" style="font-size:12px">${esc((j.updated||"").slice(0,10))}</span><span class="spacer"></span>${tab==="write"?`<button class="btn small ghost" style="min-height:26px;padding:0 8px;font-size:12px" onclick="jotInsert('${j.id}')" title="노트의 커서 자리에 넣습니다">글에 넣기</button>`:""}<button class="btn small ghost" style="min-height:26px;padding:0 8px;font-size:12px" onclick="jotDel('${j.id}')" title="지우기">✕</button></div></div>`).join("")||`<p class="muted" style="margin:8px 0 0">아직 끄적인 것이 없습니다.</p>`)
+  return (L.map(j=>`<div class="jot" id="jot-${j.id}"><div class="jt"><button type="button" class="jtpen" onclick="jotEditOpen('${j.id}')" title="고치기 — 누르면 이 자리에서 고칩니다" aria-label="이 끄적임 고치기">✎</button><span class="jtx">${esc(j.t)}</span></div><div class="row" style="gap:6px;margin-top:2px"><span class="muted" style="font-size:12px">${esc((j.updated||"").slice(0,10))}</span><span class="spacer"></span>${tab==="write"?`<button class="btn small ghost" style="min-height:26px;padding:0 8px;font-size:12px" onclick="jotInsert('${j.id}')" title="노트의 커서 자리에 넣습니다">글에 넣기</button>`:""}<button class="btn small ghost" style="min-height:26px;padding:0 8px;font-size:12px" onclick="jotDel('${j.id}')" title="지우기">✕</button></div></div>`).join("")||`<p class="muted" style="margin:8px 0 0">아직 끄적인 것이 없습니다.</p>`)
     +(total>L.length?`<button class="btn small ghost" style="margin-top:6px" onclick="JOT_ALL=true;jotPaint()">${total-L.length}개 더 보기</button>`:JOT_ALL&&total>6?`<button class="btn small ghost" style="margin-top:6px" onclick="JOT_ALL=false;jotPaint()">접기</button>`:"");
 }
 function jotPaint(){ const el=$("#jotlist"); if(el) el.innerHTML=jotList(); }
+// 연필을 누르면 그 자리에서 고침(2026-11-02 팀장님): 칸을 벗어나면·Esc·⌘Enter = 간직, 다 지우면 지우기(jotEdit 그대로)
+function jotEditOpen(id){ const row=$("#jot-"+id), x=row?.querySelector(".jtx"); if(!x) return; if(row.classList.contains("editing")) return x.blur();
+  row.classList.add("editing"); try{ x.contentEditable="plaintext-only"; }catch(_){ x.contentEditable="true"; } if(x.contentEditable!=="plaintext-only") x.contentEditable="true";
+  x.spellcheck=false; x.focus(); const r=document.createRange(); r.selectNodeContents(x); r.collapse(false); const sel=getSelection(); sel.removeAllRanges(); sel.addRange(r);
+  x.onkeydown=e=>{ if(e.key==="Escape"||((e.metaKey||e.ctrlKey)&&e.key==="Enter")){ e.preventDefault(); x.blur(); } };
+  x.onblur=()=>{ const t=x.innerText; x.onblur=null; x.contentEditable="false"; row.classList.remove("editing"); const j=jotFind(id), was=j?.t;
+    jotEdit(id,t); if(j&&j.t!==was) toast("고쳤습니다"); jotPaint(); try{ jbPaint(); }catch(_){} }; }
 function jotAdd(){ const i=$("#jotin"); const t=(i?.value||"").trim(); if(!t) return toast("적을 것을 먼저 써 주세요"); (S.jots=S.jots||[]).push(jotNew(t)); i.value=""; save(); toast("끄적여 두었습니다"); if($("#jotlist")){ jotPaint(); if(S.jots.length===7) render(); } else if(tab==="today") render(); }
 function jotDel(id){ const j=(S.jots||[]).find(x=>x.id===id); if(!j) return; if(j.t.length>40&&!confirm("이 끄적임을 지울까요?")) return; tomb(id); S.jots=S.jots.filter(x=>x.id!==id); save(); jotPaint(); jbPaint(); stSideCount(); }
 function jotInsert(id){ const j=(S.jots||[]).find(x=>x.id===id), b=$("#wbody"); if(!j||!b) return; tInsert(b,j.t+"\n"); toast("글에 넣었습니다 (끄적임은 그대로 둡니다)"); }
