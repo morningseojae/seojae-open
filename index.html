@@ -1556,11 +1556,14 @@ body.dfull .dbook>.diary>.pg>.dfolio{position:static;order:99;margin-top:auto;pa
 .hb:hover{opacity:1;color:var(--ink);background:color-mix(in srgb,var(--ink) 8%,transparent)} .hb.on{color:var(--sepia);opacity:1} .hb.busy{opacity:.4;pointer-events:none}
 .hbvol{width:58px;height:12px;vertical-align:middle;accent-color:var(--sepia);opacity:.65;margin:0 2px} .hbvol:hover{opacity:1}
 .mplayer{left:16px;right:auto;width:250px} .mplayer .mp-vid{width:224px;height:200px;margin:0 auto;border-radius:8px;overflow:hidden;background:#111;display:grid;place-items:center;color:#aaa;font-size:12.5px;text-align:center}
-.mplayer .mp-vid iframe{width:224px;height:200px;border:0;display:block} .mplayer .mp-ccm{display:grid;gap:4px;max-height:200px;overflow:auto}
+.mplayer .mp-vid iframe{width:224px;height:200px;border:0;display:block} .mplayer .mp-ccm{display:grid;gap:4px;max-height:248px;overflow:auto}
 .mplayer .mp-ccm .ci{display:flex;gap:6px;align-items:flex-start;padding:4px 2px;border-top:1px dashed var(--edge)} .mplayer .mp-ccm .ci div{display:grid;min-width:0;flex:1}
 .mplayer .mp-ctl{display:flex;align-items:center;justify-content:center;gap:8px;position:relative} .mplayer .mp-ctl button{border:1px solid var(--edge);background:var(--paper);border-radius:50%;width:32px;height:32px;padding:0;cursor:pointer;font-size:13px;color:var(--ink);display:grid;place-items:center} .mplayer .mp-ctl button.pp{width:40px;height:40px;background:var(--ink);color:var(--paper);border-color:var(--ink);font-size:15px} .mplayer .mp-ctl small{position:absolute;right:2px;color:var(--faint);font-size:11px}
 .mplayer.min .mp-ctl{gap:6px} .mplayer.min .mp-ctl button{width:28px;height:28px} .mplayer.min .mp-ctl button.pp{width:34px;height:34px} .mplayer.min .mp-ctl small{display:none}
 .mplayer .mp-ccm .ci b{font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis} .mplayer .mp-ccm .ci.on b{color:var(--sepia)} .mplayer .mp-note{font-size:11px}
+/* CCM 갈래 넷(2026-11-02): 말씀 맞춤·새로 나온 곡·요즘 인기·오래 사랑받은 곡 — 목록 위에 붙어 있는 알약 */
+.mplayer .ccmtabs{display:grid;grid-template-columns:1fr 1fr;gap:4px;position:sticky;top:0;z-index:1;background:var(--paper);padding:2px 0 5px} .mplayer .ccmtabs button{border:1px solid var(--edge);border-radius:999px;background:var(--paper);color:var(--ink);font:inherit;font-size:11.5px;line-height:1.2;padding:3px 8px;cursor:pointer;box-shadow:0 1px 0 var(--edge)}
+.mplayer .ccmtabs button:active{transform:translateY(1px);box-shadow:none} .mplayer .ccmtabs button.on{background:var(--ink);color:var(--paper);border-color:var(--ink)} .mplayer .ccmhint{font-size:11px;color:var(--faint);line-height:1.45}
 /* 음악 창 「작게」: 목록·제목·안내를 접고 영상만 200×200 (유튜브 규칙상 이보다 작게 하거나 가릴 수 없음) + 위에 가는 줄(끌기·▴·✕) */
 .mplayer[data-size="l"]{width:356px} .mplayer[data-size="l"] .mp-vid,.mplayer[data-size="l"] .mp-vid iframe{width:330px!important;height:330px!important}
 .mplayer[data-lock="1"] .spl-t{cursor:default} .mplayer .spl-t button.on{color:var(--sepia)}
@@ -3098,7 +3101,7 @@ async function pushSave(){
 // ───────── 새 버전 자동 새로 고침 ─────────
 // 올릴 때마다 version.json 의 번호가 바뀝니다. 앱이 열릴 때·다시 화면에 올라올 때·5분마다 확인해서,
 // 쓰는 중인 글이 없고 저장이 끝났을 때 새 버전으로 새로 고칩니다.
-const APP_BUILD="173a701459"; const APP_VER="3.5";   // 판 번호: 배포할 때마다 도구/판올리기.py 가 0.1씩 올림 (1.9 다음은 2.0) — 손으로 고치지 말 것
+const APP_BUILD="a278d07389"; const APP_VER="3.6";   // 판 번호: 배포할 때마다 도구/판올리기.py 가 0.1씩 올림 (1.9 다음은 2.0) — 손으로 고치지 말 것
 let NEW_BUILD=null, UPDATE_NOTICED=false;
 async function checkUpdate(){
   if(APP_BUILD.startsWith("__")) return;                 // 원본 파일로 열었을 때(고치는 중)는 건너뜁니다
@@ -3377,14 +3380,14 @@ function suDrag(el,key="seojae-open.suPos"){ if(el.dataset.drag) return; el.data
   el.addEventListener("pointerup",end); el.addEventListener("pointercancel",end);
   addEventListener("resize",()=>{ if(!el.hidden) suPlace(el,key); }); }
 // ───────── 찬송가·CCM 듣기: 서버 musicFind(유튜브 검색 열쇠) → 앱 안 작은 유튜브 창. 열쇠가 없으면 유튜브뮤직 검색을 새 창으로 ─────────
-let MUSIC={key:"",v:null,ccm:null,cur:null,slot:"",playing:false,retry:false}, MP=null, YT_P=null;   // slot: 지금 곡이 「hymn」인지 「ccm:번호」인지
+let MUSIC={key:"",v:null,ccm:null,ccmBy:{},view:"",cur:null,slot:"",playing:false,retry:false}, MP=null, YT_P=null;   // slot: 지금 곡이 「hymn」인지 「ccm:번호」인지 · view: 플레이어 아래가 찬송가(hymn)인지 CCM 목록(ccm)인지 · ccmBy: 갈래마다 받은 목록
 const hymnNo=()=>String(SU?.hymn||"").replace(/[^0-9]/g,"").slice(0,4);
 const mpVol=()=>{ let v=50; try{ v=+(localStorage.getItem("seojae-open.mpVol")??50); }catch(_){} return isFinite(v)?v:50; };
 function mpSetVol(v){ try{ localStorage.setItem("seojae-open.mpVol",String(v)); }catch(_){} try{ MP?.setVolume(+v); }catch(_){} }
 function hymnCtl(){ const n=hymnNo(); if(!n) return "";
   if(!SERVER||!CONF.yt||MUSIC.noYt) return ` <a class="hb" href="https://music.youtube.com/search?q=${encodeURIComponent("새찬송가 "+n+"장")}" target="_blank" rel="noopener" title="유튜브뮤직에서 찾기 (새 창)">♪ ↗</a>`;
   const on=MUSIC.playing&&MUSIC.slot==="hymn";
-  return ` <button class="hb ${on?"on":""}" data-hb onclick="hymnToggle()" title="${on?"멈춤":"찬송가 듣기 (유튜브)"}">${on?"❚❚":"▶"}</button>${MUSIC.cur?`<input class="hbvol" type="range" min="0" max="100" value="${mpVol()}" oninput="mpSetVol(this.value)" title="음량">`:""}<button class="hb" onclick="ccmOpen()" title="오늘 본문·찬송가와 같은 주제의 CCM 추천">CCM</button>`; }
+  return ` <button class="hb ${on?"on":""}" data-hb onclick="hymnToggle()" title="${on?"멈춤":"찬송가 듣기 (유튜브)"}">${on?"❚❚":"▶"}</button>${MUSIC.cur?`<input class="hbvol" type="range" min="0" max="100" value="${mpVol()}" oninput="mpSetVol(this.value)" title="음량">`:""}<button class="hb" onclick="ccmOpen()" title="CCM 7곡 추천 — 말씀 맞춤·새로 나온 곡·요즘 인기·오래 사랑받은 곡 (찬송가는 빼고)">CCM</button>`; }
 function paintHymnCtl(){ const b=$("#hymnbox"); if(!b||!SU?.hymn) return; b.innerHTML=`찬송가 ${esc(SU.hymn)}장${hymnCtl()}`; }
 async function musicCall(body){ if(GAS) return gcall("musicFind",body); const r=await fetch("/api/music",{method:"POST",body:JSON.stringify(body)}); const j=await r.json(); if(j&&j.ok===false) throw new Error(j.error||"서버 오류"); return j; }
 function ytLoad(){ if(window.YT?.Player) return Promise.resolve(); return YT_P||(YT_P=new Promise((ok,no)=>{ const prev=window.onYouTubeIframeAPIReady; window.onYouTubeIframeAPIReady=()=>{ try{ prev?.(); }catch(_){} ok(); };
@@ -3392,7 +3395,7 @@ function ytLoad(){ if(window.YT?.Player) return Promise.resolve(); return YT_P||
 function mpCard(){ let el=$("#mplayer");
   if(!el){ el=document.createElement("div"); el.id="mplayer"; el.className="suplayer mplayer"; el.hidden=true;
     el.innerHTML=`<div class="spl-t"><span class="spl-ic">♪</span><div><b id="mp-t">찬송가·CCM</b><small id="mp-s">유튜브뮤직 음원 우선</small></div><span class="spacer"></span><button data-min title="크기 바꾸기 (작게 → 보통 → 크게)">▾</button><button data-lock title="자리 고정 (끌리지 않게)">📌</button><button data-menu title="크기·자리">⋯</button><button data-x title="닫기 (멈춤)">✕</button></div>
-      <div class="mp-menu" hidden><div class="r"><span>크기</span><button data-sz="s">작게</button><button data-sz="m">보통</button><button data-sz="l">크게</button></div><div class="r"><span>자리</span><button data-dk="tl" title="왼쪽 위">↖</button><button data-dk="tr" title="오른쪽 위">↗</button><button data-dk="bl" title="왼쪽 아래">↙</button><button data-dk="br" title="오른쪽 아래">↘</button><button data-dk="" title="끌어서 둔 곳">자유</button></div><div class="r"><span>고정</span><button data-lk>📌 끌리지 않게</button></div><div class="r"><span>재생</span><button data-auto="1" title="곡이 끝나면 다음 곡 (찬송가 → CCM 차례로)">이어 듣기</button><button data-auto="0">한 곡씩</button><button data-auto="r" title="지금 곡을 끝나면 처음부터 다시 (찬송을 외우며 부를 때)">한 곡 반복</button></div></div>
+      <div class="mp-menu" hidden><div class="r"><span>크기</span><button data-sz="s">작게</button><button data-sz="m">보통</button><button data-sz="l">크게</button></div><div class="r"><span>자리</span><button data-dk="tl" title="왼쪽 위">↖</button><button data-dk="tr" title="오른쪽 위">↗</button><button data-dk="bl" title="왼쪽 아래">↙</button><button data-dk="br" title="오른쪽 아래">↘</button><button data-dk="" title="끌어서 둔 곳">자유</button></div><div class="r"><span>고정</span><button data-lk>📌 끌리지 않게</button></div><div class="r"><span>재생</span><button data-auto="1" title="곡이 끝나면 다음 곡 (CCM 목록 차례로 · 찬송가는 한 곡만)">이어 듣기</button><button data-auto="0">한 곡씩</button><button data-auto="r" title="지금 곡을 끝나면 처음부터 다시 (찬송을 외우며 부를 때)">한 곡 반복</button></div></div>
       <div class="mp-vid" id="mpbox"><span>▶를 누르면 여기서 재생됩니다</span></div><div class="mp-ctl"><button data-prev title="이전 곡 (3초 넘게 들었으면 이 곡 처음으로)">⏮&#xFE0E;</button><button data-pp class="pp" title="재생 · 멈춤">▶</button><button data-next title="다음 곡">⏭&#xFE0E;</button><small id="mp-pos"></small></div><div class="mp-ccm" id="mpccm"></div><small class="mp-note">유튜브 영상 · 위 줄을 잡고 옮길 수 있습니다</small>`;
     document.body.appendChild(el); el.querySelector("[data-x]").onclick=mpClose; suDrag(el,"seojae-open.mpPos");
     const cyc={s:"m",m:"l",l:"s"};
@@ -3423,24 +3426,24 @@ function mpPlace(el){ const d=mpDock(); el.querySelectorAll("[data-dk]").forEach
 // 고정: 끌리지 않게(머리 줄을 잡아도 안 움직임)
 function mpLock(on,quiet){ const el=$("#mplayer"); if(!el) return; el.dataset.lock=on?"1":"0"; el.querySelector("[data-lock]")?.classList.toggle("on",on); el.querySelector("[data-lk]")?.classList.toggle("on",on);
   if(!quiet){ try{ localStorage.setItem("seojae-open.mpLock",on?"1":"0"); }catch(_){} toast(on?"플레이어 자리를 고정했습니다":"플레이어를 다시 끌어 옮길 수 있습니다"); } }
-// 재생 방식(이 기기에 기억): "1" 이어 듣기 — 찬송가 다음은 CCM 첫 곡(목록이 없으면 받아 옴), CCM은 목록 차례대로, 마지막 곡에서 멈춤 · "0" 한 곡씩 · "r" 한 곡 반복
+// 재생 방식(이 기기에 기억): "1" 이어 듣기 — CCM은 목록 차례대로, 마지막 곡에서 멈춤(찬송가는 한 곡만 — CCM으로 넘어가지 않음, 2026-11-02) · "0" 한 곡씩 · "r" 한 곡 반복
 const mpAutoMode=()=>{ let v="1"; try{ v=localStorage.getItem("seojae-open.mpAuto")||"1"; }catch(_){} return ["1","0","r"].includes(v)?v:"1"; };
 const mpAuto=()=>mpAutoMode()==="1";
-// 재생 목록: 오늘 찬송가 → CCM 차례
-const mpQueue=()=>[...(hymnNo()?["hymn"]:[]),...(MUSIC.ccm||[]).map((_,i)=>"ccm:"+i)];
+// 재생 목록: 찬송가는 찬송가 듣기에서만(찬송가 한 곡), CCM은 고른 갈래의 7곡 차례 (2026-11-02 팀장님)
+const mpQueue=()=>MUSIC.slot==="hymn"||MUSIC.view==="hymn"?(hymnNo()?["hymn"]:[]):(MUSIC.ccm||[]).map((_,i)=>"ccm:"+i);
 function mpGo(slot){ if(slot==="hymn") return hymnToggle(); ccmPlay(+slot.slice(4)); }
 async function mpSkip(d){ if(d<0){ try{ if(MUSIC.cur&&MP?.getCurrentTime?.()>3){ MP.seekTo(0,true); MP.playVideo(); return; } }catch(_){} }
-  if(d>0&&MUSIC.slot==="hymn"&&!MUSIC.ccm) await ccmOpen();
   const q=mpQueue(), i=q.indexOf(MUSIC.slot), nx=i<0?(d>0?q[0]:null):q[i+d]; if(!nx) return toast(d>0?"마지막 곡입니다":"첫 곡입니다"); mpGo(nx); }
 function paintMpCtl(){ const el=$("#mplayer"); if(!el) return; const pp=el.querySelector("[data-pp]"); if(pp){ pp.textContent=MUSIC.playing?"❚❚":"▶"; pp.title=MUSIC.playing?"멈춤":"재생"; }
   const q=mpQueue(), i=q.indexOf(MUSIC.slot), pos=$("#mp-pos"); if(pos) pos.textContent=(i>=0&&q.length>1?`${i+1} / ${q.length}`:"")+(mpAutoMode()==="r"?" · 🔁":""); }
 async function mpNext(){ if(mpAutoMode()==="r"){ try{ MP.seekTo(0,true); MP.playVideo(); }catch(_){} return; } if(!mpAuto()) return; const s=MUSIC.slot||"";
-  if(s==="hymn"){ if(!MUSIC.ccm) await ccmOpen(); if(MUSIC.slot==="hymn"&&MUSIC.ccm?.length) ccmPlay(0); return; }   // 받는 사이에 다른 곡을 골랐으면 그대로
+  if(s==="hymn") return;   // 찬송가는 한 곡만 — CCM으로 넘어가지 않음
+  if(s==="ccm:old"&&MUSIC.ccm?.length) return ccmPlay(0);   // 듣는 사이 갈래를 바꿨으면 새 목록 첫 곡으로
   const m=s.match(/^ccm:(\d+)$/); if(m&&MUSIC.ccm?.[+m[1]+1]) ccmPlay(+m[1]+1); }
 function mpClose(){ try{ MP?.stopVideo(); }catch(_){} const el=$("#mplayer"); if(el) el.hidden=true; MUSIC.playing=false; MUSIC.cur=null; MUSIC.slot=""; paintHymnCtl(); paintCcm(); }
 async function mpPlay(id,title,sub,slot,ym){ mpCard(); $("#mp-t").textContent=title||"찬송가"; $("#mp-s").innerHTML=(ym?`<span class="ymb" title="유튜브뮤직 공식 음원">MUSIC</span>`:"")+esc(sub||"유튜브");
   try{ await ytLoad(); }catch(e){ return toast(e.message); }
-  MUSIC.cur=id; MUSIC.slot=slot||""; MUSIC.playing=false; MUSIC.q=slot==="hymn"?`새찬송가 ${hymnNo()}장`:[title,sub].filter(Boolean).join(" "); MUSIC.ym=!!ym;   // 유튜브뮤직으로 넘길 때 찾을 말
+  MUSIC.cur=id; MUSIC.slot=slot||""; MUSIC.view=slot==="hymn"?"hymn":"ccm"; MUSIC.playing=false; MUSIC.q=slot==="hymn"?`새찬송가 ${hymnNo()}장`:[title,sub].filter(Boolean).join(" "); MUSIC.ym=!!ym;   // 유튜브뮤직으로 넘길 때 찾을 말
   if(MP&&MP.loadVideoById){ MP.loadVideoById(id); MP.setVolume(mpVol()); }
   else { $("#mpbox").innerHTML=`<div id="mpvid"></div>`; const z=$("#mplayer")?.dataset.size||"m"; MP=new YT.Player("mpvid",{width:z==="l"?330:z==="s"?200:224,height:z==="l"?330:200,videoId:id,playerVars:{autoplay:1,playsinline:1,rel:0,modestbranding:1},
     events:{onReady:e=>{ try{ e.target.setVolume(mpVol()); e.target.playVideo(); }catch(_){} }, onStateChange:e=>{ MUSIC.playing=e.data===1; if(e.data===0){ MUSIC.playing=false; setTimeout(mpNext,600); } if(e.data===1){ const sa=$("#suplayer audio"); if(sa&&!sa.paused) sa.pause(); } paintHymnCtl(); paintCcm(); }, onError:mpErr}}); }
@@ -3453,23 +3456,35 @@ async function mpErr(){ const wasHymn=MUSIC.slot==="hymn";
 async function hymnToggle(){ const n=hymnNo(); if(!n) return;
   if(MP&&MUSIC.slot==="hymn"&&MUSIC.key===n){ try{ MUSIC.playing?MP.pauseVideo():MP.playVideo(); }catch(_){} mpCard(); return; }
   const b=document.querySelector("[data-hb]"); b?.classList.add("busy");
-  try{ if(MUSIC.key!==n||!MUSIC.v){ const r=await musicCall({hymn:n}); MUSIC.key=n; MUSIC.v=r.hymn; MUSIC.ccm=null; MUSIC.retry=false; }
+  try{ if(MUSIC.key!==n||!MUSIC.v){ const r=await musicCall({hymn:n}); MUSIC.key=n; MUSIC.v=r.hymn; MUSIC.retry=false; }
     await mpPlay(MUSIC.v.id,`새찬송가 ${n}장`,MUSIC.v.title,"hymn",MUSIC.v.ym); }
   catch(e){ if(/준비되지|한도|쉽니다/.test(e.message||"")){ MUSIC.noYt=true; paintHymnCtl(); } toast(e.message||"찬송가를 찾지 못했습니다"); }   // 창구가 못 찾는 날은 유튜브뮤직 찾기(♪ ↗)로
   finally{ b?.classList.remove("busy"); } }
-async function ccmOpen(refresh){ const n=hymnNo(); mpCard(); const box=$("#mpccm");
-  if(MUSIC.key!==n){ MUSIC.key=n; MUSIC.v=null; MUSIC.ccm=null; }
-  if(MUSIC.ccm&&!refresh) return paintCcm();
-  if(refresh&&MUSIC.slot.startsWith("ccm:")) MUSIC.slot="ccm:old";   // 목록이 바뀌면 옛 번호와 헷갈리지 않게
-  box.innerHTML=`<span class="muted" style="font-size:12.5px">오늘 본문·찬송가와 같은 주제의 곡을 고르고, 유튜브에 실제로 있는지 확인하는 중…</span>`;
-  try{ const r=await musicCall({kind:"ccm",hymn:n,date:SU?.date||today(),passage:suPassage(SU)?.label||"",title:SU?.title||"",refresh:!!refresh}); MUSIC.ccm=r.ccm||[]; }
-  catch(e){ box.innerHTML=`<span class="muted" style="font-size:12.5px">${esc(e.message||"추천을 받지 못했습니다")}</span>`; return; }
-  paintCcm(); }
-function paintCcm(){ paintMpCtl(); const box=$("#mpccm"); if(!box||!MUSIC.ccm) return; const n=hymnNo(), hOn=MUSIC.slot==="hymn";
-  box.innerHTML=(n?`<div class="ci ${hOn?"on":""}"><button class="hb ${hOn&&MUSIC.playing?"on":""}" onclick="hymnToggle()" title="듣기">${hOn&&MUSIC.playing?"❚❚":"▶"}</button><div><b>${MUSIC.v?.ym?`<span class="ymb" title="유튜브뮤직 공식 음원">MUSIC</span>`:""}새찬송가 ${esc(n)}장</b><small>오늘의 찬송가${MUSIC.v?.title?" · "+esc(MUSIC.v.title):""}</small></div></div>`:"")
-    +(MUSIC.ccm.length?MUSIC.ccm.map((c,i)=>`<div class="ci ${MUSIC.slot==="ccm:"+i?"on":""}"><button class="hb ${MUSIC.slot==="ccm:"+i&&MUSIC.playing?"on":""}" onclick="ccmPlay(${i})" title="듣기">${MUSIC.slot==="ccm:"+i&&MUSIC.playing?"❚❚":"▶"}</button><div><b title="${esc(c.title)}">${c.ym?`<span class="ymb" title="유튜브뮤직 공식 음원">MUSIC</span>`:""}${esc(c.song)}</b><small>${esc(c.artist)}${c.why?" · "+esc(c.why):""}</small></div></div>`).join("")
-    :`<span class="muted" style="font-size:12.5px">유튜브에서 확인된 곡이 없습니다.</span>`)
-    +`<div class="row" style="gap:6px;justify-content:space-between"><small class="muted" style="font-size:11px">AI가 고르고 유튜브에서 찾은 곡만</small><button class="hb" onclick="ccmOpen(true)" title="다른 곡으로 다시 고르기">다시 고르기</button></div>`; }
+// CCM 갈래 넷 (2026-11-02 팀장님 「늘 같은 찬양만」 → 고도화): 서버가 갈래마다 7곡 · 찬송가는 빼고 · 최근 추천한 곡은 피함 · 「다시 고르기」는 다른 곡으로
+const CCM_MODES=[["word","말씀 맞춤","오늘 본문과 주제가 이어지는 곡 — AI가 고르고 유튜브에 실제로 있는 곡만"],["new","새로 나온 곡","최근 석 달 동안 나온 CCM — 유튜브 조회수 상위에서 고루"],["trend","요즘 인기","최근 1년 동안 많이 들은 CCM — 유튜브 조회수 상위에서 고루"],["all","오래 사랑받은 곡","오래도록 많이 들은 CCM — 유튜브 조회수 상위에서 고루"]];
+const ccmMode=()=>{ let v="word"; try{ v=localStorage.getItem("seojae-open.ccmMode")||"word"; }catch(_){} return CCM_MODES.some(m=>m[0]===v)?v:"word"; };
+const ccmK=m=>m==="word"?"word:"+hymnNo()+":"+(SU?.date||today()):m;   // 말씀 맞춤은 그날 본문마다, 차트는 갈래마다
+const ccmViews=n=>n>=1e8?(n/1e8).toFixed(1).replace(/\.0$/,"")+"억":n>=1e4?Math.round(n/1e4).toLocaleString()+"만":(+n||0).toLocaleString();
+function ccmSync(){ if(!MUSIC.slot.startsWith("ccm:")) return; const j=(MUSIC.ccm||[]).findIndex(c=>c.id===MUSIC.cur); MUSIC.slot=j>=0?"ccm:"+j:"ccm:old"; }   // 목록이 바뀌어도 듣는 곡은 그대로(옛 번호와 헷갈리지 않게)
+async function ccmOpen(refresh,mode){ const n=hymnNo(); mpCard(); MUSIC.view="ccm";
+  if(mode){ try{ localStorage.setItem("seojae-open.ccmMode",mode); }catch(_){} }
+  const m=mode||ccmMode(), k=ccmK(m);
+  if(MUSIC.key!==n){ MUSIC.key=n; MUSIC.v=null; }
+  MUSIC.ccm=MUSIC.ccmBy[k]||null;
+  if(MUSIC.ccm&&!refresh){ ccmSync(); return paintCcm(); }
+  paintCcm(m==="word"?"오늘 본문과 같은 주제의 곡을 고르고, 유튜브에 실제로 있는지 확인하는 중…":"유튜브 조회수 차트에서 CCM을 고르는 중…");
+  try{ const r=await musicCall({kind:"ccm",mode:m,hymn:n,date:SU?.date||today(),passage:suPassage(SU)?.label||"",title:SU?.title||"",refresh:!!refresh}); MUSIC.ccmBy[k]=(r.ccm||[]).slice(0,7); }
+  catch(e){ if(ccmMode()===m) paintCcm(e.message||"추천을 받지 못했습니다"); return; }
+  if(ccmMode()!==m||MUSIC.view!=="ccm") return;   // 받는 사이 다른 갈래를 눌렀으면 그쪽을 그대로
+  MUSIC.ccm=MUSIC.ccmBy[k]; ccmSync(); paintCcm(); }
+function paintCcm(msg){ paintMpCtl(); const box=$("#mpccm"); if(!box) return;
+  if(MUSIC.view!=="ccm"){ box.innerHTML=MUSIC.view==="hymn"?`<div class="ccmhint">찬송가는 이 곡만 틉니다 · <button class="hb" onclick="ccmOpen()" title="CCM 7곡 추천 목록 열기 (찬송가는 빼고)">CCM 추천 보기</button></div>`:""; return; }
+  const m=ccmMode(), M=CCM_MODES.find(x=>x[0]===m)||CCM_MODES[0];
+  const tabs=`<div class="ccmtabs" role="tablist" aria-label="CCM 추천 갈래">${CCM_MODES.map(([k,l,h])=>`<button type="button" role="tab" class="${k===m?"on":""}" aria-selected="${k===m}" onclick="ccmOpen(false,'${k}')" title="${esc(h)}">${l}</button>`).join("")}</div>`;
+  if(msg||!MUSIC.ccm){ box.innerHTML=tabs+`<span class="muted" style="font-size:12.5px">${esc(msg||"")}</span>`; return; }
+  box.innerHTML=tabs+(MUSIC.ccm.length?MUSIC.ccm.map((c,i)=>`<div class="ci ${MUSIC.slot==="ccm:"+i?"on":""}"><button class="hb ${MUSIC.slot==="ccm:"+i&&MUSIC.playing?"on":""}" onclick="ccmPlay(${i})" title="듣기">${MUSIC.slot==="ccm:"+i&&MUSIC.playing?"❚❚":"▶"}</button><div><b title="${esc(c.title||c.song)}">${c.ym?`<span class="ymb" title="유튜브뮤직 공식 음원">MUSIC</span>`:""}${esc(c.song)}</b><small>${esc(c.artist||"")}${c.why?" · "+esc(c.why):""}${c.views?" · 조회 "+ccmViews(c.views):""}</small></div></div>`).join("")
+    :`<span class="muted" style="font-size:12.5px">유튜브에서 확인된 곡이 없습니다. 다른 갈래를 눌러 보세요.</span>`)
+    +`<div class="row" style="gap:6px;justify-content:space-between;align-items:flex-end"><small class="ccmhint">${esc(M[2])}</small><button class="hb" onclick="ccmOpen(true)" title="이 갈래에서 다른 곡으로 다시 고르기">다시 고르기</button></div>`; }
 function ccmPlay(i){ const c=MUSIC.ccm?.[i]; if(!c) return; if(MP&&MUSIC.slot==="ccm:"+i){ try{ MUSIC.playing?MP.pauseVideo():MP.playVideo(); }catch(_){} return; } mpPlay(c.id,c.song,c.artist,"ccm:"+i,c.ym); }
 // ───────── 설정 화면 (2026-10-29 디자인 검토 반영): 갈래마다 한 판, 칸마다 한 줄 — 다 정한 칸은 접히고 줄에 무엇이 정해졌는지만 ─────────
 // st: ok 설정됨 · need 설정 필요 · off 꺼짐/선택 · "" 상태 없음. 사람이 펼치고 접은 것은 이 기기에 기억(seojae.setOpen) — 기억이 기본값보다 앞섬
@@ -3618,6 +3633,10 @@ const MANUALS=[["quick","간단 매뉴얼","읽자마자 바로 써 보는 한 �
 // ───────── 새 소식 (공개판, 2026-10-31 팀장님): 중요한 고침은 앱을 열 때 한 번만 쉬운 말로 알림 ─────────
 // 새 소식을 더할 때: NEWS 맨 앞에 넣고 id 는 날짜(같은 날 둘째는 2026-11-02b 처럼 — 글자 순서로 새것이 뒤). 본 소식 id 는 이 기기에만(seojae-open.newsSeen)
 const NEWS=[
+ {id:"2026-11-02",date:"2026년 11월 2일",title:"CCM 추천이 넓어졌어요",items:[
+  ["♪","CCM은 찬송가를 빼고 7곡","「CCM」을 누르면 찬송가를 뺀 찬양 7곡을 골라 드려요. 찬송가는 「찬송가 ○장 ▶ 듣기」에서만 듣고, 끝나도 CCM으로 넘어가지 않아요.",""],
+  ["✦","네 갈래로 골라 들어요","목록 위 알약에서 「말씀 맞춤」·「새로 나온 곡」·「요즘 인기」·「오래 사랑받은 곡」을 고르세요. 차트 갈래는 유튜브 조회수 상위에서 고르고, 곡마다 조회수가 함께 보여요.","고른 갈래는 다음에도 그대로예요"],
+  ["↻","늘 같은 곡이 되지 않게","최근에 추천한 곡은 되도록 피하고, 고를 때마다 보는 결(잔잔한 묵상곡·선포 찬양·옛 경배와 찬양 등)을 바꿔요. 「다시 고르기」를 누르면 다른 곡이 나와요.",""]]},
  {id:"2026-11-01n",date:"2026년 11월 1일",title:"책장을 더 진짜 책장처럼",items:[
   ["📚","실제 도서관 책장처럼","장식을 걷어 내고, 단정한 참나무 책장에 황갈색 가죽·양피지 책이 꽂힌 모습으로 다시 꾸몄어요. 앱의 종이색과도 잘 어울려요.","칸 이름표는 선반 앞에 꽂은 종이 카드예요"],
   ["✦","읽기 쉬운 책등","책등의 금박 제목이 또렷해졌고, 양피지 책은 갈색 잉크로 적혀요. 「지금 읽는 중」 쪽지도 잘리지 않아요.",""]]},
@@ -3820,13 +3839,13 @@ setInterval(()=>{ lbRun(false,false); },10*60e3);
 document.addEventListener("visibilitychange",()=>{ if(document.visibilityState==="hidden") lbRun(false,false); });
 setTimeout(()=>lbRun(false,false),20000);   // 열고 조금 뒤 (최신 기록을 받은 다음)
 function musicPubSection(){ return `<section class="sheet tape c compact"><p class="label">찬송가·CCM 듣기</p>
-    <p class="sub">묵상 화면 「찬송가 ○장」 옆 <b>▶</b>를 누르면 그 찬송가를 유튜브에서 찾아 <b>앱 안 작은 창</b>에서 틉니다. <b>CCM</b>을 누르면 오늘 본문·찬송가와 같은 주제의 곡을 AI가 고르고, 유튜브에 실제로 있는 곡만 보여 줍니다. 열쇠를 넣을 필요가 없습니다.</p>
+    <p class="sub">묵상 화면 「찬송가 ○장」 옆 <b>▶</b>를 누르면 그 찬송가를 유튜브에서 찾아 <b>앱 안 작은 창</b>에서 틉니다. <b>CCM</b>을 누르면 찬송가를 뺀 찬양 7곡을 네 갈래 — 말씀 맞춤·새로 나온 곡·요즘 인기·오래 사랑받은 곡 — 로 골라 줍니다. 유튜브에 실제로 있는 곡만 보여 주고, 최근에 추천한 곡은 되도록 피합니다. 열쇠를 넣을 필요가 없습니다.</p>
     <p class="hint">찾은 곡은 아침 서재 공개 창구가 기억해 모두가 함께 씁니다(찾을 때 가는 것은 찬송가 번호·날짜뿐, 쓴 글은 가지 않음). 붐비는 날에는 ▶ 대신 「♪ ↗」(유튜브뮤직에서 찾기)가 보입니다. 플레이어 크기·자리·이어 듣기는 플레이어의 ⋯ 단추에서 고릅니다.</p>
     <p class="hint">이 기능은 YouTube API 서비스를 씁니다. 쓰면 <a href="https://www.youtube.com/t/terms" target="_blank" rel="noopener">YouTube 서비스 약관 ↗</a>에 동의하는 것이며, <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Google 개인정보처리방침 ↗</a>이 함께 적용됩니다.</p></section>`; }
 function musicSection(){
   return `<section class="sheet tape ${CONF.yt?"compact":""}">
     <p class="label">찬송가·CCM 듣기</p>
-    <p class="sub">묵상 화면 찬송가 옆 <b>▶</b>로 새찬송가를 유튜브에서 찾아 앱 안 작은 창에서 틉니다. <b>CCM</b>은 오늘 본문·찬송가와 같은 주제의 곡을 인공지능이 고르고, 유튜브에 실제로 있는 곡만 보여 줍니다.</p>
+    <p class="sub">묵상 화면 찬송가 옆 <b>▶</b>로 새찬송가를 유튜브에서 찾아 앱 안 작은 창에서 틉니다. <b>CCM</b>은 찬송가를 뺀 찬양 7곡을 네 갈래 — 말씀 맞춤(오늘 본문과 같은 주제를 인공지능이 고름)·새로 나온 곡·요즘 인기·오래 사랑받은 곡(유튜브 조회수 상위에서) — 로 골라 주고, 유튜브에 실제로 있는 곡만 보여 줍니다. 최근에 추천한 곡은 되도록 피합니다.</p>
     ${CONF.yt?`<div class="okline"><span class="stamp ok">열쇠 들어 있음</span><span class="muted">찬송가는 번호마다, CCM은 날마다 한 번만 찾고 기억합니다</span></div>`:""}
     <div class="row" style="margin-top:8px"><input id="ytkey" type="text" class="secret" spellcheck="false" placeholder="${CONF.yt?"유튜브 열쇠 들어 있음 ✓ — 바꾸려면 새 열쇠":"유튜브 API 키 (AIza…)"}" style="flex:1" autocomplete="off"><button class="btn small" onclick="saveKey('youtubeKey','ytkey')">저장</button></div>
     <p class="hint">열쇠 만들기: <a href="https://console.cloud.google.com/apis/library/youtube.googleapis.com" target="_blank" rel="noopener">구글 클라우드 → YouTube Data API v3</a>에서 「사용」을 누르고, 「사용자 인증 정보 → API 키 만들기」. 무료(하루 검색 약 100번). 열쇠는 내 구글 서버에만 보관됩니다.</p>
