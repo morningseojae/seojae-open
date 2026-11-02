@@ -1590,7 +1590,12 @@ body.dfull .dbook>.diary>.pg>.dfolio{position:static;order:99;margin-top:auto;pa
 .mplayer .mp-menu button{border:1px solid var(--edge);border-radius:999px;padding:2px 9px;font-size:12.5px} .mplayer .mp-menu button.on{background:var(--ink);color:var(--paper)}
 .mplayer .ymb{font-size:10.5px;border:1px solid currentColor;border-radius:4px;padding:0 3px;margin-right:4px;color:#c00}
 .mplayer.min{width:auto;padding:4px 4px 4px;gap:2px;border-radius:12px}
-.mplayer.min .spl-t{gap:2px;min-height:22px} .mplayer.min .spl-t div,.mplayer.min .mp-ccm,.mplayer.min .mp-note{display:none} .mplayer.min .spl-ic{font-size:13px;padding-left:4px}
+/* 재생 목록 접기·펴기 · 화면보다 길면 플레이어 안에서 넘겨 봄 */
+.mplayer{max-height:calc(100dvh - 24px);overflow-y:auto;overscroll-behavior:contain} @media (max-width:700px){ .mplayer{max-height:calc(100dvh - 96px - env(safe-area-inset-bottom))} } .mplayer[data-list="0"] .mp-ccm{display:none}
+.mplayer .mp-lt{display:flex;align-items:center;gap:6px;width:100%;border:0;border-top:1px dashed var(--edge);background:transparent;padding:6px 2px 2px;font:700 12px/1 var(--ui-font,sans-serif);color:var(--ink-soft);cursor:pointer;text-align:left} .mplayer .mp-lt .mp-lta{margin-left:auto}
+.mplayer .mp-lt:hover{color:var(--sepia)} .mplayer .spl-t [data-list].on{color:var(--sepia)}
+.mplayer.min .mp-ccm{width:200px;max-height:170px} .mplayer.min .ccmtabs{grid-template-columns:1fr 1fr} .mplayer.min .mp-ccm .ci small{display:none}   /* 「작게」: 영상 아래 200px 폭에 짧게 */
+.mplayer.min .spl-t{gap:2px;min-height:22px} .mplayer.min .spl-t div,.mplayer.min .mp-note,.mplayer.min .mp-lt{display:none} .mplayer.min .spl-ic{font-size:13px;padding-left:4px}
 .mplayer.min .spl-t button{font-size:13px;padding:0 6px} .mplayer.min [data-min]{transform:rotate(180deg)}
 .mplayer.min .mp-vid,.mplayer.min .mp-vid iframe{width:200px!important;height:200px!important}
 @media (max-width:700px){ .mplayer{left:12px;right:auto;width:250px} .mplayer.min{width:auto} .mplayer[data-size="l"]{width:calc(100vw - 24px)} .mplayer[data-size="l"] .mp-vid,.mplayer[data-size="l"] .mp-vid iframe{width:min(330px,calc(100vw - 50px))!important;height:min(330px,calc(100vw - 50px))!important} }   /* 휴대폰 「크게」는 화면 폭에 맞춤 */
@@ -3119,7 +3124,7 @@ async function pushSave(){
 // ───────── 새 버전 자동 새로 고침 ─────────
 // 올릴 때마다 version.json 의 번호가 바뀝니다. 앱이 열릴 때·다시 화면에 올라올 때·5분마다 확인해서,
 // 쓰는 중인 글이 없고 저장이 끝났을 때 새 버전으로 새로 고칩니다.
-const APP_BUILD="5b20502c26"; const APP_VER="4.1";   // 판 번호: 배포할 때마다 도구/판올리기.py 가 0.1씩 올림 (1.9 다음은 2.0) — 손으로 고치지 말 것
+const APP_BUILD="4525b1e526"; const APP_VER="4.2";   // 판 번호: 배포할 때마다 도구/판올리기.py 가 0.1씩 올림 (1.9 다음은 2.0) — 손으로 고치지 말 것
 let NEW_BUILD=null, UPDATE_NOTICED=false;
 async function checkUpdate(){
   if(APP_BUILD.startsWith("__")) return;                 // 원본 파일로 열었을 때(고치는 중)는 건너뜁니다
@@ -3389,7 +3394,7 @@ function suListen(){ if(!SU?.audio) return; let el=$("#suplayer"); const a0=el?.
 function suPlace(el,key="seojae-open.suPos"){ let p=null; try{ p=JSON.parse(localStorage.getItem(key)||"null"); }catch(_){} if(!p){ el.style.left=el.style.top=el.style.right=el.style.bottom=""; return; }
   Object.assign(el.style,{right:"auto",bottom:"auto"}); const r=el.getBoundingClientRect(), x=Math.max(6,Math.min(innerWidth-r.width-6,p.x)), y=Math.max(6,Math.min(innerHeight-r.height-6,p.y)); Object.assign(el.style,{left:x+"px",top:y+"px"}); }   // 크기가 바뀐 즉시 화면 안으로
 function suDrag(el,key="seojae-open.suPos"){ if(el.dataset.drag) return; el.dataset.drag="1"; let st=null;
-  el.addEventListener("pointerdown",e=>{ if(e.button>0||e.target.closest("button,audio,a,input,.mp-menu")||el.dataset.lock==="1") return; if(!el.classList.contains("min")&&!e.target.closest(".spl-t")) return;
+  el.addEventListener("pointerdown",e=>{ if(e.button>0||e.target.closest("button,audio,a,input,.mp-menu,.mp-ccm")||el.dataset.lock==="1") return; if(!el.classList.contains("min")&&!e.target.closest(".spl-t")) return;
     const r=el.getBoundingClientRect(); st={dx:e.clientX-r.left,dy:e.clientY-r.top,x0:e.clientX,y0:e.clientY,moved:false}; try{ el.setPointerCapture(e.pointerId); }catch(_){} });
   el.addEventListener("pointermove",e=>{ if(!st) return; if(!st.moved&&Math.hypot(e.clientX-st.x0,e.clientY-st.y0)<5) return; st.moved=true; el.classList.add("drag");
     const r=el.getBoundingClientRect(), x=Math.max(6,Math.min(innerWidth-r.width-6,e.clientX-st.dx)), y=Math.max(6,Math.min(innerHeight-r.height-6,e.clientY-st.dy));
@@ -3417,9 +3422,9 @@ function ytLoad(){ if(window.YT?.Player) return Promise.resolve(); return YT_P||
   const sc=document.createElement("script"); sc.src="https://www.youtube.com/iframe_api"; sc.onerror=()=>{ YT_P=null; no(new Error("유튜브를 불러오지 못했습니다 — 인터넷 연결을 확인해 주세요")); }; document.head.appendChild(sc); })); }
 function mpCard(){ let el=$("#mplayer");
   if(!el){ el=document.createElement("div"); el.id="mplayer"; el.className="suplayer mplayer"; el.hidden=true;
-    el.innerHTML=`<div class="spl-t"><span class="spl-ic">♪</span><div><b id="mp-t">찬송가·CCM</b><small id="mp-s">유튜브뮤직 음원 우선</small></div><span class="spacer"></span><button data-min title="크기 바꾸기 (작게 → 보통 → 크게)">▾</button><button data-lock title="자리 고정 (끌리지 않게)">📌</button><button data-menu title="크기·자리">⋯</button><button data-x title="닫기 (멈춤)">✕</button></div>
+    el.innerHTML=`<div class="spl-t"><span class="spl-ic">♪</span><div><b id="mp-t">찬송가·CCM</b><small id="mp-s">유튜브뮤직 음원 우선</small></div><span class="spacer"></span><button data-list title="재생 목록 접기 · 펴기">☰</button><button data-min title="크기 바꾸기 (작게 → 보통 → 크게)">▾</button><button data-lock title="자리 고정 (끌리지 않게)">📌</button><button data-menu title="크기·자리">⋯</button><button data-x title="닫기 (멈춤)">✕</button></div>
       <div class="mp-menu" hidden><div class="r"><span>크기</span><button data-sz="s">작게</button><button data-sz="m">보통</button><button data-sz="l">크게</button></div><div class="r"><span>자리</span><button data-dk="tl" title="왼쪽 위">↖</button><button data-dk="tr" title="오른쪽 위">↗</button><button data-dk="bl" title="왼쪽 아래">↙</button><button data-dk="br" title="오른쪽 아래">↘</button><button data-dk="" title="끌어서 둔 곳">자유</button></div><div class="r"><span>고정</span><button data-lk>📌 끌리지 않게</button></div><div class="r"><span>재생</span><button data-auto="1" title="곡이 끝나면 다음 곡 (CCM 목록 차례로 · 찬송가는 한 곡만)">이어 듣기</button><button data-auto="0">한 곡씩</button><button data-auto="r" title="지금 곡을 끝나면 처음부터 다시 (찬송을 외우며 부를 때)">한 곡 반복</button></div></div>
-      <div class="mp-vid" id="mpbox"><span>▶를 누르면 여기서 재생됩니다</span></div><div class="mpkind" role="tablist" aria-label="무엇을 들을까요"><button type="button" role="tab" data-kind="hymn" title="오늘의 찬송가를 듣습니다">찬송가</button><button type="button" role="tab" data-kind="ccm" title="찬송가를 뺀 CCM 7곡을 듣습니다">CCM</button></div><div class="mp-ctl"><button data-prev title="이전 곡 (3초 넘게 들었으면 이 곡 처음으로)">⏮&#xFE0E;</button><button data-pp class="pp" title="재생 · 멈춤">▶</button><button data-next title="다음 곡">⏭&#xFE0E;</button><small id="mp-pos"></small></div><div class="mp-ccm" id="mpccm"></div><small class="mp-note">유튜브 영상 · 위 줄을 잡고 옮길 수 있습니다</small>`;
+      <div class="mp-vid" id="mpbox"><span>▶를 누르면 여기서 재생됩니다</span></div><div class="mpkind" role="tablist" aria-label="무엇을 들을까요"><button type="button" role="tab" data-kind="hymn" title="오늘의 찬송가를 듣습니다">찬송가</button><button type="button" role="tab" data-kind="ccm" title="찬송가를 뺀 CCM 7곡을 듣습니다">CCM</button></div><div class="mp-ctl"><button data-prev title="이전 곡 (3초 넘게 들었으면 이 곡 처음으로)">⏮&#xFE0E;</button><button data-pp class="pp" title="재생 · 멈춤">▶</button><button data-next title="다음 곡">⏭&#xFE0E;</button><small id="mp-pos"></small></div><button type="button" class="mp-lt" data-lt aria-controls="mpccm" title="재생 목록 접기 · 펴기">☰ 재생 목록 <span class="mp-lta">▴</span></button><div class="mp-ccm" id="mpccm"></div><small class="mp-note">유튜브 영상 · 위 줄을 잡고 옮길 수 있습니다</small>`;
     document.body.appendChild(el); el.querySelector("[data-x]").onclick=mpClose; suDrag(el,"seojae-open.mpPos");
     const cyc={s:"m",m:"l",l:"s"};
     el.querySelector("[data-min]").onclick=()=>mpSize(cyc[el.dataset.size||"m"]);
@@ -3430,12 +3435,18 @@ function mpCard(){ let el=$("#mplayer");
     const autoMark=()=>el.querySelectorAll("[data-auto]").forEach(b=>b.classList.toggle("on",b.dataset.auto===mpAutoMode()));
     el.querySelectorAll("[data-auto]").forEach(b=>b.onclick=()=>{ try{ localStorage.setItem("seojae-open.mpAuto",b.dataset.auto); }catch(_){} autoMark(); paintMpCtl(); toast({"1":"곡이 끝나면 다음 곡을 이어서 틉니다","0":"한 곡씩 틉니다","r":"지금 곡을 되풀이해 틉니다"}[mpAutoMode()]); }); autoMark();
     el.querySelector("[data-prev]").onclick=()=>mpSkip(-1); el.querySelector("[data-next]").onclick=()=>mpSkip(1);
+    el.querySelectorAll("[data-list],[data-lt]").forEach(b=>b.onclick=()=>mpList(el.dataset.list==="0"));
     el.querySelector("[data-pp]").onclick=mpPP; el.querySelectorAll("[data-kind]").forEach(b=>b.onclick=()=>mpKind(b.dataset.kind));
     document.addEventListener("pointerdown",e=>{ const m=el.querySelector(".mp-menu"); if(!m.hidden&&!e.target.closest("#mplayer .mp-menu,#mplayer [data-menu]")) m.hidden=true; });
     addEventListener("resize",()=>{ if(!el.hidden) mpPlace(el); });
     let sz="m", lk="0"; try{ sz=localStorage.getItem("seojae-open.mpSize")||(localStorage.getItem("seojae-open.mpMin")==="1"?"s":"m"); lk=localStorage.getItem("seojae-open.mpLock")||"0"; }catch(_){}
-    mpSize(sz,true); mpLock(lk==="1",true); }   // 크기·자리·고정은 이 기기에 기억
+    let ls="1"; try{ ls=localStorage.getItem("seojae-open.mpList")||"1"; }catch(_){} mpList(ls!=="0",true);
+    mpSize(sz,true); mpLock(lk==="1",true); }   // 크기·자리·고정·목록 펼침은 이 기기에 기억
   el.hidden=false; mpPlace(el); return el; }
+// 재생 목록 접기·펴기(2026-11-02 팀장님 「크기에 따라 목록이 안 보임」): 모든 크기에서 목록을 보이되 제목 줄 ☰·목록 머리로 접고 폄 — 이 기기에 기억.
+// 「작게」에서도 목록은 영상 아래(영상 위에 겹치면 유튜브 규칙 — 재생 화면을 가리지 않기 — 에 걸림)
+function mpList(open,quiet){ const el=$("#mplayer"); if(!el) return; el.dataset.list=open?"1":"0"; el.querySelectorAll("[data-list],[data-lt]").forEach(b=>{ b.classList.toggle("on",open); b.setAttribute("aria-expanded",open); });
+  const a=el.querySelector(".mp-lta"); if(a) a.textContent=open?"▴":"▾"; if(!quiet) try{ localStorage.setItem("seojae-open.mpList",open?"1":"0"); }catch(_){} mpPlace(el); }
 // 크기: s 작게(영상 200×200만) · m 보통(영상 224×200 + 목록) · l 크게(영상 330×330 + 목록). 유튜브 규칙상 영상은 200×200보다 작게·가리게 하지 않음
 function mpSize(z,quiet){ const el=$("#mplayer"); if(!el) return; z=["s","m","l"].includes(z)?z:"m"; el.dataset.size=z; el.classList.toggle("min",z==="s");
   try{ MP?.setSize?.(z==="l"?330:z==="s"?200:224,z==="l"?330:200); }catch(_){}
@@ -3667,6 +3678,9 @@ const MANUALS=[["quick","간단 매뉴얼","읽자마자 바로 써 보는 한 �
 // ───────── 새 소식 (공개판, 2026-10-31 팀장님): 중요한 고침은 앱을 열 때 한 번만 쉬운 말로 알림 ─────────
 // 새 소식을 더할 때: NEWS 맨 앞에 넣고 id 는 날짜(같은 날 둘째는 2026-11-02b 처럼 — 글자 순서로 새것이 뒤). 본 소식 id 는 이 기기에만(seojae-open.newsSeen)
 const NEWS=[
+ {id:"2026-11-02g",date:"2026년 11월 2일",title:"음악 플레이어 재생 목록을 접고 펴요",items:[
+  ["☰","어느 크기에서나 재생 목록","플레이어를 「작게」·「보통」·「크게」 어느 크기로 두어도 재생 목록이 보여요. 「작게」에서는 영상 바로 아래에 붙어요.","유튜브 규칙상 영상 위에 겹쳐 띄우지는 않아요"],
+  ["▴","접고 펴기","플레이어 위 ☰ 또는 목록 머리 「재생 목록 ▴」를 누르면 목록을 접고 펴요. 이 기기에 기억돼요.","플레이어가 화면보다 길면 플레이어 안에서 위아래로 넘겨 보세요"]]},
  {id:"2026-11-02f",date:"2026년 11월 2일",title:"끄적임은 연필로 고치고, 모눈은 글줄에 맞게",items:[
   ["✎","연필을 누르면 고쳐요","끄적임 앞 연필에 마우스를 올리면 색이 바뀌며 살짝 기울어요. 누르면 그 자리에서 고치고, 칸 밖을 누르거나 Esc를 누르면 간직돼요.","다 지우면 그 끄적임이 지워져요"],
   ["▦","모눈 종이가 글줄에 맞아요","쓰기 화면을 「모눈」으로 바꾸면 이제 글 한 줄이 모눈 한 칸 안에 들어가요. 줄이 글자를 가로지르지 않아요.",""]]},
