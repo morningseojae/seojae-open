@@ -1327,6 +1327,13 @@ span.rtc{display:inline-grid;place-items:center;cursor:default}
 .rtpickbtn.on{background:var(--bible);border-color:var(--bible)} .rtpickbtn.on .rtpk-l,.rtpickbtn.on .rtpk-a,.rtpickbtn.on .rtpk-c,.rtpickbtn.on .rtpk-c b{color:var(--paper)}
 .rtlist.picking{border-top:0}
 .rtptabs{display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:0 0 8px;background:var(--paper)}
+/* 성경읽기표 위 줄 .rtsel(2026-11-02, 아래 알림 띠 .rtbar와 다름): 왼쪽 「구약 | 신약」(채운 알약) · 오른쪽 보기 방식 「장 보기 | 책 고르기」(옅은 알약) — 두 갈래가 다른 일임을 모양으로 나눔 */
+.rtsel{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;margin:10px 0 8px;container-type:inline-size} .rtsel .rtptabs.rttest{margin:0}
+@container (max-width:380px){ .rtsel .rtptabs.rttest button small{display:none} .rtsel .rtptabs.rttest button,.rtsel .rtmode button{padding:0 8px} }   /* 휴대폰: 권수는 숨기고 한 줄에 */
+.rtmode{display:inline-flex;margin-left:auto;border:1px solid var(--edge);border-radius:999px;overflow:hidden;background:var(--paper-2)}
+.rtmode button{display:inline-flex;align-items:center;gap:5px;min-height:32px;padding:0 12px;border:0;background:transparent;cursor:pointer;font:700 12.5px/1 var(--ui-font,sans-serif);color:var(--ink-soft)}
+.rtmode button+button{border-left:1px solid var(--edge)} .rtmode button .ico{width:15px;height:15px} .rtmode .rtmd-i{font-size:12px}
+.rtmode button.on{background:var(--paper);color:var(--bible);box-shadow:inset 0 -2px 0 var(--bible)} .rtmode button:active{transform:translateY(1px)}
 .rtptabs.rttest{display:inline-flex;align-self:flex-start;width:max-content;gap:0;padding:0;margin:0 0 8px;border:1.5px solid color-mix(in srgb,var(--bible) 40%,var(--edge));border-radius:999px;overflow:hidden;background:var(--paper)}   /* 구약·신약: 왼쪽 작은 알약 두 개(팀장님 2026-11-01) */
 .rtptabs.rttest button{min-height:32px;padding:0 14px;border:0;border-radius:0;background:transparent;font:800 13.5px/1 var(--ui-font,sans-serif);color:var(--ink-soft)}
 .rtptabs.rttest button+button{border-left:1px solid color-mix(in srgb,var(--bible) 25%,var(--edge))}
@@ -3104,7 +3111,7 @@ async function pushSave(){
 // ───────── 새 버전 자동 새로 고침 ─────────
 // 올릴 때마다 version.json 의 번호가 바뀝니다. 앱이 열릴 때·다시 화면에 올라올 때·5분마다 확인해서,
 // 쓰는 중인 글이 없고 저장이 끝났을 때 새 버전으로 새로 고칩니다.
-const APP_BUILD="4a539a9885"; const APP_VER="3.7";   // 판 번호: 배포할 때마다 도구/판올리기.py 가 0.1씩 올림 (1.9 다음은 2.0) — 손으로 고치지 말 것
+const APP_BUILD="e9469b12b7"; const APP_VER="3.8";   // 판 번호: 배포할 때마다 도구/판올리기.py 가 0.1씩 올림 (1.9 다음은 2.0) — 손으로 고치지 말 것
 let NEW_BUILD=null, UPDATE_NOTICED=false;
 async function checkUpdate(){
   if(APP_BUILD.startsWith("__")) return;                 // 원본 파일로 열었을 때(고치는 중)는 건너뜁니다
@@ -3647,6 +3654,8 @@ const MANUALS=[["quick","간단 매뉴얼","읽자마자 바로 써 보는 한 �
 // ───────── 새 소식 (공개판, 2026-10-31 팀장님): 중요한 고침은 앱을 열 때 한 번만 쉬운 말로 알림 ─────────
 // 새 소식을 더할 때: NEWS 맨 앞에 넣고 id 는 날짜(같은 날 둘째는 2026-11-02b 처럼 — 글자 순서로 새것이 뒤). 본 소식 id 는 이 기기에만(seojae-open.newsSeen)
 const NEWS=[
+ {id:"2026-11-02c",date:"2026년 11월 2일",title:"성경읽기표 위 줄이 한결 알기 쉬워요",items:[
+  ["📖","왼쪽은 구약·신약, 오른쪽은 보기 방식","성경읽기표 맨 위 왼쪽 「구약 | 신약」으로 읽을 쪽을 고르고, 오른쪽 「장 보기 | 책 고르기」로 보는 방식을 바꿔요.","「장 보기」는 장 동그라미에 읽음 표시, 「책 고르기」는 큼직한 책 칸에서 책을 골라 그 장으로 가요"]]},
  {id:"2026-11-02b",date:"2026년 11월 2일",title:"성경 창은 나란히, 음악은 골라서",items:[
   ["▥","성경 창이 가려지지 않아요","컴퓨터에서 성경 창(새한글·개역개정 등)을 열면 성경 창은 화면 오른쪽에 세로로, 앱 창은 왼쪽에 나란히 놓여요. 앱을 눌러도 성경 창이 가려지지 않아 읽으면서 밑줄·묵상을 남기기 좋아요.","성경 창을 닫으면 앱 창은 원래 크기로 돌아와요 · 앱으로 설치해 연 창에서 돼요"],
   ["♪","찬송가와 CCM을 골라 들어요","음악 플레이어의 재생 단추 위 「찬송가 | CCM」에서 먼저 고르고 ▶를 누르세요. 고른 쪽 곡이 나와요.","다른 쪽을 고르면 듣던 곡은 멈춰요"],
@@ -5677,8 +5686,9 @@ function rtPaint(first){ const ov=$("#rtview"); if(!ov) return; const T=rtBuild(
     <div class="rttop"><div><h3 class="rtt">${esc(pl.name)}</h3><p class="rtsum">오늘 ${ti+1}일째 · 읽은 장 <b>${rAll.toLocaleString()}</b> / ${nAll.toLocaleString()}</p></div>
       <div class="rtring" style="--p:${pct}" aria-label="${pct}% 읽음"><b>${pct<10?pct.toFixed(1):Math.floor(pct)}<small>%</small></b></div></div>
     ${!RT_MENU&&T.lab?`<div class="rttabs" role="tablist" style="--n:${T.tracks.length}">${T.tracks.map((t,i)=>`<button type="button" role="tab" aria-selected="${i===RT_TAB}" class="${i===RT_TAB?"on":""}" onclick="RT_TAB=${i};RT_LAST=null;RT_PT=null;rtPaint(true)">${esc(t.n)}<small>${esc(curName(t)||"—")}</small></button>`).join("")}</div>`:""}
-    ${RT_MENU?"":(()=>{ const cb=tr.blocks.find(B=>rtBlk(B).cur&&(!tt||(B.b<39)===(tt==="ot")))||tr.blocks.find(B=>rtBlk(B).cur), nb=new Set(tr.blocks.map(B=>B.b)).size; return `<button type="button" class="rtpickbtn${RT_PICK?" on":""}" onclick="RT_PICK=!RT_PICK;rtPaint(true)" aria-expanded="${RT_PICK}"><span class="rtpk-l">${ICO.book}책 고르기</span><span class="rtpk-c">${cb?`지금 <b>${BIBLE[cb.b][0]}</b>`:""}</span><span class="rtpk-a">${RT_PICK?"닫기 ▴":`${nb}권 ▾`}</span></button>`; })()}
-    ${RT_MENU?"":rtTestTabs(tr,tt)}
+    ${RT_MENU?"":(()=>{ const cb=tr.blocks.find(B=>rtBlk(B).cur&&(!tt||(B.b<39)===(tt==="ot")))||tr.blocks.find(B=>rtBlk(B).cur), nb=new Set(tr.blocks.map(B=>B.b)).size;
+      // 2026-11-02 팀장님: 위에는 「구약 | 신약」, 그 오른쪽에 보기 방식(장 보기 | 책 고르기) — 켜고 끄는 단추가 아니라 「보는 방식」으로 읽히게
+      return `<div class="rtsel">${rtTestTabs(tr,tt)}<div class="rtmode" role="tablist" aria-label="보기 방식"><button type="button" role="tab" aria-selected="${!RT_PICK}" class="${RT_PICK?"":"on"}" onclick="RT_PICK=false;rtPaint(true)" title="장 동그라미를 눌러 읽은 장을 표시합니다"><span class="rtmd-i" aria-hidden="true">◉</span>장 보기</button><button type="button" role="tab" aria-selected="${RT_PICK}" class="${RT_PICK?"on":""}" onclick="RT_PICK=true;rtPaint(true)" title="${cb?`지금 ${esc(BIBLE[cb.b][0])} · `:""}${nb}권 가운데 책을 골라 그 장으로 갑니다">${ICO.book}책 고르기</button></div></div>`; })()}
     <div class="rtlist${RT_PICK?" picking":""}">${RT_MENU?rtMenuPlans():RT_PICK?rtPickerHtml(tr,tt):blocks}</div>
     ${bar}
     <div class="rtfoot">${rtBakOk()?`<button type="button" class="rtrestore" onclick="rtRestore()" title="초기화하기 바로 전 체크와 진도로 돌아갑니다">↶ 초기화 전으로 되살리기 <small>${esc(bkWhen(S.settings.planBak.at))}</small></button>`:"<span></span>"}<button type="button" class="rtreset" onclick="rtResetAll()" title="이 통독 방법의 체크와 진도를 모두 지우고 1일째부터 (되살리기 가능)">전체 초기화</button></div></article>`;
