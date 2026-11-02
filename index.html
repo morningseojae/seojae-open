@@ -565,6 +565,11 @@ body.focus .notebook{margin:0 auto!important;max-width:min(860px,100%)} body.doc
 .sbico.folded .sbpane{opacity:0;transform:scaleX(.2)} .sbico.folded .sbline{opacity:.35} .sbico.folded .sbarr{transform:rotate(180deg)}
 .sidebtn:hover .sbico:not(.folded) .sbpane{transform:scaleX(.55)} .sidebtn:hover .sbico.folded .sbpane{opacity:.12;transform:scaleX(.6)}
 .sidebtn small{font-size:.85em;opacity:.7}
+/* 옆 칸 접기는 늘 옆 칸 맨 위에(2026-11-02 팀장님) — 위 도구 줄 단추는 접혀 있을 때 「옆 칸 펴기」로만 보임 */
+.writegrid>aside .asidefold{position:sticky;top:8px;z-index:4;width:max-content;margin:0 0 10px auto;align-self:flex-end;justify-self:end;background:var(--paper);box-shadow:0 1px 0 var(--edge)}
+body:not(.sidefold) .toolbar #sidebtn{display:none} .studio .toolbar #sidebtn{display:inline-flex} body.staside .studio .toolbar #sidebtn{display:none} .toolbar #sidebtn{margin-left:auto}   /* 접혀 있을 때 「옆 칸 펴기」는 도구 줄 오른쪽 끝 — 옆 칸이 펴질 쪽 */
+@media (min-width:881px){ .writegrid>aside .sidebtn.asidefold{display:flex} }   /* 블록으로 — 오른쪽 끝에 붙게 */
+@media (max-width:880px){ .writegrid>aside .asidefold,.toolbar #sidebtn{display:none!important} }
 @media (prefers-reduced-motion:reduce){ .sbico *{transition:none!important} }
 body.focus main.wrap{padding-top:40px}
 
@@ -1567,6 +1572,8 @@ body.dfull .dbook>.diary>.pg>.dfolio{position:static;order:99;margin-top:auto;pa
 .hymnbox .hkind button{border:0;background:transparent;color:var(--ink-soft);font:600 12px/1 var(--ui-font,sans-serif);padding:5px 9px;cursor:pointer} .hymnbox .hkind button+button{border-left:1px solid color-mix(in srgb,var(--sepia) 30%,var(--edge))}
 .hymnbox .hkind button.on{background:var(--sepia);color:var(--paper)}   /* 찬송가 | CCM — 고른 쪽을 옆 「▶ 듣기」가 틂 */
 @media (pointer:coarse){ .hymnbox .hbvol{display:none} }   /* 휴대폰은 기기 음량 단추로 — 줄이 넘치지 않게 */
+.suopenbar{display:flex;align-items:center;gap:8px;width:100%;margin-top:10px;padding:9px 14px;border:1px dashed color-mix(in srgb,var(--bible,var(--sepia)) 45%,var(--edge));border-radius:10px;background:color-mix(in srgb,var(--paper-2,var(--paper)) 70%,transparent);color:var(--bible,var(--sepia));font:700 13.5px/1.2 var(--ui-font,sans-serif);cursor:pointer;text-align:left}
+.suopenbar small{margin-left:auto;font-weight:400;color:var(--faint)} .suopenbar:hover{border-style:solid;background:var(--paper)} .suopenbar:active{transform:translateY(1px)} .fsbtn.sufold{font-weight:700}
 .hymnbox{white-space:nowrap} .hymnbox .hb[data-hb]{opacity:1;color:var(--sepia);font-weight:700;border:1px solid color-mix(in srgb,var(--sepia) 45%,transparent);padding:3px 9px;margin-left:2px} .hymnbox .hb[data-hb]::after{content:" 듣기";font-size:12px} .hymnbox .hb[data-hb].on::after{content:""} .hb{border:0;background:none;color:var(--faint);font:inherit;font-size:12.5px;line-height:1;padding:3px 6px;border-radius:999px;cursor:pointer;opacity:.7;vertical-align:baseline;text-decoration:none}
 .hb:hover{opacity:1;color:var(--ink);background:color-mix(in srgb,var(--ink) 8%,transparent)} .hb.on{color:var(--sepia);opacity:1} .hb.busy{opacity:.4;pointer-events:none}
 .hbvol{width:58px;height:12px;vertical-align:middle;accent-color:var(--sepia);opacity:.65;margin:0 2px} .hbvol:hover{opacity:1}
@@ -3125,7 +3132,7 @@ async function pushSave(){
 // ───────── 새 버전 자동 새로 고침 ─────────
 // 올릴 때마다 version.json 의 번호가 바뀝니다. 앱이 열릴 때·다시 화면에 올라올 때·5분마다 확인해서,
 // 쓰는 중인 글이 없고 저장이 끝났을 때 새 버전으로 새로 고칩니다.
-const APP_BUILD="50619b791f"; const APP_VER="4.3";   // 판 번호: 배포할 때마다 도구/판올리기.py 가 0.1씩 올림 (1.9 다음은 2.0) — 손으로 고치지 말 것
+const APP_BUILD="fcaacb1048"; const APP_VER="4.4";   // 판 번호: 배포할 때마다 도구/판올리기.py 가 0.1씩 올림 (1.9 다음은 2.0) — 손으로 고치지 말 것
 let NEW_BUILD=null, UPDATE_NOTICED=false;
 async function checkUpdate(){
   if(APP_BUILD.startsWith("__")) return;                 // 원본 파일로 열었을 때(고치는 중)는 건너뜁니다
@@ -3689,6 +3696,9 @@ const MANUALS=[["quick","간단 매뉴얼","읽자마자 바로 써 보는 한 �
 // ───────── 새 소식 (공개판, 2026-10-31 팀장님): 중요한 고침은 앱을 열 때 한 번만 쉬운 말로 알림 ─────────
 // 새 소식을 더할 때: NEWS 맨 앞에 넣고 id 는 날짜(같은 날 둘째는 2026-11-02b 처럼 — 글자 순서로 새것이 뒤). 본 소식 id 는 이 기기에만(seojae-open.newsSeen)
 const NEWS=[
+ {id:"2026-11-02i",date:"2026년 11월 2일",title:"성경 본문 접기 · 옆 칸 접기 자리",items:[
+  ["▴","성경 본문을 완전히 접어요","매일성경 본문 위 「다 펼치기」 옆 「접기 ▴」를 누르면 본문 칸이 접히고, 그 자리에 「▾ 성경 본문 펼치기」 띠만 남아요. 누르면 다시 펴져요.","이 기기에 기억돼요"],
+  ["▸","「옆 칸 접기」는 옆 칸 맨 위에","옆 칸(달력·메모)을 접는 단추가 이제 늘 옆 칸 맨 위 오른쪽에 있어요. 접으면 위 도구 줄 오른쪽 끝에 「옆 칸 펴기」가 나와요.","창을 좁혀도 단추가 왼쪽으로 밀려나지 않아요"]]},
  {id:"2026-11-02h",date:"2026년 11월 2일",title:"유튜브 앱에서 이어 들어요",items:[
   ["▶","「유튜브 앱에서 이어 듣기」","음악 플레이어 아래 단추를 누르면 지금 듣던 곡부터 남은 곡이 한 묶음으로 유튜브(휴대폰은 유튜브 앱)에서 이어져요. 앱 안 재생은 멈춰서 소리가 겹치지 않아요.","유튜브 프리미엄이면 화면을 꺼도 계속 들려요 · 찬송가는 듣던 자리부터"]]},
  {id:"2026-11-02g",date:"2026년 11월 2일",title:"음악 플레이어 재생 목록을 접고 펴요",items:[
@@ -4026,8 +4036,8 @@ async function paintSu(){
       ${SU.audio?`<button class="btn small ghost" onclick="suListen()" title="매일성경 해설(본문 낭독과 해설)을 앱 안 작은 재생기로 듣습니다. 다른 메뉴로 옮겨도 계속 들립니다">${ICO.audio}해설 듣기</button>`:""}<button class="btn small ghost" id="subtn" onclick="suNoteToggle()">${ICO.book}해설 보기</button></div>
     <details class="more"><summary>말씀 앞에서 묻기 <small class="hint" style="display:inline">· 오늘의 질문</small></summary><ol class="q" style="margin:4px 0 0">${pickQ("bible",today()+"b").map(q=>`<li>${esc(q)}</li>`).join("")}</ol></details>
     <div id="sunote"></div>
-    ${open?`<div class="row" style="gap:6px;margin-top:10px;flex-wrap:wrap"><span class="muted" style="font-size:12.5px">보기</span><span class="pills">${SU_VIEWS.map(([k,n,tip])=>`<button class="pill ${suView()===k?"on":""}" style="padding:3px 10px;font-size:13px" data-tip="${tip}" onclick="lookSet('suview','${k}');paintSuText()">${n}</button>`).join("")}</span><span class="spacer"></span><span class="row" style="gap:4px" title="매일성경 글자 크기 (이 기기만)"><button class="fsbtn" onclick="suFont(-1)">가−</button><button class="fsbtn" onclick="suFont(1)">가＋</button></span><button class="fsbtn" onclick="lookSet('sutall',applyLook().sutall?'':1);paintSuText()" title="본문 칸을 다 펼쳐 스크롤 없이 봅니다">${applyLook().sutall?"칸 줄이기":"다 펼치기"}</button></div>
-      <div class="sutext" id="sutext"><span class="muted">본문을 불러오는 중…</span></div>`:""}`;
+    ${open?`<div class="row" style="gap:6px;margin-top:10px;flex-wrap:wrap"><span class="muted" style="font-size:12.5px">보기</span><span class="pills">${SU_VIEWS.map(([k,n,tip])=>`<button class="pill ${suView()===k?"on":""}" style="padding:3px 10px;font-size:13px" data-tip="${tip}" onclick="lookSet('suview','${k}');paintSuText()">${n}</button>`).join("")}</span><span class="spacer"></span><span class="row" style="gap:4px" title="매일성경 글자 크기 (이 기기만)"><button class="fsbtn" onclick="suFont(-1)">가−</button><button class="fsbtn" onclick="suFont(1)">가＋</button></span><button class="fsbtn" onclick="lookSet('sutall',applyLook().sutall?'':1);paintSuText()" title="본문 칸을 다 펼쳐 스크롤 없이 봅니다">${applyLook().sutall?"칸 줄이기":"다 펼치기"}</button><button class="fsbtn sufold" onclick="suToggle()" title="성경 본문 칸을 완전히 접습니다 (이 기기에 기억)">접기 ▴</button></div>
+      <div class="sutext" id="sutext"><span class="muted">본문을 불러오는 중…</span></div>`:`<button type="button" class="suopenbar" onclick="suToggle()" title="접어 둔 성경 본문 칸을 다시 폅니다"><span>▾ 성경 본문 펼치기</span><small>개역한글 · 영어</small></button>`}`;   // 접으면 그 자리에 펴는 띠(2026-11-02 팀장님 「성경 보기 창을 완전히 접도록」)
   if(!open) return;
   try{ if(!SUT||SUT.label!==P.label){ const t=await suTexts(P); if(gen!==SUGEN) return; SUT=t; SUT.label=P.label; } }catch(e){ const t=$("#sutext"); if(t) t.innerHTML=`<span class="muted">본문을 불러오지 못했습니다. 위 단추로 열어 주세요.</span>`; return; }
   paintSuText();
@@ -5474,6 +5484,7 @@ write0(){
       </div>
     </div>
     <aside>
+      <button type="button" class="btn small ghost sidebtn asidefold" onclick="toggleSide()" title="옆 칸(달력·글 정보·간직)을 접습니다 — 다시 펴려면 위 도구 줄 「옆 칸 펴기」">${sideBtnInner(false,false)}</button>
       ${(()=>{ let o=track==="bible"; try{ const v=localStorage.getItem("seojae-open.calfold."+track); if(v!=null) o=v==="1"; }catch(_){} return `<details class="calfold" ${o?"open":""} ontoggle="try{localStorage.setItem('seojae-open.calfold.${track}',this.open?'1':'0')}catch(_){}"><summary>${track==="bible"?"묵상 캘린더":"글쓰기 캘린더"}</summary>${calHtml()}</details>`; })()}
       ${track==="bible"?sideTabs(w):""}
       <div class="card-index ${track}${w&&isNovelW(w)?" nv":""}"><div class="nvhide">
