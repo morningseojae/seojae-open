@@ -1561,6 +1561,9 @@ body.dfull .dbook>.diary>.pg>.dfolio{position:static;order:99;margin-top:auto;pa
 .mplayer .mp-ctl{display:flex;align-items:center;justify-content:center;gap:8px;position:relative} .mplayer .mp-ctl button{border:1px solid var(--edge);background:var(--paper);border-radius:50%;width:32px;height:32px;padding:0;cursor:pointer;font-size:13px;color:var(--ink);display:grid;place-items:center} .mplayer .mp-ctl button.pp{width:40px;height:40px;background:var(--ink);color:var(--paper);border-color:var(--ink);font-size:15px} .mplayer .mp-ctl small{position:absolute;right:2px;color:var(--faint);font-size:11px}
 .mplayer.min .mp-ctl{gap:6px} .mplayer.min .mp-ctl button{width:28px;height:28px} .mplayer.min .mp-ctl button.pp{width:34px;height:34px} .mplayer.min .mp-ctl small{display:none}
 .mplayer .mp-ccm .ci b{font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis} .mplayer .mp-ccm .ci.on b{color:var(--sepia)} .mplayer .mp-note{font-size:11px}
+/* 찬송가 | CCM 고르기 — 재생 단추 위 두 알약(고른 쪽을 ▶가 틂) */
+.mplayer .mpkind{display:flex;justify-content:center;gap:4px} .mplayer .mpkind button{border:1px solid var(--edge);border-radius:999px;background:var(--paper);color:var(--ink);font:inherit;font-size:12.5px;line-height:1.2;padding:4px 14px;cursor:pointer;box-shadow:0 1px 0 var(--edge)}
+.mplayer .mpkind button:active{transform:translateY(1px);box-shadow:none} .mplayer .mpkind button.on{background:var(--sepia);color:var(--paper);border-color:var(--sepia)} .mplayer .mpkind button:disabled{opacity:.4;cursor:default} .mplayer.min .mpkind{display:none}
 /* CCM 갈래 넷(2026-11-02): 말씀 맞춤·새로 나온 곡·요즘 인기·오래 사랑받은 곡 — 목록 위에 붙어 있는 알약 */
 .mplayer .ccmtabs{display:grid;grid-template-columns:1fr 1fr;gap:4px;position:sticky;top:0;z-index:1;background:var(--paper);padding:2px 0 5px} .mplayer .ccmtabs button{border:1px solid var(--edge);border-radius:999px;background:var(--paper);color:var(--ink);font:inherit;font-size:11.5px;line-height:1.2;padding:3px 8px;cursor:pointer;box-shadow:0 1px 0 var(--edge)}
 .mplayer .ccmtabs button:active{transform:translateY(1px);box-shadow:none} .mplayer .ccmtabs button.on{background:var(--ink);color:var(--paper);border-color:var(--ink)} .mplayer .ccmhint{font-size:11px;color:var(--faint);line-height:1.45}
@@ -3101,7 +3104,7 @@ async function pushSave(){
 // ───────── 새 버전 자동 새로 고침 ─────────
 // 올릴 때마다 version.json 의 번호가 바뀝니다. 앱이 열릴 때·다시 화면에 올라올 때·5분마다 확인해서,
 // 쓰는 중인 글이 없고 저장이 끝났을 때 새 버전으로 새로 고칩니다.
-const APP_BUILD="a278d07389"; const APP_VER="3.6";   // 판 번호: 배포할 때마다 도구/판올리기.py 가 0.1씩 올림 (1.9 다음은 2.0) — 손으로 고치지 말 것
+const APP_BUILD="4a539a9885"; const APP_VER="3.7";   // 판 번호: 배포할 때마다 도구/판올리기.py 가 0.1씩 올림 (1.9 다음은 2.0) — 손으로 고치지 말 것
 let NEW_BUILD=null, UPDATE_NOTICED=false;
 async function checkUpdate(){
   if(APP_BUILD.startsWith("__")) return;                 // 원본 파일로 열었을 때(고치는 중)는 건너뜁니다
@@ -3336,7 +3339,7 @@ function sideTip(){ if(document.querySelector(".sidetip")) return; const mac=/Ma
   const ov=document.createElement("div"); ov.className="bookview sendview sidetip";
   ov.innerHTML=`<section class="sheet" style="max-width:560px;margin:50px auto;display:grid;gap:10px"><p class="label" style="margin:0">성경 창을 띄워 둔 채 쓰려면</p>
     <p class="sub" style="margin:0">새한글·새번역·개역개정·NIV는 저작권 때문에 대한성서공회·성경 사이트에서만 볼 수 있고, 그 사이트가 다른 프로그램 안에 넣는 것을 막아 두어 앱 위에 고정할 수 없습니다. 대신 <b>화면을 반씩 나눠</b> 두면 앱을 눌러도 성경 창이 사라지지 않습니다.</p>
-    <ul style="margin:0;padding-left:1.2em;line-height:1.8">${touch?`<li><b>갤럭시</b>: 최근 앱 단추(▢ 또는 |||) → 아침 서재 아이콘을 누름 → 「분할 화면으로 열기」 → 아래쪽에 크롬(성경 창)을 고르기</li>`:`<li><b>${mac?"맥":"컴퓨터"}</b>: ${mac?"성경 창 왼쪽 위 <b>초록 단추</b>에 마우스를 올리면 나오는 메뉴에서 「오른쪽에 배치」를 고르고, 아침 서재 창을 왼쪽에 둡니다 (단축키: fn + control + → / ←)":"성경 창을 화면 오른쪽 끝으로 끌어 붙이고(⊞ + →), 아침 서재 창을 왼쪽에 둡니다 (⊞ + ←)"}</li>`}
+    <ul style="margin:0;padding-left:1.2em;line-height:1.8">${touch?"":`<li><b>나란히 놓기</b>: 아침 서재를 <b>앱으로 설치해</b> 열면, 성경 창을 열 때 성경 창은 화면 오른쪽 끝에 세로로, 앱 창은 그 왼쪽으로 저절로 놓여 앱을 눌러도 가려지지 않습니다. 성경 창을 닫으면 앱 창은 원래 크기로 돌아옵니다(설정 → 아침 → 「성경 통독」의 「성경 창」에서 끄기).</li>`}${touch?`<li><b>갤럭시</b>: 최근 앱 단추(▢ 또는 |||) → 아침 서재 아이콘을 누름 → 「분할 화면으로 열기」 → 아래쪽에 크롬(성경 창)을 고르기</li>`:`<li><b>${mac?"맥":"컴퓨터"}</b>: ${mac?"성경 창 왼쪽 위 <b>초록 단추</b>에 마우스를 올리면 나오는 메뉴에서 「오른쪽에 배치」를 고르고, 아침 서재 창을 왼쪽에 둡니다 (단축키: fn + control + → / ←)":"성경 창을 화면 오른쪽 끝으로 끌어 붙이고(⊞ + →), 아침 서재 창을 왼쪽에 둡니다 (⊞ + ←)"}</li>`}
       <li><b>개역한글·영어 본문</b>은 「위에 띄우기」로 앱 위에 늘 떠 있는 작은 창으로 볼 수 있습니다.</li><li><b>듣기</b>는 앱 안 재생기로 들려 다른 메뉴로 옮겨도 계속됩니다.</li></ul>
     <div class="row" style="gap:6px"><button class="btn ink" data-ok>알겠습니다</button><button class="btn ghost" data-x>닫기</button></div></section>`;
   document.body.appendChild(ov); const done=()=>{ try{ localStorage.setItem("seojae-open.sideTip","1"); }catch(_){} ov.remove(); };
@@ -3380,14 +3383,14 @@ function suDrag(el,key="seojae-open.suPos"){ if(el.dataset.drag) return; el.data
   el.addEventListener("pointerup",end); el.addEventListener("pointercancel",end);
   addEventListener("resize",()=>{ if(!el.hidden) suPlace(el,key); }); }
 // ───────── 찬송가·CCM 듣기: 서버 musicFind(유튜브 검색 열쇠) → 앱 안 작은 유튜브 창. 열쇠가 없으면 유튜브뮤직 검색을 새 창으로 ─────────
-let MUSIC={key:"",v:null,ccm:null,ccmBy:{},view:"",cur:null,slot:"",playing:false,retry:false}, MP=null, YT_P=null;   // slot: 지금 곡이 「hymn」인지 「ccm:번호」인지 · view: 플레이어 아래가 찬송가(hymn)인지 CCM 목록(ccm)인지 · ccmBy: 갈래마다 받은 목록
+let MUSIC={key:"",v:null,ccm:null,ccmBy:{},view:"hymn",cur:null,slot:"",playing:false,retry:false}, MP=null, YT_P=null;   // slot: 지금 곡이 「hymn」인지 「ccm:번호」인지 · view: 플레이어 아래가 찬송가(hymn)인지 CCM 목록(ccm)인지 · ccmBy: 갈래마다 받은 목록
 const hymnNo=()=>String(SU?.hymn||"").replace(/[^0-9]/g,"").slice(0,4);
 const mpVol=()=>{ let v=50; try{ v=+(localStorage.getItem("seojae-open.mpVol")??50); }catch(_){} return isFinite(v)?v:50; };
 function mpSetVol(v){ try{ localStorage.setItem("seojae-open.mpVol",String(v)); }catch(_){} try{ MP?.setVolume(+v); }catch(_){} }
 function hymnCtl(){ const n=hymnNo(); if(!n) return "";
   if(!SERVER||!CONF.yt||MUSIC.noYt) return ` <a class="hb" href="https://music.youtube.com/search?q=${encodeURIComponent("새찬송가 "+n+"장")}" target="_blank" rel="noopener" title="유튜브뮤직에서 찾기 (새 창)">♪ ↗</a>`;
   const on=MUSIC.playing&&MUSIC.slot==="hymn";
-  return ` <button class="hb ${on?"on":""}" data-hb onclick="hymnToggle()" title="${on?"멈춤":"찬송가 듣기 (유튜브)"}">${on?"❚❚":"▶"}</button>${MUSIC.cur?`<input class="hbvol" type="range" min="0" max="100" value="${mpVol()}" oninput="mpSetVol(this.value)" title="음량">`:""}<button class="hb" onclick="ccmOpen()" title="CCM 7곡 추천 — 말씀 맞춤·새로 나온 곡·요즘 인기·오래 사랑받은 곡 (찬송가는 빼고)">CCM</button>`; }
+  return ` <button class="hb ${on?"on":""}" data-hb onclick="hymnToggle()" title="${on?"멈춤":"찬송가 듣기 (유튜브)"}">${on?"❚❚":"▶"}</button>${MUSIC.cur?`<input class="hbvol" type="range" min="0" max="100" value="${mpVol()}" oninput="mpSetVol(this.value)" title="음량">`:""}<button class="hb" onclick="mpKind('ccm')" title="CCM 7곡 — 고른 뒤 ▶를 누르면 들립니다 (말씀 맞춤·새로 나온 곡·요즘 인기·오래 사랑받은 곡, 찬송가는 빼고)">CCM</button>`; }
 function paintHymnCtl(){ const b=$("#hymnbox"); if(!b||!SU?.hymn) return; b.innerHTML=`찬송가 ${esc(SU.hymn)}장${hymnCtl()}`; }
 async function musicCall(body){ if(GAS) return gcall("musicFind",body); const r=await fetch("/api/music",{method:"POST",body:JSON.stringify(body)}); const j=await r.json(); if(j&&j.ok===false) throw new Error(j.error||"서버 오류"); return j; }
 function ytLoad(){ if(window.YT?.Player) return Promise.resolve(); return YT_P||(YT_P=new Promise((ok,no)=>{ const prev=window.onYouTubeIframeAPIReady; window.onYouTubeIframeAPIReady=()=>{ try{ prev?.(); }catch(_){} ok(); };
@@ -3396,7 +3399,7 @@ function mpCard(){ let el=$("#mplayer");
   if(!el){ el=document.createElement("div"); el.id="mplayer"; el.className="suplayer mplayer"; el.hidden=true;
     el.innerHTML=`<div class="spl-t"><span class="spl-ic">♪</span><div><b id="mp-t">찬송가·CCM</b><small id="mp-s">유튜브뮤직 음원 우선</small></div><span class="spacer"></span><button data-min title="크기 바꾸기 (작게 → 보통 → 크게)">▾</button><button data-lock title="자리 고정 (끌리지 않게)">📌</button><button data-menu title="크기·자리">⋯</button><button data-x title="닫기 (멈춤)">✕</button></div>
       <div class="mp-menu" hidden><div class="r"><span>크기</span><button data-sz="s">작게</button><button data-sz="m">보통</button><button data-sz="l">크게</button></div><div class="r"><span>자리</span><button data-dk="tl" title="왼쪽 위">↖</button><button data-dk="tr" title="오른쪽 위">↗</button><button data-dk="bl" title="왼쪽 아래">↙</button><button data-dk="br" title="오른쪽 아래">↘</button><button data-dk="" title="끌어서 둔 곳">자유</button></div><div class="r"><span>고정</span><button data-lk>📌 끌리지 않게</button></div><div class="r"><span>재생</span><button data-auto="1" title="곡이 끝나면 다음 곡 (CCM 목록 차례로 · 찬송가는 한 곡만)">이어 듣기</button><button data-auto="0">한 곡씩</button><button data-auto="r" title="지금 곡을 끝나면 처음부터 다시 (찬송을 외우며 부를 때)">한 곡 반복</button></div></div>
-      <div class="mp-vid" id="mpbox"><span>▶를 누르면 여기서 재생됩니다</span></div><div class="mp-ctl"><button data-prev title="이전 곡 (3초 넘게 들었으면 이 곡 처음으로)">⏮&#xFE0E;</button><button data-pp class="pp" title="재생 · 멈춤">▶</button><button data-next title="다음 곡">⏭&#xFE0E;</button><small id="mp-pos"></small></div><div class="mp-ccm" id="mpccm"></div><small class="mp-note">유튜브 영상 · 위 줄을 잡고 옮길 수 있습니다</small>`;
+      <div class="mp-vid" id="mpbox"><span>▶를 누르면 여기서 재생됩니다</span></div><div class="mpkind" role="tablist" aria-label="무엇을 들을까요"><button type="button" role="tab" data-kind="hymn" title="오늘의 찬송가를 듣습니다">찬송가</button><button type="button" role="tab" data-kind="ccm" title="찬송가를 뺀 CCM 7곡을 듣습니다">CCM</button></div><div class="mp-ctl"><button data-prev title="이전 곡 (3초 넘게 들었으면 이 곡 처음으로)">⏮&#xFE0E;</button><button data-pp class="pp" title="재생 · 멈춤">▶</button><button data-next title="다음 곡">⏭&#xFE0E;</button><small id="mp-pos"></small></div><div class="mp-ccm" id="mpccm"></div><small class="mp-note">유튜브 영상 · 위 줄을 잡고 옮길 수 있습니다</small>`;
     document.body.appendChild(el); el.querySelector("[data-x]").onclick=mpClose; suDrag(el,"seojae-open.mpPos");
     const cyc={s:"m",m:"l",l:"s"};
     el.querySelector("[data-min]").onclick=()=>mpSize(cyc[el.dataset.size||"m"]);
@@ -3407,7 +3410,7 @@ function mpCard(){ let el=$("#mplayer");
     const autoMark=()=>el.querySelectorAll("[data-auto]").forEach(b=>b.classList.toggle("on",b.dataset.auto===mpAutoMode()));
     el.querySelectorAll("[data-auto]").forEach(b=>b.onclick=()=>{ try{ localStorage.setItem("seojae-open.mpAuto",b.dataset.auto); }catch(_){} autoMark(); paintMpCtl(); toast({"1":"곡이 끝나면 다음 곡을 이어서 틉니다","0":"한 곡씩 틉니다","r":"지금 곡을 되풀이해 틉니다"}[mpAutoMode()]); }); autoMark();
     el.querySelector("[data-prev]").onclick=()=>mpSkip(-1); el.querySelector("[data-next]").onclick=()=>mpSkip(1);
-    el.querySelector("[data-pp]").onclick=()=>{ if(!MUSIC.cur) return hymnToggle(); try{ MUSIC.playing?MP.pauseVideo():MP.playVideo(); }catch(_){} };
+    el.querySelector("[data-pp]").onclick=mpPP; el.querySelectorAll("[data-kind]").forEach(b=>b.onclick=()=>mpKind(b.dataset.kind));
     document.addEventListener("pointerdown",e=>{ const m=el.querySelector(".mp-menu"); if(!m.hidden&&!e.target.closest("#mplayer .mp-menu,#mplayer [data-menu]")) m.hidden=true; });
     addEventListener("resize",()=>{ if(!el.hidden) mpPlace(el); });
     let sz="m", lk="0"; try{ sz=localStorage.getItem("seojae-open.mpSize")||(localStorage.getItem("seojae-open.mpMin")==="1"?"s":"m"); lk=localStorage.getItem("seojae-open.mpLock")||"0"; }catch(_){}
@@ -3430,11 +3433,22 @@ function mpLock(on,quiet){ const el=$("#mplayer"); if(!el) return; el.dataset.lo
 const mpAutoMode=()=>{ let v="1"; try{ v=localStorage.getItem("seojae-open.mpAuto")||"1"; }catch(_){} return ["1","0","r"].includes(v)?v:"1"; };
 const mpAuto=()=>mpAutoMode()==="1";
 // 재생 목록: 찬송가는 찬송가 듣기에서만(찬송가 한 곡), CCM은 고른 갈래의 7곡 차례 (2026-11-02 팀장님)
-const mpQueue=()=>MUSIC.slot==="hymn"||MUSIC.view==="hymn"?(hymnNo()?["hymn"]:[]):(MUSIC.ccm||[]).map((_,i)=>"ccm:"+i);
+const mpQueue=()=>MUSIC.view==="ccm"?(MUSIC.ccm||[]).map((_,i)=>"ccm:"+i):(hymnNo()?["hymn"]:[]);
 function mpGo(slot){ if(slot==="hymn") return hymnToggle(); ccmPlay(+slot.slice(4)); }
 async function mpSkip(d){ if(d<0){ try{ if(MUSIC.cur&&MP?.getCurrentTime?.()>3){ MP.seekTo(0,true); MP.playVideo(); return; } }catch(_){} }
   const q=mpQueue(), i=q.indexOf(MUSIC.slot), nx=i<0?(d>0?q[0]:null):q[i+d]; if(!nx) return toast(d>0?"마지막 곡입니다":"첫 곡입니다"); mpGo(nx); }
-function paintMpCtl(){ const el=$("#mplayer"); if(!el) return; const pp=el.querySelector("[data-pp]"); if(pp){ pp.textContent=MUSIC.playing?"❚❚":"▶"; pp.title=MUSIC.playing?"멈춤":"재생"; }
+// 찬송가 | CCM 고르기 (2026-11-02 팀장님 「CCM을 눌러도 찬송가만」): 먼저 고르고, ▶를 누르면 고른 쪽 곡이 나옴. 바꿀 때 다른 쪽 곡이 나오고 있으면 멈춤
+async function mpKind(k){ mpCard(); const other=k==="ccm"?MUSIC.slot==="hymn":MUSIC.slot.startsWith("ccm:");
+  if(other&&MUSIC.playing){ try{ MP?.pauseVideo(); }catch(_){} MUSIC.playing=false; }
+  if(other){ const n=hymnNo(); $("#mp-t").textContent=k==="ccm"?"CCM":`새찬송가 ${n}장`; $("#mp-s").textContent="▶를 누르면 재생합니다"; }
+  if(k==="ccm") return ccmOpen();
+  if(!hymnNo()) return toast("오늘은 찬송가가 없습니다");
+  MUSIC.view="hymn"; paintHymnCtl(); paintCcm(); }
+async function mpPP(){ const toggle=()=>{ try{ MUSIC.playing?MP.pauseVideo():MP.playVideo(); }catch(_){} };
+  if(MUSIC.view==="ccm"){ if(MP&&/^ccm:\d+$/.test(MUSIC.slot)) return toggle(); if(!MUSIC.ccm) await ccmOpen(); if(MUSIC.ccm?.length) return ccmPlay(0); return toast("들을 CCM을 아직 받지 못했습니다"); }
+  if(!hymnNo()) return toast("오늘은 찬송가가 없습니다");
+  hymnToggle(); }
+function paintMpCtl(){ const el=$("#mplayer"); if(!el) return; el.querySelectorAll("[data-kind]").forEach(b=>{ const on=(MUSIC.view||"hymn")===b.dataset.kind; b.classList.toggle("on",on); b.setAttribute("aria-selected",on); if(b.dataset.kind==="hymn") b.disabled=!hymnNo(); }); const pp=el.querySelector("[data-pp]"); if(pp){ pp.textContent=MUSIC.playing?"❚❚":"▶"; pp.title=MUSIC.playing?"멈춤":"재생"; }
   const q=mpQueue(), i=q.indexOf(MUSIC.slot), pos=$("#mp-pos"); if(pos) pos.textContent=(i>=0&&q.length>1?`${i+1} / ${q.length}`:"")+(mpAutoMode()==="r"?" · 🔁":""); }
 async function mpNext(){ if(mpAutoMode()==="r"){ try{ MP.seekTo(0,true); MP.playVideo(); }catch(_){} return; } if(!mpAuto()) return; const s=MUSIC.slot||"";
   if(s==="hymn") return;   // 찬송가는 한 곡만 — CCM으로 넘어가지 않음
@@ -3478,7 +3492,7 @@ async function ccmOpen(refresh,mode){ const n=hymnNo(); mpCard(); MUSIC.view="cc
   if(ccmMode()!==m||MUSIC.view!=="ccm") return;   // 받는 사이 다른 갈래를 눌렀으면 그쪽을 그대로
   MUSIC.ccm=MUSIC.ccmBy[k]; ccmSync(); paintCcm(); }
 function paintCcm(msg){ paintMpCtl(); const box=$("#mpccm"); if(!box) return;
-  if(MUSIC.view!=="ccm"){ box.innerHTML=MUSIC.view==="hymn"?`<div class="ccmhint">찬송가는 이 곡만 틉니다 · <button class="hb" onclick="ccmOpen()" title="CCM 7곡 추천 목록 열기 (찬송가는 빼고)">CCM 추천 보기</button></div>`:""; return; }
+  if(MUSIC.view!=="ccm"){ box.innerHTML=MUSIC.view==="hymn"?`<div class="ccmhint">찬송가는 이 곡만 틉니다. CCM을 들으려면 위 「CCM」을 고른 뒤 ▶를 누르세요.</div>`:""; return; }
   const m=ccmMode(), M=CCM_MODES.find(x=>x[0]===m)||CCM_MODES[0];
   const tabs=`<div class="ccmtabs" role="tablist" aria-label="CCM 추천 갈래">${CCM_MODES.map(([k,l,h])=>`<button type="button" role="tab" class="${k===m?"on":""}" aria-selected="${k===m}" onclick="ccmOpen(false,'${k}')" title="${esc(h)}">${l}</button>`).join("")}</div>`;
   if(msg||!MUSIC.ccm){ box.innerHTML=tabs+`<span class="muted" style="font-size:12.5px">${esc(msg||"")}</span>`; return; }
@@ -3633,6 +3647,10 @@ const MANUALS=[["quick","간단 매뉴얼","읽자마자 바로 써 보는 한 �
 // ───────── 새 소식 (공개판, 2026-10-31 팀장님): 중요한 고침은 앱을 열 때 한 번만 쉬운 말로 알림 ─────────
 // 새 소식을 더할 때: NEWS 맨 앞에 넣고 id 는 날짜(같은 날 둘째는 2026-11-02b 처럼 — 글자 순서로 새것이 뒤). 본 소식 id 는 이 기기에만(seojae-open.newsSeen)
 const NEWS=[
+ {id:"2026-11-02b",date:"2026년 11월 2일",title:"성경 창은 나란히, 음악은 골라서",items:[
+  ["▥","성경 창이 가려지지 않아요","컴퓨터에서 성경 창(새한글·개역개정 등)을 열면 성경 창은 화면 오른쪽에 세로로, 앱 창은 왼쪽에 나란히 놓여요. 앱을 눌러도 성경 창이 가려지지 않아 읽으면서 밑줄·묵상을 남기기 좋아요.","성경 창을 닫으면 앱 창은 원래 크기로 돌아와요 · 앱으로 설치해 연 창에서 돼요"],
+  ["♪","찬송가와 CCM을 골라 들어요","음악 플레이어의 재생 단추 위 「찬송가 | CCM」에서 먼저 고르고 ▶를 누르세요. 고른 쪽 곡이 나와요.","다른 쪽을 고르면 듣던 곡은 멈춰요"],
+  ["⚙","끄고 싶으면","설정 → 아침 → 「성경 통독」의 「성경 창」에서 「창만 열기」를 고르면 앱 창 크기를 바꾸지 않아요.",""]]},
  {id:"2026-11-02",date:"2026년 11월 2일",title:"CCM 추천이 넓어졌어요",items:[
   ["♪","CCM은 찬송가를 빼고 7곡","「CCM」을 누르면 찬송가를 뺀 찬양 7곡을 골라 드려요. 찬송가는 「찬송가 ○장 ▶ 듣기」에서만 듣고, 끝나도 CCM으로 넘어가지 않아요.",""],
   ["✦","네 갈래로 골라 들어요","목록 위 알약에서 「말씀 맞춤」·「새로 나온 곡」·「요즘 인기」·「오래 사랑받은 곡」을 고르세요. 차트 갈래는 유튜브 조회수 상위에서 고르고, 곡마다 조회수가 함께 보여요.","고른 갈래는 다음에도 그대로예요"],
@@ -3850,15 +3868,32 @@ function musicSection(){
     <div class="row" style="margin-top:8px"><input id="ytkey" type="text" class="secret" spellcheck="false" placeholder="${CONF.yt?"유튜브 열쇠 들어 있음 ✓ — 바꾸려면 새 열쇠":"유튜브 API 키 (AIza…)"}" style="flex:1" autocomplete="off"><button class="btn small" onclick="saveKey('youtubeKey','ytkey')">저장</button></div>
     <p class="hint">열쇠 만들기: <a href="https://console.cloud.google.com/apis/library/youtube.googleapis.com" target="_blank" rel="noopener">구글 클라우드 → YouTube Data API v3</a>에서 「사용」을 누르고, 「사용자 인증 정보 → API 키 만들기」. 무료(하루 검색 약 100번). 열쇠는 내 구글 서버에만 보관됩니다.</p>
   </section>`; }
+// 성경 창 나란히 놓기 (2026-11-02 팀장님 「바깥을 누르면 성경 창이 사라짐 — 늘 위에」):
+// 웹 페이지는 다른 사이트의 창을 「늘 위」로 고정할 수 없고(성서공회 사이트는 다른 창 안에 넣는 것도 막아 둠), 늘 위 창(Document PiP)에는 그 사이트를 넣을 수 없음.
+// 그래서 성경 창은 화면 오른쪽 끝에 세로 가득, 앱 창은 그 왼쪽으로 줄여 겹치지 않게 놓음 → 앱을 눌러도 성경 창이 가려지지 않음.
+// 앱 창 크기는 「설치한 앱」 창(또는 탭이 하나뿐인 창)에서만 바꿀 수 있어, 안 되면 화면 나누는 법을 안내. 성경 창을 닫으면 앱 창을 원래 크기로 되돌림.
+let BTILE=null, BTILE_T=0;
+const bibleTileOn=()=>{ try{ return localStorage.getItem("seojae-open.bibleTile")!=="0"; }catch(_){ return true; } };
+function bibleTileSet(on){ try{ localStorage.setItem("seojae-open.bibleTile",on?"1":"0"); }catch(_){} if(!on) bibleUntile(); toast(on?"성경 창을 열면 앱 창을 왼쪽에 나란히 놓습니다":"앱 창 크기는 그대로 두고 성경 창만 엽니다"); }
 function popBible(u){
   const wide=matchMedia("(pointer:fine)").matches&&screen.availWidth>900;
-  const W=Math.min(560,Math.round(screen.availWidth*.38)), H=Math.round(screen.availHeight*.86);
+  const sx=screen.availLeft||0, sy=screen.availTop||0, SW=screen.availWidth, SH=screen.availHeight;
+  const W=Math.min(560,Math.round(SW*.36)), H=SH, L=sx+SW-W;
   // 같은 이름("seojaeBible")의 창을 다시 써서, 누를 때마다 새 창이 늘지 않게 합니다
-  const win=wide?window.open(u,"seojaeBible",`popup,width=${W},height=${H},left=${screen.availWidth-W-24},top=40`):window.open(u,"seojaeBible");
-  if(win){ try{ win.focus(); }catch(_){} } else location.href=u;
-  let seen=false; try{ seen=localStorage.getItem("seojae-open.sideTip")==="1"; }catch(_){} if(!seen) setTimeout(sideTip,400);
+  const win=wide?window.open(u,"seojaeBible",`popup,width=${W},height=${H},left=${L},top=${sy}`):window.open(u,"seojaeBible");
+  if(win){ try{ win.focus(); }catch(_){} } else { location.href=u; return false; }
+  if(wide&&bibleTileOn()&&!isTouch()) bibleTile(win,L);
+  else { let seen=false; try{ seen=localStorage.getItem("seojae-open.sideTip")==="1"; }catch(_){} if(!seen&&wide) setTimeout(sideTip,400); }
   return false;
 }
+function bibleTile(win,L){ const sx=screen.availLeft||0, sy=screen.availTop||0, SH=screen.availHeight, want=L-sx;
+  if(window.screenX+window.outerWidth<=L+4) return bibleWatch(win);   // 이미 겹치지 않음
+  const before={x:window.screenX,y:window.screenY,w:window.outerWidth,h:window.outerHeight};
+  try{ window.moveTo(sx,sy); window.resizeTo(want,SH); }catch(_){}
+  setTimeout(()=>{ if(window.screenX+window.outerWidth<=L+12){ if(!BTILE) BTILE=before; bibleWatch(win); toast("성경 창이 가려지지 않게 앱 창을 왼쪽에 나란히 놓았습니다 · 성경 창을 닫으면 원래대로"); return; }
+    let seen=false; try{ seen=localStorage.getItem("seojae-open.sideTip")==="1"; }catch(_){} if(!seen) sideTip(); else toast("이 창은 크기를 바꿀 수 없어 성경 창과 겹칩니다(브라우저 탭·전체 화면일 때) — 아침 서재를 앱으로 설치해 보통 창으로 열면 나란히 놓입니다"); },400); }
+function bibleWatch(win){ clearInterval(BTILE_T); BTILE_T=setInterval(()=>{ let gone=true; try{ gone=!win||win.closed; }catch(_){} if(gone){ clearInterval(BTILE_T); bibleUntile(); } },1500); }
+function bibleUntile(){ if(!BTILE) return; const b=BTILE; BTILE=null; try{ window.resizeTo(b.w,b.h); window.moveTo(b.x,b.y); }catch(_){} }
 function openBible(x){ const u=bibleUrl(x); if(!u) return toast("본문 위치를 알 수 없습니다"); popBible(u); }
 function setBibleVer(v){ S.settings.bibleVer=v; save(); render(); toast(`${bibleVer()[1]}으로 엽니다`); }
 
@@ -10566,6 +10601,8 @@ function planSettings(){
     <p class="hint">${mode==="date"?"달력대로: 「1일째 날짜」부터 읽는 날마다 하루치씩 넘어갑니다. 못 읽은 날은 따라잡을 날로 남습니다.":"그 자리에서: 읽기를 마쳐야 다음 날 분량으로 넘어가서, 빠진 날이 있어도 밀리지 않습니다."}</p>
     <div class="setrow"><span class="k">성경 번역</span>
       <div class="pills">${BVERS.map(([v,n])=>`<button class="pill ${bibleVer()[0]===v?"on":""}" data-tip="「오늘의 말씀」의 책 그림을 누르면 대한성서공회 성경플랫폼에서 ${n}으로 그 장을 엽니다" onclick="setBibleVer('${v}')">${n}</button>`).join("")}</div></div>
+    <div class="setrow pconly"><span class="k">성경 창</span>
+      <div class="pills"><button class="pill ${bibleTileOn()?"on":""}" data-tip="성경 창을 화면 오른쪽 끝에 세로로, 앱 창은 그 왼쪽에 겹치지 않게 놓습니다 — 앱을 눌러도 성경 창이 가려지지 않아 읽으며 밑줄·묵상을 남기기 좋습니다. 설치한 앱 창에서 됩니다" onclick="bibleTileSet(true);render()">나란히 놓기</button><button class="pill ${bibleTileOn()?"":"on"}" data-tip="앱 창 크기는 그대로 두고 성경 창만 엽니다" onclick="bibleTileSet(false);render()">창만 열기</button></div></div>
     <div class="setrow"><span class="k">묵상 본문</span>
       <div class="pills"><button class="pill ${S.settings.qtSource!=="plan"?"on":""}" data-tip="새 묵상을 쓸 때 성서유니온 매일성경의 오늘 본문을 본문 칸에 넣습니다" onclick="S.settings.qtSource='su';save();render()">매일성경 따라</button><button class="pill ${S.settings.qtSource==="plan"?"on":""}" data-tip="새 묵상을 쓸 때 통독표의 오늘 분량을 본문 칸에 넣습니다" onclick="S.settings.qtSource='plan';save();render()">통독표 따라</button></div></div>
     <div class="setrow"><span class="k">읽는 요일</span>
