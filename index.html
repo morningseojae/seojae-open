@@ -565,11 +565,9 @@ body.focus .notebook{margin:0 auto!important;max-width:min(860px,100%)} body.doc
 .sbico.folded .sbpane{opacity:0;transform:scaleX(.2)} .sbico.folded .sbline{opacity:.35} .sbico.folded .sbarr{transform:rotate(180deg)}
 .sidebtn:hover .sbico:not(.folded) .sbpane{transform:scaleX(.55)} .sidebtn:hover .sbico.folded .sbpane{opacity:.12;transform:scaleX(.6)}
 .sidebtn small{font-size:.85em;opacity:.7}
-/* 옆 칸 접기는 늘 옆 칸 맨 위에(2026-11-02 팀장님) — 위 도구 줄 단추는 접혀 있을 때 「옆 칸 펴기」로만 보임 */
-.writegrid>aside .asidefold{position:sticky;top:8px;z-index:4;width:max-content;margin:0 0 10px auto;align-self:flex-end;justify-self:end;background:var(--paper);box-shadow:0 1px 0 var(--edge)}
-body:not(.sidefold) .toolbar #sidebtn{display:none} .studio .toolbar #sidebtn{display:inline-flex} body.staside .studio .toolbar #sidebtn{display:none} .toolbar #sidebtn{margin-left:auto}   /* 접혀 있을 때 「옆 칸 펴기」는 도구 줄 오른쪽 끝 — 옆 칸이 펴질 쪽 */
-@media (min-width:881px){ .writegrid>aside .sidebtn.asidefold{display:flex} }   /* 블록으로 — 오른쪽 끝에 붙게 */
-@media (max-width:880px){ .writegrid>aside .asidefold,.toolbar #sidebtn{display:none!important} }
+/* 옆 칸 접기·펴기 = 한 자리(2026-11-02 팀장님 「왔다 갔다 하지 말고」): 도구 줄 맨 오른쪽 끝(「간직」 뒤) 작은 단추 하나 — 도구 줄은 옆 칸을 접든 펴든 같으니 자리가 그대로, 창이 좁아 줄이 접혀도 마지막 줄 오른쪽 끝 */
+.toolbar #sidebtn{order:99;margin-left:auto;min-height:28px;padding:0 9px;gap:5px;font-size:12px;border:1px solid var(--edge);border-radius:999px;background:var(--paper);box-shadow:0 1px 0 var(--edge)} .toolbar #sidebtn .sbico{width:20px;height:16px}
+.toolbar #sidebtn:hover{border-color:var(--ink-soft)} @media (max-width:880px){ .toolbar #sidebtn{display:none!important} }
 @media (prefers-reduced-motion:reduce){ .sbico *{transition:none!important} }
 body.focus main.wrap{padding-top:40px}
 
@@ -3132,7 +3130,7 @@ async function pushSave(){
 // ───────── 새 버전 자동 새로 고침 ─────────
 // 올릴 때마다 version.json 의 번호가 바뀝니다. 앱이 열릴 때·다시 화면에 올라올 때·5분마다 확인해서,
 // 쓰는 중인 글이 없고 저장이 끝났을 때 새 버전으로 새로 고칩니다.
-const APP_BUILD="fcaacb1048"; const APP_VER="4.4";   // 판 번호: 배포할 때마다 도구/판올리기.py 가 0.1씩 올림 (1.9 다음은 2.0) — 손으로 고치지 말 것
+const APP_BUILD="7bbf789c66"; const APP_VER="4.5";   // 판 번호: 배포할 때마다 도구/판올리기.py 가 0.1씩 올림 (1.9 다음은 2.0) — 손으로 고치지 말 것
 let NEW_BUILD=null, UPDATE_NOTICED=false;
 async function checkUpdate(){
   if(APP_BUILD.startsWith("__")) return;                 // 원본 파일로 열었을 때(고치는 중)는 건너뜁니다
@@ -3696,6 +3694,8 @@ const MANUALS=[["quick","간단 매뉴얼","읽자마자 바로 써 보는 한 �
 // ───────── 새 소식 (공개판, 2026-10-31 팀장님): 중요한 고침은 앱을 열 때 한 번만 쉬운 말로 알림 ─────────
 // 새 소식을 더할 때: NEWS 맨 앞에 넣고 id 는 날짜(같은 날 둘째는 2026-11-02b 처럼 — 글자 순서로 새것이 뒤). 본 소식 id 는 이 기기에만(seojae-open.newsSeen)
 const NEWS=[
+ {id:"2026-11-02j",date:"2026년 11월 2일",title:"옆 칸 접기·펴기가 한 자리에",items:[
+  ["▸","왔다 갔다 하지 않아요","「옆 칸 접기」와 「옆 칸 펴기」가 이제 같은 단추예요. 위 도구 줄 맨 오른쪽 끝에 작게 있고, 누를 때마다 글자만 바뀌어요.","창을 좁혀도 그 줄 오른쪽 끝에 있어요"]]},
  {id:"2026-11-02i",date:"2026년 11월 2일",title:"성경 본문 접기 · 옆 칸 접기 자리",items:[
   ["▴","성경 본문을 완전히 접어요","매일성경 본문 위 「다 펼치기」 옆 「접기 ▴」를 누르면 본문 칸이 접히고, 그 자리에 「▾ 성경 본문 펼치기」 띠만 남아요. 누르면 다시 펴져요.","이 기기에 기억돼요"],
   ["▸","「옆 칸 접기」는 옆 칸 맨 위에","옆 칸(달력·메모)을 접는 단추가 이제 늘 옆 칸 맨 위 오른쪽에 있어요. 접으면 위 도구 줄 오른쪽 끝에 「옆 칸 펴기」가 나와요.","창을 좁혀도 단추가 왼쪽으로 밀려나지 않아요"]]},
@@ -5484,7 +5484,6 @@ write0(){
       </div>
     </div>
     <aside>
-      <button type="button" class="btn small ghost sidebtn asidefold" onclick="toggleSide()" title="옆 칸(달력·글 정보·간직)을 접습니다 — 다시 펴려면 위 도구 줄 「옆 칸 펴기」">${sideBtnInner(false,false)}</button>
       ${(()=>{ let o=track==="bible"; try{ const v=localStorage.getItem("seojae-open.calfold."+track); if(v!=null) o=v==="1"; }catch(_){} return `<details class="calfold" ${o?"open":""} ontoggle="try{localStorage.setItem('seojae-open.calfold.${track}',this.open?'1':'0')}catch(_){}"><summary>${track==="bible"?"묵상 캘린더":"글쓰기 캘린더"}</summary>${calHtml()}</details>`; })()}
       ${track==="bible"?sideTabs(w):""}
       <div class="card-index ${track}${w&&isNovelW(w)?" nv":""}"><div class="nvhide">
