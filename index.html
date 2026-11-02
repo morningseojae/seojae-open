@@ -3111,7 +3111,7 @@ async function pushSave(){
 // ───────── 새 버전 자동 새로 고침 ─────────
 // 올릴 때마다 version.json 의 번호가 바뀝니다. 앱이 열릴 때·다시 화면에 올라올 때·5분마다 확인해서,
 // 쓰는 중인 글이 없고 저장이 끝났을 때 새 버전으로 새로 고칩니다.
-const APP_BUILD="e9469b12b7"; const APP_VER="3.8";   // 판 번호: 배포할 때마다 도구/판올리기.py 가 0.1씩 올림 (1.9 다음은 2.0) — 손으로 고치지 말 것
+const APP_BUILD="721f4a7e31"; const APP_VER="3.9";   // 판 번호: 배포할 때마다 도구/판올리기.py 가 0.1씩 올림 (1.9 다음은 2.0) — 손으로 고치지 말 것
 let NEW_BUILD=null, UPDATE_NOTICED=false;
 async function checkUpdate(){
   if(APP_BUILD.startsWith("__")) return;                 // 원본 파일로 열었을 때(고치는 중)는 건너뜁니다
@@ -3654,6 +3654,8 @@ const MANUALS=[["quick","간단 매뉴얼","읽자마자 바로 써 보는 한 �
 // ───────── 새 소식 (공개판, 2026-10-31 팀장님): 중요한 고침은 앱을 열 때 한 번만 쉬운 말로 알림 ─────────
 // 새 소식을 더할 때: NEWS 맨 앞에 넣고 id 는 날짜(같은 날 둘째는 2026-11-02b 처럼 — 글자 순서로 새것이 뒤). 본 소식 id 는 이 기기에만(seojae-open.newsSeen)
 const NEWS=[
+ {id:"2026-11-02d",date:"2026년 11월 2일",title:"「통독 방법 바꾸기」로 이름이 바뀌었어요",items:[
+  ["⇄","무엇을 하는 단추인지 바로 보여요","성경읽기표 맨 위 「⇄ 방법」이 「⇄ 통독 방법 바꾸기」가 되었어요. 누르면 맥체인·연대기순 같은 성경 통독 방법을 바꾸거나 함께 읽을 방법을 더해요.",""]]},
  {id:"2026-11-02c",date:"2026년 11월 2일",title:"성경읽기표 위 줄이 한결 알기 쉬워요",items:[
   ["📖","왼쪽은 구약·신약, 오른쪽은 보기 방식","성경읽기표 맨 위 왼쪽 「구약 | 신약」으로 읽을 쪽을 고르고, 오른쪽 「장 보기 | 책 고르기」로 보는 방식을 바꿔요.","「장 보기」는 장 동그라미에 읽음 표시, 「책 고르기」는 큼직한 책 칸에서 책을 골라 그 장으로 가요"]]},
  {id:"2026-11-02b",date:"2026년 11월 2일",title:"성경 창은 나란히, 음악은 골라서",items:[
@@ -5699,10 +5701,10 @@ function rtPaint(first){ const ov=$("#rtview"); if(!ov) return; const T=rtBuild(
 function rtPick(i,c){ statHit("rtcheck"); const T=rtBuild(), B=(T.tracks[RT_TAB]||T.tracks[0]).blocks[i], ch=B&&B.list.find(x=>x.c===c); if(!ch) return; const was=rtChRead(ch);
   RT_OPS.add(RT_TAB+":"+i); RT_LAST={tab:RT_TAB,i,c,read:!was}; rtChAct(i,c,was?0:1,true); }
 function rtUndo(){ const L=RT_LAST; if(!L) return; RT_LAST=null; rtChAct(L.i,L.c,L.read?0:1,true); RT_LAST=null; rtPaint(); }
-// 읽기표 맨 위: 읽고 있는 방법 탭(주·함께 읽기·모아 보기) + 「⇄ 방법」(바꾸기·더하기·그만두기)
+// 읽기표 맨 위: 읽고 있는 방법 탭(주·함께 읽기·모아 보기) + 「⇄ 통독 방법 바꾸기」(바꾸기·더하기·그만두기)
 function rtPlanBar(){ const L=planList(); const cur=RT_PLAN;
   const tabs=L.length>1?L.map(x=>`<button type="button" class="${cur===x.j?"on":""}" onclick="rtSwitch(${x.j})">${x.j?"":`<i class="rtmain" title="주 방법">주</i>`}${esc(planName(x.id))}</button>`).join("")+`<button type="button" class="${cur===-1?"on":""}" onclick="rtSwitch(-1)" title="어느 방법으로든 읽은 장을 성경 1,189장에 함께">모아 보기</button>`:"";
-  return `<div class="rtplans">${tabs?`<div class="rtpl" role="tablist" aria-label="읽고 있는 통독 방법">${tabs}</div>`:""}<button type="button" class="rtplbtn${RT_MENU?" on":""}" onclick="RT_MENU=!RT_MENU;RT_PICK=false;rtPaint(true)" aria-expanded="${RT_MENU}" title="읽는 방법을 바꾸거나, 다른 방법을 함께 읽습니다">⇄ ${RT_MENU?"닫기":"방법"}</button></div>`; }
+  return `<div class="rtplans">${tabs?`<div class="rtpl" role="tablist" aria-label="읽고 있는 통독 방법">${tabs}</div>`:""}<button type="button" class="rtplbtn${RT_MENU?" on":""}" onclick="RT_MENU=!RT_MENU;RT_PICK=false;rtPaint(true)" aria-expanded="${RT_MENU}" title="성경 통독 방법(맥체인·연대기순 등)을 바꾸거나, 다른 방법을 함께 읽습니다">⇄ ${RT_MENU?"닫기":"통독 방법 바꾸기"}</button></div>`; }
 function rtSwitch(j){ RT_PLAN=j; RT_TAB=0; RT_PT=null; RT_PICK=false; RT_MENU=false; RT_LAST=null; RT_OPS=new Set(); rtPaint(true); }
 function rtMenuPlans(){ const L=planList(), mainId=L[0].id;
   return `<div class="rtpmenu"><p class="rtpgn">통독 방법 — 바꾸거나 함께 읽기</p>${PLANS.map(pl=>{ const inAlso=L.find(x=>x.id===pl.id&&x.j>0), isMain=pl.id===mainId, st=isMain||inAlso?null:planState(pl.id), kept=st?readDays(st):0;
@@ -10595,7 +10597,7 @@ function planSettings(){
     <div class="setrow alsoset"><span class="k">함께 읽기</span><div style="flex:1;min-width:0">
       ${plansAlso().map((x,i)=>{ const j=i+1, d=withPlan(j,()=>({i:todayIdx(),len:planDays().length,mode:S.settings.plan.mode})); return `<div class="alsoitem"><b>${esc(planName(x.id))}</b><span class="muted">${d.i+1}일째 / ${d.len}일 · ${d.mode==="date"?"달력대로":"이어 읽기"}</span><span class="spacer"></span><button class="btn small" onclick="planAlsoMain(${j})" title="이 방법을 주 방법으로(오늘 화면 맨 위·아침 메일)">주 방법으로</button><button class="btn small ghost" onclick="planAlsoDrop(${j})">그만 읽기</button></div>`; }).join("")}
       ${plansAlso().length<2?`<label class="row" style="gap:6px;margin:4px 0 0"><select onchange="if(this.value){ planAlsoAdd(this.value); }" style="width:auto;max-width:100%"><option value="">＋ 함께 읽을 방법 더하기…</option>${PLANS.filter(pl=>pl.id!==p.id&&!plansAlso().some(x=>x.id===pl.id)).map(pl=>`<option value="${pl.id}">${esc(pl.name)}${readDays(planState(pl.id))?` (진도 ${readDays(planState(pl.id))}일 보관)`:""}</option>`).join("")}</select></label>`:""}
-      <p class="hint" style="margin:6px 0 0">예) 맥체인 + 신약 90일, 연대기순 + 시편·잠언 한 달. 방법마다 진도와 장 체크가 따로 간직되고, 「오늘」 화면에 함께 읽는 통독 칸이 생깁니다. 할 일 줄 「성경 읽기」는 모두 읽으면 체크됩니다. 성경읽기표 맨 위 「⇄ 방법」에서도 바꿀 수 있습니다.</p></div></div>
+      <p class="hint" style="margin:6px 0 0">예) 맥체인 + 신약 90일, 연대기순 + 시편·잠언 한 달. 방법마다 진도와 장 체크가 따로 간직되고, 「오늘」 화면에 함께 읽는 통독 칸이 생깁니다. 할 일 줄 「성경 읽기」는 모두 읽으면 체크됩니다. 성경읽기표 맨 위 「⇄ 통독 방법 바꾸기」에서도 바꿀 수 있습니다.</p></div></div>
     <div class="setrow"><span class="k">기간</span>
       <div class="pills"><button class="pill ${p.spanM?"":"on"}" data-tip="이 방법의 원래 읽기표 그대로 (${lenOf(cur)}일)" onclick="clearSpan()">기본<small>${lenOf(cur)}일</small></button>${SPANS.map(([m,n])=>{ const c=spanCalc(m); return `<button class="pill ${p.spanM===m?"on":""}" data-tip="${c.until}까지 · 읽는 날 ${c.rd}일 · 하루 약 ${c.per}장" onclick="applySpan(${m})">${n}<small>하루 약 ${Math.max(1,Math.round(c.per))}장</small></button>`; }).join("")}
 </div>
