@@ -1593,6 +1593,7 @@ body.dfull .dbook>.diary>.pg>.dfolio{position:static;order:99;margin-top:auto;pa
 /* 재생 목록 접기·펴기 · 화면보다 길면 플레이어 안에서 넘겨 봄 */
 .mplayer{max-height:calc(100dvh - 24px);overflow-y:auto;overscroll-behavior:contain} @media (max-width:700px){ .mplayer{max-height:calc(100dvh - 96px - env(safe-area-inset-bottom))} } .mplayer[data-list="0"] .mp-ccm{display:none}
 .mplayer .mp-lt{display:flex;align-items:center;gap:6px;width:100%;border:0;border-top:1px dashed var(--edge);background:transparent;padding:6px 2px 2px;font:700 12px/1 var(--ui-font,sans-serif);color:var(--ink-soft);cursor:pointer;text-align:left} .mplayer .mp-lt .mp-lta{margin-left:auto}
+.mplayer .mp-ytapp{justify-self:center;border:1px solid var(--edge);border-radius:999px;background:var(--paper);color:var(--ink-soft);font:600 12px/1 var(--ui-font,sans-serif);padding:6px 12px;cursor:pointer;box-shadow:0 1px 0 var(--edge)} .mplayer .mp-ytapp:hover{color:#c00;border-color:currentColor} .mplayer .mp-ytapp:active{transform:translateY(1px);box-shadow:none} .mplayer.min .mp-ytapp{font-size:11px;padding:5px 9px}
 .mplayer .mp-lt:hover{color:var(--sepia)} .mplayer .spl-t [data-list].on{color:var(--sepia)}
 .mplayer.min .mp-ccm{width:200px;max-height:170px} .mplayer.min .ccmtabs{grid-template-columns:1fr 1fr} .mplayer.min .mp-ccm .ci small{display:none}   /* 「작게」: 영상 아래 200px 폭에 짧게 */
 .mplayer.min .spl-t{gap:2px;min-height:22px} .mplayer.min .spl-t div,.mplayer.min .mp-note,.mplayer.min .mp-lt{display:none} .mplayer.min .spl-ic{font-size:13px;padding-left:4px}
@@ -3124,7 +3125,7 @@ async function pushSave(){
 // ───────── 새 버전 자동 새로 고침 ─────────
 // 올릴 때마다 version.json 의 번호가 바뀝니다. 앱이 열릴 때·다시 화면에 올라올 때·5분마다 확인해서,
 // 쓰는 중인 글이 없고 저장이 끝났을 때 새 버전으로 새로 고칩니다.
-const APP_BUILD="4525b1e526"; const APP_VER="4.2";   // 판 번호: 배포할 때마다 도구/판올리기.py 가 0.1씩 올림 (1.9 다음은 2.0) — 손으로 고치지 말 것
+const APP_BUILD="50619b791f"; const APP_VER="4.3";   // 판 번호: 배포할 때마다 도구/판올리기.py 가 0.1씩 올림 (1.9 다음은 2.0) — 손으로 고치지 말 것
 let NEW_BUILD=null, UPDATE_NOTICED=false;
 async function checkUpdate(){
   if(APP_BUILD.startsWith("__")) return;                 // 원본 파일로 열었을 때(고치는 중)는 건너뜁니다
@@ -3424,7 +3425,7 @@ function mpCard(){ let el=$("#mplayer");
   if(!el){ el=document.createElement("div"); el.id="mplayer"; el.className="suplayer mplayer"; el.hidden=true;
     el.innerHTML=`<div class="spl-t"><span class="spl-ic">♪</span><div><b id="mp-t">찬송가·CCM</b><small id="mp-s">유튜브뮤직 음원 우선</small></div><span class="spacer"></span><button data-list title="재생 목록 접기 · 펴기">☰</button><button data-min title="크기 바꾸기 (작게 → 보통 → 크게)">▾</button><button data-lock title="자리 고정 (끌리지 않게)">📌</button><button data-menu title="크기·자리">⋯</button><button data-x title="닫기 (멈춤)">✕</button></div>
       <div class="mp-menu" hidden><div class="r"><span>크기</span><button data-sz="s">작게</button><button data-sz="m">보통</button><button data-sz="l">크게</button></div><div class="r"><span>자리</span><button data-dk="tl" title="왼쪽 위">↖</button><button data-dk="tr" title="오른쪽 위">↗</button><button data-dk="bl" title="왼쪽 아래">↙</button><button data-dk="br" title="오른쪽 아래">↘</button><button data-dk="" title="끌어서 둔 곳">자유</button></div><div class="r"><span>고정</span><button data-lk>📌 끌리지 않게</button></div><div class="r"><span>재생</span><button data-auto="1" title="곡이 끝나면 다음 곡 (CCM 목록 차례로 · 찬송가는 한 곡만)">이어 듣기</button><button data-auto="0">한 곡씩</button><button data-auto="r" title="지금 곡을 끝나면 처음부터 다시 (찬송을 외우며 부를 때)">한 곡 반복</button></div></div>
-      <div class="mp-vid" id="mpbox"><span>▶를 누르면 여기서 재생됩니다</span></div><div class="mpkind" role="tablist" aria-label="무엇을 들을까요"><button type="button" role="tab" data-kind="hymn" title="오늘의 찬송가를 듣습니다">찬송가</button><button type="button" role="tab" data-kind="ccm" title="찬송가를 뺀 CCM 7곡을 듣습니다">CCM</button></div><div class="mp-ctl"><button data-prev title="이전 곡 (3초 넘게 들었으면 이 곡 처음으로)">⏮&#xFE0E;</button><button data-pp class="pp" title="재생 · 멈춤">▶</button><button data-next title="다음 곡">⏭&#xFE0E;</button><small id="mp-pos"></small></div><button type="button" class="mp-lt" data-lt aria-controls="mpccm" title="재생 목록 접기 · 펴기">☰ 재생 목록 <span class="mp-lta">▴</span></button><div class="mp-ccm" id="mpccm"></div><small class="mp-note">유튜브 영상 · 위 줄을 잡고 옮길 수 있습니다</small>`;
+      <div class="mp-vid" id="mpbox"><span>▶를 누르면 여기서 재생됩니다</span></div><div class="mpkind" role="tablist" aria-label="무엇을 들을까요"><button type="button" role="tab" data-kind="hymn" title="오늘의 찬송가를 듣습니다">찬송가</button><button type="button" role="tab" data-kind="ccm" title="찬송가를 뺀 CCM 7곡을 듣습니다">CCM</button></div><div class="mp-ctl"><button data-prev title="이전 곡 (3초 넘게 들었으면 이 곡 처음으로)">⏮&#xFE0E;</button><button data-pp class="pp" title="재생 · 멈춤">▶</button><button data-next title="다음 곡">⏭&#xFE0E;</button><small id="mp-pos"></small></div><button type="button" class="mp-lt" data-lt aria-controls="mpccm" title="재생 목록 접기 · 펴기">☰ 재생 목록 <span class="mp-lta">▴</span></button><div class="mp-ccm" id="mpccm"></div><button type="button" class="mp-ytapp" data-ytapp title="지금 곡부터 남은 곡을 한 묶음으로 유튜브 앱(또는 유튜브 사이트)에서 이어 듣습니다 — 유튜브 프리미엄이면 화면을 꺼도 계속 들립니다">▶ 유튜브 앱에서 이어 듣기 ↗</button><small class="mp-note">유튜브 영상 · 위 줄을 잡고 옮길 수 있습니다</small>`;
     document.body.appendChild(el); el.querySelector("[data-x]").onclick=mpClose; suDrag(el,"seojae-open.mpPos");
     const cyc={s:"m",m:"l",l:"s"};
     el.querySelector("[data-min]").onclick=()=>mpSize(cyc[el.dataset.size||"m"]);
@@ -3436,6 +3437,7 @@ function mpCard(){ let el=$("#mplayer");
     el.querySelectorAll("[data-auto]").forEach(b=>b.onclick=()=>{ try{ localStorage.setItem("seojae-open.mpAuto",b.dataset.auto); }catch(_){} autoMark(); paintMpCtl(); toast({"1":"곡이 끝나면 다음 곡을 이어서 틉니다","0":"한 곡씩 틉니다","r":"지금 곡을 되풀이해 틉니다"}[mpAutoMode()]); }); autoMark();
     el.querySelector("[data-prev]").onclick=()=>mpSkip(-1); el.querySelector("[data-next]").onclick=()=>mpSkip(1);
     el.querySelectorAll("[data-list],[data-lt]").forEach(b=>b.onclick=()=>mpList(el.dataset.list==="0"));
+    el.querySelector("[data-ytapp]").onclick=mpYtApp;
     el.querySelector("[data-pp]").onclick=mpPP; el.querySelectorAll("[data-kind]").forEach(b=>b.onclick=()=>mpKind(b.dataset.kind));
     document.addEventListener("pointerdown",e=>{ const m=el.querySelector(".mp-menu"); if(!m.hidden&&!e.target.closest("#mplayer .mp-menu,#mplayer [data-menu]")) m.hidden=true; });
     addEventListener("resize",()=>{ if(!el.hidden) mpPlace(el); });
@@ -3447,6 +3449,15 @@ function mpCard(){ let el=$("#mplayer");
 // 「작게」에서도 목록은 영상 아래(영상 위에 겹치면 유튜브 규칙 — 재생 화면을 가리지 않기 — 에 걸림)
 function mpList(open,quiet){ const el=$("#mplayer"); if(!el) return; el.dataset.list=open?"1":"0"; el.querySelectorAll("[data-list],[data-lt]").forEach(b=>{ b.classList.toggle("on",open); b.setAttribute("aria-expanded",open); });
   const a=el.querySelector(".mp-lta"); if(a) a.textContent=open?"▴":"▾"; if(!quiet) try{ localStorage.setItem("seojae-open.mpList",open?"1":"0"); }catch(_){} mpPlace(el); }
+// 유튜브 앱에서 이어 듣기(2026-11-02 팀장님 허락 — 예전 「플레이어 안에 유튜브로 넘기는 단추 없음」을 바꿈): 앱 안 재생기는 프리미엄인지 알 수 없고,
+// 화면을 꺼도 들리는 것(백그라운드 재생)은 유튜브·유튜브뮤직 앱 안에서만 되는 프리미엄 기능 → 지금 곡부터 남은 곡을 youtube.com/watch_videos 한 묶음으로 넘김(휴대폰은 유튜브 앱이 열림). 앱 안 재생은 멈춤(소리 겹침 막기)
+function mpYtApp(){ const L=MUSIC.ccm||[], m=String(MUSIC.slot||"").match(/^ccm:(\d+)$/); let url="";
+  if(MUSIC.view==="ccm"&&L.length){ const from=m?+m[1]:0, ids=L.slice(from).map(c=>c.id).filter(x=>/^[\w-]{11}$/.test(x||""));
+    if(ids.length===1) url="https://www.youtube.com/watch?v="+ids[0]; else if(ids.length) url="https://www.youtube.com/watch_videos?video_ids="+ids.join(","); }
+  else { const v=MUSIC.slot==="hymn"&&MUSIC.cur?MUSIC.cur:MUSIC.v?.id; if(v&&/^[\w-]{11}$/.test(v)){ let t=0; try{ t=Math.floor(MP?.getCurrentTime?.()||0); }catch(_){} url="https://www.youtube.com/watch?v="+v+(t>3?"&t="+t+"s":""); } }
+  if(!url) return toast(MUSIC.view==="ccm"?"먼저 CCM 목록을 받아 주세요":"먼저 ▶로 찬송가를 한 번 틀어 주세요");
+  try{ if(MUSIC.playing) MP?.pauseVideo(); }catch(_){} MUSIC.playing=false; paintHymnCtl(); paintCcm();
+  window.open(url,"_blank","noopener"); toast("유튜브에서 이어 듣습니다 — 프리미엄이면 화면을 꺼도 들려요"); }
 // 크기: s 작게(영상 200×200만) · m 보통(영상 224×200 + 목록) · l 크게(영상 330×330 + 목록). 유튜브 규칙상 영상은 200×200보다 작게·가리게 하지 않음
 function mpSize(z,quiet){ const el=$("#mplayer"); if(!el) return; z=["s","m","l"].includes(z)?z:"m"; el.dataset.size=z; el.classList.toggle("min",z==="s");
   try{ MP?.setSize?.(z==="l"?330:z==="s"?200:224,z==="l"?330:200); }catch(_){}
@@ -3678,6 +3689,8 @@ const MANUALS=[["quick","간단 매뉴얼","읽자마자 바로 써 보는 한 �
 // ───────── 새 소식 (공개판, 2026-10-31 팀장님): 중요한 고침은 앱을 열 때 한 번만 쉬운 말로 알림 ─────────
 // 새 소식을 더할 때: NEWS 맨 앞에 넣고 id 는 날짜(같은 날 둘째는 2026-11-02b 처럼 — 글자 순서로 새것이 뒤). 본 소식 id 는 이 기기에만(seojae-open.newsSeen)
 const NEWS=[
+ {id:"2026-11-02h",date:"2026년 11월 2일",title:"유튜브 앱에서 이어 들어요",items:[
+  ["▶","「유튜브 앱에서 이어 듣기」","음악 플레이어 아래 단추를 누르면 지금 듣던 곡부터 남은 곡이 한 묶음으로 유튜브(휴대폰은 유튜브 앱)에서 이어져요. 앱 안 재생은 멈춰서 소리가 겹치지 않아요.","유튜브 프리미엄이면 화면을 꺼도 계속 들려요 · 찬송가는 듣던 자리부터"]]},
  {id:"2026-11-02g",date:"2026년 11월 2일",title:"음악 플레이어 재생 목록을 접고 펴요",items:[
   ["☰","어느 크기에서나 재생 목록","플레이어를 「작게」·「보통」·「크게」 어느 크기로 두어도 재생 목록이 보여요. 「작게」에서는 영상 바로 아래에 붙어요.","유튜브 규칙상 영상 위에 겹쳐 띄우지는 않아요"],
   ["▴","접고 펴기","플레이어 위 ☰ 또는 목록 머리 「재생 목록 ▴」를 누르면 목록을 접고 펴요. 이 기기에 기억돼요.","플레이어가 화면보다 길면 플레이어 안에서 위아래로 넘겨 보세요"]]},
