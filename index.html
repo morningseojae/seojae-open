@@ -1937,7 +1937,8 @@ body.focus .stside,body.focus .sttabs{display:none} body.focus .studio{grid-temp
 #aipanel .aif{padding:0 14px 10px;font-size:11.5px;color:var(--faint)} #aipanel .ctxsel{margin:6px 14px 0;font-size:12.5px;color:var(--ink-soft);background:color-mix(in srgb,#7a5aa8 8%,transparent);border-radius:8px;padding:4px 8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 #aipanel .dots i{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--faint);margin:0 2px;animation:aid 1s infinite} #aipanel .dots i:nth-child(2){animation-delay:.15s} #aipanel .dots i:nth-child(3){animation-delay:.3s} @keyframes aid{50%{opacity:.25}}
 @media (min-width:1100px){ body.aiopen main.wrap,body.aiopen header .wrap{max-width:none;margin-left:max(16px,calc(50vw - 790px));margin-right:432px} }   /* 위 메뉴(글쓰기·AI 단추)도 함께 */   /* AI 창이 열리면 본문을 왼쪽으로 붙여 겹치지 않게 */
-@media (max-width:700px){ #aipanel{left:0;right:0;top:auto;bottom:0;width:auto;height:78vh;border-radius:16px 16px 0 0} }
+@media (max-width:700px){ #aipanel{left:0;right:0;top:auto;bottom:0;width:auto;height:78vh;border-radius:16px 16px 0 0;font-size:13px;line-height:1.6}
+  #aipanel .aih b{font-size:14px} #aipanel .aihint,#aipanel .aikind{font-size:11px} #aipanel .sug{font-size:14px} #aipanel .aif{font-size:10.5px} #aipanel .rssrc{font-size:11px} #aipanel textarea::placeholder{font-size:13px} }   /* 휴대폰 AI 창: 글자를 한 단계 작게 (입력 칸 글자는 16px 그대로 — iOS 확대 막기, 자리 표시 글만 작게) */
 .ctxmenu{position:fixed;z-index:120;min-width:220px;max-width:min(320px,calc(100vw - 16px));max-height:calc(100vh - 16px);overflow:auto;background:var(--paper) var(--grain);border:1px solid var(--edge);border-radius:10px;box-shadow:0 14px 34px -10px rgba(0,0,0,.45);padding:5px;font:14.5px/1.35 -apple-system,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;color:var(--ink)}
 .ctxmenu .cth{padding:6px 10px 4px;font-size:12.5px;color:var(--faint);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .ctxmenu button{display:flex;align-items:center;gap:8px;width:100%;text-align:left;border:0;background:none;color:inherit;font:inherit;padding:7px 10px;border-radius:6px;cursor:pointer}
@@ -3130,7 +3131,7 @@ async function pushSave(){
 // ───────── 새 버전 자동 새로 고침 ─────────
 // 올릴 때마다 version.json 의 번호가 바뀝니다. 앱이 열릴 때·다시 화면에 올라올 때·5분마다 확인해서,
 // 쓰는 중인 글이 없고 저장이 끝났을 때 새 버전으로 새로 고칩니다.
-const APP_BUILD="7bbf789c66"; const APP_VER="4.5";   // 판 번호: 배포할 때마다 도구/판올리기.py 가 0.1씩 올림 (1.9 다음은 2.0) — 손으로 고치지 말 것
+const APP_BUILD="f1799f5af7"; const APP_VER="4.6";   // 판 번호: 배포할 때마다 도구/판올리기.py 가 0.1씩 올림 (1.9 다음은 2.0) — 손으로 고치지 말 것
 let NEW_BUILD=null, UPDATE_NOTICED=false;
 async function checkUpdate(){
   if(APP_BUILD.startsWith("__")) return;                 // 원본 파일로 열었을 때(고치는 중)는 건너뜁니다
@@ -3694,6 +3695,9 @@ const MANUALS=[["quick","간단 매뉴얼","읽자마자 바로 써 보는 한 �
 // ───────── 새 소식 (공개판, 2026-10-31 팀장님): 중요한 고침은 앱을 열 때 한 번만 쉬운 말로 알림 ─────────
 // 새 소식을 더할 때: NEWS 맨 앞에 넣고 id 는 날짜(같은 날 둘째는 2026-11-02b 처럼 — 글자 순서로 새것이 뒤). 본 소식 id 는 이 기기에만(seojae-open.newsSeen)
 const NEWS=[
+ {id:"2026-11-03",date:"2026년 11월 3일",title:"원고지 끝줄 · 휴대폰 AI 창 글자",items:[
+  ["▦","원고지 마지막 줄도 칸 안에","휴대폰에서 원고지로 글을 처음 열면 마지막 줄이 원고지 아래로 삐져나오던 것을 고쳤어요. 이제 끝줄까지 칸 안에 들어가요.","폭이 바뀌어도 칸 줄 수만큼 종이가 늘어나요"],
+  ["✦","AI 창 글자를 작게","휴대폰에서 AI 도우미 창의 글자를 한 단계 줄였어요. 한 화면에 대화가 더 많이 보여요.","글 넣는 칸은 누를 때 화면이 커지지 않게 그대로예요"]]},
  {id:"2026-11-02j",date:"2026년 11월 2일",title:"옆 칸 접기·펴기가 한 자리에",items:[
   ["▸","왔다 갔다 하지 않아요","「옆 칸 접기」와 「옆 칸 펴기」가 이제 같은 단추예요. 위 도구 줄 맨 오른쪽 끝에 작게 있고, 누를 때마다 글자만 바뀌어요.","창을 좁혀도 그 줄 오른쪽 끝에 있어요"]]},
  {id:"2026-11-02i",date:"2026년 11월 2일",title:"성경 본문 접기 · 옆 칸 접기 자리",items:[
@@ -5935,7 +5939,7 @@ function updatePage(){ let p=+$("#pg").value; const b=curBook(); if(!b) return; 
 let HEADS_RAF=0;
 function growFit(t){ if(track!=="bible"||innerWidth<=880||document.body.classList.contains("sidefold")||document.body.classList.contains("readmode")||document.body.classList.contains("focus")) return 0;   // 묵상: 공책 아래가 오른쪽 칸보다 짧으면 글 칸을 그만큼 늘림
   const a=$(".writegrid>aside"), nb=t.closest(".notebook"); if(!a||!nb||!a.offsetHeight) return 0; const need=a.getBoundingClientRect().bottom-nb.getBoundingClientRect().bottom; return need>0?t.offsetHeight+need:0; }
-function grow(){ const t=$("#wbody"); if(!t) return; const y=scrollY; t.style.height="auto"; { const h=Math.max(wgOn(t)?wgModel(t).length*t._wg.L+t._wg.pt+t._wg.L:t.scrollHeight,innerHeight*.62,growFit(t)); t.style.height=(wgOn(t)?t._wg.pt+Math.ceil((h-t._wg.pt)/t._wg.L)*t._wg.L+2:h)+"px"; } if(scrollY!==y) scrollTo(0,y); if(!HEADS_RAF){ HEADS_RAF=requestAnimationFrame(()=>{ HEADS_RAF=0; paintHeads(); }); setTimeout(()=>{ if(HEADS_RAF){ cancelAnimationFrame(HEADS_RAF); HEADS_RAF=0; paintHeads(); } },200); } }   // 화면 그리기가 늦어도(가려진 창·느린 기기) 0.2초 안에는 거울 층을 그림
+function grow(){ const t=$("#wbody"); if(!t) return; const y=scrollY; wongoFit(t); t.style.height="auto"; { const h=Math.max(wgOn(t)?wgModel(t).length*t._wg.L+t._wg.pt+t._wg.L:t.scrollHeight,innerHeight*.62,growFit(t)); t.style.height=(wgOn(t)?t._wg.pt+Math.ceil((h-t._wg.pt)/t._wg.L)*t._wg.L+2:h)+"px"; } if(scrollY!==y) scrollTo(0,y); if(!HEADS_RAF){ HEADS_RAF=requestAnimationFrame(()=>{ HEADS_RAF=0; paintHeads(); }); setTimeout(()=>{ if(HEADS_RAF){ cancelAnimationFrame(HEADS_RAF); HEADS_RAF=0; paintHeads(); } },200); } }   // 화면 그리기가 늦어도(가려진 창·느린 기기) 0.2초 안에는 거울 층을 그림
 // 소제목(■ 줄)과 주석 요약의 ◆ 줄을 굵게: 줄마다 모양을 따로 두지 않고, 같은 자리에 투명한 거울 층을 겹쳐 그 줄의 한글만 굵은 글자로 한 번 더 그립니다
 // (한글은 굵게 해도 글자 폭이 같아 정확히 겹칩니다. 거울 층은 맞춤법·AI 표시·네 자리도 함께 그림 — 꾸밈 자체는 글 칸(<w-ed>)이 모양째 보임)
 const HEAD_RE=/^\s*(■|◆|▣|※\s*주석 요약|※\s*요약 끝)/;
@@ -5948,7 +5952,7 @@ function paintHeads(){
   const t=$("#wbody"); if(!t) return; let m=$("#hmirror"); if(!m){ m=document.createElement("div"); m.id="hmirror"; m.className="hmirror"; m.setAttribute("aria-hidden","true"); t.after(m); }
   if(t.style.display==="none"){ m.style.display="none"; return; } m.style.display="";
   wongoFit(t); const cs=getComputedStyle(t); m.style.cssText=`top:${t.offsetTop}px;left:${t.offsetLeft}px;width:${t.clientWidth}px;padding:${cs.padding};font:${cs.font};letter-spacing:${cs.letterSpacing};word-spacing:${cs.wordSpacing};color:${cs.color};text-align:${cs.textAlign}`;
-  if(wgOn(t)){ m.style.color="var(--penink,var(--ink))"; wgPaint(t,m); fnPanePaint(t); sugDraw(); histPaint(); return; } m.classList.remove("wgm");
+  if(wgOn(t)){ m.style.color="var(--penink,var(--ink))"; const n=wgPaint(t,m); if(t.offsetHeight&&t._wg.pt+n*t._wg.L>t.offsetHeight) grow(); fnPanePaint(t); sugDraw(); histPaint(); return; }   // 칸 줄 수가 글 칸 높이보다 많아지면(폭·글꼴이 바뀜) 높이를 다시 m.classList.remove("wgm");
   const errs=spellLines(t.value), rf=RF&&!RF.stale?RF:null;
   const RG=[...(rf?[{s:rf.s,e:rf.e,c:"rf"}]:[]),...sugRanges(t.value),...styRanges(t.value),...(AIU_ON?aiuRanges(t.value):[])].sort((a,b)=>a.s-b.s).filter((r,i,A)=>!A.slice(0,i).some(q=>q.e>r.s));   // AI 다듬기(보라) · AI 제안(파랑) · 문체(노랑 물결)
   m.innerHTML=edMirrorHtml(t,errs,RG,ownZones(t.value)); aiuPaint();   // 글 칸과 같은 모양(꾸밈째)으로 그리고 표시만 보이게
