@@ -3148,7 +3148,7 @@ async function pushSave(){
 // ───────── 새 버전 자동 새로 고침 ─────────
 // 올릴 때마다 version.json 의 번호가 바뀝니다. 앱이 열릴 때·다시 화면에 올라올 때·5분마다 확인해서,
 // 쓰는 중인 글이 없고 저장이 끝났을 때 새 버전으로 새로 고칩니다.
-const APP_BUILD="c52472cb1c"; const APP_VER="4.7";   // 판 번호: 배포할 때마다 도구/판올리기.py 가 0.1씩 올림 (1.9 다음은 2.0) — 손으로 고치지 말 것
+const APP_BUILD="39a3409362"; const APP_VER="4.8";   // 판 번호: 배포할 때마다 도구/판올리기.py 가 0.1씩 올림 (1.9 다음은 2.0) — 손으로 고치지 말 것
 let NEW_BUILD=null, UPDATE_NOTICED=false;
 async function checkUpdate(){
   if(APP_BUILD.startsWith("__")) return;                 // 원본 파일로 열었을 때(고치는 중)는 건너뜁니다
@@ -3712,6 +3712,9 @@ const MANUALS=[["quick","간단 매뉴얼","읽자마자 바로 써 보는 한 �
 // ───────── 새 소식 (공개판, 2026-10-31 팀장님): 중요한 고침은 앱을 열 때 한 번만 쉬운 말로 알림 ─────────
 // 새 소식을 더할 때: NEWS 맨 앞에 넣고 id 는 날짜(같은 날 둘째는 2026-11-02b 처럼 — 글자 순서로 새것이 뒤). 본 소식 id 는 이 기기에만(seojae-open.newsSeen)
 const NEWS=[
+ {id:"2026-11-05b",date:"2026년 11월 5일",title:"목차 순서는 위계대로",items:[
+  ["⇅","묶인 것은 함께 옮겨져요","「부」를 옮기면 안의 장과 글이 함께, 「장」을 옮기면 안의 글이 함께 옮겨져요. ↑↓, ⋯, 끌어 옮기기 모두 같아요.","전에는 줄 하나만 옮겨져 글이 다른 칸으로 끼어들 수 있었어요"],
+  ["▦","각 위계에 맞는 자리로만","부는 다른 부의 앞뒤로, 장은 장 자리로만 움직여요. 부가 하나뿐이면 옮길 곳이 없어 ↑↓가 흐리게 보여요.","글은 끝에 닿으면 앞뒤 장으로 넘어가요"]]},
  {id:"2026-11-05",date:"2026년 11월 5일",title:"목차 위계 · 틀 빼기 · 원고지 꾹 눌러 고르기",items:[
   ["▥","원고지에서 꾹 눌러 고르기","휴대폰 원고지 모드에서 글자를 꾹 누르면 낱말이 골라져요. 떼지 않고 끌면 넓어지고, 뗀 뒤에는 양 끝 파란 손잡이로 넓히고 좁혀요.","고르면 꾸밈 막대도 그대로 나와요"],
   ["▦","목차가 한눈에","글방 목차를 다시 그렸어요. 「부」는 색 띠와 바탕으로, 「장」은 그 아래 들여서, 글은 세로선에 구슬처럼 꿰어 보여요.","↑↓·이름·빼기는 줄 끝 ⋯ 안으로. 순서를 여러 번 옮길 때는 「⇅ 순서 바꾸기」를 켜세요"],
@@ -7085,7 +7088,7 @@ function freezeMs(id){ const m=S.manuscripts.find(x=>x.id===id);
   m.items=msList(m).map(w=>w.id); delete m.rule; delete m.order; save(); toast("직접 다듬는 원고로 바꿨습니다"); render(); }
 function setOrder(id,o){ const m=S.manuscripts.find(x=>x.id===id); m.order=o; msChanged(m); }
 function msAdd(mid,wid){ if(!wid) return; const m=S.manuscripts.find(x=>x.id===mid); if(!m.items.includes(wid)) m.items.push(wid); msChanged(m); }
-function msMove(mid,wid,dir){ const m=S.manuscripts.find(x=>x.id===mid), k=m.items.indexOf(wid), j=k+dir; if(j<0||j>=m.items.length) return; [m.items[k],m.items[j]]=[m.items[j],m.items[k]]; msChanged(m); }
+function msMove(mid,wid,dir){ const m=S.manuscripts.find(x=>x.id===mid), n=m&&msStepTo(m,wid,dir); if(n){ m.items=n; msChanged(m); } }
 function msRemove(mid,wid){ const m=S.manuscripts.find(x=>x.id===mid); m.items=m.items.filter(x=>x!==wid); msChanged(m,S.writings.filter(w=>w.id===wid)); }
 // 원고 휴지통: m.trashed(시각)만 붙이고 30일 뒤 완전히 지움. 「원고와 꼭지 글 모두」면 꼭지 글에도 trashed + trashedWith(원고 번호) — 원고를 되살리면 함께 돌아옴
 function delMs(id){ const m=S.manuscripts.find(x=>x.id===id); if(!m) return; const ws=m.rule?[]:msList(m), mine=ws.filter(w=>!liveMs().some(o=>o.id!==id&&!o.rule&&(o.items||[]).includes(w.id)));
@@ -7896,10 +7899,24 @@ async function renamePart(mid,pid){ const m=S.manuscripts.find(x=>x.id===mid), p
 function delPart(mid,pid){ const m=S.manuscripts.find(x=>x.id===mid); if(!m) return; if(!confirm("이 구분을 지울까요? 안에 있던 글은 그대로 남습니다.")) return;
   m.items=m.items.filter(x=>x!=="part:"+pid); if(m.parts) delete m.parts[pid]; save(); render(); }
 // 끌어 옮기기: k 를 before 앞으로 (before 가 없으면 맨 뒤)
-function msReorder(mid,k,before){ const m=S.manuscripts.find(x=>x.id===mid); if(!m||m.rule||k===before) return;
-  const a=m.items.filter(x=>x!==k), i=before?a.indexOf(before):-1; if(i<0) a.push(k); else a.splice(i,0,k); m.items=a; save(); render(); }
+function msReorder(mid,k,before){ const m=S.manuscripts.find(x=>x.id===mid); if(!m||m.rule||k===before) return; const blk=msBlock(m,k), a=m.items.filter(x=>!blk.includes(x)); let i=before&&!blk.includes(before)?a.indexOf(before):-1; if(i<0) i=a.length;
+  const at=msPlaceAt(m,k,a,i); if(at==null) return toast("같은 단계에서 옮길 자리가 없습니다"); a.splice(at,0,...blk); if(a.join()===m.items.join()) return; m.items=a; m.updated=new Date().toISOString(); save(); render(); }
 const msShown=(m,x)=>isPart(x)?!!(m.parts||{})[x.slice(5)]:S.writings.some(w=>w.id===x&&!w.trashed);   // 차례에 보이는 줄인가 (휴지통 글·지운 구분은 숨음)
-function roomStep(mid,k,dir){ const m=S.manuscripts.find(x=>x.id===mid); if(!m||m.rule) return; const a=m.items, i=a.indexOf(k); let j=i+dir; while(j>=0&&j<a.length&&!msShown(m,a[j])) j+=dir; if(i<0||j<0||j>=a.length) return; [a[i],a[j]]=[a[j],a[i]]; m.updated=new Date().toISOString(); save(); render(); }
+// 목차 옮기기 규칙 (2026-11-05 팀장님: 위계로 묶인 것은 함께, 각 위계에 해당하는 곳으로만) — ↑↓·⋯·끌어 옮기기가 모두 이 규칙
+// 부: 안의 장·글과 함께, 다른 부의 앞뒤로만(부가 하나면 못 옮김) · 장: 안의 글과 함께, 장 자리로만(부 바로 아래 글 앞으로는 안 감, 맨 첫 부 위로도 안 감) · 글: 어느 칸 안이든 글 자리
+const msLv=(m,x)=>isPart(x)&&m.parts?.[x.slice(5)]?(m.parts[x.slice(5)].lv||1):0;
+function msStops(m,rest,lv){ const out=[], has1=rest.some(x=>msLv(m,x)===1); let seen1=false;
+  if(lv===1){ rest.forEach((x,i)=>{ if(msLv(m,x)===1) out.push(i); }); if(out.length) out.push(rest.length); return out; }
+  rest.forEach((x,i)=>{ const l=msLv(m,x); if(l===1){ if(seen1) out.push(i); seen1=true; } else if(l===2&&(!has1||seen1)) out.push(i); }); if(!has1||seen1) out.push(rest.length); return out; }
+// 한 칸 옮긴 새 차례 (못 옮기면 null)
+function msStepTo(m,k,dir){ const a=m.items||[], i=a.indexOf(k); if(i<0) return null; const blk=msBlock(m,k), rest=a.filter(x=>!blk.includes(x)); let at=null;
+  if(isPart(k)){ const st=msStops(m,rest,msLv(m,k)||1); at=dir<0?[...st].reverse().find(x=>x<i):st.find(x=>x>i); if(at==null) return null; }
+  else if(dir>0){ let j=i; while(j<rest.length&&!msShown(m,rest[j])) j++; if(j>=rest.length) return null; if(isPart(rest[j])){ while(j<rest.length&&(isPart(rest[j])||!msShown(m,rest[j]))) j++; at=j; } else at=j+1; }
+  else { let j=i-1; while(j>=0&&!msShown(m,rest[j])) j--; if(j<0) return null; if(isPart(rest[j])){ while(j>0&&(isPart(rest[j-1])||!msShown(m,rest[j-1]))) j--; if(j===0) return null; } at=j; }
+  rest.splice(at,0,...blk); return rest.join()===a.join()?null:rest; }
+function roomStep(mid,k,dir){ const m=S.manuscripts.find(x=>x.id===mid); if(!m||m.rule) return; const n=msStepTo(m,k,dir); if(!n) return toast("같은 단계에서 옮길 자리가 없습니다"); m.items=n; m.updated=new Date().toISOString(); save(); render(); }
+// 끌어 놓은 자리: 칸(부·장)은 안의 것과 함께, 가장 가까운 같은 단계 자리로 (못 옮기면 null)
+function msPlaceAt(m,k,rest,at){ if(!isPart(k)) return at; const st=msStops(m,rest,msLv(m,k)||1); if(!st.length) return null; return st.reduce((b,x)=>Math.abs(x-at)<=Math.abs(b-at)?x:b,st[0]); }
 // 새 꼭지: 성격의 갈래(설교집은 말씀 글·설교초안)·종류·틀로 시작
 // 새 꼭지: 누르는 즉시 원고 안 제자리에 글로 만듦 — 장·절 줄의 ＋면 그 장·절 끝, 쓰는 중이면 지금 글 바로 뒤, 아니면 맨 끝. 틀은 auto 성격만.
 // 아무것도 쓰지 않고(제목 없음·본문이 틀 그대로) 떠나면 지움 (FRESH: 이번에 막 만든 글 → 처음 본문)
@@ -7949,7 +7966,7 @@ function msBlock(m,k){ const it=m.items||[], i=it.indexOf(k); if(i<0) return [];
   while(j<it.length){ const x=it[j]; if(isPart(x)&&(m.parts?.[x.slice(5)]?.lv||1)<=lv) break; j++; } return it.slice(i,j); }
 // 옮기기: mode b=앞에, a=뒤에, in=칸 안 맨 앞에. 장은 안에 든 글과 함께
 function stMove(mid,k,tk,mode){ const m=S.manuscripts.find(x=>x.id===mid); if(!m||m.rule||!k||k===tk) return; const blk=msBlock(m,k); if(!blk.length) return; if(blk.includes(tk)) return toast("자기 안으로는 옮길 수 없습니다");
-  const rest=m.items.filter(x=>!blk.includes(x)); let at=rest.indexOf(tk); if(at<0) return; if(mode!=="b") at+=1; rest.splice(at,0,...blk);
+  const rest=m.items.filter(x=>!blk.includes(x)); let at=rest.indexOf(tk); if(at<0) return; if(mode!=="b") at+=1; at=msPlaceAt(m,k,rest,at); if(at==null) return toast("같은 단계에서 옮길 자리가 없습니다"); rest.splice(at,0,...blk);
   if(rest.join()===m.items.join()) return; m.items=rest; m.updated=new Date().toISOString(); save(); render();
   const nm=isPart(k)?m.parts?.[k.slice(5)]?.t:(S.writings.find(w=>w.id===k)?.title||"(제목 없음)"), tn=isPart(tk)?m.parts?.[tk.slice(5)]?.t:"";
   toast(mode==="in"?`「${nm}」${jp(nm,"을","를")} 「${tn}」 안 맨 앞으로 옮겼습니다`:`「${nm}」${blk.length>1?` (안에 든 ${blk.length-1}개와 함께)`:""} 자리를 옮겼습니다`); }
@@ -8301,14 +8318,14 @@ function seedColor(mid,id){ const m=seedMs(mid), x=m?.seeds?.find(y=>y.id===id);
 function seedDel(mid,id){ const m=seedMs(mid); if(!m) return; tomb(id); m.seeds=(m.seeds||[]).filter(y=>y.id!==id); save(); render(); }
 // 목차 줄 ⋯ 메뉴: 칸은 이름·새 글·단계·순서·구분 지우기, 글은 열기·순서·원고에서 빼기 (휴대폰은 아래 시트)
 let ROOM_ORDER=false;
-function roomRowMenu(mid,k,ev){ const m=S.manuscripts.find(x=>x.id===mid); if(!m||m.rule) return; const g=G(m), r=ev?.currentTarget?.getBoundingClientRect?.()||{right:innerWidth-20,bottom:innerHeight/2}, sheet=isTouch()&&innerWidth<=700, mv=[{t:"위로",ic:"↑",fn:()=>roomStep(mid,k,-1)},{t:"아래로",ic:"↓",fn:()=>roomStep(mid,k,1)}]; let title, items;
+function roomRowMenu(mid,k,ev){ const m=S.manuscripts.find(x=>x.id===mid); if(!m||m.rule) return; const g=G(m), r=ev?.currentTarget?.getBoundingClientRect?.()||{right:innerWidth-20,bottom:innerHeight/2}, sheet=isTouch()&&innerWidth<=700, mv=[msStepTo(m,k,-1)?{t:isPart(k)?"안의 글과 함께 위로":"위로",ic:"↑",fn:()=>roomStep(mid,k,-1)}:null,msStepTo(m,k,1)?{t:isPart(k)?"안의 글과 함께 아래로":"아래로",ic:"↓",fn:()=>roomStep(mid,k,1)}:null]; let title, items;
   if(isPart(k)){ const pid=k.slice(5), p=m.parts?.[pid]; if(!p) return; const other=p.lv===1?2:1; title=p.t;
     items=[{t:`새 ${g.item} — 이 칸 끝에`,ic:"＋",fn:()=>roomNewPiece(mid,pid)},{t:"이름 바꾸기",ic:"✎",fn:()=>renamePart(mid,pid)},{t:`「${g.parts[other-1]}」 단계로 바꾸기`,ic:"⇅",fn:()=>{ p.lv=other; m.updated=new Date().toISOString(); save(); render(); }},...mv,"-",{t:"구분 지우기 (안의 글은 그대로)",ic:"✕",danger:true,fn:()=>delPart(mid,pid)}]; }
   else { const w=S.writings.find(x=>x.id===k); title=w?.title||"(제목 없음)"; items=[{t:"열기",ic:"✎",fn:()=>go('write',{edit:k})},...mv,"-",{t:"원고에서 빼기 (글은 남습니다)",ic:"✕",danger:true,fn:()=>msRemove(mid,k)}]; }
   ctxOpen(r.right-200,r.bottom+4,title,items,sheet); }
 function msBodyHtml(m,V){ V=V||ROOM_VIEW; const g=G(m), seq=msSeq(m), ws=seq.filter(x=>x.w).map(x=>x.w);
   const dragA=k=>m.rule?"":`draggable="true" data-k="${esc(k)}"`;
-  const steps=k=>m.rule?"":`<span class="rstep"><button class="btn small ghost" onclick="event.stopPropagation();roomStep('${m.id}','${k}',-1)" title="위로">↑</button><button class="btn small ghost" onclick="event.stopPropagation();roomStep('${m.id}','${k}',1)" title="아래로">↓</button></span>`;
+  const steps=k=>m.rule?"":`<span class="rstep"><button class="btn small ghost" ${msStepTo(m,k,-1)?"":"disabled"} onclick="event.stopPropagation();roomStep('${m.id}','${k}',-1)" title="${isPart(k)?"안의 글과 함께 위로":"위로"}">↑</button><button class="btn small ghost" ${msStepTo(m,k,1)?"":"disabled"} onclick="event.stopPropagation();roomStep('${m.id}','${k}',1)" title="${isPart(k)?"안의 글과 함께 아래로":"아래로"}">↓</button></span>`;
   let body="";
   if(V==="scriv") body=scrivHtml(m)+`<p class="hint" style="margin-top:8px">${esc(G(m).item||"글")}들을 한 장처럼 이어 읽습니다. 「고치기」로 그 자리에서 고치고 간직하면 그 ${esc(G(m).item||"글")}에 저장됩니다(이전 판도 남음).</p>`;
   else if(V==="cork"){
