@@ -2298,7 +2298,7 @@ sup.fnref{color:var(--sepia);font-size:11px;margin-left:1px;cursor:help}
 .cmtsum,.cmtex{font-family:"Gowun Batang","Noto Serif","Noto Serif Hebrew",Georgia,serif;unicode-bidi:plaintext}
 .cmtsum{white-space:pre-wrap;font-size:15px;line-height:1.75}
 #cmtsum,#cmtauth{scroll-margin-top:70px}
-.cmtq{display:flex;gap:8px;align-items:center;margin:8px 0 10px}.cmtq input{flex:1;min-width:0}
+.cmtq{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:8px 0 10px}.cmtq input{flex:1 1 150px;min-width:0}
 mark.cmthit{background:#f6e7a1;color:#3b2f22;border-radius:2px}
 .cmta{padding:10px 0;border-top:1px dotted var(--edge)}.cmta p{margin:4px 0;font-family:"Gowun Batang","Noto Serif","Noto Serif Hebrew",Georgia,serif;font-size:15px;line-height:1.75;unicode-bidi:plaintext}.cmta a{font-size:13px}.cmta .cmtaq{color:var(--soft,#6b5d4d);border-left:2px solid var(--edge);padding-left:10px;font-size:14px}
 .cmtsum h5{font-family:"Gamja Flower";font-size:21px;color:var(--sepia);margin:10px 0 2px}
@@ -3158,7 +3158,7 @@ async function pushSave(){
 // ───────── 새 버전 자동 새로 고침 ─────────
 // 올릴 때마다 version.json 의 번호가 바뀝니다. 앱이 열릴 때·다시 화면에 올라올 때·5분마다 확인해서,
 // 쓰는 중인 글이 없고 저장이 끝났을 때 새 버전으로 새로 고칩니다.
-const APP_BUILD="9584e500c8"; const APP_VER="5.1";   // 판 번호: 배포할 때마다 도구/판올리기.py 가 0.1씩 올림 (1.9 다음은 2.0) — 손으로 고치지 말 것
+const APP_BUILD="6cb55435e4"; const APP_VER="5.2";   // 판 번호: 배포할 때마다 도구/판올리기.py 가 0.1씩 올림 (1.9 다음은 2.0) — 손으로 고치지 말 것
 let NEW_BUILD=null, UPDATE_NOTICED=false;
 async function checkUpdate(){
   if(APP_BUILD.startsWith("__")) return;                 // 원본 파일로 열었을 때(고치는 중)는 건너뜁니다
@@ -3771,6 +3771,8 @@ const MANUALS=[["quick","간단 매뉴얼","읽자마자 바로 써 보는 한 �
 // ───────── 새 소식 (공개판, 2026-10-31 팀장님): 중요한 고침은 앱을 열 때 한 번만 쉬운 말로 알림 ─────────
 // 새 소식을 더할 때: NEWS 맨 앞에 넣고 id 는 날짜(같은 날 둘째는 2026-11-02b 처럼 — 글자 순서로 새것이 뒤). 본 소식 id 는 이 기기에만(seojae-open.newsSeen)
 const NEWS=[
+ {id:"2026-11-06c",date:"2026년 11월 6일",title:"주석이 묵상 본문을 찾아요",items:[
+  ["▤","주석이 오늘 묵상 본문을 찾아요","주석 보기가 묵상 본문 대신 통독표의 다른 본문(창세기 등)을 찾던 것을 고쳤어요. 본문 칸이 비었거나 장까지만 적혀 있으면 그날 묵상 본문으로 찾아요.","본문 칸과 오늘 묵상 본문이 다르면 주석 칸에 그 본문으로 찾는 단추가 나와요"]]},
  {id:"2026-11-06b",date:"2026년 11월 6일",title:"주석 보기가 생겼어요",items:[
   ["▤","한 번 누르면 주석 요약까지","묵상 화면 ✦ AI 옆 「주석 보기」를 누르면, 그 성경 책의 권위 있는 주석에서 이 본문을 찾아 요약해 주고 다 되면 화면에 보여 드려요.","클로드 열쇠를 넣으면 웹에서 원문을 찾아 「원문 열기」로 확인할 수 있어요"],
   ["✦","믿을 수 있게 나눠서 보여 드려요","웹에서 원문을 연 주석과, AI가 아는 내용을 따로 표시해요. 함께 쓰는 무료 AI는 AI가 아는 내용만 보여 드려요. 주석 이름·저자까지 틀릴 수 있으니 쓰기 전에 꼭 대조해 주세요.","처음 쓸 때 AI가 꺼져 있으면 설정 → 쓰기 → AI 열쇠에서 켜 주세요"]]},
@@ -4122,7 +4124,7 @@ async function paintSu(){
     ${date!==today()&&!cur?`<div class="qtnew">${x.getMonth()+1}월 ${x.getDate()}일 묵상 노트입니다 · 쓰면 그날 묵상으로 간직됩니다</div>`:""}`;
   if(!SU||!P){ box.innerHTML=nav+`<p class="muted" style="margin:6px 0 0">본문을 불러오지 못했습니다${SUERR?" ("+esc(SUERR)+")":""}. <a class="muted" href="https://sum.su.or.kr:8888/bible/today" target="_blank" rel="noopener">성서유니온에서 보기 ↗</a></p>`; return; }   // 본문을 못 받아도 날짜는 넘길 수 있게
   // 새 묵상이면 본문 칸을 매일성경으로 (설정에서 '통독표 따라'를 고르면 그대로 둠)
-  const f=$("#wpassage"); if(f&&!fromNote&&!fromWriting&&S.settings.qtSource!=="plan"&&$("#wtype")?.value==="묵상"&&(editId?cur?.date===date&&!f.value.trim():f.value===f.defaultValue)){ f.value=P.label; }   // 본문 칸이 빈 그날 묵상에는 저절로
+  const f=$("#wpassage"); if(f&&!fromNote&&!fromWriting&&S.settings.qtSource!=="plan"&&$("#wtype")?.value==="묵상"&&(editId?cur?.date===date&&cmtBare(f.value):f.value===f.defaultValue)){ f.value=P.label; }   // 본문 칸이 빈 그날 묵상에는 저절로
   box.innerHTML=`${nav}
     <div class="sut"><b>${esc(SU.title)}</b> · ${esc(P.label)}${SU.hymn?` · <span class="muted hymnbox" id="hymnbox">찬송가 ${esc(SU.hymn)}장${hymnCtl()}</span>`:""}</div>
     <div class="links"><button class="btn small ink" onclick="suUse()">이 본문으로 쓰기</button>
@@ -4837,7 +4839,9 @@ function cmtRange(name){ const n=String(name||"").normalize("NFC");
 const CMT_WEB=true;   // 공개판: 주석 파일 대신 검색과 AI가 아는 주석에서
 const cmtExHtml=(e,i,open)=>`<details class="more cmtx" data-i="${i}" ${open?"open":""} ontoggle="cmtOne(this)"><summary><span class="arrow">▶</span>${esc(e.name.normalize("NFC"))}${e.series?` <span class="chip on" style="cursor:default;font-size:11px">${esc(e.series)}</span>`:""} <span class="muted">· ${e.text.length.toLocaleString()}자</span></summary><div class="cmtex">${esc(e.text)}</div><button class="btn small ghost" onmousedown="event.preventDefault()" ontouchend="event.preventDefault();cmtQuote(${i})" onclick="cmtQuote(${i})" title="발췌에서 인용할 글자를 먼저 고른 뒤 누르세요">고른 글자를 각주와 함께 인용</button></details>`;
 function cmtOne(d){ if(!d.open) return; document.querySelectorAll("#cmtbox details.cmtx[open]").forEach(x=>{ if(x!==d) x.open=false; }); }   // 하나를 펼치면 다른 주석은 접힙니다
-const cmtSearchRow=label=>`<div class="cmtq"><input id="cmtq" value="${esc(label)}" placeholder="본문(시편 23:1-6) 또는 낱말" aria-label="주석에서 찾기" onkeydown="if(event.key==='Enter'){event.preventDefault();cmtSearch()}"><button class="btn small" onclick="cmtSearch()" title="본문을 적으면 그 부분의 주석을, 낱말을 적으면 지금 발췌 안에서 그 낱말을 찾습니다">찾기</button></div>`;
+function cmtBare(v){ v=String(v||"").trim(); return !v||/:$/.test(v); }   // 칸이 비었거나 장까지만 적힌 자리표시
+const cmtSuBtn=label=>{ const sp=$("#wtype")?.value==="묵상"&&suPassage(SU); return sp&&sp.label!==label?`<button class="btn small ghost" onclick="cmtShow(${jsArg(sp.label)})" title="본문 칸과 다른 오늘 묵상 본문으로 찾습니다">오늘 본문: ${esc(sp.label)}</button>`:""; };
+const cmtSearchRow=label=>`<div class="cmtq"><input id="cmtq" value="${esc(label)}" placeholder="본문(시편 23:1-6) 또는 낱말" aria-label="주석에서 찾기" onkeydown="if(event.key==='Enter'){event.preventDefault();cmtSearch()}"><button class="btn small" onclick="cmtSearch()" title="본문을 적으면 그 부분의 주석을, 낱말을 적으면 지금 발췌 안에서 그 낱말을 찾습니다">찾기</button>${cmtSuBtn(label)}</div>`;
 function cmtSearch(){ const v=($("#cmtq")?.value||"").trim(); if(!v) return toast("본문이나 낱말을 적어 주세요"); cmtShow(v); }
 // 낱말 찾기: 지금 불러온 발췌 안에서 (주석 파일 전체를 다시 읽지 않음)
 function cmtWord(w){ const box=$("#cmtbox"); if(!box||!CMTR?.excerpts?.length) return toast("「시편 23:1-6」처럼 본문을 적어 주세요 — 낱말은 본문을 찾은 뒤 그 발췌 안에서 찾습니다");
@@ -4849,7 +4853,10 @@ function cmtWord(w){ const box=$("#cmtbox"); if(!box||!CMTR?.excerpts?.length) r
   if(first){ first.open=true; setTimeout(()=>first.querySelector("mark.cmthit")?.scrollIntoView({behavior:"smooth",block:"center"}),60); } }
 async function cmtShow(want,auto){
   const f=$("#wpassage"); let src=String(want||f?.value||"").trim();
-  if(!src&&$("#wtype")?.value==="묵상"){ if(!SU) try{ await paintSu(); }catch(_){} const sp=suPassage(SU); if(sp){ src=sp.label; if(f){ f.value=sp.label; draftInput(); } } }   // 본문 칸이 비었으면 그날 묵상 본문을 저절로 적어 찾음
+  if(!want&&$("#wtype")?.value==="묵상"&&S.settings.qtSource!=="plan"&&cmtBare(src)){   // 본문 칸이 비었거나 통독표 자리표시(「창세기 1:」)면 그날 묵상 본문으로 — 매일성경이 아직 안 왔으면 기다림
+    const d=$("#sucard")?.dataset.date; if(d&&(!SU||SU.date!==d)) try{ await paintSu(); }catch(_){}
+    const sp=suPassage(SU); if(!sp) return toast("오늘 묵상 본문을 불러오지 못했습니다 — 본문 칸에 「요한복음 15:1-8」처럼 적어 주세요");
+    src=sp.label; if(f){ f.value=sp.label; draftInput(); } }
   const P=parseRef(normPassage(src)); if(!P){ if(want) return cmtWord(String(want)); return toast("본문 칸에 「요한복음 15:1-8」처럼 적어 주세요"); }
   // 묵상은 먼저 본문과 씨름한 뒤에: 글이 거의 없으면 한 번 묻습니다
   if(!want&&$("#wtype")?.value==="묵상"&&chars($("#wbody")?.value||"")<80&&!confirm("아직 관찰·해석을 적기 전입니다. 먼저 본문과 씨름한 뒤 주석을 보는 편이 묵상에 좋습니다.\n그래도 지금 주석을 볼까요?")) return;
@@ -5567,7 +5574,7 @@ write0(){
   const notes=S.notes.filter(n=>n.track===track).slice(-14).reverse();
   const ink=S.settings.ink, paper=S.settings.paper;
   const books=S.books;
-  const defPassage=w?.passage ?? fw?.passage ?? (fn?.track==="bible"&&fn.source?fn.source:(!dtype||dtype==="묵상")?todayPassageHint():"");
+  const defPassage=w?.passage ?? fw?.passage ?? (fn?.track==="bible"&&fn.source?fn.source:(!dtype||dtype==="묵상")&&S.settings.qtSource==="plan"?todayPassageHint():"");
   return `
   ${track==="bible"?`<div class="sucard" id="sucard" data-date="${esc(w?.date||NEW_DATE||today())}"></div>`:""}
   <div class="toolbar">
