@@ -185,7 +185,7 @@ function aiText_(prompt, opts) {
         const cand = (j.candidates || [])[0] || {}, parts = (cand.content || {}).parts || [];
         const t = parts.filter(x => x.text && !x.thought).map(x => x.text).join("");   // 생각(thought) 조각은 빼고 답만
         // 검색으로 참고한 웹 자료 (제목·주소)
-        const gm = cand.groundingMetadata || {}, sources = (gm.groundingChunks || []).map(c => (c.web || {})).filter(w => w.uri).map(w => ({ title: String(w.title || w.uri).slice(0, 80), url: w.uri })).slice(0, 8);
+        const gm = cand.groundingMetadata || {}, sources = (gm.groundingChunks || []).map(c => (c.web || {})).filter(w => w.uri).map(w => ({ title: String(w.title || w.uri).slice(0, 80), url: w.uri })).slice(0, opts.srcMax || 8);
         if (t) return { text: t, ai: "gemini (" + model + ")", sources: sources, searched: !!(r.used && r.used.search), info: { finish: cand.finishReason, parts: parts.length, thought: parts.filter(x => x.thought).length, usage: j.usageMetadata, used: r.used } };
         last = model + ": 빈 응답 (" + (cand.finishReason || "") + ")"; continue; }
       last = model + " " + r.code + ": " + ((j.error || {}).message || "").slice(0, 100); errs.push(last);
@@ -206,7 +206,7 @@ function aiClaude_(prompt, opts, ck) {
   const CLAUDE_MODEL = "claude-opus-5-5";
   const payload = { model: CLAUDE_MODEL, max_tokens: Math.max(8000, Math.min((opts.maxTokens || 2500) * 2, 16000)),
     output_config: { effort: "low" }, messages: [{ role: "user", content: prompt }] };
-  if (opts.search) payload.tools = [{ type: "web_search_20260209", name: "web_search", max_uses: 3 }];
+  if (opts.search) payload.tools = [{ type: "web_search_20260209", name: "web_search", max_uses: opts.uses || 3 }];
   const post = () => UrlFetchApp.fetch("https://api.anthropic.com/v1/messages", { method: "post", contentType: "application/json",
     headers: { "x-api-key": ck, "anthropic-version": "2023-06-01" }, payload: JSON.stringify(payload), muteHttpExceptions: true });
   const readJ = res => { try { return JSON.parse(res.getContentText() || "{}"); } catch (e) { return { error: { message: "클로드 응답을 읽지 못했습니다" } }; } };
@@ -229,11 +229,11 @@ function aiClaude_(prompt, opts, ck) {
     res = post(); if (res.getResponseCode() !== 200) break; j = readJ(res); try { claudeCharge_(j.usage, opts.kind); } catch (e) {} (j.content || []).forEach(x => content.push(x));
   }
   if (j.stop_reason === "refusal") throw new Error("클로드가 이 요청에 답하지 않았습니다");
-  const srcs = []; content.forEach(x => { if (x.type === "web_search_tool_result" && Array.isArray(x.content)) x.content.forEach(c => { if (c.url && srcs.length < 8) srcs.push({ title: String(c.title || c.url).slice(0, 80), url: c.url }); }); });
+  const srcs = []; content.forEach(x => { if (x.type === "web_search_tool_result" && Array.isArray(x.content)) x.content.forEach(c => { if (c.url && srcs.length < (opts.srcMax || 8)) srcs.push({ title: String(c.title || c.url).slice(0, 80), url: c.url }); }); });
   const text = content.filter(x => x.type === "text").map(x => x.text || "").join("");
   if (!text) throw new Error("클로드가 빈 답을 보냈습니다 (" + (j.stop_reason || "") + ")");
   // 답이 실제로 기대어 쓴 원문 구절(인용 위치) — 검색 결과 전체가 아니라 인용한 곳만
-  const cites = []; content.forEach(x => { if (x.type === "text" && Array.isArray(x.citations)) x.citations.forEach(c => { if (c && c.url && c.cited_text && cites.length < 10 && !cites.some(y => y.url === c.url && y.text === c.cited_text)) cites.push({ url: c.url, title: String(c.title || c.url).slice(0, 120), text: String(c.cited_text).slice(0, 600) }); }); });
+  const cites = []; content.forEach(x => { if (x.type === "text" && Array.isArray(x.citations)) x.citations.forEach(c => { if (c && c.url && c.cited_text && cites.length < (opts.srcMax || 10) && !cites.some(y => y.url === c.url && y.text === c.cited_text)) cites.push({ url: c.url, title: String(c.title || c.url).slice(0, 120), text: String(c.cited_text).slice(0, 600) }); }); });
   return { text: text, ai: "claude (" + CLAUDE_MODEL + ")", sources: cites.length ? srcs.filter(x => cites.some(c => c.url === x.url)).concat(cites.filter((c, i) => !srcs.some(x => x.url === c.url) && cites.findIndex(y => y.url === c.url) === i).map(c => ({ title: c.title.slice(0, 80), url: c.url }))) : srcs, cites: cites, searched: !!payload.tools, info: { stop: j.stop_reason, truncated: j.stop_reason === "max_tokens", usage: j.usage } };
 }
 

@@ -2810,6 +2810,7 @@ function aiCall(fn,args){
     const w=AIW_WAIT.get(id); AIW_WAIT.set(id,{ok:r=>{ clearTimeout(t); w.ok(r); },no:e=>{ clearTimeout(t); w.no(e); }});
     aiWorker().postMessage({id,fn,args,keys:mode==="shared"?{geminiKey:"__SHARED__",claudeKey:""}:{geminiKey:k.gemini||"",claudeKey:k.claude||""},props,gw:PUB_GW,dev:devId()}); });
 }
+let DRV_VER=null;
 async function drvCall(fn,args){
   if(GW_FN.has(fn)) return gwCall(fn,args);
   if(AI_FN.has(fn)) return aiCall(fn,args);
@@ -2819,7 +2820,8 @@ async function drvCall(fn,args){
   if(fn==="boot") return {data:await drvRead()||"{}",config:drvConf()};
   if(fn==="getData") return await drvRead()||"{}";
   if(fn==="getConfig") return drvConf();
-  if(fn==="rev"){ const m=(await drvRead()||"").match(/"rev":\s*(\d+)/); return {rev:m?+m[1]:0}; }
+  if(fn==="rev"){ let v=null; try{ v=(await drvFetch(DRV_API+"/files/"+DRV.data+"?fields=version",{cache:"no-store"}))?.version??null; }catch(e){ if(e?.needLogin) throw e; }   // 파일의 고친 횟수만 먼저 — 그대로면 기록 전체를 받지 않음
+    if(v!=null&&v===DRV_VER) return {rev:REV}; const m=(await drvRead()||"").match(/"rev":\s*(\d+)/); DRV_VER=v; return {rev:m?+m[1]:0}; }
   if(fn==="saveData") return drvSave(args[0],args[1]);
   throw new Error("공개판에서는 아직 쓰지 않는 기능입니다");
 }
@@ -2952,16 +2954,16 @@ async function fetchFresh(first){
     SERVER=true; REV=d.rev??0; CONF=c; if(GAS) CONF.phoneUrl=connectLink(); try{ creditWarn(); }catch(_){} try{ sizeWarn(); }catch(_){}
     try{ localStorage.setItem(CKEY,JSON.stringify(c)); }catch(_){}
     // 이 기기에 아직 구글로 못 간 기록(오프라인에서 쓴 글, 열자마자 한 저장)이 있으면 덮지 않고 합칩니다
-    const dirty=PENDING||!!saveT||isDirty();
+    const dirty=PENDING||!!saveT||isDirty(), seen=first?null:new Set((S.writings||[]).map(w=>w.id));
     let changed=true;
     if(first){ if(d&&d.writings){ if(isDirty()&&S.writings.length){ mergeFrom(d); PENDING=true; } else useData(d); } else migrate(); }
     else if(dirty||!d.writings){ clearTimeout(saveT); saveT=null; mergeFrom(d); PENDING=true; }
-    else if((d.rev??0)!==known) useData(d);               // 다른 기기에서 바뀐 것이 있으면 최신으로
+    else if((d.rev??0)!==known){ useData(d); SYNCED=SER0(); }               // 다른 기기에서 바뀐 것이 있으면 최신으로
     else changed=false;
     READY=true; takeSnap(); try{ purgeOldTrash(); }catch(_){} try{ roomBase(); }catch(_){}
     if(PENDING){ PENDING=false; pushSave(); }
     else if(changed&&!first){ try{ localStorage.setItem(LKEY,SER()); }catch(_){} }
-    if(changed&&!first){ ensurePlan(); ensureMs(); if(tab!=="write") render(); else afterRemote(); }   // 쓰는 중이면 화면을 바꾸지 않음(손대지 않은 글만 새 판으로)
+    if(changed&&!first){ ensurePlan(); ensureMs(); syncShow(seen,SYNC_NOTE); }   // 쓰는 중이면 화면을 바꾸지 않음(손대지 않은 글만 새 판으로)
     if(window._justConnected){ window._justConnected=false; setTimeout(()=>toast("이 기기를 아침 서재에 연결했습니다"),300); }
   }catch(e){
     if(AUTH_FAIL){ if(!first) render(); return; }
@@ -2971,6 +2973,7 @@ async function fetchFresh(first){
       try{ const d=JSON.parse(localStorage.getItem(LKEY)); if(d) S=Object.assign(blank(),d); else migrate(); }catch(_){}
       if(GAS&&!window._firstRetry){ window._firstRetry=1; setTimeout(()=>fetchFresh(true).then(()=>{ if(SERVER) render(); }),15000); }   // 잠시 뒤 한 번 더
     } else {
+      if(SYNC_NOTE) return;   // 저절로 묻다가 실패한 때는 다음 차례에 다시
       toast("최신 기록을 아직 받지 못해 이 기기의 사본을 보여 드립니다");
       setTimeout(()=>fetchFresh(false),15000);          // 잠시 뒤 다시 시도
     }
@@ -2991,6 +2994,8 @@ function migrate(){ // 첫 버전 기록 옮기기
 // · 지운 것은 S.deleted 에 지운 시각(묘비)을 남겨, 옛 사본과 합쳐도 되살아나지 않게 합니다
 // · 책·원고·설정은 바뀔 때 시각을 찍어 두고(stampChanges), 합칠 때 나중에 바뀐 쪽을 씁니다
 const SER=()=>JSON.stringify(S,(k,v)=>k==="syncing"||k==="resync"?undefined:v);
+const SER0=()=>JSON.stringify({...S,rev:0},(k,v)=>k==="syncing"||k==="resync"?undefined:v);   // 판 번호를 뺀 내용
+let SYNCED=null;   // 구글에 있다고 아는 내용(판 번호 뺌)
 const isDirty=()=>{ try{ return localStorage.getItem("seojae-open.dirty")==="1"; }catch(_){ return false; } };
 const setDirty=on=>{ try{ on?localStorage.setItem("seojae-open.dirty","1"):localStorage.removeItem("seojae-open.dirty"); }catch(_){} };
 function tomb(id){ (S.deleted=S.deleted||{})[id]=new Date().toISOString(); }
@@ -3123,22 +3128,23 @@ function save(){
   if(!SERVER){ if(GAS) setDirty(true); return; }   // 구글에 못 닿은 동안 쓴 것도 표시 → 닿으면 덮지 않고 합침
   setDirty(true);                                          // 구글에 닿을 때까지 '아직 못 감' 표시
   clearTimeout(saveT);
-  saveT=setTimeout(()=>{ saveT=null; pushSave(); },GAS?800:400);
+  saveT=setTimeout(()=>{ saveT=null; pushSave(); },300);
 }
 function flushSave(){ if(saveT){ clearTimeout(saveT); saveT=null; pushSave(); } }
 let SAVING=false, AGAIN=false;
 async function pushSave(){
   if(GAS&&!READY){ PENDING=true; return; }   // 최신 기록을 받기 전에는 저장을 미뤄 둡니다
   if(SAVING){ AGAIN=true; return; }          // 한 번에 하나씩만 저장합니다(겹치면 끝난 뒤 다시)
+  const same=SER0(); if(same===SYNCED){ if(!saveT&&!AGAIN) setDirty(false); return; }   // 구글에 있는 것과 똑같으면 보내지 않음 — 받은 뒤 두 기기가 서로 올리며 판만 오르는 일이 없게
   SAVING=true;
   try{
-    if(!GAS){ await fetch("/api/data",{method:"POST",body:SER()}); if(!saveT&&!AGAIN) setDirty(false); return; }
+    if(!GAS){ const j=await (await fetch("/api/data",{method:"POST",body:SER()})).json().catch(()=>null); if(j&&j.rev!=null){ REV=j.rev; S.rev=j.rev; SYNCED=same; } if(!saveT&&!AGAIN) setDirty(false); return; }
     const r=await gcall("saveData",SER(),REV);
-    if(r.ok){ REV=r.rev; S.rev=r.rev; if(!saveT&&!AGAIN) setDirty(false); snapDaily(); return; }
+    if(r.ok){ REV=r.rev; S.rev=r.rev; SYNCED=same; if(!saveT&&!AGAIN) setDirty(false); snapDaily(); return; }
     if(r.conflict){
       const o=JSON.parse(r.data); mergeFrom(o); REV=o.rev??0; AGAIN=true;
       toast("다른 기기에서 쓴 기록과 합쳤습니다");
-      if(tab==="write") afterRemote(); else if(!writingUnsaved()) render();    // 쓰는 중이면 화면을 바꾸지 않음
+      if(tab==="write") afterRemote(); else { SYNC_PAINT=true; syncPaintTry(); }    // 쓰는 중이면 화면을 바꾸지 않음
     } else if(r.busy){ AGAIN=false; setTimeout(()=>pushSave(),3000); }   // 서버가 노션 보내기 중이면 잠시 뒤 다시
     else if(r.error) toast(r.error);
   }catch(e){ if(AUTH_FAIL) return render(); if(e?.needLogin){ DRV_NEED=true; READY=false; PENDING=true; return render(); } toast(PLACE()+"에 저장하지 못했습니다. 잠시 뒤 저절로 다시 보냅니다"); clearTimeout(window._retryT); window._retryT=setTimeout(()=>{ if(isDirty()) pushSave(); },20000); }
@@ -3148,7 +3154,7 @@ async function pushSave(){
 // ───────── 새 버전 자동 새로 고침 ─────────
 // 올릴 때마다 version.json 의 번호가 바뀝니다. 앱이 열릴 때·다시 화면에 올라올 때·5분마다 확인해서,
 // 쓰는 중인 글이 없고 저장이 끝났을 때 새 버전으로 새로 고칩니다.
-const APP_BUILD="39a3409362"; const APP_VER="4.8";   // 판 번호: 배포할 때마다 도구/판올리기.py 가 0.1씩 올림 (1.9 다음은 2.0) — 손으로 고치지 말 것
+const APP_BUILD="46dada874e"; const APP_VER="4.9";   // 판 번호: 배포할 때마다 도구/판올리기.py 가 0.1씩 올림 (1.9 다음은 2.0) — 손으로 고치지 말 것
 let NEW_BUILD=null, UPDATE_NOTICED=false;
 async function checkUpdate(){
   if(APP_BUILD.startsWith("__")) return;                 // 원본 파일로 열었을 때(고치는 중)는 건너뜁니다
@@ -3183,13 +3189,62 @@ if(/[?&]v=/.test(location.search)) history.replaceState(null,"",location.pathnam
 document.addEventListener("visibilitychange",()=>{
   if(document.visibilityState==="hidden"){ try{ nmAuto(); }catch(_){} if(SCRIV_EDIT&&$("#scta")) scrivAuto(true); autoKeepNow(); saveDraft(); draftCloud(); flushSave(); return; }   // 화면을 내릴 때: 임시 저장(구글에도) + 미뤄 둔 저장 바로 보내기
   checkUpdate();
-  if(GAS&&READY&&!saveT&&!SAVING&&isDirty()) pushSave();   // 밀린 저장이 있으면 먼저 보냄
-  if(GAS&&READY&&!saveT&&!SAVING&&!(tab==="write"&&writingUnsaved())) (async()=>{ try{ const r=await gcall("rev"); if(r&&r.rev===REV) return; }catch(_){} fetchFresh(false); })();   // 오래 열어 둔 화면도 최신으로 (바뀐 게 없으면 전체를 받지 않음)
+  SYNC_AT=0; SYNC_PUSH=0; syncCheck();   // 밀린 저장이 있으면 먼저 보내고, 오래 열어 둔 화면도 최신으로
 });
-addEventListener("online",()=>{ if(GAS&&READY&&isDirty()) pushSave(); });
+addEventListener("online",()=>{ SYNC_AT=0; SYNC_PUSH=0; syncCheck(); });
 addEventListener("pagehide",()=>{ try{ nmAuto(); }catch(_){} autoKeepNow(); saveDraft(); draftCloud(); flushSave(); });
 addEventListener("beforeunload",e=>{ if(writingUnsaved()){ saveDraft(); e.preventDefault(); e.returnValue=""; } });
 setInterval(checkUpdate,5*60*1000);
+
+// ───────── 다른 기기 기록 저절로 받기 (2026-11-06) ─────────
+// 화면을 내렸다 올릴 때만 물으면, 창을 켜 둔 컴퓨터는 다른 기기의 글을 영영 받지 못함 → 켜 둔 동안 판 번호만 가볍게 물어 다르면 받습니다.
+// 쓰는 중에는 받지 않고(글을 지키는 것이 먼저), 다시 그릴 수 없는 때는 데이터만 받아 두었다가 손을 놓으면 그립니다.
+let SYNC_ON=false, SYNC_AT=0, SYNC_USER=Date.now(), SYNC_PUSH=0, SYNC_T=null, SYNC_NOTE=false, SYNC_PAINT=false, SYNC_TOAST=0;
+const syncOk=()=>!DRV_NEED&&!(LOCALMODE&&!DRV);
+const syncRev=()=>GAS?gcall("rev"):apiGet("/api/rev");
+function syncSafe(){   // 다른 기기 기록을 지금 들여도 되는가 — 간직 전의 글·고치던 칸을 건드리지 않게
+  if(AUTOKEEP_ON||writingUnsaved()||READVIEW||$(".bookview")) return false;
+  const inWrite=tab==="write"&&!!$("#wbody"), a=document.activeElement, skip=/^(checkbox|radio|file|range|color|hidden|button|submit)$/;
+  if(a&&a.matches?.("input,textarea,select,w-ed,[contenteditable]")&&!(inWrite&&/^(wbody|wtitle|wpassage)$/.test(a.id))) return false;
+  for(const e of document.querySelectorAll("input,textarea,w-ed")){ if((inWrite&&e.closest("#main"))||skip.test(e.type||"")) continue; if((e.value||"")!==(e.defaultValue||"")) return false; }
+  return true;
+}
+function syncCalm(){   // 화면을 다시 그려도 되는가 — 커서·고른 글자·열린 창을 그대로 두게
+  if(!syncSafe()||sjOverlay()) return false;
+  const a=document.activeElement; if(a&&a.matches?.("input,textarea,select,w-ed,[contenteditable]")) return false;
+  const s=window.getSelection?.(); return !s||s.isCollapsed;
+}
+function syncPaintTry(){ if(!SYNC_PAINT||!syncCalm()) return; SYNC_PAINT=false; const y=scrollY; render(); if(scrollY!==y) scrollTo(0,y); }
+function syncShow(seen,note){   // 받은 기록을 화면에: 빈 새 묵상이면 다른 기기에서 쓴 그 글로, 연 글이 바뀌었으면 새 판으로, 그 밖에는 조용히 다시 그림
+  if(tab==="write"){
+    if(!editId&&track==="bible"&&!NEW_TPL&&!NEW_TYPE&&seen&&!writingUnsaved()){ const d=NEW_DATE||today(), ws=live().filter(w=>w.date===d&&w.track==="bible"&&!seen.has(w.id)), w=ws.find(x=>x.type==="묵상")||ws[0];
+      if(w){ editId=w.id; NAV=true; try{ render(); }finally{ NAV=false; } toast("다른 기기에서 쓴 묵상을 열었습니다"); return; } }
+    const w=editId&&S.writings.find(x=>x.id===editId); if(w&&(w.updated||null)!==EDIT_BASE) return afterRemote();
+  }
+  SYNC_PAINT=true; syncPaintTry();
+  if(note&&Date.now()-SYNC_TOAST>60000){ SYNC_TOAST=Date.now(); toast("다른 기기의 기록을 받아 왔습니다"); }
+}
+async function syncCheck(){
+  const now=Date.now(); if(SYNC_ON||document.hidden||!READY||!SERVER||NEED_CONNECT||AUTH_FAIL||!syncOk()||now-SYNC_AT<2500) return;
+  syncPaintTry(); if(navigator.onLine===false||saveT||SAVING||PENDING) return;
+  SYNC_AT=now;
+  if(isDirty()){ if(now-SYNC_PUSH>30000){ SYNC_PUSH=now; pushSave(); } return; }   // 밀린 저장이 있으면 먼저 보냄
+  if(!syncSafe()) return;
+  SYNC_ON=true;
+  try{ const r=await syncRev(); if(!r||r.rev==null||r.rev===REV) return;       // 바뀐 게 없으면 전체를 받지 않음
+    if(saveT||SAVING||!syncSafe()) return;
+    SYNC_NOTE=true; await fetchFresh(false); }
+  catch(_e){ if(_e?.needLogin){ DRV_NEED=true; if(!writingUnsaved()) render(); } }
+  finally{ SYNC_ON=false; SYNC_NOTE=false; }
+}
+// 얼마나 자주: 쓰고 있는 창 10초 · 켜 두기만 한 창 15초 · 30분 넘게 손대지 않으면 2분 · 내려 둔 창은 묻지 않음
+const syncGap=()=>{ const idle=Date.now()-SYNC_USER; return idle>30*60e3?120e3:document.hasFocus()&&idle<120e3?10e3:15e3; };
+function syncLoop(){ clearTimeout(SYNC_T); SYNC_T=setTimeout(()=>{ syncCheck(); syncLoop(); },syncGap()); }
+function syncTouch(){ const now=Date.now(), away=now-SYNC_USER>20e3; SYNC_USER=now; if(away){ syncCheck(); syncLoop(); } }   // 자리를 비웠다 돌아와 손을 대면 바로 확인
+for(const ev of ["pointermove","pointerdown","keydown","wheel","touchstart"]) addEventListener(ev,syncTouch,{passive:true,capture:true});
+addEventListener("focus",()=>{ SYNC_USER=Date.now(); syncCheck(); syncLoop(); });
+addEventListener("pageshow",e=>{ if(e.persisted) syncCheck(); });
+syncLoop();
 
 // ───────── 노션 ─────────
 async function api(path,body){
@@ -3712,6 +3767,9 @@ const MANUALS=[["quick","간단 매뉴얼","읽자마자 바로 써 보는 한 �
 // ───────── 새 소식 (공개판, 2026-10-31 팀장님): 중요한 고침은 앱을 열 때 한 번만 쉬운 말로 알림 ─────────
 // 새 소식을 더할 때: NEWS 맨 앞에 넣고 id 는 날짜(같은 날 둘째는 2026-11-02b 처럼 — 글자 순서로 새것이 뒤). 본 소식 id 는 이 기기에만(seojae-open.newsSeen)
 const NEWS=[
+ {id:"2026-11-06",date:"2026년 11월 6일",title:"켜 둔 창에도 저절로",items:[
+  ["⇄","켜 둔 창에도 저절로 들어와요","휴대폰에서 쓴 글이 켜 둔 컴퓨터 창에 10~15초 안에 저절로 들어와요. 앱을 껐다 켜지 않아도 돼요. 자리로 돌아와 마우스를 움직이면 바로 확인해요.","쓰는 중인 글이 있으면 건드리지 않고, 간직한 뒤에 합쳐요"],
+  ["✎","묵상 본문 칸도 저절로","본문 칸이 빈 그날 묵상을 열면 그날 묵상 본문이 저절로 적혀요.",""]]},
  {id:"2026-11-05b",date:"2026년 11월 5일",title:"목차 순서는 위계대로",items:[
   ["⇅","묶인 것은 함께 옮겨져요","「부」를 옮기면 안의 장과 글이 함께, 「장」을 옮기면 안의 글이 함께 옮겨져요. ↑↓, ⋯, 끌어 옮기기 모두 같아요.","전에는 줄 하나만 옮겨져 글이 다른 칸으로 끼어들 수 있었어요"],
   ["▦","각 위계에 맞는 자리로만","부는 다른 부의 앞뒤로, 장은 장 자리로만 움직여요. 부가 하나뿐이면 옮길 곳이 없어 ↑↓가 흐리게 보여요.","글은 끝에 닿으면 앞뒤 장으로 넘어가요"]]},
@@ -4057,7 +4115,7 @@ async function paintSu(){
     ${date!==today()&&!cur?`<div class="qtnew">${x.getMonth()+1}월 ${x.getDate()}일 묵상 노트입니다 · 쓰면 그날 묵상으로 간직됩니다</div>`:""}`;
   if(!SU||!P){ box.innerHTML=nav+`<p class="muted" style="margin:6px 0 0">본문을 불러오지 못했습니다${SUERR?" ("+esc(SUERR)+")":""}. <a class="muted" href="https://sum.su.or.kr:8888/bible/today" target="_blank" rel="noopener">성서유니온에서 보기 ↗</a></p>`; return; }   // 본문을 못 받아도 날짜는 넘길 수 있게
   // 새 묵상이면 본문 칸을 매일성경으로 (설정에서 '통독표 따라'를 고르면 그대로 둠)
-  const f=$("#wpassage"); if(f&&!editId&&!fromNote&&!fromWriting&&S.settings.qtSource!=="plan"&&f.value===f.defaultValue&&$("#wtype")?.value==="묵상"){ f.value=P.label; }
+  const f=$("#wpassage"); if(f&&!fromNote&&!fromWriting&&S.settings.qtSource!=="plan"&&$("#wtype")?.value==="묵상"&&(editId?cur?.date===date&&!f.value.trim():f.value===f.defaultValue)){ f.value=P.label; }   // 본문 칸이 빈 그날 묵상에는 저절로
   box.innerHTML=`${nav}
     <div class="sut"><b>${esc(SU.title)}</b> · ${esc(P.label)}${SU.hymn?` · <span class="muted hymnbox" id="hymnbox">찬송가 ${esc(SU.hymn)}장${hymnCtl()}</span>`:""}</div>
     <div class="links"><button class="btn small ink" onclick="suUse()">이 본문으로 쓰기</button>
