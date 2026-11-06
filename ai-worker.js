@@ -62,7 +62,7 @@ const UrlFetchApp = {
 };
 function claudeWarn_() { /* 개인용은 크레딧 경고를 메일로 보냄 — 공개판은 하지 않음 */ }
 
-const AI_ENTRY_ = { coWrite: b => coWrite_(b), spellCheck: b => spellCheck_(b), reviewMs: b => reviewMs_(b) };
+const AI_ENTRY_ = { coWrite: b => coWrite_(b), spellCheck: b => spellCheck_(b), reviewMs: b => reviewMs_(b), cmtAuthority: b => cmtAuthority_(b) };
 const AI_MSG_ = m => { m = String(m || "").replace(/설정 → 주석 서재(에서)?/g, "설정 → 쓰기 → AI 열쇠$1").replace(/요약 열쇠/g, "AI 열쇠");
   return SHARED_() && m && !/내 열쇠/.test(m) && /한도|429|붐빕|몫|준비되지|닿지|답하지|혼잡|많이 썼/.test(m) ? m + " — 함께 쓰는 무료 AI는 여러 사람이 나눠 써서 한도가 작습니다. 설정 → 쓰기 → AI 열쇠에 내 열쇠를 넣으면 넉넉하고 더 좋은 답을 받습니다." : m; };
 self.onmessage = e => {
@@ -235,6 +235,41 @@ function aiClaude_(prompt, opts, ck) {
   // 답이 실제로 기대어 쓴 원문 구절(인용 위치) — 검색 결과 전체가 아니라 인용한 곳만
   const cites = []; content.forEach(x => { if (x.type === "text" && Array.isArray(x.citations)) x.citations.forEach(c => { if (c && c.url && c.cited_text && cites.length < (opts.srcMax || 10) && !cites.some(y => y.url === c.url && y.text === c.cited_text)) cites.push({ url: c.url, title: String(c.title || c.url).slice(0, 120), text: String(c.cited_text).slice(0, 600) }); }); });
   return { text: text, ai: "claude (" + CLAUDE_MODEL + ")", sources: cites.length ? srcs.filter(x => cites.some(c => c.url === x.url)).concat(cites.filter((c, i) => !srcs.some(x => x.url === c.url) && cites.findIndex(y => y.url === c.url) === i).map(c => ({ title: c.title.slice(0, 80), url: c.url }))) : srcs, cites: cites, searched: !!payload.tools, info: { stop: j.stop_reason, truncated: j.stop_reason === "max_tokens", usage: j.usage } };
+}
+
+function cmtAuthority_(body) {
+  return safe_(() => {
+    const label = String((body || {}).label || "").slice(0, 60), mine = ((body || {}).mine || []).slice(0, 8).map(x => String(x).slice(0, 80));
+    if (!label) throw new Error("본문이 없습니다");
+    const prompt = AI_PRINCIPLES_ + "\n당신은 성경 주석을 조사하는 조교입니다. 「" + label + "」을 이 성경 책의 권위 있는 주석들이 어떻게 풀었는지 웹 검색으로 직접 찾아 한국어로 요약합니다."
+      + (mine.length ? " 목회자가 이미 읽은 주석은 빼고 찾으세요: " + mine.join(", ") + "." : "") + "\n"
+      + "고르는 기준:\n1) 이 성경 책에 대해 학계와 교회에서 널리 인정된 주석만 씁니다. 먼저 신학교의 주석 안내(예: Denver Seminary 주석 목록)나 주석 평가 자료로 어떤 주석이 권위 있는지 확인하고, 고전(칼뱅, 루터, 크리소스토무스, 카일-델리치, 매튜 헨리 등)과 현대 표준 시리즈(NICOT·NICNT, WBC, BECNT, Hermeneia, ICC, Anchor, Pillar, NIGTC 등) 가운데서 고릅니다. 개인 블로그, 설교 모음, 출처 없는 요약 사이트는 쓰지 않습니다.\n"
+      + "2) items 에는 이 본문(장·절)의 주해가 담긴 페이지를 실제로 열어 읽은 주석만 넣습니다. 공개된 본문(biblehub, ccel, studylight, biblestudytools, archive.org 등)이나 출판사·학술지가 공개한 부분을 찾으세요. 서평이나 소개만 본 주석, 기억으로 아는 내용은 넣지 않습니다.\n"
+      + "3) 그 페이지에 있는 해석만 씁니다. 문장을 옮기지 말고 2~4문장으로 내 말로 요약하며, 직접 인용은 한 문장 이내로 합니다. 주석끼리 견해가 다르면 그 차이가 드러나게 쓰고, t 에 전통과 시대를 적습니다(예: 개혁주의 · 16세기). 원어는 「원어, 한글 음독」 꼴로 적습니다.\n"
+      + "4) more 에는 내용을 읽지는 못했지만 이 책의 권위 있는 주석으로 꼽힌 것을 확인한 주석을 4개까지 넣습니다. u 는 그렇게 꼽은 페이지 주소, w 는 왜 좋은지 한 줄입니다.\n"
+      + (body.known ? "5) known 에는 검색으로 원문을 열지 못했지만 당신이 확실히 아는, 널리 인정된 주석의 이 본문 해석을 3개까지 넣습니다. 내 말로 2~3문장만 쓰고, 인용문·쪽수는 넣지 않습니다. 확실하지 않으면 넣지 않습니다.\n" : "")
+      + "찾지 못했으면 빈 목록으로 답하세요. 지어내는 것보다 빈 목록이 낫습니다. 설명 없이 JSON 하나만 답합니다:\n"
+      + '{"items":[{"c":"주석 이름","a":"저자","t":"전통·시대","s":"요약","q":"읽은 페이지에서 그대로 옮긴 한 문장(없으면 빈칸)","u":"읽은 페이지 주소"}],' + (body.known ? '"known":[{"c":"주석 이름","a":"저자","t":"전통·시대","s":"요약"}],' : "") + '"more":[{"c":"주석 이름","a":"저자","w":"왜 좋은지","u":"확인한 페이지 주소"}]}\nitems 는 5개까지.';
+    const r = aiText_(prompt, { maxTokens: 6000, temperature: 0.2, search: true, uses: 8, srcMax: 24, kind: "권위 주석" });
+    const none = { items: [], more: [], known: [], ai: r.ai || "", note: "이번에는 웹에서 주석 원문을 확인하지 못해 아무것도 싣지 않았습니다. 잠시 뒤 다시 찾아 주세요." };
+    const web = r.searched && (r.sources || []).length;
+    if (!web && !body.known) return none;
+    let o; try { o = jsonOf_(r.text, "{", "}"); } catch (e) { return none; }
+    const c = web ? cmtAuthCheck_(o, r.sources, !body.noLive) : { items: [], more: [] };
+    const known = body.known ? (Array.isArray(o.known) ? o.known : []).filter(x => x && x.c && x.s).slice(0, 3).map(x => ({ c: String(x.c).slice(0, 80), a: String(x.a || "").slice(0, 60), t: String(x.t || "").slice(0, 40), s: String(x.s).slice(0, 700) })) : [];   // 원문을 못 연 것 — 앱이 따로 표시
+    return { items: c.items, more: c.more, known: known, ai: r.ai || "", note: c.items.length || known.length ? "" : none.note };
+  });
+}
+
+function cmtAuthCheck_(o, sources, live) {
+  const host = u => ((String(u || "").match(/^https?:\/\/(?:www\.)?([^\/?#:]+)/i) || [])[1] || "").toLowerCase();
+  const seen = {}; (sources || []).forEach(s => { const h = host(s.url), t = String(s.title || "").toLowerCase().replace(/^www\./, ""); if (h) seen[h] = 1; if (/^[a-z0-9.-]+\.[a-z]{2,}$/.test(t)) seen[t] = 1; });
+  const known = u => { const h = host(u); return !!h && Object.keys(seen).some(k => h === k || h.endsWith("." + k)); };
+  const clean = (l, n, long) => (Array.isArray(l) ? l : []).filter(x => x && x.c && (long ? x.s : true) && known(x.u)).slice(0, n)
+    .map(x => ({ c: String(x.c).slice(0, 80), a: String(x.a || "").slice(0, 60), t: String(x.t || "").slice(0, 40), s: String(x.s || "").slice(0, 900), q: String(x.q || "").slice(0, 240), w: String(x.w || "").slice(0, 120), u: String(x.u).slice(0, 400) }));
+  const items = clean((o || {}).items, 5, true), more = clean((o || {}).more, 4, false), all = items.concat(more), gone = {};
+  if (live !== false) all.forEach(x => { try { const code = UrlFetchApp.fetch(x.u, { muteHttpExceptions: true, followRedirects: true }).getResponseCode(); if (code === 404 || code === 410) gone[x.u] = 1; } catch (e) { gone[x.u] = 1; } });
+  return { items: items.filter(x => !gone[x.u]), more: more.filter(x => !gone[x.u]) };
 }
 
 function reviewMs_(body) {
