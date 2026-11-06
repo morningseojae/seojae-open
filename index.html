@@ -3158,7 +3158,7 @@ async function pushSave(){
 // ───────── 새 버전 자동 새로 고침 ─────────
 // 올릴 때마다 version.json 의 번호가 바뀝니다. 앱이 열릴 때·다시 화면에 올라올 때·5분마다 확인해서,
 // 쓰는 중인 글이 없고 저장이 끝났을 때 새 버전으로 새로 고칩니다.
-const APP_BUILD="17427c2e2c"; const APP_VER="5.0";   // 판 번호: 배포할 때마다 도구/판올리기.py 가 0.1씩 올림 (1.9 다음은 2.0) — 손으로 고치지 말 것
+const APP_BUILD="9584e500c8"; const APP_VER="5.1";   // 판 번호: 배포할 때마다 도구/판올리기.py 가 0.1씩 올림 (1.9 다음은 2.0) — 손으로 고치지 말 것
 let NEW_BUILD=null, UPDATE_NOTICED=false;
 async function checkUpdate(){
   if(APP_BUILD.startsWith("__")) return;                 // 원본 파일로 열었을 때(고치는 중)는 건너뜁니다
@@ -3772,8 +3772,8 @@ const MANUALS=[["quick","간단 매뉴얼","읽자마자 바로 써 보는 한 �
 // 새 소식을 더할 때: NEWS 맨 앞에 넣고 id 는 날짜(같은 날 둘째는 2026-11-02b 처럼 — 글자 순서로 새것이 뒤). 본 소식 id 는 이 기기에만(seojae-open.newsSeen)
 const NEWS=[
  {id:"2026-11-06b",date:"2026년 11월 6일",title:"주석 보기가 생겼어요",items:[
-  ["▤","한 번 누르면 주석 요약까지","묵상 화면 ✦ AI 옆 「주석 보기」를 누르면, 그 성경 책의 권위 있는 주석에서 이 본문을 찾아 요약해 주고 다 되면 화면에 보여 드려요.","칼뱅처럼 웹에 원문이 있는 주석은 「원문 열기」로 확인할 수 있어요"],
-  ["✦","믿을 수 있게 나눠서 보여 드려요","웹에서 원문을 연 주석과, AI가 아는 내용을 따로 표시해요. AI가 아는 내용은 틀릴 수 있으니 쓰기 전에 꼭 대조해 주세요.","처음 쓸 때 AI가 꺼져 있으면 설정 → 쓰기 → AI 열쇠에서 켜 주세요"]]},
+  ["▤","한 번 누르면 주석 요약까지","묵상 화면 ✦ AI 옆 「주석 보기」를 누르면, 그 성경 책의 권위 있는 주석에서 이 본문을 찾아 요약해 주고 다 되면 화면에 보여 드려요.","클로드 열쇠를 넣으면 웹에서 원문을 찾아 「원문 열기」로 확인할 수 있어요"],
+  ["✦","믿을 수 있게 나눠서 보여 드려요","웹에서 원문을 연 주석과, AI가 아는 내용을 따로 표시해요. 함께 쓰는 무료 AI는 AI가 아는 내용만 보여 드려요. 주석 이름·저자까지 틀릴 수 있으니 쓰기 전에 꼭 대조해 주세요.","처음 쓸 때 AI가 꺼져 있으면 설정 → 쓰기 → AI 열쇠에서 켜 주세요"]]},
  {id:"2026-11-06",date:"2026년 11월 6일",title:"켜 둔 창에도 저절로",items:[
   ["⇄","켜 둔 창에도 저절로 들어와요","휴대폰에서 쓴 글이 켜 둔 컴퓨터 창에 10~15초 안에 저절로 들어와요. 앱을 껐다 켜지 않아도 돼요. 자리로 돌아와 마우스를 움직이면 바로 확인해요.","쓰는 중인 글이 있으면 건드리지 않고, 간직한 뒤에 합쳐요"],
   ["✎","묵상 본문 칸도 저절로","본문 칸이 빈 그날 묵상을 열면 그날 묵상 본문이 저절로 적혀요.",""]]},
@@ -4900,13 +4900,14 @@ const cmtAuthBtn=()=>CONF.ai?`<div class="row" style="margin-top:10px"><button c
 function cmtAuthHtml(r){ const it=r.items||[], more=r.more||[], kn=r.known||[], has=it.length||kn.length;
   return `<p class="label bible" style="margin:18px 0 2px">${CMT_WEB?"주석 요약":"권위 있는 주석에서"} — ${esc(CMTR.passage)}</p>`
     +(it.length?it.map(x=>`<div class="cmta"><b>${esc(x.c)}</b>${x.a?` <span class="muted">${esc(x.a)}</span>`:""}${x.t?` <span class="chip on" style="cursor:default;font-size:11px">${esc(x.t)}</span>`:""}<p>${esc(x.s)}</p>${x.q?`<p class="cmtaq">${esc(x.q)}</p>`:""}<a href="${esc(safeUrl(x.u)||"#")}" target="_blank" rel="noopener">원문 열기 ↗</a></div>`).join(""):has?"":`<p class="muted">${esc(r.note||"이 본문의 주해를 웹에서 확인하지 못해 싣지 않았습니다.")}</p>`)
-    +(kn.length?`<p class="hint" style="margin-top:12px"><b>AI가 아는 주석 내용</b> (원문을 열어 보지 못했습니다. 쓰기 전에 꼭 대조해 주세요)</p>${kn.map(x=>`<div class="cmta"><b>${esc(x.c)}</b>${x.a?` <span class="muted">${esc(x.a)}</span>`:""}${x.t?` <span class="chip on" style="cursor:default;font-size:11px">${esc(x.t)}</span>`:""}<p>${esc(x.s)}</p></div>`).join("")}`:"")
+    +(kn.length?`<p class="hint" style="margin-top:12px"><b>AI가 아는 주석 내용</b> (원문을 열어 보지 못했습니다. 주석 이름·저자까지 틀릴 수 있으니 쓰기 전에 꼭 대조해 주세요)</p>${kn.map(x=>`<div class="cmta"><b>${esc(x.c)}</b>${x.a?` <span class="muted">${esc(x.a)}</span>`:""}${x.t?` <span class="chip on" style="cursor:default;font-size:11px">${esc(x.t)}</span>`:""}<p>${esc(x.s)}</p></div>`).join("")}`:"")
     +(more.length?`<p class="hint" style="margin-top:12px"><b>더 읽어 볼 주석</b> (내용을 읽지는 못하고, 권위 있는 주석으로 꼽힌 것만 확인했습니다)</p>${more.map(x=>`<p class="hint" style="margin:2px 0">· <a href="${esc(safeUrl(x.u)||"#")}" target="_blank" rel="noopener">${esc(x.c)}</a>${x.a?` — ${esc(x.a)}`:""}${x.w?` · ${esc(x.w)}`:""}</p>`).join("")}`:"")
     +(it.length?`<p class="hint">${esc(r.ai||"인공지능")}가 웹에서 원문을 열어 본 것만 위에 실었습니다. 요약이니 설교에 쓸 때는 「원문 열기」로 대조해 주세요.</p>`:"")
+    +(CMT_WEB&&kn.length&&!it.length?`<p class="hint">함께 쓰는 무료 AI는 웹 검색을 쓰지 못해 AI가 아는 내용만 보입니다. 설정 → 쓰기 → AI 열쇠에 클로드 열쇠를 넣으면 원문을 찾아 드립니다.</p>`:"")
     +(CMT_WEB&&has?`<div class="row" style="margin-top:8px"><button class="btn small" onclick="cmtInsert()" title="내 글 맨 뒤에 ※ 표시로 감싸 넣습니다">요약을 글 끝에 넣기</button></div>`:""); }
 async function cmtAuthority(scroll){ const el=$("#cmtauth"); if(!el||!CMTR?.passage) return; const label=CMTR.passage, gen=CMT_GEN; let r=CMT_AUTH.get(label);
   el.innerHTML=`<p class="muted" style="margin-top:14px">⏳ 권위 있는 주석에서 이 본문을 찾는 중… (1~2분)</p>`;
-  try{ if(!r){ r=await gcall("cmtAuthority",{label,mine:CMTR.excerpts.map(e=>e.name.normalize("NFC")),...(CMT_WEB?{known:true,noLive:true}:{})}); if(!r.ok) throw new Error(r.error); if((r.items||[]).length||(r.known||[]).length) CMT_AUTH.set(label,r); }
+  try{ if(!r){ r=await gcall("cmtAuthority",{label,mine:CMTR.excerpts.map(e=>e.name.normalize("NFC")),...(CMT_WEB?{known:true,noLive:true,noSearch:aiMode()==="shared"}:{})}); if(!r.ok) throw new Error(r.error); if((r.items||[]).length||(r.known||[]).length) CMT_AUTH.set(label,r); }
     if(gen!==CMT_GEN||!$("#cmtauth")) return; CMTR.auth=r; el.innerHTML=cmtAuthHtml(r); }
   catch(e){ if(gen===CMT_GEN&&$("#cmtauth")) el.innerHTML=`<p class="muted" style="margin-top:14px">권위 있는 주석을 찾지 못했습니다: ${esc(e.message)}</p><button class="btn small" onclick="cmtAuthority(true)">다시 찾기</button>`; }
   if(scroll&&gen===CMT_GEN) cmtScrollTo($("#cmtauth"));

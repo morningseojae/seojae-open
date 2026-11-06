@@ -163,7 +163,8 @@ function aiText_(prompt, opts) {
     const tryCall = model => {   // 검색+생각끄기 → 검색만 → 둘 다 없이
       const combos = opts.search ? [[true, true], [false, true], [true, false], [false, false]] : [[true, false], [false, false]];
       let res = null, code = 0, used = null;
-      for (const [think, search] of combos) { res = call(model, think, search); code = res.getResponseCode(); used = { think: think, search: search }; if (code !== 400) break; }
+      let noSearch = false;   // 무료 열쇠는 검색만 한도가 0이라 429가 옴 → 그 답은 한도가 아니니 검색 없이 이어서
+      for (const [think, search] of combos) { if (noSearch && search) continue; res = call(model, think, search); code = res.getResponseCode(); used = { think: think, search: search }; if (code === 429 && search) { noSearch = true; continue; } if (code !== 400) break; }
       return { res: res, code: code, used: used }; };
     let last = "", errs = [];
     const order = l => l.slice().sort((a, b) => opts.fast ? (/lite/.test(b) ? 1 : 0) - (/lite/.test(a) ? 1 : 0) : 0);   // 빠른 일(맞춤법)은 lite 모델부터
@@ -241,6 +242,7 @@ function cmtAuthority_(body) {
   return safe_(() => {
     const label = String((body || {}).label || "").slice(0, 60), mine = ((body || {}).mine || []).slice(0, 8).map(x => String(x).slice(0, 80));
     if (!label) throw new Error("본문이 없습니다");
+    if (body.known && body.noSearch) return cmtKnown_(label);
     const prompt = AI_PRINCIPLES_ + "\n당신은 성경 주석을 조사하는 조교입니다. 「" + label + "」을 이 성경 책의 권위 있는 주석들이 어떻게 풀었는지 웹 검색으로 직접 찾아 한국어로 요약합니다."
       + (mine.length ? " 목회자가 이미 읽은 주석은 빼고 찾으세요: " + mine.join(", ") + "." : "") + "\n"
       + "고르는 기준:\n1) 이 성경 책에 대해 학계와 교회에서 널리 인정된 주석만 씁니다. 먼저 신학교의 주석 안내(예: Denver Seminary 주석 목록)나 주석 평가 자료로 어떤 주석이 권위 있는지 확인하고, 고전(칼뱅, 루터, 크리소스토무스, 카일-델리치, 매튜 헨리 등)과 현대 표준 시리즈(NICOT·NICNT, WBC, BECNT, Hermeneia, ICC, Anchor, Pillar, NIGTC 등) 가운데서 고릅니다. 개인 블로그, 설교 모음, 출처 없는 요약 사이트는 쓰지 않습니다.\n"
@@ -250,15 +252,29 @@ function cmtAuthority_(body) {
       + (body.known ? "5) known 에는 검색으로 원문을 열지 못했지만 당신이 확실히 아는, 널리 인정된 주석의 이 본문 해석을 3개까지 넣습니다. 내 말로 2~3문장만 쓰고, 인용문·쪽수는 넣지 않습니다. 확실하지 않으면 넣지 않습니다.\n" : "")
       + "찾지 못했으면 빈 목록으로 답하세요. 지어내는 것보다 빈 목록이 낫습니다. 설명 없이 JSON 하나만 답합니다:\n"
       + '{"items":[{"c":"주석 이름","a":"저자","t":"전통·시대","s":"요약","q":"읽은 페이지에서 그대로 옮긴 한 문장(없으면 빈칸)","u":"읽은 페이지 주소"}],' + (body.known ? '"known":[{"c":"주석 이름","a":"저자","t":"전통·시대","s":"요약"}],' : "") + '"more":[{"c":"주석 이름","a":"저자","w":"왜 좋은지","u":"확인한 페이지 주소"}]}\nitems 는 5개까지.';
-    const r = aiText_(prompt, { maxTokens: 6000, temperature: 0.2, search: true, uses: 8, srcMax: 24, kind: "권위 주석" });
+    const r = aiText_(prompt, { maxTokens: 6000, temperature: 0.2, search: true, uses: 8, srcMax: 24, fast: !!body.known, kind: "권위 주석" });   // 공개판은 빠른 모델 먼저 (무료 AI가 창구 시간 안에 답하게)
     const none = { items: [], more: [], known: [], ai: r.ai || "", note: "이번에는 웹에서 주석 원문을 확인하지 못해 아무것도 싣지 않았습니다. 잠시 뒤 다시 찾아 주세요." };
     const web = r.searched && (r.sources || []).length;
     if (!web && !body.known) return none;
     let o; try { o = jsonOf_(r.text, "{", "}"); } catch (e) { return none; }
     const c = web ? cmtAuthCheck_(o, r.sources, !body.noLive) : { items: [], more: [] };
-    const known = body.known ? (Array.isArray(o.known) ? o.known : []).filter(x => x && x.c && x.s).slice(0, 3).map(x => ({ c: String(x.c).slice(0, 80), a: String(x.a || "").slice(0, 60), t: String(x.t || "").slice(0, 40), s: String(x.s).slice(0, 700) })) : [];   // 원문을 못 연 것 — 앱이 따로 표시
+    const memo = (Array.isArray(o.known) ? o.known : []).concat(web || !Array.isArray(o.items) ? [] : o.items);   // 검색을 못 했으면 items 라고 답해도 기억으로 쓴 것
+    const known = body.known ? memo.filter(x => x && x.c && x.s).slice(0, 3).map(x => ({ c: String(x.c).slice(0, 80), a: String(x.a || "").slice(0, 60), t: String(x.t || "").slice(0, 40), s: String(x.s).slice(0, 700) })) : [];   // 원문을 못 연 것 — 앱이 따로 표시
+    if (body.known && !c.items.length && !known.length) return cmtKnown_(label);
     return { items: c.items, more: c.more, known: known, ai: r.ai || "", note: c.items.length || known.length ? "" : none.note };
   });
+}
+
+function cmtKnown_(label) {
+  const prompt = AI_PRINCIPLES_ + "\n당신은 성경 주석을 정리하는 조교입니다. 「" + label + "」을 이 성경 책의 권위 있는 주석들이 어떻게 풀었는지 당신이 확실히 아는 내용으로 한국어로 요약합니다.\n"
+    + "1) 이 성경 책에 대해 실제로 주석을 쓴 저자로 학계와 교회에서 널리 인정된 주석만 씁니다(고전: 칼뱅, 루터, 크리소스토무스, 카일-델리치, 매튜 헨리 등 / 현대 표준 시리즈: NICOT·NICNT, WBC, BECNT, Hermeneia, Pillar 등). 주석과 저자가 이 성경 책의 것이 맞는지 확실하지 않으면 넣지 않습니다.\n"
+    + "2) 이 본문의 해석만 내 말로 3~4문장으로 씁니다. 인용문·쪽수는 넣지 않습니다. 견해가 다르면 그 차이가 드러나게 쓰고, 원어는 「원어, 한글 음독」 꼴로 적습니다.\n"
+    + "3) 주석마다 하나씩 4개까지. 지어내는 것보다 빈 목록이 낫습니다. 설명 없이 JSON 하나만 답합니다:\n"
+    + '{"known":[{"c":"주석 이름","a":"저자","t":"전통·시대","s":"요약"}]}';
+  const r = aiText_(prompt, { maxTokens: 4000, temperature: 0.2, fast: true, kind: "권위 주석" });
+  let o = {}; try { o = jsonOf_(r.text, "{", "}"); } catch (e) {}
+  const known = (Array.isArray(o.known) ? o.known : []).filter(x => x && x.c && x.s).slice(0, 4).map(x => ({ c: String(x.c).slice(0, 80), a: String(x.a || "").slice(0, 60), t: String(x.t || "").slice(0, 40), s: String(x.s).slice(0, 900) }));
+  return { items: [], more: [], known: known, ai: r.ai || "", note: known.length ? "" : "이 본문의 주석을 찾지 못했습니다. 잠시 뒤 다시 찾아 주세요." };
 }
 
 function cmtAuthCheck_(o, sources, live) {
