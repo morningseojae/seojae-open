@@ -2723,13 +2723,15 @@ const aiKeys=()=>{ try{ return JSON.parse(localStorage.getItem(AIK)||"{}")||{}; 
 const aiMode=()=>{ const k=aiKeys(); if(k.off) return ""; if(k.ok&&(k.gemini||k.claude)) return "own"; return "shared"; };
 const aiOn=()=>!!aiMode();
 const devId=()=>{ let d=""; try{ d=localStorage.getItem("seojae-open.devid")||""; if(!d){ d=Math.random().toString(36).slice(2,12)+Date.now().toString(36); localStorage.setItem("seojae-open.devid",d); } }catch(_){ d="x"+Math.random().toString(36).slice(2,12); } return d; };
-let AIW=null, AIW_N=0; const AIW_WAIT=new Map();
-function aiWorker(){ if(AIW) return AIW; AIW=new Worker("ai-worker.js?v="+APP_BUILD);
-  AIW.onmessage=e=>{ const d=e.data||{}, w=AIW_WAIT.get(d.id); if(!w) return; AIW_WAIT.delete(d.id);
+let AIW=null, AIW_BG=null, AIW_N=0; const AIW_WAIT=new Map();   // AIW_BG: 저절로 하는 AI(오늘의 한 줄·맞춤법 뒷검사) — 단추로 부른 AI가 그 뒤에서 기다리지 않게
+function aiWorker(bg){ const cur=bg?AIW_BG:AIW; if(cur) return cur; const W=new Worker("ai-worker.js?v="+APP_BUILD); if(bg) AIW_BG=W; else AIW=W;
+  W.onmessage=e=>{ const d=e.data||{}, w=AIW_WAIT.get(d.id); if(!w) return; AIW_WAIT.delete(d.id);
     if(d.props&&Object.keys(d.props).length){ try{ const p=JSON.parse(localStorage.getItem("seojae-open.aiprops")||"{}"); for(const k in d.props){ if(d.props[k]==null) delete p[k]; else p[k]=d.props[k]; } localStorage.setItem("seojae-open.aiprops",JSON.stringify(p)); }catch(_){} }
     d.ok?w.ok(d.result):w.no(new Error(d.error)); };
-  AIW.onerror=e=>{ const err=new Error("AI 일꾼이 멈췄습니다 — 새로 고친 뒤 다시 해 주세요"); AIW_WAIT.forEach(w=>w.no(err)); AIW_WAIT.clear(); AIW=null; };
-  return AIW; }
+  W.onerror=e=>{ aiLaneDrop(bg,"AI 일꾼이 멈췄습니다 — 새로 고친 뒤 다시 해 주세요"); };
+  return W; }
+function aiLaneDrop(bg,msg){ const W=bg?AIW_BG:AIW; try{ W&&W.terminate(); }catch(_){} if(bg) AIW_BG=null; else AIW=null;   // 멈춘 일꾼은 버리고 다음에 새로 (뒤에 줄 선 일도 함께 알림)
+  const err=new Error(msg); for(const [id,w] of [...AIW_WAIT]) if(!!w.bg===!!bg){ AIW_WAIT.delete(id); w.no(err); } }
 // ───────── 익명 사용 통계(공개판만, 2026-11-01): 하루 한 번 숫자만 공개 창구로(stat). 글·제목·이름·메일·기기 번호는 보내지 않음 ─────────
 // 이 기기에 남는 것(seojae-open.stat): 처음 쓴 날·보낸 날·오늘 기능 횟수. 설정 → 도움 → 「익명 사용 통계」에서 끄면 보내지 않음. 브라우저 「추적 안 함」이면 처음부터 보내지 않음
 const ST_KEY="seojae-open.stat", ST_ADMIN="4gospel@gmail.com";
@@ -2810,9 +2812,10 @@ function aiCall(fn,args){
     if(!ok){ if(!confirm("함께 쓰는 무료 AI(구글 제미나이)를 씁니다.\n\nAI 단추를 누른 그때의 글(고른 부분·지금 글)이 아침 서재 공개 창구를 거쳐 구글로 갑니다. 창구는 글을 남기지 않습니다.\n무료 등급이라 구글이 서비스 개선에 쓸 수 있고, 여러 사람이 나눠 써서 하루에 쓸 수 있는 양이 적습니다.\n일기는 AI로 보내지 않습니다.\n\n계속할까요? (내 열쇠를 넣으면 더 좋은 답 — 설정 → 쓰기 → AI 열쇠)")) return Promise.reject(new Error("AI를 쓰지 않았습니다"));
       try{ localStorage.setItem("seojae-open.aiShareOk","1"); }catch(_){} } }
   const k=mode==="own"?aiKeys():{}, id=++AIW_N; let props={}; try{ props=JSON.parse(localStorage.getItem("seojae-open.aiprops")||"{}"); }catch(_){}
-  return new Promise((ok,no)=>{ AIW_WAIT.set(id,{ok,no}); const t=setTimeout(()=>{ if(AIW_WAIT.has(id)){ AIW_WAIT.delete(id); no(new Error("AI가 너무 오래 답하지 않습니다 — 잠시 뒤 다시 해 주세요")); } },240000);
-    const w=AIW_WAIT.get(id); AIW_WAIT.set(id,{ok:r=>{ clearTimeout(t); w.ok(r); },no:e=>{ clearTimeout(t); w.no(e); }});
-    aiWorker().postMessage({id,fn,args,keys:mode==="shared"?{geminiKey:"__SHARED__",claudeKey:""}:{geminiKey:k.gemini||"",claudeKey:k.claude||""},props,gw:PUB_GW,dev:devId()}); });
+  const bg=(fn==="coWrite"&&args?.[0]?.mode==="dayline")||(fn==="spellCheck"&&!!args?.[0]?.fast);   // 저절로 하는 일은 따로 줄에
+  return new Promise((ok,no)=>{ const t=setTimeout(()=>{ if(AIW_WAIT.has(id)) aiLaneDrop(bg,"AI가 너무 오래 답하지 않습니다 — 잠시 뒤 다시 해 주세요"); },150000);
+    AIW_WAIT.set(id,{bg,ok:r=>{ clearTimeout(t); ok(r); },no:e=>{ clearTimeout(t); no(e); }});
+    aiWorker(bg).postMessage({id,fn,args,keys:mode==="shared"?{geminiKey:"__SHARED__",claudeKey:""}:{geminiKey:k.gemini||"",claudeKey:k.claude||""},props,gw:PUB_GW,dev:devId()}); });
 }
 let DRV_VER=null;
 async function drvCall(fn,args){
@@ -3158,7 +3161,7 @@ async function pushSave(){
 // ───────── 새 버전 자동 새로 고침 ─────────
 // 올릴 때마다 version.json 의 번호가 바뀝니다. 앱이 열릴 때·다시 화면에 올라올 때·5분마다 확인해서,
 // 쓰는 중인 글이 없고 저장이 끝났을 때 새 버전으로 새로 고칩니다.
-const APP_BUILD="6cb55435e4"; const APP_VER="5.2";   // 판 번호: 배포할 때마다 도구/판올리기.py 가 0.1씩 올림 (1.9 다음은 2.0) — 손으로 고치지 말 것
+const APP_BUILD="dab7303dcb"; const APP_VER="5.3";   // 판 번호: 배포할 때마다 도구/판올리기.py 가 0.1씩 올림 (1.9 다음은 2.0) — 손으로 고치지 말 것
 let NEW_BUILD=null, UPDATE_NOTICED=false;
 async function checkUpdate(){
   if(APP_BUILD.startsWith("__")) return;                 // 원본 파일로 열었을 때(고치는 중)는 건너뜁니다
@@ -3771,6 +3774,8 @@ const MANUALS=[["quick","간단 매뉴얼","읽자마자 바로 써 보는 한 �
 // ───────── 새 소식 (공개판, 2026-10-31 팀장님): 중요한 고침은 앱을 열 때 한 번만 쉬운 말로 알림 ─────────
 // 새 소식을 더할 때: NEWS 맨 앞에 넣고 id 는 날짜(같은 날 둘째는 2026-11-02b 처럼 — 글자 순서로 새것이 뒤). 본 소식 id 는 이 기기에만(seojae-open.newsSeen)
 const NEWS=[
+ {id:"2026-11-08",date:"2026년 11월 8일",title:"주석 요약이 빨라졌어요",items:[
+  ["⏱","주석 요약이 오래 걸리지 않아요","앱을 열 때 「오늘의 한 줄」을 만드는 동안 주석 요약이 그 뒤에서 기다리느라 한참 걸리던 것을 고쳤어요. 이제 따로 처리해서 보통 10초 안에 나와요.","무료 AI가 붐비면 더 빠른 모델로 바꿔 답해요"]]},
  {id:"2026-11-06c",date:"2026년 11월 6일",title:"주석이 묵상 본문을 찾아요",items:[
   ["▤","주석이 오늘 묵상 본문을 찾아요","주석 보기가 묵상 본문 대신 통독표의 다른 본문(창세기 등)을 찾던 것을 고쳤어요. 본문 칸이 비었거나 장까지만 적혀 있으면 그날 묵상 본문으로 찾아요.","본문 칸과 오늘 묵상 본문이 다르면 주석 칸에 그 본문으로 찾는 단추가 나와요"]]},
  {id:"2026-11-06b",date:"2026년 11월 6일",title:"주석 보기가 생겼어요",items:[

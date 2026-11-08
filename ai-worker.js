@@ -35,8 +35,9 @@ function sharedFetch_(url, o) {   // 공개 창구(aiShared)에 맡김: 모델 �
   if (!op || !GW_) return fail(400, "함께 쓰는 무료 AI로는 할 수 없는 요청입니다");
   const x = new XMLHttpRequest();
   x.open("POST", GW_, false); x.setRequestHeader("Content-Type", "text/plain;charset=utf-8");
+  x.timeout = op === "gen" ? 40000 : 15000;   // 붐비는 모델이 답을 끝내 주지 않으면 일꾼이 멈춰 다른 AI 일까지 막힘 → 끊고 다른 모델로 (2026-11-08)
   try { x.send(JSON.stringify({ fn: "aiShared", args: [{ op, model: m ? m[1] : "", body: op === "gen" ? String(o.payload || "") : "", dev: DEV_ }] })); }
-  catch (e) { return fail(0, "함께 쓰는 무료 AI 창구에 닿지 못했습니다 — 인터넷을 확인해 주세요"); }
+  catch (e) { return /timeout/i.test(String(e && (e.name || e.message))) ? fail(504, "이 모델이 너무 오래 걸려 다른 모델로 바꿉니다") : fail(0, "함께 쓰는 무료 AI 창구에 닿지 못했습니다 — 인터넷을 확인해 주세요"); }
   let j = null; try { j = JSON.parse(x.responseText); } catch (e) {}
   if (!j) return fail(502, "함께 쓰는 무료 AI 창구가 알아볼 수 없는 답을 보냈습니다");
   if (!j.ok) return fail(429, j.error || "함께 쓰는 무료 AI가 지금 답하지 않습니다");
@@ -167,7 +168,8 @@ function aiText_(prompt, opts) {
       for (const [think, search] of combos) { if (noSearch && search) continue; res = call(model, think, search); code = res.getResponseCode(); used = { think: think, search: search }; if (code === 429 && search) { noSearch = true; continue; } if (code !== 400) break; }
       return { res: res, code: code, used: used }; };
     let last = "", errs = [];
-    const order = l => l.slice().sort((a, b) => opts.fast ? (/lite/.test(b) ? 1 : 0) - (/lite/.test(a) ? 1 : 0) : 0);   // 빠른 일(맞춤법)은 lite 모델부터
+    const fast = opts.fast || (typeof SHARED_ === "function" && SHARED_());   // 공개판 함께 쓰는 무료 AI는 늘 빠른 모델부터 (큰 모델은 붐비면 1분 넘게 걸림)
+    const order = l => l.slice().sort((a, b) => fast ? (/lite/.test(b) ? 1 : 0) - (/lite/.test(a) ? 1 : 0) : 0);   // 빠른 일(맞춤법)은 lite 모델부터
     const skip = geminiSkip_();
     let models = order(geminiModels_(gk)).filter(m => !skip[m]), refreshed = false, quota = 0, gone = 0;
     if (!models.length) quota = 1;   // 후보가 모두 방금 막혔거나 한도 — 다시 두드리지 않음 (클로드 열쇠가 있으면 그쪽으로)
@@ -190,7 +192,8 @@ function aiText_(prompt, opts) {
         if (t) return { text: t, ai: "gemini (" + model + ")", sources: sources, searched: !!(r.used && r.used.search), info: { finish: cand.finishReason, parts: parts.length, thought: parts.filter(x => x.thought).length, usage: j.usageMetadata, used: r.used } };
         last = model + ": 빈 응답 (" + (cand.finishReason || "") + ")"; continue; }
       last = model + " " + r.code + ": " + ((j.error || {}).message || "").slice(0, 100); errs.push(last);
-      if (r.code !== 503 && r.code !== 429 && r.code !== 404) break;
+      if (r.code === 504) geminiMark_(model, 504);   // 너무 늦은 모델은 15분 쉬게
+      if (r.code !== 503 && r.code !== 429 && r.code !== 404 && r.code !== 504) break;
     }
     if (claudeErr) throw new Error(claudeErr + " / 대신 쓴 제미나이도 안 됨: " + (errs.length > 1 ? errs.slice(-2).join(" / ") : last));
     if (!ck) {
