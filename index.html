@@ -1292,6 +1292,9 @@ button.rtc:hover{border-color:var(--sepia)} button.rtc.r:hover{filter:brightness
 .stulg{font-weight:400;font-size:12px;color:var(--ink-soft);display:inline-flex;align-items:center;gap:5px} .stulg i{display:inline-block;width:14px;height:3px;border-radius:2px} .stulg i.l1{background:#2f5d8a} .stulg i.l2{background:#d08a2a;margin-left:6px}
 .stuchart{width:100%;height:auto;display:block} .stug{stroke:var(--edge);stroke-width:1} .stut{font:11px var(--ui-font,sans-serif);fill:var(--faint)}
 .stul1{fill:none;stroke:#2f5d8a;stroke-width:2.4;stroke-linejoin:round} .stul2{fill:none;stroke:#d08a2a;stroke-width:2;stroke-dasharray:4 3} .stud1{fill:#2f5d8a}
+.stuwrap{position:relative;touch-action:pan-y} .stuchart{cursor:crosshair} .stuvl{stroke:var(--ink-soft);stroke-width:1;stroke-dasharray:3 3} .stuh1{fill:#2f5d8a;stroke:var(--paper);stroke-width:2} .stuh2{fill:#d08a2a;stroke:var(--paper);stroke-width:2}
+.stutip{position:absolute;pointer-events:none;z-index:2;padding:7px 10px;border-radius:9px;border:1px solid var(--edge);background:var(--paper);box-shadow:0 4px 14px rgba(0,0,0,.14);font:12.5px/1.5 var(--ui-font,sans-serif);color:var(--ink);white-space:nowrap}
+.stutip b{display:block;font-weight:800;margin-bottom:2px} .stutip span{display:flex;align-items:center;gap:6px} .stutip i{display:inline-block;width:12px;height:3px;border-radius:2px} .stutip i.l1{background:#2f5d8a} .stutip i.l2{background:#d08a2a}
 .stu2{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:0 10px}
 .stub{display:grid;grid-template-columns:minmax(80px,auto) 1fr auto;gap:8px;align-items:center;margin:5px 0;font:13px var(--ui-font,sans-serif)}
 .stubn{color:var(--ink)} .stubb{height:10px;border-radius:9px;background:var(--paper-2);overflow:hidden} .stubb i{display:block;height:100%;background:#2f5d8a;border-radius:9px}
@@ -2767,6 +2770,15 @@ async function studioLoad(ask){ STU.busy=true; STU.err=""; studioPaint();
   try{ const tok=await drvToken(!!ask); STU.data=await gwCall("statAdmin",[{tok,days:180}]); }
   catch(e){ STU.err=e.message||String(e); }
   STU.busy=false; studioPaint(); }
+// 날마다 그래프: 마우스(휴대폰은 누름) 자리에서 가장 가까운 날 → 세로선·두 점·날짜와 숫자 쪽지 (2026-11-09 팀장님)
+function stuHover(e){ const C=STU.cd, w=$("#studioview .stuwrap"), svg=w?.querySelector(".stuchart"), tip=w?.querySelector(".stutip"), g=svg?.querySelector(".stuhov"); if(!C||!g||!tip) return;
+  if(!e||!C.days.length){ g.style.display="none"; tip.hidden=true; return; }
+  const r=svg.getBoundingClientRect(), vx=(e.clientX-r.left)/r.width*C.W; let i=0,b=1e9; C.days.forEach((_,j)=>{ const d=Math.abs(C.X(j)-vx); if(d<b){ b=d; i=j; } });
+  const x=C.days[i], a=+x.a.dev||0, n=+x.a.new||0, px=C.X(i), [vl,d1,d2]=g.children, dt=new Date(x.d+"T00:00:00");
+  vl.setAttribute("x1",px); vl.setAttribute("x2",px); d1.setAttribute("cx",px); d1.setAttribute("cy",C.Y(a)); d2.setAttribute("cx",px); d2.setAttribute("cy",C.Y(n)); g.style.display="";
+  tip.innerHTML=`<b>${isNaN(dt)?esc(x.d):`${dt.getMonth()+1}월 ${dt.getDate()}일 (${"일월화수목금토"[dt.getDay()]})`}</b><span><i class="l1"></i>연 기기 ${a}</span><span><i class="l2"></i>새로 시작 ${n}</span>`; tip.hidden=false;
+  const k=r.width/C.W, tw=tip.offsetWidth, th=tip.offsetHeight, cx=px*k, cy=C.Y(Math.max(a,n))*k;
+  tip.style.left=Math.max(0,Math.min(r.width-tw,cx+(cx>r.width/2?-tw-12:12)))+"px"; tip.style.top=Math.max(0,cy-th/2)+"px"; }
 function studioSum(days,key){ return days.reduce((a,x)=>a+(+x.a[key]||0),0); }
 function studioPaint(){ const ov=$("#studioview"); if(!ov) return; const D=STU.data;
   const head=`<div class="rthead"><p class="newsk">관리 스튜디오 · 아침 서재 공개판</p><button class="rtx" data-x aria-label="닫기" title="닫기 (Esc)">✕</button></div>
@@ -2782,7 +2794,8 @@ function studioPaint(){ const ov=$("#studioview"); if(!ov) return; const D=STU.d
   const line=k=>days.map((x,i)=>`${i?"L":"M"}${X(i).toFixed(1)},${Y(+x.a[k]||0).toFixed(1)}`).join("");
   const ticks=[0,Math.round(mx/2),mx].map(v=>`<line x1="${P}" x2="${W-8}" y1="${Y(v)}" y2="${Y(v)}" class="stug"/><text x="${P-6}" y="${Y(v)+4}" class="stut" text-anchor="end">${v}</text>`).join("");
   const lab=[0,Math.floor((days.length-1)/2),days.length-1].filter((v,i,a)=>a.indexOf(v)===i).map(i=>`<text x="${X(i)}" y="${H-4}" class="stut" text-anchor="middle">${+days[i].d.slice(5,7)}.${+days[i].d.slice(8,10)}</text>`).join("");
-  const chart=`<svg class="stuchart" viewBox="0 0 ${W} ${H}" role="img" aria-label="날마다 연 기기와 새로 시작한 기기">${ticks}${lab}<path d="${line("dev")}" class="stul1"/><path d="${line("new")}" class="stul2"/>${days.map((x,i)=>`<circle cx="${X(i)}" cy="${Y(+x.a.dev||0)}" r="${days.length>60?1.5:2.5}" class="stud1"><title>${x.d} · 연 기기 ${x.a.dev||0} · 새로 ${x.a.new||0}</title></circle>`).join("")}</svg>`;
+  const chart=`<svg class="stuchart" viewBox="0 0 ${W} ${H}" role="img" aria-label="날마다 연 기기와 새로 시작한 기기">${ticks}${lab}<path d="${line("dev")}" class="stul1"/><path d="${line("new")}" class="stul2"/>${days.map((x,i)=>`<circle cx="${X(i)}" cy="${Y(+x.a.dev||0)}" r="${days.length>60?1.5:2.5}" class="stud1"/>`).join("")}<g class="stuhov" style="display:none"><line class="stuvl" y1="${Y(mx)}" y2="${Y(0)}"/><circle class="stuh1" r="4.5"/><circle class="stuh2" r="4"/></g></svg>`;
+  STU.cd={days,X,Y,W,H};
   const FN={today:"오늘",qt:"묵상",write:"글방 글쓰기",room:"글방",diary:"일기",shelf:"책장",drawer:"서랍",settings:"설정",rt:"성경읽기표 열기",rtcheck:"읽기표 장 체크",read:"말씀 다 읽음",ai:"AI 부르기",save:"글 간직",also:"함께 읽기 더함",install:"앱 설치"};
   const feats=Object.keys(FN).map(k=>({k,n:sum("f."+k),u:sum("u."+k)})).filter(x=>x.n).sort((a,b)=>b.n-a.n), fmx=Math.max(1,...feats.map(x=>x.n));
   const bars=(rows,unit)=>rows.length?rows.map(r=>`<div class="stub"><span class="stubn">${esc(r.l)}</span><span class="stubb"><i style="width:${Math.max(2,Math.round(r.v/r.mx*100))}%"></i></span><span class="stubv">${r.v.toLocaleString()}${unit||""}${r.s?`<small>${r.s}</small>`:""}</span></div>`).join(""):`<p class="hint">아직 숫자가 없습니다.</p>`;
@@ -2792,7 +2805,7 @@ function studioPaint(){ const ov=$("#studioview"); if(!ov) return; const D=STU.d
   const K=D.keys||{};
   ov.innerHTML=`<article class="newscard stucard" role="dialog" aria-modal="true" aria-label="관리 스튜디오">${head}
     <div class="stukpi">${kpi.map(([t,v,s])=>`<div class="stuk"><span>${t}</span><b>${typeof v==="number"?v.toLocaleString():v}</b><small>${s}</small></div>`).join("")}</div>
-    <section class="stus"><h4>날마다 <span class="stulg"><i class="l1"></i>연 기기 <i class="l2"></i>새로 시작</span></h4>${chart}</section>
+    <section class="stus"><h4>날마다 <span class="stulg"><i class="l1"></i>연 기기 <i class="l2"></i>새로 시작</span> <small>마우스를 올리면(휴대폰은 누르면) 그날 숫자</small></h4><div class="stuwrap" onpointermove="stuHover(event)" onpointerdown="stuHover(event)" onpointerleave="stuHover()">${chart}<div class="stutip" hidden></div></div></section>
     <div class="stu2">
       <section class="stus"><h4>많이 쓰는 기능 <small>(${STU.days}일 · 횟수 / 쓴 기기 날 수)</small></h4>${bars(feats.map(f=>({l:FN[f.k],v:f.n,s:` · ${f.u}`,mx:fmx})))}</section>
       <section class="stus"><h4>기기·저장</h4>${grp("m.",{phone:"휴대폰",tablet:"태블릿",pc:"PC"})}<hr class="dash">${grp("s.",{drive:"구글 드라이브",local:"이 기기만"})}<hr class="dash">${grp("app.",{app:"앱으로",web:"브라우저로"})}</section>
@@ -3161,7 +3174,7 @@ async function pushSave(){
 // ───────── 새 버전 자동 새로 고침 ─────────
 // 올릴 때마다 version.json 의 번호가 바뀝니다. 앱이 열릴 때·다시 화면에 올라올 때·5분마다 확인해서,
 // 쓰는 중인 글이 없고 저장이 끝났을 때 새 버전으로 새로 고칩니다.
-const APP_BUILD="dab7303dcb"; const APP_VER="5.3";   // 판 번호: 배포할 때마다 도구/판올리기.py 가 0.1씩 올림 (1.9 다음은 2.0) — 손으로 고치지 말 것
+const APP_BUILD="a19ec36fb7"; const APP_VER="5.4";   // 판 번호: 배포할 때마다 도구/판올리기.py 가 0.1씩 올림 (1.9 다음은 2.0) — 손으로 고치지 말 것
 let NEW_BUILD=null, UPDATE_NOTICED=false;
 async function checkUpdate(){
   if(APP_BUILD.startsWith("__")) return;                 // 원본 파일로 열었을 때(고치는 중)는 건너뜁니다
