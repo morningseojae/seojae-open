@@ -3217,7 +3217,7 @@ async function pushSave(){
 // ───────── 새 버전 자동 새로 고침 ─────────
 // 올릴 때마다 version.json 의 번호가 바뀝니다. 앱이 열릴 때·다시 화면에 올라올 때·5분마다 확인해서,
 // 쓰는 중인 글이 없고 저장이 끝났을 때 새 버전으로 새로 고칩니다.
-const APP_BUILD="4d5a345882"; const APP_VER="6.3";   // 판 번호: 배포할 때마다 도구/판올리기.py 가 0.1씩 올림 (1.9 다음은 2.0) — 손으로 고치지 말 것
+const APP_BUILD="55d7abeeb3"; const APP_VER="6.4";   // 판 번호: 배포할 때마다 도구/판올리기.py 가 0.1씩 올림 (1.9 다음은 2.0) — 손으로 고치지 말 것
 let NEW_BUILD=null, UPDATE_NOTICED=false;
 async function checkUpdate(){
   if(APP_BUILD.startsWith("__")) return;                 // 원본 파일로 열었을 때(고치는 중)는 건너뜁니다
@@ -3996,6 +3996,9 @@ function newsOpen(list){ list=(list&&list.length?list:NEWS.slice(0,1)); $("#news
 // 예전 주소(4gospel.github.io/seojae-open)에서 넘어온 분 (2026-11-01): 안내 화면이 ?from=old(&g=1 구글로 썼음, &app=1 홈 화면 앱)만 붙여 보냄 → 주소 줄에서 지우고, 이 기기에서 한 번만 환영 창
 const FROM_OLD=(()=>{ try{ const q=new URLSearchParams(location.search); if(q.get("from")!=="old") return null; const r={g:q.get("g")==="1",app:q.get("app")==="1"};
   ["from","g","app"].forEach(k=>q.delete(k)); history.replaceState(history.state,"",location.pathname+(q.toString()?"?"+q:"")+location.hash); return r; }catch(_){ return null; } })();
+// 주소로 화면 바로 열기(2026-11-14 — 오픈채팅방 아침 7시 알림 링크용): ?go=qt(묵상)·diary(일기)·shelf(책장)·today. 읽은 뒤 주소 줄에서 지움
+const GO_TO=(()=>{ try{ const q=new URLSearchParams(location.search), g=q.get("go"); if(!g) return null; q.delete("go"); history.replaceState(history.state,"",location.pathname+(q.toString()?"?"+q:"")+location.hash); return /^(qt|diary|shelf|today)$/.test(g)?g:null; }catch(_){ return null; } })();
+function goToStart(){ if(!GO_TO||NEED_CONNECT) return; try{ if(GO_TO==="qt") go("write",{track:"bible"}); else if(GO_TO!=="today") go(GO_TO); }catch(_){} }
 function moveWelcome(){ if(!FROM_OLD) return; let seen=""; try{ seen=localStorage.getItem("seojae-open.movedWelcome")||""; localStorage.setItem("seojae-open.movedWelcome","1"); localStorage.setItem("seojae-open.manualShown","1"); }catch(_){} if(seen) return;
   newsMark(); const NEWU="https://morningseojae.github.io/seojae-open/";   // 쓰시던 분이라 새 소식·간단 매뉴얼 창은 띄우지 않음
   const cloud=["☁","구글로 쓰셨다면","「구글로 시작하기」를 한 번만 누르시면 내 구글 드라이브의 기록이 그대로 이어져요.",""],
@@ -11274,7 +11277,7 @@ function ensurePlan(){
 { const W=(n,f)=>function(...a){ if(n==="rtPaint"&&RT_PLAN===-1) return rtPaintAll(...a); return RT_PLAN>0&&plansAlso()[RT_PLAN-1]?withPlan(RT_PLAN,()=>f.apply(this,a)):f.apply(this,a); };
   for(const n of ["rtPaint","rtPick","rtUndo","rtJumpBk","rtPickBook","rtAct","rtChAct","rtResetAll","rtRestore"]) window[n]=W(n,window[n]);
   const o=window.rtOpen; window.rtOpen=function(j){ RT_PLAN=+j||0; if(RT_PLAN>0&&!plansAlso()[RT_PLAN-1]) RT_PLAN=0; RT_TAB=0; return RT_PLAN>0?withPlan(RT_PLAN,()=>o()):o(); }; }
-load().then(()=>{ ensurePlan(); ensureMs(); render(); setTimeout(checkUpdate,1500); setTimeout(moveWelcome,1200); setTimeout(newsCheck,1800); setTimeout(manualFirst,2200); setTimeout(streakBreakCheck,2600); setTimeout(statPing,5000); });
+load().then(()=>{ ensurePlan(); ensureMs(); render(); goToStart(); setTimeout(checkUpdate,1500); setTimeout(moveWelcome,1200); setTimeout(newsCheck,1800); setTimeout(manualFirst,2200); setTimeout(streakBreakCheck,2600); setTimeout(statPing,5000); });
 </script>
 <script>
 /* 앱 안 브라우저(카카오톡·네이버·인스타그램 등) 안내 (2026-10-30): 여기서는 설치·구글 로그인이 막히고 저장 공간이 지워지기 쉬움
