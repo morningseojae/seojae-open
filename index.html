@@ -300,7 +300,11 @@ ol.toc{margin:6px 0 4px;padding-left:20px;font-size:13.5px;line-height:1.6;color
 .appfoot .af-warm{display:block;font-family:"Gamja Flower",cursive;font-size:17px;line-height:1.4;color:var(--sepia);opacity:.95;margin-bottom:4px}
 .appfoot .af-line{display:block}
 .appfoot .af-donate{margin-top:6px;font:11.5px/1.6 var(--ui-font,sans-serif);color:var(--faint);background:none;border:0;padding:2px 4px;cursor:pointer;text-decoration:underline;text-decoration-color:color-mix(in srgb,var(--faint) 50%,transparent);text-underline-offset:3px}
-.appfoot .af-donate:hover{color:var(--sepia)}
+.appfoot .af-donate:hover{color:var(--sepia)} .appfoot .af-dot{color:var(--faint);margin:0 2px}
+.fbtext{width:100%;box-sizing:border-box;font:16px/1.6 var(--ui-font,sans-serif);padding:10px 12px;border:1px solid var(--edge);border-radius:10px;background:var(--field-bg,var(--paper));color:var(--ink);resize:vertical;min-height:110px}
+.fbcontact{width:100%;box-sizing:border-box;margin-top:8px;font:16px/1.4 var(--ui-font,sans-serif);padding:9px 12px;border:1px solid var(--edge);border-radius:10px;background:var(--field-bg,var(--paper));color:var(--ink)}
+.fbwhat{margin:8px 0 10px;font-size:12px}
+.fbcard .dnamt{margin-bottom:8px}
 body.focus .appfoot,body.readmode .appfoot,body.typing .appfoot{display:none}
 @media print{.appfoot{display:none}}
 .tipbtn{display:inline-flex;align-items:center;gap:5px;vertical-align:middle;margin-left:6px;font:600 12px/1 var(--ui-font,sans-serif);color:var(--ink-soft);background:var(--paper);border:1px solid var(--edge);border-radius:999px;min-width:22px;height:22px;padding:0 6px;justify-content:center;cursor:pointer;box-shadow:0 1px 2px rgba(60,40,20,.12)}
@@ -2528,7 +2532,7 @@ details.more[open]>summary{margin-bottom:var(--sp-1)}
   <nav id="nav"></nav>
 </div><div class="navline"></div></header>
 <main class="wrap" id="main"></main>
-<footer class="appfoot" id="appfoot" aria-label="만든 사람·저작권·판"><span class="af-warm">아빠 임요한 목사와 딸 임하은 작가가 마주 앉아, 한 줄 한 줄 마음을 모아 함께 지었습니다.</span><span class="af-line">© 2026 임요한 · 임하은 · 아침 서재 <b class="af-beta">베타</b> <span id="afver"></span> · <span class="af-warn">배포 금지</span></span><button type="button" class="af-donate" onclick="donateOpen()" title="응원하고 싶으실 때만 — 토스·카카오페이·계좌">☕ 응원하기</button></footer>
+<footer class="appfoot" id="appfoot" aria-label="만든 사람·저작권·판"><span class="af-warm">아빠 임요한 목사와 딸 임하은 작가가 마주 앉아, 한 줄 한 줄 마음을 모아 함께 지었습니다.</span><span class="af-line">© 2026 임요한 · 임하은 · 아침 서재 <b class="af-beta">베타</b> <span id="afver"></span> · <span class="af-warn">배포 금지</span></span><button type="button" class="af-donate" onclick="fbOpen()" title="좋았던 점·불편한 점·바라는 기능을 만든 사람에게">💬 의견 보내기</button><span class="af-dot" aria-hidden="true">·</span><button type="button" class="af-donate" onclick="donateOpen()" title="응원하고 싶으실 때만 — 토스·카카오페이·계좌">☕ 응원하기</button></footer>
 <script>/* 맨 아래 카피라이트·판 번호(APP_VER, 1.0 → 1.1 … 1.9 → 2.0). 마우스를 올리면 올린 날·build */
 addEventListener("DOMContentLoaded",function(){ var d=new Date(document.lastModified), ok=!isNaN(d)&&d.getFullYear()>2025, v=document.getElementById("afver");
   if(v) v.textContent=typeof APP_VER==="string"?APP_VER:""; v&&(v.title=(ok?"올린 날 "+d.getFullYear()+"."+(d.getMonth()+1)+"."+d.getDate():"")+(typeof APP_BUILD==="string"?" · build "+APP_BUILD:"")); });</script>
@@ -3193,7 +3197,7 @@ async function pushSave(){
 // ───────── 새 버전 자동 새로 고침 ─────────
 // 올릴 때마다 version.json 의 번호가 바뀝니다. 앱이 열릴 때·다시 화면에 올라올 때·5분마다 확인해서,
 // 쓰는 중인 글이 없고 저장이 끝났을 때 새 버전으로 새로 고칩니다.
-const APP_BUILD="ac94eb0a16"; const APP_VER="5.8";   // 판 번호: 배포할 때마다 도구/판올리기.py 가 0.1씩 올림 (1.9 다음은 2.0) — 손으로 고치지 말 것
+const APP_BUILD="9b48613f13"; const APP_VER="5.9";   // 판 번호: 배포할 때마다 도구/판올리기.py 가 0.1씩 올림 (1.9 다음은 2.0) — 손으로 고치지 말 것
 let NEW_BUILD=null, UPDATE_NOTICED=false;
 async function checkUpdate(){
   if(APP_BUILD.startsWith("__")) return;                 // 원본 파일로 열었을 때(고치는 중)는 건너뜁니다
@@ -3773,6 +3777,7 @@ function setGroups(){ const R=S.reminder||{}, rOn=!!(R.on&&R.clock!==false), p=S
   const cm=(cmtLoad()?.files||[]).filter(f=>!f.hidden).length, sf=S.settings.streakFrom;
   return [
    {id:"help",t:"도움",ic:"?",acc:"var(--sepia)",rows:[
+     {k:"feedback",ic:"💬",t:"의견 보내기",st:"",sum:"좋았던 점·불편한 점·바라는 기능을 만든 사람에게",body:fbSection()},
      {k:"donate",ic:"☕",t:"후원하기",st:"",sum:"원하실 때만 · 토스·카카오페이·계좌",body:donateSection()},
      {k:"news",ic:"✉",t:"새 소식",st:"",sum:NEWS[0]?`${esc(NEWS[0].date)} · ${esc(NEWS[0].title)}`:"아직 없음",body:newsSection()},
      {k:"app",ic:"▢",t:"앱으로 설치하기",st:isApp()?"ok":"off",pill:isApp()?"설치됨":"선택",sum:isApp()?"이 기기는 앱으로 쓰는 중 · PC·안드로이드·아이폰 설치법":"PC·크롬·안드로이드·아이폰 사파리 — 기기마다 설치하는 법",body:appSection()},
@@ -3807,6 +3812,9 @@ const MANUALS=[["quick","간단 매뉴얼","읽자마자 바로 써 보는 한 �
 // ───────── 새 소식 (공개판, 2026-10-31 팀장님): 중요한 고침은 앱을 열 때 한 번만 쉬운 말로 알림 ─────────
 // 새 소식을 더할 때: NEWS 맨 앞에 넣고 id 는 날짜(같은 날 둘째는 2026-11-02b 처럼 — 글자 순서로 새것이 뒤). 본 소식 id 는 이 기기에만(seojae-open.newsSeen)
 const NEWS=[
+ {id:"2026-11-14b",date:"2026년 11월 14일",title:"의견을 보내 주실 수 있어요",items:[
+  ["💬","좋았던 점도, 불편한 점도","앱을 쓰시며 좋았던 점·불편했던 점·바라는 기능을 앱 안에서 바로 적어 보내실 수 있어요. 만든 사람이 직접 읽어요.","설정 맨 앞 「도움 → 의견 보내기」, 화면 맨 아래 작은 「💬 의견 보내기」"],
+  ["🌿","오픈채팅방 「아침서재」","말씀으로 하루를 여는 분들이 함께 묵상을 나누는 오픈채팅방을 열었어요. 「의견 보내기」 창의 「오픈채팅방에서 이야기 나누기」로 들어오실 수 있어요.","오고 싶을 때 편하게 — 날마다 오지 않으셔도 괜찮아요"]]},
  {id:"2026-11-14",date:"2026년 11월 14일",title:"응원하고 싶으실 때를 위한 작은 자리",items:[
   ["☕","원하실 때만, 원하시는 만큼","아침 서재는 지금처럼 누구나 끝까지 무료로 쓰실 수 있어요. 다만 「커피 한 잔 값쯤 보태고 싶다」는 분들이 계셔서 작은 자리를 하나 만들었어요. 하지 않으셔도 아무것도 달라지지 않아요.","설정 맨 앞 「도움 → 후원하기」, 화면 맨 아래 작은 「☕ 응원하기」 — 토스·카카오페이·계좌번호 복사"]]},
  {id:"2026-11-08",date:"2026년 11월 8일",title:"주석 요약이 빨라졌어요",items:[
@@ -3976,6 +3984,36 @@ function moveWelcome(){ if(!FROM_OLD) return; let seen=""; try{ seen=localStorag
   ov.onclick=e=>{ if(e.target===ov||e.target.closest("[data-x]")) return close();
     if(e.target.closest("[data-copy]")){ const m=ov.querySelector("[data-msg]"), ok=()=>{ m.textContent="새 주소를 복사했어요. 메시지 창에 붙여 넣어 보내실 수 있어요."; }; try{ navigator.clipboard.writeText(NEWU).then(ok,()=>{ m.textContent=NEWU; }); }catch(_){ m.textContent=NEWU; } } };
   addEventListener("keydown",k,true); setTimeout(()=>{ ov.querySelector(".newsok")?.focus({preventScroll:true}); },50); }
+// ───────── 의견 보내기 (공개판, 2026-11-14 팀장님): 앱 안 칸 → 공개 창구가 팀장님 메일로. 오픈채팅방 링크가 생기면 FEEDBACK.chat 에
+const FEEDBACK={chat:"https://open.kakao.com/o/pYKm52Wi"};   // 오픈채팅방 「아침서재」 주소(https://open.kakao.com/o/…)를 받으면 여기에 — 창에 「오픈채팅방에서 이야기 나누기」가 보임
+const FB_KIND=[["good","😊","좋았던 점"],["hard","😕","불편한 점"],["bug","🛠","고쳐 주세요"],["wish","✨","바라는 기능"]];
+let FB_PICK="";
+const fbDraftKey="seojae-open.fbDraft";
+function fbOpen(){ $("#fbview")?.remove(); const ov=document.createElement("div"); ov.id="fbview"; ov.className="newsview"; let d={}; try{ d=JSON.parse(localStorage.getItem(fbDraftKey)||"{}"); }catch(_){}
+  if(d.k) FB_PICK=d.k;
+  ov.innerHTML=`<article class="newscard dncard fbcard" role="dialog" aria-modal="true" aria-label="의견 보내기">
+    <h3 class="newst">💬 의견 보내기</h3>
+    <p class="dnlead">쓰시면서 좋았던 점, 불편했던 점, 바라는 기능을 편하게 적어 주세요. 만든 사람이 직접 읽어요.</p>
+    <div class="dnamt" role="radiogroup" aria-label="어떤 이야기인가요">${FB_KIND.map(([k,ic,n])=>`<button type="button" role="radio" aria-checked="${FB_PICK===k}" class="${FB_PICK===k?"on":""}" data-k="${k}"><span aria-hidden="true">${ic}</span>${n}</button>`).join("")}</div>
+    <textarea id="fbtext" class="fbtext" rows="5" maxlength="2000" placeholder="예) 일기장에서 날씨를 두 개 고르는 게 좋았어요 / 휴대폰에서 글자가 조금 작아요">${esc(d.t||"")}</textarea>
+    <input id="fbcontact" class="fbcontact" type="text" maxlength="80" autocomplete="off" placeholder="답 받을 메일·카톡 아이디 (선택)" value="${esc(d.c||"")}">
+    <p class="hint fbwhat">함께 가는 것: 적으신 글 · 판 번호(베타 ${esc(typeof APP_VER==="string"?APP_VER:"")}) · 휴대폰/컴퓨터 · 지금 화면. 다른 기록은 보내지 않아요.</p>
+    <div class="dnacts fbacts"><button class="btn ink dnbtn" id="fbsend">보내기</button>${FEEDBACK.chat?`<a class="btn dnbtn" href="${esc(safeUrl(FEEDBACK.chat))}" target="_blank" rel="noopener">오픈채팅방에서 이야기 나누기</a>`:""}</div>
+    <div class="newsacts"><button class="btn newsok" data-x>닫기</button></div></article>`;
+  document.body.appendChild(ov);
+  const keep=()=>{ try{ localStorage.setItem(fbDraftKey,JSON.stringify({k:FB_PICK,t:$("#fbtext")?.value||"",c:$("#fbcontact")?.value||""})); }catch(_){} };
+  ov.querySelectorAll(".dnamt button").forEach(b=>b.onclick=()=>{ FB_PICK=FB_PICK===b.dataset.k?"":b.dataset.k; ov.querySelectorAll(".dnamt button").forEach(x=>{ const on=x.dataset.k===FB_PICK; x.classList.toggle("on",on); x.setAttribute("aria-checked",on); }); keep(); });
+  ov.querySelector("#fbtext").oninput=keep; ov.querySelector("#fbcontact").oninput=keep;
+  ov.querySelector("#fbsend").onclick=fbSend;
+  const close=()=>{ ov.remove(); removeEventListener("keydown",k,true); }, k=e=>{ if(e.key==="Escape"){ e.preventDefault(); e.stopImmediatePropagation(); close(); } };
+  ov.onclick=e=>{ if(e.target===ov||e.target.closest("[data-x]")) close(); }; addEventListener("keydown",k,true); }
+async function fbSend(){ const t=($("#fbtext")?.value||"").trim(), b=$("#fbsend"); if(t.length<2){ $("#fbtext")?.focus(); return toast("적으신 글이 없어요 — 한 줄이면 충분해요"); }
+  b.disabled=true; b.textContent="보내는 중…";
+  try{ await gwCall("feedback",[{kind:FB_PICK||"etc",text:t,contact:($("#fbcontact")?.value||"").trim(),ver:typeof APP_VER==="string"?APP_VER:"",device:matchMedia("(pointer:coarse)").matches?(innerWidth<=700?"휴대폰":"태블릿"):"컴퓨터",where:tab||"",dev:devId()}]);
+    try{ localStorage.removeItem(fbDraftKey); }catch(_){} FB_PICK=""; $("#fbview")?.remove(); toast("보내 주셔서 고맙습니다 — 만든 사람이 꼭 읽을게요"); }
+  catch(e){ b.disabled=false; b.textContent="보내기"; if(/없는 기능/.test(e.message||"")&&FEEDBACK.chat) return toast("의견함을 준비하는 중이에요 — 아래 「오픈채팅방에서 이야기 나누기」로 들려주세요. 적으신 글은 이 기기에 남아 있어요"); toast((e.message||"보내지 못했어요")+" — 적으신 글은 이 기기에 남아 있어요"); } }
+function fbSection(){ return `<section class="sheet tape c compact"><p class="label">의견 보내기</p><p class="sub">좋았던 점·불편한 점·바라는 기능을 적어 보내시면 만든 사람에게 바로 전해져요. 묵상을 함께 나누는 오픈채팅방 「아침서재」도 있어요.</p>
+  <div class="row" style="gap:6px;flex-wrap:wrap;margin-top:6px"><button class="btn small" onclick="fbOpen()">💬 의견 보내기</button>${FEEDBACK.chat?`<a class="btn small ghost" href="${esc(safeUrl(FEEDBACK.chat))}" target="_blank" rel="noopener">오픈채팅방 ↗</a>`:""}</div></section>`; }
 // ───────── 후원 (공개판, 2026-11-14 팀장님): 「커피 한 잔 값」처럼 부담 없이 — 조르지 않고, 설정 「도움 → 후원하기」와 맨 아래 한 줄에서만 ─────────
 // 토스: toss.me 아이디가 있으면 공식 링크(https://toss.me/아이디/금액, PC에서도 됨), 없으면 토스 앱 송금 화면을 바로 여는 주소(supertoss://send — 휴대폰, 토스 앱이 있을 때)
 // 카카오페이: 계좌번호만으로는 열 수 없어 「송금코드」 링크(qr.kakaopay.com/…)를 받았을 때만 단추가 보임. 계좌번호 복사는 어느 은행 앱에서나
