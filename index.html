@@ -2544,7 +2544,7 @@ details.more[open]>summary{margin-bottom:var(--sp-1)}
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><filter id="crayon" x="-5%" y="-5%" width="110%" height="110%"><feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="2" seed="7" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="3.2" xChannelSelector="R" yChannelSelector="G"/></filter></svg>
 <header><div class="wrap">
   <div class="top">
-    <div class="brand" onclick="go('today')" title="오늘 화면으로" role="link">아침 서재<span class="beta" title="아직 시험 중인 베타판입니다 — 허락 없이 배포하지 마세요">베타</span><small>MORNING · STUDY · DIARY</small></div>
+    <div class="brand" onclick="go('today')" title="오늘 화면으로" role="link">아침 서재<span class="beta" title="아직 다듬는 중인 베타판입니다">베타</span><small>MORNING · STUDY · DIARY</small></div>
     <div class="topright"><div class="stkcol"><div class="streak" id="streak"></div><div class="pomomini" id="pomomini" hidden></div></div>
     <button class="vsbtn" id="vsbtn" onclick="vsPop(event)" title="보기 크기 — 화면을 크게·작게" aria-label="보기 크기 바꾸기"><svg class="vsico" viewBox="0 0 30 22" aria-hidden="true"><text x="1" y="18.5" font-size="11" font-weight="700" textLength="10" lengthAdjust="spacingAndGlyphs">가</text><text x="12" y="19" font-size="17.5" font-weight="800" textLength="17" lengthAdjust="spacingAndGlyphs">가</text></svg></button>
     <button class="gearbtn" id="gearbtn" onclick="gearToggle()" title="설정 (한 번 더 누르면 하던 화면으로)" aria-label="설정"></button></div>
@@ -2552,7 +2552,7 @@ details.more[open]>summary{margin-bottom:var(--sp-1)}
   <nav id="nav"></nav>
 </div><div class="navline"></div></header>
 <main class="wrap" id="main"></main>
-<footer class="appfoot" id="appfoot" aria-label="만든 사람·저작권·판"><span class="af-warm">아빠 임요한 목사와 딸 임하은 작가가 마주 앉아, 한 줄 한 줄 마음을 모아 함께 지었습니다.</span><span class="af-line">© 2026 임요한 · 임하은 · 아침 서재 <b class="af-beta">베타</b> <span id="afver"></span> · <span class="af-warn">배포 금지</span></span><button type="button" class="af-donate" onclick="fbOpen()" title="좋았던 점·불편한 점·바라는 기능을 만든 사람에게">💬 의견 보내기</button><span class="af-dot" aria-hidden="true">·</span><button type="button" class="af-donate" onclick="donateOpen()" title="응원하고 싶으실 때만 — 토스·카카오페이·계좌">☕ 응원하기</button></footer>
+<footer class="appfoot" id="appfoot" aria-label="만든 사람·저작권·판"><span class="af-warm">아빠 임요한 목사와 딸 임하은 작가가 마주 앉아, 한 줄 한 줄 마음을 모아 함께 지었습니다.</span><span class="af-line">© 2026 임요한 · 임하은 · 아침 서재 <b class="af-beta">베타</b> <span id="afver"></span></span><button type="button" class="af-donate" onclick="fbOpen()" title="좋았던 점·불편한 점·바라는 기능을 만든 사람에게">💬 의견 보내기</button><span class="af-dot" aria-hidden="true">·</span><button type="button" class="af-donate" onclick="donateOpen()" title="응원하고 싶으실 때만 — 토스·카카오페이·계좌">☕ 응원하기</button></footer>
 <script>/* 맨 아래 카피라이트·판 번호(APP_VER, 1.0 → 1.1 … 1.9 → 2.0). 마우스를 올리면 올린 날·build */
 addEventListener("DOMContentLoaded",function(){ var d=new Date(document.lastModified), ok=!isNaN(d)&&d.getFullYear()>2025, v=document.getElementById("afver");
   if(v) v.textContent=typeof APP_VER==="string"?APP_VER:""; v&&(v.title=(ok?"올린 날 "+d.getFullYear()+"."+(d.getMonth()+1)+"."+d.getDate():"")+(typeof APP_BUILD==="string"?" · build "+APP_BUILD:"")); });</script>
@@ -2940,7 +2940,7 @@ function connectView(){
   return `<section class="sheet tape" style="max-width:640px;margin:20px auto">
     <p class="label">아침 서재 시작하기</p>
     <p class="sub">말씀과 책을 읽고 쓰는 아침의 다이어리입니다.</p>
-    <div class="betanote"><b>베타판입니다.</b> 아직 시험 중인 프로그램이라 기능이 바뀌거나 오류가 날 수 있습니다. 중요한 글은 따로 사본을 남겨 두세요.<br><b>⚠ 배포 금지</b> — 만든 사람의 허락 없이 이 프로그램(주소·코드)을 다른 사람에게 퍼뜨리거나 배포하지 마세요.</div>
+    <div class="betanote"><b>베타판입니다.</b> 아직 시험 중인 프로그램이라 기능이 바뀌거나 오류가 날 수 있습니다. 중요한 글은 따로 사본을 남겨 두세요.<br>주변에 함께 묵상할 분이 계시면 이 주소를 편하게 나눠 주세요.</div>
     <div class="startpick">
       <div class="startcard rec"><span class="startbadge">권해 드려요</span>
         <button class="btn ink startbtn" onclick="drvStart(this)">구글로 시작하기</button>
@@ -3217,7 +3217,7 @@ async function pushSave(){
 // ───────── 새 버전 자동 새로 고침 ─────────
 // 올릴 때마다 version.json 의 번호가 바뀝니다. 앱이 열릴 때·다시 화면에 올라올 때·5분마다 확인해서,
 // 쓰는 중인 글이 없고 저장이 끝났을 때 새 버전으로 새로 고칩니다.
-const APP_BUILD="ea21e2385f"; const APP_VER="6.2";   // 판 번호: 배포할 때마다 도구/판올리기.py 가 0.1씩 올림 (1.9 다음은 2.0) — 손으로 고치지 말 것
+const APP_BUILD="4d5a345882"; const APP_VER="6.3";   // 판 번호: 배포할 때마다 도구/판올리기.py 가 0.1씩 올림 (1.9 다음은 2.0) — 손으로 고치지 말 것
 let NEW_BUILD=null, UPDATE_NOTICED=false;
 async function checkUpdate(){
   if(APP_BUILD.startsWith("__")) return;                 // 원본 파일로 열었을 때(고치는 중)는 건너뜁니다
@@ -4084,7 +4084,7 @@ function newsSection(){ return `<section class="sheet tape c compact"><p class="
 function manualSection(){ return `<section class="sheet tape c compact"><p class="label">사용 설명서</p>
   <p class="sub">처음이라면 간단 매뉴얼부터, 더 깊이 알고 싶을 때 상세 매뉴얼을 펴 보세요. 둘 다 새 창으로 열립니다.</p>
   <div class="mancards">${MANUALS.map(([k,n,d])=>`<div class="mancard"><b>${n}</b><span>${d}</span><div class="row" style="gap:6px;flex-wrap:wrap"><a class="btn small ink" href="manual/${k}.html" target="_blank" rel="noopener" title="${n}을 웹 페이지로 엽니다 (차례·검색·밝게/어둡게)">웹으로 보기 ↗</a><a class="btn small" href="manual/${k}.pdf" target="_blank" rel="noopener" download title="${n}을 PDF 책으로 받습니다 (인쇄용)">PDF 받기</a></div></div>`).join("")}</div>
-  <p class="hint">프로그램이 바뀌면 설명서도 함께 고쳐집니다. 단추 위에 마우스를 올리면 뜨는 도움말(설정 → 화면·기기 → 화면 꾸미기 → 도움말 모드)도 함께 쓰세요.</p><div class="betanote"><b>베타판입니다.</b> 아직 시험 중인 프로그램이라 기능이 바뀌거나 오류가 날 수 있습니다. 중요한 글은 따로 사본을 남겨 두세요.<br><b>⚠ 배포 금지</b> — 만든 사람의 허락 없이 이 프로그램(주소·코드)을 다른 사람에게 퍼뜨리거나 배포하지 마세요.</div><p class="madeby">아침 서재 베타판 · 아빠 <b>임요한 목사</b>(좋은나무교회 담임목사)와 딸 <b>임하은 작가</b>가 함께 만들었습니다. 임요한 목사는 매일성경 묵상을 나누는 YouTube <a href="https://www.youtube.com/@%EA%B5%BF%ED%8A%B8%EB%A6%AC%EC%94%A8" target="_blank" rel="noopener" title="YouTube 굿트리씨[매일성경묵상] 채널을 새 창으로 엽니다">「굿트리씨」 채널 ↗</a>을 운영합니다. 만든 사람의 허락 없이 배포하지 마세요.</p></section>`; }
+  <p class="hint">프로그램이 바뀌면 설명서도 함께 고쳐집니다. 단추 위에 마우스를 올리면 뜨는 도움말(설정 → 화면·기기 → 화면 꾸미기 → 도움말 모드)도 함께 쓰세요.</p><div class="betanote"><b>베타판입니다.</b> 아직 시험 중인 프로그램이라 기능이 바뀌거나 오류가 날 수 있습니다. 중요한 글은 따로 사본을 남겨 두세요.<br>주변에 함께 묵상할 분이 계시면 이 주소를 편하게 나눠 주세요.</div><p class="madeby">아침 서재 베타판 · 아빠 <b>임요한 목사</b>(좋은나무교회 담임목사)와 딸 <b>임하은 작가</b>가 함께 만들었습니다. 임요한 목사는 매일성경 묵상을 나누는 YouTube <a href="https://www.youtube.com/@%EA%B5%BF%ED%8A%B8%EB%A6%AC%EC%94%A8" target="_blank" rel="noopener" title="YouTube 굿트리씨[매일성경묵상] 채널을 새 창으로 엽니다">「굿트리씨」 채널 ↗</a>을 운영합니다.</p></section>`; }
 // ───────── 자동 백업: 구글 드라이브 「아침 서재/백업」(모든 기기, 서버가 날마다) + 이 PC 폴더(설정한 PC만, 휴대폰은 구글만) ─────────
 // PC 백업은 크롬·엣지의 「폴더 고르기」로 고른 폴더에 아침서재-백업-날짜.json 을 씁니다. 같은 날은 30분마다 그날 파일을 새로 고치고, 최근 30일 + 달마다 첫 파일을 남깁니다.
 // 고른 폴더(손잡이)는 이 기기 큰 저장소(IndexedDB lbDir)에만, 켜기·마지막 시각은 seojae.localBackup 에만 — 기록 파일(구글)에는 넣지 않음
