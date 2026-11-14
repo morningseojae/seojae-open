@@ -5,6 +5,26 @@
 <meta name="viewport" id="vpmeta" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>아침 서재</title>
 <meta name="author" content="임요한 목사 · 임하은 작가">
+<!-- 링크 미리보기(카카오톡·문자·SNS에 주소를 보낼 때 뜨는 그림과 글, 2026-11-14) — 그림을 바꾸면 og-image.jpg(1200×630)·og-square.jpg(800×800)를 새로 -->
+<meta name="description" content="말씀과 책을 읽고 한 줄을 쓰는 아침의 서재 — 매일성경 묵상·일기·독서·글쓰기를 한곳에서. 광고 없이 무료로.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="아침 서재">
+<meta property="og:title" content="아침 서재 — 말씀과 책으로 여는 아침">
+<meta property="og:description" content="매일성경 묵상·일기·독서·글쓰기를 한곳에서. 광고 없이 무료로, 구글 계정이나 이 기기만으로 바로 시작해요.">
+<meta property="og:url" content="https://morningseojae.github.io/seojae-open/">
+<meta property="og:image" content="https://morningseojae.github.io/seojae-open/og-image.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="햇살 드는 식탁 위 커피 한 잔, 크루아상, 펼친 성경과 「아침 서재」 도장">
+<meta property="og:image" content="https://morningseojae.github.io/seojae-open/og-square.jpg">
+<meta property="og:image:width" content="800">
+<meta property="og:image:height" content="800">
+<meta property="og:locale" content="ko_KR">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="아침 서재 — 말씀과 책으로 여는 아침">
+<meta name="twitter:description" content="매일성경 묵상·일기·독서·글쓰기를 한곳에서. 광고 없이 무료로.">
+<meta name="twitter:image" content="https://morningseojae.github.io/seojae-open/og-image.jpg">
+<link rel="canonical" href="https://morningseojae.github.io/seojae-open/">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon-small.svg" type="image/svg+xml">
 <link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
@@ -3197,7 +3217,7 @@ async function pushSave(){
 // ───────── 새 버전 자동 새로 고침 ─────────
 // 올릴 때마다 version.json 의 번호가 바뀝니다. 앱이 열릴 때·다시 화면에 올라올 때·5분마다 확인해서,
 // 쓰는 중인 글이 없고 저장이 끝났을 때 새 버전으로 새로 고칩니다.
-const APP_BUILD="fb2dbebdad"; const APP_VER="6.1";   // 판 번호: 배포할 때마다 도구/판올리기.py 가 0.1씩 올림 (1.9 다음은 2.0) — 손으로 고치지 말 것
+const APP_BUILD="ea21e2385f"; const APP_VER="6.2";   // 판 번호: 배포할 때마다 도구/판올리기.py 가 0.1씩 올림 (1.9 다음은 2.0) — 손으로 고치지 말 것
 let NEW_BUILD=null, UPDATE_NOTICED=false;
 async function checkUpdate(){
   if(APP_BUILD.startsWith("__")) return;                 // 원본 파일로 열었을 때(고치는 중)는 건너뜁니다
