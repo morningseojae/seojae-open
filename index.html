@@ -81,7 +81,7 @@ applyLook();
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" integrity="sha384-3zSEDfvllQohrq0PHL1fOXJuC/jSOO34H46t6UQfobFOmxE5BpjjaIJY5F2/bMnU" crossorigin="anonymous" referrerpolicy="no-referrer" defer></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Nanum+Myeongjo:wght@400;700;800&family=Noto+Serif:ital,wght@0,400;0,700;1,400&family=Noto+Serif+Hebrew:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Nanum+Myeongjo:wght@400;700;800&family=Noto+Serif:ital,wght@0,400;0,700;1,400&family=Noto+Serif+Hebrew:wght@400;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'"><noscript><link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Nanum+Myeongjo:wght@400;700;800&family=Noto+Serif:ital,wght@0,400;0,700;1,400&family=Noto+Serif+Hebrew:wght@400;700&display=swap" rel="stylesheet"></noscript>
 <style>
 :root{
   --desk:#e8dfcf; --paper:#fbf7ee; --paper-2:#f5eedf; --ink:#2e2721; --ink-soft:#6d6157; --faint:#7a6d5c; --deco:#b8ab98;
@@ -2541,14 +2541,16 @@ details.more[open]>summary{margin-bottom:var(--sp-1)}
 </style>
 </head>
 <body>
-<!-- 앱 시작 화면(2026-11-14): 설치한 앱으로 열 때만, 한 번 켤 때 한 번 — 아침 상 사진 + 「아침 서재」 도장, 첫 화면이 그려지면 사라짐(splashOff). 휴대폰이 먼저 띄우는 시작 화면은 manifest 바탕색 #f7a929 + 아이콘 -->
-<div id="appsplash" aria-hidden="true" style="position:fixed;inset:0;z-index:99999;background:#f7a929 url(splash.jpg) center top/cover no-repeat;display:grid;place-items:end center;padding-bottom:max(14vh,env(safe-area-inset-bottom));box-sizing:border-box;transition:opacity .45s ease"><img src="splash-stamp.png" alt="" style="width:min(40vw,190px);height:auto;filter:drop-shadow(0 6px 18px rgba(80,40,0,.35))"></div>
+<!-- 앱 시작 화면(2026-11-14): 설치한 앱으로 열 때만, 한 번 켤 때 한 번 — 아침 상 사진 + 「아침 서재」 도장, 첫 화면을 그리면 곧 사라짐(splashOff — 드라이브를 기다리지 않음). 휴대폰이 먼저 띄우는 시작 화면은 manifest 바탕색 #f7a929 + 아이콘 -->
+<div id="appsplash" aria-hidden="true" style="position:fixed;inset:0;z-index:99999;background:#f7a929;display:grid;place-items:center;transition:opacity .45s ease"><i style="position:absolute;inset:0;background:url(splash.jpg) center top/cover no-repeat;opacity:0;transition:opacity .5s ease"></i><img data-src="icon-512.png?v=20261114" alt="" style="position:relative;width:128px;height:128px;border-radius:22px;filter:drop-shadow(0 6px 18px rgba(80,40,0,.35))"></div>
 <script>(function(){ var s=document.getElementById("appsplash"), t0=Date.now(), app=false, seen=false;
   try{ app=matchMedia("(display-mode: standalone)").matches||navigator.standalone===true; }catch(e){}
   try{ seen=sessionStorage.getItem("sjSplash")==="1"; sessionStorage.setItem("sjSplash","1"); }catch(e){}
   if(!app||seen){ s.remove(); window.splashOff=function(){}; return; }
-  var done=false; window.splashOff=function(){ if(done) return; done=true; setTimeout(function(){ s.style.opacity="0"; s.style.pointerEvents="none"; setTimeout(function(){ s.remove(); },500); },Math.max(0,900-(Date.now()-t0))); };
-  setTimeout(window.splashOff,5000);   // 늦어도 5초 뒤에는 걷음
+  var im=s.querySelector("img"); im.src=im.getAttribute("data-src"); var ph=new Image(); ph.onload=function(){ s.querySelector("i").style.opacity="1"; }; ph.src="splash.jpg";   // 휴대폰 시작 화면(금빛+도장)과 같은 자리·크기에서 사진이 둘레로 스며듦 → 한 화면처럼
+  var done=false; window.splashOff=function(){ if(done) return; done=true; setTimeout(function(){ s.style.opacity="0"; s.style.pointerEvents="none"; setTimeout(function(){ s.remove(); },500); },Math.max(0,1100-(Date.now()-t0))); };
+  document.addEventListener("DOMContentLoaded",function(){ setTimeout(window.splashOff,120); });   // 첫 화면을 그리면 바로(드라이브 기록을 기다리지 않음)
+  setTimeout(window.splashOff,2500);   // 늦어도 2.5초
 })();</script>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><filter id="crayon" x="-5%" y="-5%" width="110%" height="110%"><feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="2" seed="7" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="3.2" xChannelSelector="R" yChannelSelector="G"/></filter></svg>
 <header><div class="wrap">
@@ -3226,7 +3228,7 @@ async function pushSave(){
 // ───────── 새 버전 자동 새로 고침 ─────────
 // 올릴 때마다 version.json 의 번호가 바뀝니다. 앱이 열릴 때·다시 화면에 올라올 때·5분마다 확인해서,
 // 쓰는 중인 글이 없고 저장이 끝났을 때 새 버전으로 새로 고칩니다.
-const APP_BUILD="2386e90ae9"; const APP_VER="6.6";   // 판 번호: 배포할 때마다 도구/판올리기.py 가 0.1씩 올림 (1.9 다음은 2.0) — 손으로 고치지 말 것
+const APP_BUILD="c5ad652c62"; const APP_VER="6.7";   // 판 번호: 배포할 때마다 도구/판올리기.py 가 0.1씩 올림 (1.9 다음은 2.0) — 손으로 고치지 말 것
 let NEW_BUILD=null, UPDATE_NOTICED=false;
 async function checkUpdate(){
   if(APP_BUILD.startsWith("__")) return;                 // 원본 파일로 열었을 때(고치는 중)는 건너뜁니다
@@ -6953,7 +6955,7 @@ const INST_GUIDES=[["pc","PC · 크롬·엣지"],["mac","맥 · 사파리"],["an
 function instHow(k){ const b=x=>`<b>${x}</b>`;
   return {pc:`<ol class="steps sub"><li>크롬이나 엣지로 아침 서재를 엽니다.</li><li>주소창 오른쪽 끝의 ${b("설치")} 아이콘(모니터에 ↓, 엣지는 ⊞)을 누릅니다.</li><li>아이콘이 없으면 오른쪽 위 ${b("⋮")} → ${b("전송, 저장, 공유 → 페이지를 앱으로 설치")}(엣지는 ${b("⋯ → 앱 → 이 사이트를 앱으로 설치")}).</li><li>${b("설치")}를 누르면 작업 표시줄·바탕 화면(맥은 Dock·응용 프로그램)에 「아침 서재」가 생깁니다.</li></ol>`,
     mac:`<ol class="steps sub"><li>사파리로 아침 서재를 엽니다.</li><li>위쪽 메뉴 ${b("파일 → Dock에 추가…")}를 누릅니다(또는 공유 단추 → ${b("Dock에 추가")}).</li><li>이름 「아침 서재」 그대로 ${b("추가")}. Dock의 아이콘으로 엽니다.</li></ol>`,
-    android:`<ol class="steps sub"><li>크롬으로 아침 서재를 엽니다.</li><li>오른쪽 위 ${b("⋮")} 메뉴를 누릅니다.</li><li>${b("앱 설치")}(또는 ${b("홈 화면에 추가 → 설치")})를 누릅니다.</li><li>홈 화면에 「아침 서재」 아이콘이 생깁니다. 삼성 인터넷은 아래 ${b("≡")} → ${b("현재 페이지 추가 → 홈 화면")}.</li></ol>`,
+    android:`<ol class="steps sub"><li>크롬으로 아침 서재를 엽니다.</li><li>오른쪽 위 ${b("⋮")} 메뉴를 누릅니다.</li><li>${b("앱 설치")}(또는 ${b("홈 화면에 추가 → 설치")})를 누릅니다.</li><li>홈 화면에 「아침 서재」 아이콘이 생깁니다. 삼성 인터넷은 아래 ${b("≡")} → ${b("현재 페이지 추가 → 홈 화면")}.</li><li><b>설치를 누르고 1~2분쯤 기다리면</b> 홈 화면에 아이콘이 생겨요. 그동안 여러 번 누르지 말고 기다려 주세요(다 되면 알림이 와요).</li></ol>`,
     ios:`<ol class="steps sub"><li>사파리로 아침 서재를 엽니다(카카오톡 안에서 열렸으면 ${b("Safari로 열기")}).</li><li>${b("공유")} 단추(□↑)를 누릅니다. 주소창이 아래에 있으면 아래 가운데, 위에 있으면 위 오른쪽입니다. 안 보이면 주소창 옆 ${b("⋯")} → ${b("공유")}.</li><li>목록을 조금 내려 ${b("홈 화면에 추가")}를 누릅니다.</li><li>이름 「아침 서재」 그대로 오른쪽 위 ${b("추가")}. 홈 화면의 아이콘으로 엽니다.</li></ol><p class="hint">아이폰은 애플 정책으로 단추 한 번 설치가 없어, 이렇게 손으로 추가합니다.</p>`,
     iosc:`<ol class="steps sub"><li>크롬으로 아침 서재를 엽니다.</li><li>주소창 오른쪽의 ${b("공유")} 단추(□↑)를 누릅니다(안 보이면 ${b("⋯")} 메뉴 안).</li><li>${b("홈 화면에 추가")}를 누르고 ${b("추가")}.</li><li>목록에 없으면 iOS가 오래된 것입니다 — 사파리로 열어 「아이폰 · 사파리」 순서로 해 주세요.</li></ol>`}[k]||""; }
 const instCur=E=>E.ios?(E.br==="safari"?"ios":"iosc"):E.android?"android":E.br==="safari"?"mac":"pc";
@@ -6971,7 +6973,7 @@ function appSection(){
   else if(E.ios) how=`<ol class="steps sub"><li>주소창 오른쪽의 ${b("공유")} 단추(□↑)를 누릅니다(크롬은 위 오른쪽, 안 보이면 ${b("⋯")} 메뉴 안).</li><li>${b("홈 화면에 추가")}를 누르고 ${b("추가")}.</li><li>목록에 없으면 iOS가 오래된 것입니다 — Safari로 열어 같은 순서로 해 주세요.</li></ol>`;
   else if(E.android&&E.br==="samsung") how=`<ol class="steps sub"><li>아래 ${b("≡")}(메뉴)를 누릅니다.</li><li>${b("현재 페이지 추가 → 홈 화면")}(또는 ${b("앱 설치")})를 누릅니다.</li></ol>`;
   else if(E.android&&E.br==="firefox") how=`<ol class="steps sub"><li>오른쪽 ${b("⋮")} 메뉴를 누릅니다.</li><li>${b("설치")} 또는 ${b("홈 화면에 추가")}를 누릅니다.</li></ol>`;
-  else if(E.android) how=`<ol class="steps sub"><li>크롬 오른쪽 위 ${b("⋮")} 메뉴를 누릅니다.</li><li>${b("앱 설치")} 또는 ${b("홈 화면에 추가 → 설치")}를 누릅니다.</li><li>홈 화면에 「아침 서재」 아이콘이 생깁니다. ${b("바로가기 만들기")}만 보이면 그것을 골라도 됩니다.</li></ol>`;
+  else if(E.android) how=`<ol class="steps sub"><li>크롬 오른쪽 위 ${b("⋮")} 메뉴를 누릅니다.</li><li>${b("앱 설치")} 또는 ${b("홈 화면에 추가 → 설치")}를 누릅니다.</li><li>홈 화면에 「아침 서재」 아이콘이 생깁니다. ${b("바로가기 만들기")}만 보이면 그것을 골라도 됩니다.</li><li><b>설치를 누르고 1~2분쯤 기다리면</b> 홈 화면에 아이콘이 생겨요. 그동안 여러 번 누르지 말고 기다려 주세요(다 되면 알림이 와요).</li></ol>`;
   else if(E.br==="safari") how=`<ol class="steps sub"><li>Safari 위쪽 메뉴에서 ${b("파일 → Dock에 추가…")}를 누릅니다(또는 공유 단추 → ${b("Dock에 추가")}).</li><li>이름 「아침 서재」 그대로 ${b("추가")}.</li></ol>`;
   else if(E.br==="edge") how=`<ol class="steps sub"><li>주소창 오른쪽의 ${b("앱 설치")} 아이콘(⊞)을 누르거나,</li><li>오른쪽 위 ${b("⋯ → 앱 → 이 사이트를 앱으로 설치")}를 누릅니다.</li></ol>`;
   else if(E.br==="firefox") how=`<p class="sub">컴퓨터의 Firefox는 앱 설치를 지원하지 않습니다. 크롬·엣지·Safari(맥)로 열어 주세요.</p>`;
