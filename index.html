@@ -3193,7 +3193,7 @@ async function pushSave(){
 // ───────── 새 버전 자동 새로 고침 ─────────
 // 올릴 때마다 version.json 의 번호가 바뀝니다. 앱이 열릴 때·다시 화면에 올라올 때·5분마다 확인해서,
 // 쓰는 중인 글이 없고 저장이 끝났을 때 새 버전으로 새로 고칩니다.
-const APP_BUILD="db1e937bb4"; const APP_VER="5.7";   // 판 번호: 배포할 때마다 도구/판올리기.py 가 0.1씩 올림 (1.9 다음은 2.0) — 손으로 고치지 말 것
+const APP_BUILD="ac94eb0a16"; const APP_VER="5.8";   // 판 번호: 배포할 때마다 도구/판올리기.py 가 0.1씩 올림 (1.9 다음은 2.0) — 손으로 고치지 말 것
 let NEW_BUILD=null, UPDATE_NOTICED=false;
 async function checkUpdate(){
   if(APP_BUILD.startsWith("__")) return;                 // 원본 파일로 열었을 때(고치는 중)는 건너뜁니다
@@ -3985,6 +3985,8 @@ let DONATE_PICK=0;   // 처음엔 아무 금액도 골라 두지 않음(권하�
 const donateDigits=()=>DONATE.acct.replace(/\D/g,"");
 const donateToss=a=>DONATE.tossId?`https://toss.me/${encodeURIComponent(DONATE.tossId)}${a?"/"+a:""}`:`supertoss://send?${a?"amount="+a+"&":""}bank=${encodeURIComponent(DONATE.bank)}&accountNo=${donateDigits()}&origin=qr`;
 const donatePhone=()=>matchMedia("(pointer:coarse)").matches;
+// 카카오페이: 송금코드 뒤에 (금액 × 2^19)의 16진수를 붙이면 금액이 채워진 채 열림(공식 문서는 없음 — 알려진 방법, 2026-11-14 팀장님 휴대폰에서 확인할 것)
+const donateKakao=a=>DONATE.kakao+(a?(a*524288).toString(16):"");
 function donateCopy(){ const t=`${DONATE.bank} ${DONATE.acct}`, done=()=>toast(`계좌번호를 복사했습니다 — 은행 앱에서 붙여 넣어 주세요 (${DONATE.bank} · 예금주 ${DONATE.name})`);
   try{ navigator.clipboard.writeText(t).then(done,()=>donateSel()); }catch(_){ donateSel(); } }
 function donateSel(){ const el=$("#dnacct"); if(!el) return; const r=document.createRange(); r.selectNodeContents(el); const g=getSelection(); g.removeAllRanges(); g.addRange(r); toast("계좌번호를 골라 두었습니다 — 길게 눌러 복사해 주세요"); }
@@ -3999,7 +4001,7 @@ function donateBody(){ const a=DONATE_PICK;
   <div class="dnamt" role="radiogroup" aria-label="후원 금액">${DONATE_AMT.map(([v,ic,n])=>`<button type="button" role="radio" aria-checked="${a===v}" class="${a===v?"on":""}" onclick="DONATE_PICK=DONATE_PICK===${v}?0:${v};donatePaint()" title="${n}${v?" "+v.toLocaleString()+"원":""}"><span aria-hidden="true">${ic}</span>${v.toLocaleString()}원</button>`).join("")}</div>
   <div class="dnacts">
     <button class="btn dnbtn dntoss" onclick="donateGoToss()"><span class="dnlogo" aria-hidden="true">toss</span>토스로${a?` ${a.toLocaleString()}원`:""}</button>
-    ${DONATE.kakao?`<a class="btn dnbtn dnkakao" href="${esc(safeUrl(DONATE.kakao))}" target="_blank" rel="noopener"><span class="dnlogo" aria-hidden="true">pay</span>카카오페이로</a>`:""}
+    ${DONATE.kakao?`<a class="btn dnbtn dnkakao" href="${esc(safeUrl(donateKakao(a)))}" target="_blank" rel="noopener"><span class="dnlogo" aria-hidden="true">pay</span>카카오페이로${a?` ${a.toLocaleString()}원`:""}</a>`:""}
     <button class="btn dnbtn" onclick="donateCopy()">계좌번호 복사</button>
   </div>
   <div class="dnacct"><span>${esc(DONATE.bank)}</span><b id="dnacct">${esc(DONATE.acct)}</b><span>예금주 ${esc(DONATE.name)}</span></div>
