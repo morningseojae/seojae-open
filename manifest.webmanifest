@@ -4,7 +4,7 @@
   "description": "말씀과 책을 읽고 쓰는 아침의 다이어리",
   "start_url": "./",
   "display": "standalone",
-  "background_color": "#e8dfcf",
+  "background_color": "#f7a929",
   "theme_color": "#e8dfcf",
   "lang": "ko",
   "icons": [

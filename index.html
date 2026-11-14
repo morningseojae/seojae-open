@@ -2541,6 +2541,15 @@ details.more[open]>summary{margin-bottom:var(--sp-1)}
 </style>
 </head>
 <body>
+<!-- 앱 시작 화면(2026-11-14): 설치한 앱으로 열 때만, 한 번 켤 때 한 번 — 아침 상 사진 + 「아침 서재」 도장, 첫 화면이 그려지면 사라짐(splashOff). 휴대폰이 먼저 띄우는 시작 화면은 manifest 바탕색 #f7a929 + 아이콘 -->
+<div id="appsplash" aria-hidden="true" style="position:fixed;inset:0;z-index:99999;background:#f7a929 url(splash.jpg) center top/cover no-repeat;display:grid;place-items:end center;padding-bottom:max(14vh,env(safe-area-inset-bottom));box-sizing:border-box;transition:opacity .45s ease"><img src="splash-stamp.png" alt="" style="width:min(40vw,190px);height:auto;filter:drop-shadow(0 6px 18px rgba(80,40,0,.35))"></div>
+<script>(function(){ var s=document.getElementById("appsplash"), t0=Date.now(), app=false, seen=false;
+  try{ app=matchMedia("(display-mode: standalone)").matches||navigator.standalone===true; }catch(e){}
+  try{ seen=sessionStorage.getItem("sjSplash")==="1"; sessionStorage.setItem("sjSplash","1"); }catch(e){}
+  if(!app||seen){ s.remove(); window.splashOff=function(){}; return; }
+  var done=false; window.splashOff=function(){ if(done) return; done=true; setTimeout(function(){ s.style.opacity="0"; s.style.pointerEvents="none"; setTimeout(function(){ s.remove(); },500); },Math.max(0,900-(Date.now()-t0))); };
+  setTimeout(window.splashOff,5000);   // 늦어도 5초 뒤에는 걷음
+})();</script>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><filter id="crayon" x="-5%" y="-5%" width="110%" height="110%"><feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="2" seed="7" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="3.2" xChannelSelector="R" yChannelSelector="G"/></filter></svg>
 <header><div class="wrap">
   <div class="top">
@@ -3217,7 +3226,7 @@ async function pushSave(){
 // ───────── 새 버전 자동 새로 고침 ─────────
 // 올릴 때마다 version.json 의 번호가 바뀝니다. 앱이 열릴 때·다시 화면에 올라올 때·5분마다 확인해서,
 // 쓰는 중인 글이 없고 저장이 끝났을 때 새 버전으로 새로 고칩니다.
-const APP_BUILD="f8cc6749ec"; const APP_VER="6.5";   // 판 번호: 배포할 때마다 도구/판올리기.py 가 0.1씩 올림 (1.9 다음은 2.0) — 손으로 고치지 말 것
+const APP_BUILD="2386e90ae9"; const APP_VER="6.6";   // 판 번호: 배포할 때마다 도구/판올리기.py 가 0.1씩 올림 (1.9 다음은 2.0) — 손으로 고치지 말 것
 let NEW_BUILD=null, UPDATE_NOTICED=false;
 async function checkUpdate(){
   if(APP_BUILD.startsWith("__")) return;                 // 원본 파일로 열었을 때(고치는 중)는 건너뜁니다
@@ -11277,7 +11286,7 @@ function ensurePlan(){
 { const W=(n,f)=>function(...a){ if(n==="rtPaint"&&RT_PLAN===-1) return rtPaintAll(...a); return RT_PLAN>0&&plansAlso()[RT_PLAN-1]?withPlan(RT_PLAN,()=>f.apply(this,a)):f.apply(this,a); };
   for(const n of ["rtPaint","rtPick","rtUndo","rtJumpBk","rtPickBook","rtAct","rtChAct","rtResetAll","rtRestore"]) window[n]=W(n,window[n]);
   const o=window.rtOpen; window.rtOpen=function(j){ RT_PLAN=+j||0; if(RT_PLAN>0&&!plansAlso()[RT_PLAN-1]) RT_PLAN=0; RT_TAB=0; return RT_PLAN>0?withPlan(RT_PLAN,()=>o()):o(); }; }
-load().then(()=>{ ensurePlan(); ensureMs(); render(); goToStart(); setTimeout(checkUpdate,1500); setTimeout(moveWelcome,1200); setTimeout(newsCheck,1800); setTimeout(manualFirst,2200); setTimeout(streakBreakCheck,2600); setTimeout(statPing,5000); });
+load().then(()=>{ ensurePlan(); ensureMs(); render(); try{ splashOff(); }catch(_){} goToStart(); setTimeout(checkUpdate,1500); setTimeout(moveWelcome,1200); setTimeout(newsCheck,1800); setTimeout(manualFirst,2200); setTimeout(streakBreakCheck,2600); setTimeout(statPing,5000); });
 </script>
 <script>
 /* 앱 안 브라우저(카카오톡·네이버·인스타그램 등) 안내 (2026-10-30): 여기서는 설치·구글 로그인이 막히고 저장 공간이 지워지기 쉬움
