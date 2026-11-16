@@ -286,7 +286,7 @@ ol.chapters .btn[disabled]{opacity:.25;cursor:default}
 .bigchoice{font:inherit;color:inherit;text-align:left;width:100%;padding-left:16px}
 .bigchoice:hover{border-color:var(--sepia)}
 .rulegrid{display:grid;grid-template-columns:72px 1fr;gap:10px 12px;align-items:start;margin:10px 0}
-.rulegrid .rl{font-family:"Gamja Flower";font-size:20px;color:var(--ink-soft);line-height:1.6}
+.rulegrid .rl{font:600 13px/1.6 var(--ui-font);color:var(--ui-label,var(--ink-soft));padding-top:5px}
 .preview{background:var(--paper-2);border:1px dashed var(--sepia);border-radius:6px;padding:10px 14px}
 .rulechips{font-size:13px;color:var(--bible);background:var(--bible-wash);border-radius:4px;padding:3px 8px;display:inline-block;margin:2px 0 6px}
 .filterbar{margin-top:12px;gap:8px}
@@ -371,7 +371,7 @@ body.focus .appfoot,body.readmode .appfoot,body.typing .appfoot{display:none}
 .chip{display:inline-block;font-size:13px;padding:1px 10px;border:1px solid var(--edge);border-radius:999px;margin:3px 4px 0 0;color:var(--ink-soft);background:var(--paper-2);cursor:pointer;user-select:none}
 .chip.on{background:var(--bible-wash);color:var(--bible);border-color:var(--bible)}
 .chip.book.on{background:var(--book-wash);color:var(--book);border-color:var(--book)}
-.tag{font-family:"Gamja Flower";font-size:19px;color:var(--sepia);margin-right:8px}
+.tag{font:500 13px/1.6 var(--ui-font);color:var(--sepia);margin-right:8px}
 
 /* 질문 */
 ol.q{margin:4px 0 0;padding-left:22px}
@@ -383,7 +383,7 @@ ol.q li::marker{font-family:"Gamja Flower";color:var(--sepia);font-size:20px}
 .item:first-child{border-top:0}
 .quote{font-family:"Nanum Myeongjo";font-size:17px;line-height:1.85;border-left:3px solid var(--sepia);padding:2px 0 2px 14px;margin:6px 0;white-space:pre-wrap}
 .quote.bible{border-color:var(--bible)} .quote.book{border-color:var(--book)}
-.thought{font-family:"Gamja Flower";font-size:21px;color:var(--ink-soft);line-height:1.3;white-space:pre-wrap}
+.thought{font-family:var(--memo-font);font-size:15px;color:var(--ink-soft);line-height:1.6;white-space:pre-wrap}
 
 /* 노트 페이지 */
 .notebook{position:relative;background:var(--paper) var(--grain);box-shadow:var(--shadow);border:1px solid var(--edge);border-radius:2px 6px 6px 2px;padding:30px 118px 26px 84px}
@@ -546,23 +546,23 @@ body.readmode .notebook{padding:40px 64px 48px 96px} body.readmode .readview{fon
 .srccard .srcsec{padding:8px 0 6px;border-top:1px dotted var(--edge)} .srccard .sh{font-family:"Nanum Myeongjo";font-weight:800;font-size:13.5px;color:var(--bible)}
 .srccard .sb{white-space:pre-wrap;font-size:14px;line-height:1.65;color:var(--ink-soft);max-height:9.5em;overflow:auto} .srccard .srcsec .btn{margin-top:4px;min-height:26px;padding:0 10px;font-size:12px}
 .side-note{cursor:pointer;padding:10px 12px;margin:8px 0;background:var(--paper-2);border-left:3px solid var(--sepia);font-size:14px;line-height:1.6}
-/* 끄적이기: 펜으로 쓴 아이디어 노트처럼 — 줄 쳐진 메모지, 손글씨, 줄마다 조금씩 기운 글씨와 다른 잉크 */
+/* 끄적이기: 줄 쳐진 메모지에 줄마다 다른 잉크 — 글씨는 읽기 쉬운 고딕(2026-11-16, 손글씨는 일기·감각적인 한 줄만) */
 .jotbox{background:#fdf6df var(--grain);border:1px solid rgba(120,90,40,.18);box-shadow:var(--shadow),inset 0 0 40px rgba(180,140,80,.08);padding:18px 18px 16px !important}
 :root[data-theme="dark"] .jotbox{background:#2d2820 var(--grain)}
 .jotbox .label{color:var(--bible)}
-.jotbox textarea#jotin{border:0;border-radius:0;background:transparent;padding:4px 2px 0;line-height:30px;background-image:repeating-linear-gradient(to bottom,transparent 0 29px,rgba(110,140,170,.35) 29px 30px);background-attachment:local;background-position:0 2px;resize:none;color:#24427a}
+.jotbox textarea#jotin{font-family:var(--memo-font);font-size:16px;border:0;border-radius:0;background:transparent;padding:4px 2px 0;line-height:30px;background-image:repeating-linear-gradient(to bottom,transparent 0 29px,rgba(110,140,170,.35) 29px 30px);background-attachment:local;background-position:0 2px;resize:none;color:#24427a}
 .jotbox textarea#jotin:focus{outline:0;box-shadow:none}
 .jotlines{margin-top:8px;background-image:repeating-linear-gradient(to bottom,transparent 0 29px,rgba(110,140,170,.22) 29px 30px);background-position:0 7px}
 .jot{padding:0 2px 6px;margin:0;border:0;background:transparent;position:relative}
-.jot .jt{font-family:"Gamja Flower";font-size:21px;line-height:30px;color:var(--ink);white-space:pre-wrap;padding-left:24px;text-indent:-24px}
+.jot .jt{font-family:var(--memo-font);font-size:15.5px;line-height:30px;color:var(--ink);white-space:pre-wrap;padding-left:24px;text-indent:-24px}
 .jot .jtpen{display:inline-grid;place-items:center;width:22px;height:22px;margin:0 4px 0 -2px;padding:0;vertical-align:2px;text-indent:0;border:1px solid color-mix(in srgb,var(--ink) 18%,transparent);border-radius:50%;background:color-mix(in srgb,var(--paper) 70%,transparent);color:var(--ink-soft);font:15px/1 sans-serif;cursor:pointer;transition:transform .15s,background .15s,color .15s,border-color .15s}
 .jot .jtpen:hover,.jot .jtpen:focus-visible{color:var(--paper);background:var(--sepia);border-color:var(--sepia);transform:rotate(-14deg) scale(1.12);box-shadow:0 2px 6px -2px rgba(0,0,0,.35)} .jot .jtpen:active{transform:rotate(-14deg) scale(.96)}
 .jot.editing .jtpen{color:var(--paper);background:var(--sepia);border-color:var(--sepia)} .jot.editing .jtx{outline:none;background:color-mix(in srgb,var(--paper) 85%,transparent);box-shadow:0 0 0 2px color-mix(in srgb,var(--sepia) 45%,transparent);border-radius:4px;cursor:text}
 @media (prefers-reduced-motion:reduce){ .jot .jtpen{transition:none} .jot .jtpen:hover{transform:none} }   /* 끄적임 연필 = 고치기 단추: 테두리는 늘 보이고, 올리면 세피아로 기울어 「누르면 고치겠구나」 */
-.jot:nth-child(3n+1) .jt{color:#2e2721;transform:rotate(-.4deg)} .jot:nth-child(3n+2) .jt{color:#24427a;transform:rotate(.3deg)} .jot:nth-child(3n) .jt{color:#5a3a2a;transform:rotate(-.2deg)}
+.jot:nth-child(3n+1) .jt{color:#2e2721} .jot:nth-child(3n+2) .jt{color:#24427a} .jot:nth-child(3n) .jt{color:#5a3a2a}
 :root[data-theme="dark"] .jot:nth-child(3n+1) .jt{color:#ece2d2} :root[data-theme="dark"] .jot:nth-child(3n+2) .jt{color:#9fc0ea} :root[data-theme="dark"] .jot:nth-child(3n) .jt{color:#e0b98f}
 .jot .row{opacity:.55;transition:opacity .15s} .jot:hover .row{opacity:1}
-.jot .row .muted{font-family:"Gamja Flower";font-size:15px}
+.jot .row .muted{font:400 12px/1.5 var(--ui-font)}
 .side-note:hover{background:var(--bible-wash)}
 
 /* 집중 모드 */
@@ -1920,7 +1920,7 @@ w-ed.isempty::before{-webkit-text-fill-color:var(--ph)}
 .stgoal .bar{width:120px;height:6px;border-radius:3px;background:var(--edge);overflow:hidden;flex:none} .stgoal .bar i{display:block;height:100%;background:var(--book)}
 .dday{margin-left:auto;font-size:12.5px;padding:1px 9px;border-radius:999px;border:1px solid var(--edge)} .dday.soon{color:#b45309;border-color:#f0c48a} .dday.over{color:var(--bible);border-color:var(--bible)}
 .jboard{max-width:1100px} .jbin{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:end;background:var(--paper);border:1px solid var(--edge);border-radius:10px;padding:10px 12px;box-shadow:0 8px 20px -18px rgba(0,0,0,.5)}
-.jbin textarea{width:100%;border:0;background:transparent;font-size:22px;resize:vertical;min-height:52px;outline:0;color:var(--ink)} .jbin select{font-size:13px}
+.jbin textarea{width:100%;border:0;background:transparent;font-family:var(--memo-font);font-size:16px;resize:vertical;min-height:52px;outline:0;color:var(--ink)} .jbin select{font-size:13px}
 .jbbar{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;justify-content:space-between;margin:16px 0 6px} .jchips{display:flex;flex-wrap:wrap;gap:6px}
 .jchip{border:1px solid var(--edge);background:var(--paper);border-radius:99px;padding:3px 12px;font:13px/1.6 -apple-system,"Apple SD Gothic Neo",sans-serif;color:var(--ink-soft);cursor:pointer} .jchip i{font-style:normal;opacity:.55;margin-left:5px;font-size:12px} .jchip.on{background:var(--ink);border-color:var(--ink);color:var(--paper)}
 .jbtools{display:flex;align-items:center;gap:8px;flex-wrap:wrap} .jbtools input{width:130px!important;font-size:13px;padding:4px 9px} .jbtools select,.jbin select{width:auto!important;font-size:13px;padding:5px 8px} .jbin .row{flex-wrap:nowrap} .jbtools label.chk{display:inline-flex;align-items:center;gap:5px;width:auto;font-size:13px;white-space:nowrap;margin:0} .jbtools label.chk input{width:auto!important;margin:0}
@@ -1933,12 +1933,12 @@ w-ed.isempty::before{-webkit-text-fill-color:var(--ph)}
 .jseeds{margin-top:10px;border-top:1px dashed var(--edge);padding-top:4px} .seedc{opacity:.92} .jdot{display:inline-block;width:10px;height:10px;border-radius:50%;background:#fdf0a6;border:1px solid rgba(0,0,0,.1)} .jdot.c-p{background:#fbd3dc} .jdot.c-g{background:#d2efc6} .jdot.c-b{background:#cfe4fb}
 .jempty{color:var(--faint);text-align:center;padding:26px 8px;margin:0;line-height:1.8}
 .jcard .stb button{white-space:nowrap}
-@media (max-width:700px){ .jcard .stb small{display:none} .jcard .stb{gap:2px} .jbin{grid-template-columns:1fr} .stickies.jgrid{grid-template-columns:repeat(2,1fr);gap:14px 10px} .jcard{font-size:19px} .jbbar{flex-direction:column;align-items:stretch} .jbtools input{flex:1} }
+@media (max-width:700px){ .jcard .stb small{display:none} .jcard .stb{gap:2px} .jbin{grid-template-columns:1fr} .stickies.jgrid{grid-template-columns:repeat(2,1fr);gap:14px 10px} .jcard{font-size:14.5px} .jbbar{flex-direction:column;align-items:stretch} .jbtools input{flex:1} }
 .stickies{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:18px;padding:10px 4px} .stickies.small{grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}
-.sticky{position:relative;min-height:130px;padding:16px 12px 30px;background:#fdf0a6;color:#3a3220;border-radius:2px 2px 12px 2px;box-shadow:0 12px 18px -14px rgba(0,0,0,.55),0 1px 0 rgba(0,0,0,.05);transform:rotate(var(--r,0deg));font-family:"Gamja Flower",cursive;font-size:21px;line-height:1.25}
+.sticky{position:relative;min-height:130px;padding:16px 12px 30px;background:#fdf0a6;color:#3a3220;border-radius:2px 2px 12px 2px;box-shadow:0 12px 18px -14px rgba(0,0,0,.55),0 1px 0 rgba(0,0,0,.05);transform:rotate(var(--r,0deg));font-family:var(--memo-font);font-size:15px;line-height:1.6}
 .sticky::before{content:"";position:absolute;top:-8px;left:50%;width:46px;height:16px;margin-left:-23px;background:rgba(255,255,255,.55);box-shadow:0 1px 2px rgba(0,0,0,.08);transform:rotate(-2deg)}
 .sticky.c-p{background:#fbd3dc} .sticky.c-g{background:#d2efc6} .sticky.c-b{background:#cfe4fb} .sticky.done{opacity:.55} .sticky.done .stt{text-decoration:line-through}
-.sticky .stt{outline:0;white-space:pre-wrap;word-break:break-word;min-height:60px;cursor:text}
+.sticky .stt{outline:0;white-space:pre-wrap;word-break:keep-all;overflow-wrap:anywhere;min-height:60px;cursor:text}
 .sticky .stb{position:absolute;left:8px;right:8px;bottom:5px;display:flex;gap:3px;align-items:center;opacity:.3;transition:opacity .15s;font-family:-apple-system,sans-serif}
 .sticky:hover .stb,.sticky:focus-within .stb{opacity:1} .sticky .stb button{border:0;background:rgba(255,255,255,.55);border-radius:5px;cursor:pointer;font-size:12px;padding:1px 7px;color:#3a3220} .sticky .stb small{margin-left:auto;font-size:11px;opacity:.7}
 @media (hover:none){ .sticky .stb{opacity:.85} }
@@ -2480,6 +2480,7 @@ body:has(.docbar) .toolbar .histgrp{display:none}
 /* ── UI 장치 글자·간격 통일 (2026-10-29, 디자인 기획안) — 앱이 붙인 안내(칸 이름·도움말·상태·접기 제목)는 고딕 하나, 손글씨는 쪽 제목·봉인·도장 같은 장식 자리에만, 간격은 6·10·16·22 리듬 ── */
 :root{
   --ui-font:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",sans-serif;
+  --memo-font:var(--ui-font);   /* 메모·끄적임·포스트잇 = 읽기 쉬운 고딕(2026-11-16 팀장님 「손글씨는 일기와 감각적인 한 줄만」) */
   --ui-head:"Nanum Myeongjo","Gowun Batang",serif;
   --ui-label:var(--ink-soft); --ui-hint:var(--faint);
   --ui-line:rgba(80,60,40,.22);
@@ -3228,7 +3229,7 @@ async function pushSave(){
 // ───────── 새 버전 자동 새로 고침 ─────────
 // 올릴 때마다 version.json 의 번호가 바뀝니다. 앱이 열릴 때·다시 화면에 올라올 때·5분마다 확인해서,
 // 쓰는 중인 글이 없고 저장이 끝났을 때 새 버전으로 새로 고칩니다.
-const APP_BUILD="b2ced8c732"; const APP_VER="6.8";   // 판 번호: 배포할 때마다 도구/판올리기.py 가 0.1씩 올림 (1.9 다음은 2.0) — 손으로 고치지 말 것
+const APP_BUILD="a03385630e"; const APP_VER="6.9";   // 판 번호: 배포할 때마다 도구/판올리기.py 가 0.1씩 올림 (1.9 다음은 2.0) — 손으로 고치지 말 것
 let NEW_BUILD=null, UPDATE_NOTICED=false;
 async function checkUpdate(){
   if(APP_BUILD.startsWith("__")) return;                 // 원본 파일로 열었을 때(고치는 중)는 건너뜁니다
@@ -3843,6 +3844,9 @@ const MANUALS=[["quick","간단 매뉴얼","읽자마자 바로 써 보는 한 �
 // ───────── 새 소식 (공개판, 2026-10-31 팀장님): 중요한 고침은 앱을 열 때 한 번만 쉬운 말로 알림 ─────────
 // 새 소식을 더할 때: NEWS 맨 앞에 넣고 id 는 날짜(같은 날 둘째는 2026-11-02b 처럼 — 글자 순서로 새것이 뒤). 본 소식 id 는 이 기기에만(seojae-open.newsSeen)
 const NEWS=[
+ {id:"2026-11-16",date:"2026년 11월 16일",title:"메모 글씨가 또렷해졌어요",items:[
+  ["✎","끄적임·포스트잇은 읽기 쉬운 글씨로","끄적이기 판의 포스트잇, 쓰는 화면 곁 끄적임, 꼭지 메모, 밑줄에 붙인 한 줄 생각을 손글씨 대신 또렷한 글씨로 보여 드려요. 다시 찾아 읽을 때 한눈에 들어와요.","적어 두신 글은 그대로예요 — 보이는 글씨만 바뀌었어요"],
+  ["❀","손글씨는 마음을 담는 자리에만","일기장, 오늘의 한 줄, 책을 한 줄로 남기는 칸, 제목 같은 꾸밈 자리에는 손글씨가 그대로 남아요.",""]]},
  {id:"2026-11-14c",date:"2026년 11월 14일",title:"앱 그림이 도장으로 바뀌었어요",items:[
   ["🔖","새 앱 그림: 작가의 도장","앱 그림을 새로 바꿨어요. 글 쓰는 분이 책에 찍는 도장처럼 「아침 서재」 네 글자를 새겼어요. 인주는 아침 햇살 빛깔이에요.","휴대폰 홈 화면에 둔 그림은 앱을 다시 설치하거나, 기기에 따라 며칠 뒤에 바뀌어요"],
   ["◻","작은 자리에는 「아」 한 글자","브라우저 탭처럼 작은 자리에는 「아」 한 글자 도장이 보여요.",""],
@@ -5197,7 +5201,7 @@ function jotBox(){
   return `<div class="sheet tape b jotbox" style="margin-top:22px">
     <p class="label">끄적이기</p>
     <small class="hint" style="margin-bottom:6px">글감 창고 — 생각나는 것을 그때그때 적어 두고, 글을 쓸 때 꺼내 씁니다. 모든 기기에서 같이 보이고 노션에는 가지 않습니다.</small>
-    <textarea id="jotin" class="pen" placeholder="떠오른 한 줄…${isTouch()?"":" (⌘/Ctrl+엔터로 보관)"}" onkeydown="if((event.metaKey||event.ctrlKey)&&event.key==='Enter'){event.preventDefault();jotAdd()}" style="min-height:62px;font-size:21px"></textarea>
+    <textarea id="jotin" placeholder="떠오른 한 줄…${isTouch()?"":" (⌘/Ctrl+엔터로 보관)"}" onkeydown="if((event.metaKey||event.ctrlKey)&&event.key==='Enter'){event.preventDefault();jotAdd()}" style="min-height:62px"></textarea>
     <div class="row" style="margin-top:6px"><button class="btn small ink" onclick="jotAdd()">끄적여 두기</button><span class="spacer"></span>${(S.jots||[]).length>6?`<input id="jotq" placeholder="찾기" value="${esc(JOT_Q)}" oninput="JOT_Q=this.value;jotPaint()" style="width:120px;font-size:13px;padding:4px 8px">`:""}</div>
     <div id="jotlist" class="jotlines">${jotList()}</div><button class="btn small ghost" style="margin-top:8px" onclick="stOpen('jots')">끄적이기 판에서 모두 보기 · 분류·정렬 →</button></div>`;
 }
@@ -5257,7 +5261,7 @@ function jbChips(){ const all=jots(), n=k=>k==="all"?all.length:k==="none"?all.f
 function jotBoard(){ const all=jots(), wk=new Date(Date.now()-7*864e5).toISOString(), nw=all.filter(j=>(j.at||j.updated||"")>=wk).length, used=all.filter(j=>(j.used||[]).length).length;
   return `<section class="sthome jboard"><h2 class="sthello" style="font-size:24px">끄적이기</h2>
     <p class="sub" style="text-align:center;margin:-14px 0 14px">공통 창고 — 모든 기기에서 같이 보이고 노션에는 가지 않습니다 · 모두 ${all.length} · 이번 주 ${nw}${used?` · 꺼내 쓴 것 ${used}`:""}</p>
-    <div class="jbin"><textarea id="jbin" class="pen" rows="2" placeholder="떠오른 한 줄…${isTouch()?"":" (⌘/Ctrl+엔터로 붙이기)"}" onkeydown="if((event.metaKey||event.ctrlKey)&&event.key==='Enter'&&!event.isComposing){event.preventDefault();jbAdd()}"></textarea>
+    <div class="jbin"><textarea id="jbin" rows="2" placeholder="떠오른 한 줄…${isTouch()?"":" (⌘/Ctrl+엔터로 붙이기)"}" onkeydown="if((event.metaKey||event.ctrlKey)&&event.key==='Enter'&&!event.isComposing){event.preventDefault();jbAdd()}"></textarea>
       <div class="row" style="gap:6px"><select id="jbcat" title="분류 (고르지 않으면 모양을 보고 짐작합니다)"><option value="">분류 — 저절로</option>${JOT_CATS.map(([k,l,ic])=>`<option value="${k}">${ic} ${l}</option>`).join("")}</select><button class="btn ink" onclick="jbAdd()">붙이기</button></div></div>
     <div class="jbbar"><div class="jchips" id="jbchips">${jbChips()}</div>
       <div class="row jbtools"><input id="jbq" placeholder="찾기" value="${esc(JB_Q)}" oninput="JB_Q=this.value;jbPaint()"><select onchange="JB_SORT=this.value;try{localStorage.setItem('seojae-open.jbSort',this.value)}catch(_){};jbPaint()" title="늘어놓는 순서">${[["new","최근 고친 순"],["old","처음 적은 순"],["long","긴 것부터"],["cat","분류별로 묶기"],["color","색깔별로 묶기"]].map(([k,l])=>`<option value="${k}" ${JB_SORT===k?"selected":""}>${l}</option>`).join("")}</select>
@@ -5701,7 +5705,7 @@ today(){
       
       <div class="sub" style="margin-top:12px">오늘 밑줄 ${tn.length}개 · 글 ${tw.length}편 · ${tw.reduce((a,w)=>a+chars(w.body),0).toLocaleString()}자</div>
       ${tw.length?`<div style="margin-top:6px">${tw.map(w=>`<div class="row" style="gap:8px;padding:3px 0"><span class="label ${w.track}" style="margin:0;font-size:17px">[${esc(wTag(w))}]</span><a href="#" class="myeongjo" style="color:var(--ink)" onclick="go('write',{edit:'${w.id}'});return false"><b>${esc(w.title||w.passage||"(제목 없음)")}</b></a>${nState(w)}</div>`).join("")}</div>`:""}
-      <div class="row" style="margin-top:12px;gap:8px"><input id="jotin" class="pen" placeholder="끄적이기" title="떠오른 생각을 한 줄 적어 두면 글방 「끄적이기」에 모입니다" style="flex:1;min-width:200px;font-size:21px" onkeydown="if(event.key==='Enter'&&!event.isComposing){event.preventDefault();jotAdd()}"><button class="btn small" onclick="jotAdd()">끄적여 두기</button></div>
+      <div class="row" style="margin-top:12px;gap:8px"><input id="jotin" style="font-family:var(--memo-font)" placeholder="끄적이기" title="떠오른 생각을 한 줄 적어 두면 글방 「끄적이기」에 모입니다" style="flex:1;min-width:200px;font-size:21px" onkeydown="if(event.key==='Enter'&&!event.isComposing){event.preventDefault();jotAdd()}"><button class="btn small" onclick="jotAdd()">끄적여 두기</button></div>
       <div class="row" style="margin-top:14px"><button class="btn ink" onclick="go('write',{track:'bible'})">묵상 쓰기</button><button class="btn ink" onclick="go('room')">글방으로</button></div>
       <div class="row" style="margin-top:10px"><button class="btn" onclick="diaryDate=today();go('diary')">${ICO.diary}오늘의 독서 일기 꾸미기</button></div>
     </section>
@@ -5921,7 +5925,7 @@ function noteForm(trk){
     <div class="row">${trk==="bible"
       ?`<input id="nf-src" value="${esc(todayPassageHint())}" placeholder="본문 (예: 요한복음 15:5)" style="flex:1">`
       :`<span class="muted" style="flex:1">${esc(b?.title||"")}</span><input id="nf-page" type="number" placeholder="${b?.unit==="pct"?"%":"쪽"}" style="width:80px">`}</div>
-    <input id="nf-thought" class="pen" style="font-size:20px" placeholder="한 줄 생각 (안 적어도 됩니다)">
+    <input id="nf-thought" style="font-family:var(--memo-font)" placeholder="한 줄 생각 (안 적어도 됩니다)">
     <div class="row" style="margin-top:10px"><button class="btn ink small" onclick="addNoteFrom('${trk}')">밑줄 남기기</button><button class="btn ghost small" onclick="toggleNoteForm('${trk}')">닫기</button></div>
   </div>`;
 }
@@ -8730,7 +8734,7 @@ let SIDE_TAB="memo"; try{ SIDE_TAB=localStorage.getItem("seojae-open.sidetab")||
 function sideTab(k){ setTimeout(()=>{ try{ grow(); }catch(_){} },30); SIDE_TAB=k; try{ localStorage.setItem("seojae-open.sidetab",k); }catch(_){} document.querySelectorAll(".stabs button").forEach(b=>b.classList.toggle("on",b.dataset.k===k)); document.querySelectorAll(".spanel").forEach(p=>p.hidden=p.dataset.k!==k); }
 function sideTabs(w){ const m=wMs(w), g=G(m), cx=w?codexIn(w.body+" "+(w.title||"")):[], rv=w&&(m||w.type==="설교초안");
   const memo=`${m&&w&&g.scene&&!isNovelW(w)?sceneFormHtml(w):""}
-    ${m&&w?`<label class="field"><span>${esc(G(m).item||"꼭지")} 메모 <small class="hint" style="display:inline">· 본문 밖에 남기는 생각</small></span><textarea id="wmemo" class="pen" rows="3" style="font-size:19px;min-height:72px" placeholder="이 꼭지에서 더 다룰 것, 앞뒤 꼭지와 이을 것…" oninput="memoKick('${w.id}',this.value)" onchange="saveMemo('${w.id}',this.value)">${esc(w.memo||"")}</textarea></label>`:""}
+    ${m&&w?`<label class="field"><span>${esc(G(m).item||"꼭지")} 메모 <small class="hint" style="display:inline">· 본문 밖에 남기는 생각</small></span><textarea id="wmemo" rows="3" style="font-family:var(--memo-font);font-size:15.5px;line-height:1.6;min-height:72px" placeholder="이 꼭지에서 더 다룰 것, 앞뒤 꼭지와 이을 것…" oninput="memoKick('${w.id}',this.value)" onchange="saveMemo('${w.id}',this.value)">${esc(w.memo||"")}</textarea></label>`:""}
     ${jotBox()}`;
   const res=m?resSideHtml(m):`<p class="hint">이 글이 원고에 들어 있으면 그 원고의 자료가 여기에 보입니다.</p>`;
   const notes=cx.length?cx.map(c=>`<details class="cxside ${cxOrphan(c)?"common":""}"><summary>${cxOrphan(c)?`<span class="combadge">공통</span> `:""}${esc(c.name)}</summary><div class="cxsidebody">${esc(c.body||"(노트 비어 있음)")}</div><a href="#" onclick="ROOM_CODEX='${c.id}';go('room');return false" class="muted">노트 열기 →</a></details>`).join(""):`<p class="hint">이 글에 나온 ${esc(g.codex)}가 여기에 모입니다. 노트는 글방 왼쪽에서 만듭니다.</p>`;
@@ -8745,7 +8749,7 @@ function wSideRoom(w){ const m=wMs(w), cx=w?codexIn(w.body+" "+(w.title||"")):[]
     ${rv?`<div class="revside">${revNotesHtml(w,true)}<button class="btn small" onclick="reviewOne('${w.id}')">${ICO.search}${w.review?"다시 검토 받기":"이 글 검토 받기"}</button></div>`:""}
     ${m?`<p class="step" style="margin-top:0"><span class="num">${ICO.closed}</span>원고 곁 칸 <small class="hint" style="display:inline">· ${esc(G(m).n)}</small></p>
       ${G(m).scene?sceneFormHtml(w):""}
-      <label class="field"><span>${esc(G(m).item||"꼭지")} 메모 <small class="hint" style="display:inline">· 본문 밖에 남기는 생각</small></span><textarea id="wmemo" class="pen" rows="3" style="font-size:19px;min-height:72px" placeholder="이 꼭지에서 더 다룰 것, 앞뒤 꼭지와 이을 것…" oninput="memoKick('${w.id}',this.value)" onchange="saveMemo('${w.id}',this.value)">${esc(w.memo||"")}</textarea></label>
+      <label class="field"><span>${esc(G(m).item||"꼭지")} 메모 <small class="hint" style="display:inline">· 본문 밖에 남기는 생각</small></span><textarea id="wmemo" rows="3" style="font-family:var(--memo-font);font-size:15.5px;line-height:1.6;min-height:72px" placeholder="이 꼭지에서 더 다룰 것, 앞뒤 꼭지와 이을 것…" oninput="memoKick('${w.id}',this.value)" onchange="saveMemo('${w.id}',this.value)">${esc(w.memo||"")}</textarea></label>
       ${(m.research||[]).length?`<details class="more" open><summary>원고 자료 ${(m.research||[]).length}</summary>${resSideHtml(m)}</details>`:`<p class="hint">원고 자료는 글방 → 「자료 모음」에서 모아 둡니다.</p>`}`:""}
     ${cx.length?`<details class="more" ${m?"":"open"}><summary>이 글에 나온 인물·주제 ${cx.length}</summary>${cx.map(c=>`<details class="cxside ${cxOrphan(c)?"common":""}"><summary>${cxOrphan(c)?`<span class="combadge">공통</span> `:""}${esc(c.name)}</summary><div class="cxsidebody">${esc(c.body||"(노트 비어 있음)")}</div><a href="#" onclick="ROOM_CODEX='${c.id}';go('room');return false" class="muted">노트 열기 →</a></details>`).join("")}</details>`:""}
   </div>`; }
@@ -10673,7 +10677,7 @@ function notionImportOpen(mid){ if(!SERVER) return toast("구글 서버에 닿�
       <label class="field"><span>본문 위치 <small class="hint" style="display:inline">· 성경 구절이면 (비워도 됨)</small></span><input id="ni-p" value="${esc(tt.passage)}"></label>
       <div class="row" style="gap:10px;flex-wrap:wrap"><label class="field"><span>글의 상태</span><select id="ni-s" style="width:auto">${WSTATUS.map(x=>`<option ${x==="완성"?"selected":""}>${x}</option>`).join("")}</select></label>
       <label class="field"><span>원고</span><select id="ni-m" style="width:auto"><option value="">넣지 않음</option>${others.map(x=>`<option value="${x.id}" ${m&&m.id===x.id?"selected":""}>${esc(x.title)}</option>`).join("")}</select></label></div>
-      <details class="more"><summary>가져올 글 미리 보기</summary><div class="pen" style="white-space:pre-wrap;font-size:17px;max-height:260px;overflow:auto">${esc(R.body.slice(0,1500))}${R.body.length>1500?"\n…":""}</div></details>
+      <details class="more"><summary>가져올 글 미리 보기</summary><div style="white-space:pre-wrap;font-family:var(--memo-font);font-size:14px;line-height:1.65;max-height:260px;overflow:auto">${esc(R.body.slice(0,1500))}${R.body.length>1500?"\n…":""}</div></details>
       <div class="row" style="gap:6px"><button class="btn ink" data-make>새 글로 만들기</button><small class="hint">노션 원본 주소가 글에 남아, 나중에 「원본 다시 받아 비교」를 할 수 있습니다.</small></div></div>`;
     pv.querySelector("[data-make]").onclick=()=>{ const mm=S.manuscripts.find(x=>x.id===pv.querySelector("#ni-m").value), g=G(mm), now=new Date().toISOString();
       const w={id:uid(),date:today(),track:"book",type:TYPES.book[g.type]!=null?g.type:"자유 글",title:pv.querySelector("#ni-t").value.trim()||R.title||"노션에서 가져온 글",body:R.body,summary:"",topics:[],status:pv.querySelector("#ni-s").value,updated:now,
