@@ -3229,7 +3229,7 @@ async function pushSave(){
 // ───────── 새 버전 자동 새로 고침 ─────────
 // 올릴 때마다 version.json 의 번호가 바뀝니다. 앱이 열릴 때·다시 화면에 올라올 때·5분마다 확인해서,
 // 쓰는 중인 글이 없고 저장이 끝났을 때 새 버전으로 새로 고칩니다.
-const APP_BUILD="2380546f39"; const APP_VER="7.1";   // 판 번호: 배포할 때마다 도구/판올리기.py 가 0.1씩 올림 (1.9 다음은 2.0) — 손으로 고치지 말 것
+const APP_BUILD="6d3b0e4063"; const APP_VER="7.2";   // 판 번호: 배포할 때마다 도구/판올리기.py 가 0.1씩 올림 (1.9 다음은 2.0) — 손으로 고치지 말 것
 let NEW_BUILD=null, UPDATE_NOTICED=false;
 async function checkUpdate(){
   if(APP_BUILD.startsWith("__")) return;                 // 원본 파일로 열었을 때(고치는 중)는 건너뜁니다
@@ -3819,6 +3819,8 @@ const MANUALS=[["quick","간단 매뉴얼","읽자마자 바로 써 보는 한 �
 // ───────── 새 소식 (공개판, 2026-10-31 팀장님): 중요한 고침은 앱을 열 때 한 번만 쉬운 말로 알림 ─────────
 // 새 소식을 더할 때: NEWS 맨 앞에 넣고 id 는 날짜(같은 날 둘째는 2026-11-02b 처럼 — 글자 순서로 새것이 뒤). 본 소식 id 는 이 기기에만(seojae-open.newsSeen)
 const NEWS=[
+ {id:"2026-11-16c",date:"2026년 11월 16일",title:"매일성경 해설을 나란히 보며",items:[
+  ["⇆","매일성경 누리집이 오른쪽 창으로","「해설·음성은 매일성경에서 ↗」를 누르면 매일성경 누리집이 다른 번역 성경처럼 화면 오른쪽에 세로로 열려요. 아침 서재는 왼쪽에 그대로 있어 해설을 보며 묵상을 쓰실 수 있어요.","컴퓨터에 앱으로 설치해 여신 창에서 나란히 놓여요. 휴대폰은 새 창으로 열려요."]]},
  {id:"2026-11-16b",date:"2026년 11월 16일",title:"매일성경 해설은 매일성경에서",items:[
   ["📖","해설·음성은 매일성경 누리집에서","매일성경 해설과 음성은 성서유니온이 정성껏 만든 저작물이라, 앱 안에서는 보여 드리지 않기로 했어요. 묵상 화면의 「해설·음성은 매일성경에서 ↗」를 누르면 매일성경 누리집이 열려요.",""],
   ["✓","나머지는 그대로예요","오늘 본문 위치·제목·찬송가 번호, 개역한글과 영어 본문, 묵상 노트는 전처럼 쓰실 수 있어요.",""]]},
@@ -4247,14 +4249,14 @@ async function paintSu(){
   const x=new Date(date+"T00:00"), P=suPassage(SU), dayWs=live().filter(w=>w.track==="bible"&&w.date===date), cur=editId&&S.writings.find(w=>w.id===editId), open=suOpen();
   const nav=`<div class="row sunav" style="gap:6px"><span class="label bible" style="margin:0">${date===today()?`<span class="su-today">오늘의 </span>`:""}매일성경</span><span class="sunavd"><button class="fsbtn" onclick="suMove(-1)" title="전날 매일성경 · 묵상 노트도 그 날짜로" aria-label="전날">‹</button><span class="muted sudate">${x.getMonth()+1}.${x.getDate()}(${WEEK[x.getDay()]})${dayWs.some(w=>w.type==="묵상"&&!wEmpty(w))?`<span class="qtstamp" title="이날 묵상을 썼습니다">씀</span>`:""}</span><button class="fsbtn" onclick="suMove(1)" title="다음 날 매일성경 · 묵상 노트도 그 날짜로" aria-label="다음 날">›</button>${date!==today()?`<button class="fsbtn" onclick="suGo(today())">오늘</button>`:""}</span><span class="spacer"></span>${SU&&P?`<button class="btn small ghost" onclick="suToggle()">${open?"본문 접기":"본문 펼치기"}</button>`:""}</div>
     ${date!==today()&&!cur?`<div class="qtnew">${x.getMonth()+1}월 ${x.getDate()}일 묵상 노트입니다 · 쓰면 그날 묵상으로 간직됩니다</div>`:""}`;
-  if(!SU||!P){ box.innerHTML=nav+`<p class="muted" style="margin:6px 0 0">본문을 불러오지 못했습니다${SUERR?" ("+esc(SUERR)+")":""}. <a class="muted" href="https://sum.su.or.kr:8888/bible/today" target="_blank" rel="noopener">성서유니온에서 보기 ↗</a></p>`; return; }   // 본문을 못 받아도 날짜는 넘길 수 있게
+  if(!SU||!P){ box.innerHTML=nav+`<p class="muted" style="margin:6px 0 0">본문을 불러오지 못했습니다${SUERR?" ("+esc(SUERR)+")":""}. <a class="muted" href="https://sum.su.or.kr:8888/bible/today" target="_blank" rel="noopener" onclick="return popBible(this.href)">성서유니온에서 보기 ↗</a></p>`; return; }   // 본문을 못 받아도 날짜는 넘길 수 있게
   // 새 묵상이면 본문 칸을 매일성경으로 (설정에서 '통독표 따라'를 고르면 그대로 둠)
   const f=$("#wpassage"); if(f&&!fromNote&&!fromWriting&&S.settings.qtSource!=="plan"&&$("#wtype")?.value==="묵상"&&(editId?cur?.date===date&&cmtBare(f.value):f.value===f.defaultValue)){ f.value=P.label; }   // 본문 칸이 빈 그날 묵상에는 저절로
   box.innerHTML=`${nav}
     <div class="sut"><b>${esc(SU.title)}</b> · ${esc(P.label)}${SU.hymn?` · <span class="muted hymnbox" id="hymnbox">찬송가 ${esc(SU.hymn)}장${hymnCtl()}</span>`:""}</div>
     <div class="links"><button class="btn small ink" onclick="suUse()">이 본문으로 쓰기</button>
       <a class="verlink" href="${esc(suOfficial(P,"NKRV"))}" target="_blank" rel="noopener" onclick="return popBible(this.href)" title="개역개정은 저작권 때문에 앱 안에 넣을 수 없어 대한성서공회 사이트에서 같은 구절을 엽니다">개역개정</a><a class="verlink" href="${esc(suOfficial(P,"NKT"))}" target="_blank" rel="noopener" onclick="return popBible(this.href)">새한글</a><a class="verlink" href="${esc(suOfficial(P,"RNKSV"))}" target="_blank" rel="noopener" onclick="return popBible(this.href)">새번역</a><a class="verlink" href="${esc(suNiv(P))}" target="_blank" rel="noopener" onclick="return popBible(this.href)">NIV</a><button class="btn small ghost pconly" onclick="sideTip()" title="성경 창을 띄워 둔 채 쓰는 법">ⓘ</button><button class="btn small ghost pconly" onclick="pipBible()" title="오늘 본문(개역한글·영어)을 다른 창보다 늘 위에 떠 있는 작은 창으로 띄웁니다 (크롬·엣지)">${ICO.closed}위에 띄우기</button>
-      <a class="btn small ghost" href="https://sum.su.or.kr:8888/bible/today" target="_blank" rel="noopener" title="해설과 음성은 성서유니온 매일성경(누리집·공식 앱)에서 보고 들으실 수 있습니다">${ICO.book}해설·음성은 매일성경에서 ↗</a></div>
+      <a class="btn small ghost" href="https://sum.su.or.kr:8888/bible/today" target="_blank" rel="noopener" onclick="return popBible(this.href)" title="매일성경 누리집을 화면 오른쪽 성경 창으로 엽니다(컴퓨터에서는 아침 서재가 왼쪽에 나란히). 해설과 음성은 그곳에서 보고 들으실 수 있습니다">${ICO.book}해설·음성은 매일성경에서 ↗</a></div>
     <details class="more"><summary>말씀 앞에서 묻기 <small class="hint" style="display:inline">· 오늘의 질문</small></summary><ol class="q" style="margin:4px 0 0">${pickQ("bible",today()+"b").map(q=>`<li>${esc(q)}</li>`).join("")}</ol></details>
     ${open?`<div class="row" style="gap:6px;margin-top:10px;flex-wrap:wrap"><span class="muted" style="font-size:12.5px">보기</span><span class="pills">${SU_VIEWS.map(([k,n,tip])=>`<button class="pill ${suView()===k?"on":""}" style="padding:3px 10px;font-size:13px" data-tip="${tip}" onclick="lookSet('suview','${k}');paintSuText()">${n}</button>`).join("")}</span><span class="spacer"></span><span class="row" style="gap:4px" title="매일성경 글자 크기 (이 기기만)"><button class="fsbtn" onclick="suFont(-1)">가−</button><button class="fsbtn" onclick="suFont(1)">가＋</button></span><button class="fsbtn" onclick="lookSet('sutall',applyLook().sutall?'':1);paintSuText()" title="본문 칸을 다 펼쳐 스크롤 없이 봅니다">${applyLook().sutall?"칸 줄이기":"다 펼치기"}</button><button class="fsbtn sufold" onclick="suToggle()" title="성경 본문 칸을 완전히 접습니다 (이 기기에 기억)">접기 ▴</button></div>
       <div class="sutext" id="sutext"><span class="muted">본문을 불러오는 중…</span></div>`:`<button type="button" class="suopenbar" onclick="suToggle()" title="접어 둔 성경 본문 칸을 다시 폅니다"><span>▾ 성경 본문 펼치기</span><small>개역한글 · 영어</small></button>`}`;   // 접으면 그 자리에 펴는 띠(2026-11-02 팀장님 「성경 보기 창을 완전히 접도록」)
