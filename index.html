@@ -3229,7 +3229,7 @@ async function pushSave(){
 // ───────── 새 버전 자동 새로 고침 ─────────
 // 올릴 때마다 version.json 의 번호가 바뀝니다. 앱이 열릴 때·다시 화면에 올라올 때·5분마다 확인해서,
 // 쓰는 중인 글이 없고 저장이 끝났을 때 새 버전으로 새로 고칩니다.
-const APP_BUILD="6d3b0e4063"; const APP_VER="7.2";   // 판 번호: 배포할 때마다 도구/판올리기.py 가 0.1씩 올림 (1.9 다음은 2.0) — 손으로 고치지 말 것
+const APP_BUILD="42a850adcd"; const APP_VER="7.3";   // 판 번호: 배포할 때마다 도구/판올리기.py 가 0.1씩 올림 (1.9 다음은 2.0) — 손으로 고치지 말 것
 let NEW_BUILD=null, UPDATE_NOTICED=false;
 async function checkUpdate(){
   if(APP_BUILD.startsWith("__")) return;                 // 원본 파일로 열었을 때(고치는 중)는 건너뜁니다
@@ -4135,7 +4135,7 @@ function backupSection(){ if(!BK_ASKED&&GAS&&SERVER&&!PUB){ BK_ASKED=true; setTi
     <div class="sethand"><p class="k2">이 기기 안 사본</p><p class="hint" style="margin-top:0">그날 처음 간직할 때 이 기기 안에 기록 전체의 사본을 남깁니다(최근 ${SNAP_N}개). 글을 잘못 지웠을 때 그날의 사본에서 다시 합쳐 올 수 있습니다.</p><div id="snapbox"><p class="muted">사본을 살피는 중…</p></div></div>
     ${recSizeHtml()}
     <div class="sethand"><p class="k2">손으로 하기</p><div class="row" style="gap:6px;flex-wrap:wrap"><button class="btn small" onclick="fileBackup()">백업 파일 받기</button><label class="btn small danger-o" style="margin:0">파일로 복원하기<input type="file" accept=".json" onchange="restore(this)" hidden></label><button class="btn small ghost" onclick="go('drawer',{sub:'trash'})">백업에서 글 찾기 →</button></div>
-    <p class="hint">복원은 파일의 기록을 지금 기록과 합칩니다(지금 기록은 사라지지 않음, 노션에는 보내지 않음).</p></div></section>`; }
+    <p class="hint">복원은 파일의 기록을 지금 기록과 합칩니다(지금 기록은 사라지지 않음).</p></div></section>`; }
 // 백업 파일: 휴대폰은 「공유」 창(카카오톡 나와의 채팅·메일·파일 앱), 안 되면 내려받기. 받은 날은 이 기기에만 기억
 const fileBkAt=()=>{ try{ return localStorage.getItem("seojae-open.fileBk")||""; }catch(_){ return ""; } };
 const fileBkAgo=()=>{ const d=fileBkAt(); if(!d) return ""; const n=Math.round((new Date(today())-new Date(d))/864e5); return n<=0?"오늘":n===1?"어제":n+"일 전"; };
@@ -4249,14 +4249,14 @@ async function paintSu(){
   const x=new Date(date+"T00:00"), P=suPassage(SU), dayWs=live().filter(w=>w.track==="bible"&&w.date===date), cur=editId&&S.writings.find(w=>w.id===editId), open=suOpen();
   const nav=`<div class="row sunav" style="gap:6px"><span class="label bible" style="margin:0">${date===today()?`<span class="su-today">오늘의 </span>`:""}매일성경</span><span class="sunavd"><button class="fsbtn" onclick="suMove(-1)" title="전날 매일성경 · 묵상 노트도 그 날짜로" aria-label="전날">‹</button><span class="muted sudate">${x.getMonth()+1}.${x.getDate()}(${WEEK[x.getDay()]})${dayWs.some(w=>w.type==="묵상"&&!wEmpty(w))?`<span class="qtstamp" title="이날 묵상을 썼습니다">씀</span>`:""}</span><button class="fsbtn" onclick="suMove(1)" title="다음 날 매일성경 · 묵상 노트도 그 날짜로" aria-label="다음 날">›</button>${date!==today()?`<button class="fsbtn" onclick="suGo(today())">오늘</button>`:""}</span><span class="spacer"></span>${SU&&P?`<button class="btn small ghost" onclick="suToggle()">${open?"본문 접기":"본문 펼치기"}</button>`:""}</div>
     ${date!==today()&&!cur?`<div class="qtnew">${x.getMonth()+1}월 ${x.getDate()}일 묵상 노트입니다 · 쓰면 그날 묵상으로 간직됩니다</div>`:""}`;
-  if(!SU||!P){ box.innerHTML=nav+`<p class="muted" style="margin:6px 0 0">본문을 불러오지 못했습니다${SUERR?" ("+esc(SUERR)+")":""}. <a class="muted" href="https://sum.su.or.kr:8888/bible/today" target="_blank" rel="noopener" onclick="return popBible(this.href)">성서유니온에서 보기 ↗</a></p>`; return; }   // 본문을 못 받아도 날짜는 넘길 수 있게
+  if(!SU||!P){ box.innerHTML=nav+`<p class="muted" style="margin:6px 0 0">본문을 불러오지 못했습니다${SUERR?" ("+esc(SUERR)+")":""}. <a class="muted" href="https://sum.su.or.kr:8888/bible/today#bibleTab" target="_blank" rel="noopener" onclick="return popBible(this.href)">성서유니온에서 보기 ↗</a></p>`; return; }   // 본문을 못 받아도 날짜는 넘길 수 있게
   // 새 묵상이면 본문 칸을 매일성경으로 (설정에서 '통독표 따라'를 고르면 그대로 둠)
   const f=$("#wpassage"); if(f&&!fromNote&&!fromWriting&&S.settings.qtSource!=="plan"&&$("#wtype")?.value==="묵상"&&(editId?cur?.date===date&&cmtBare(f.value):f.value===f.defaultValue)){ f.value=P.label; }   // 본문 칸이 빈 그날 묵상에는 저절로
   box.innerHTML=`${nav}
     <div class="sut"><b>${esc(SU.title)}</b> · ${esc(P.label)}${SU.hymn?` · <span class="muted hymnbox" id="hymnbox">찬송가 ${esc(SU.hymn)}장${hymnCtl()}</span>`:""}</div>
     <div class="links"><button class="btn small ink" onclick="suUse()">이 본문으로 쓰기</button>
       <a class="verlink" href="${esc(suOfficial(P,"NKRV"))}" target="_blank" rel="noopener" onclick="return popBible(this.href)" title="개역개정은 저작권 때문에 앱 안에 넣을 수 없어 대한성서공회 사이트에서 같은 구절을 엽니다">개역개정</a><a class="verlink" href="${esc(suOfficial(P,"NKT"))}" target="_blank" rel="noopener" onclick="return popBible(this.href)">새한글</a><a class="verlink" href="${esc(suOfficial(P,"RNKSV"))}" target="_blank" rel="noopener" onclick="return popBible(this.href)">새번역</a><a class="verlink" href="${esc(suNiv(P))}" target="_blank" rel="noopener" onclick="return popBible(this.href)">NIV</a><button class="btn small ghost pconly" onclick="sideTip()" title="성경 창을 띄워 둔 채 쓰는 법">ⓘ</button><button class="btn small ghost pconly" onclick="pipBible()" title="오늘 본문(개역한글·영어)을 다른 창보다 늘 위에 떠 있는 작은 창으로 띄웁니다 (크롬·엣지)">${ICO.closed}위에 띄우기</button>
-      <a class="btn small ghost" href="https://sum.su.or.kr:8888/bible/today" target="_blank" rel="noopener" onclick="return popBible(this.href)" title="매일성경 누리집을 화면 오른쪽 성경 창으로 엽니다(컴퓨터에서는 아침 서재가 왼쪽에 나란히). 해설과 음성은 그곳에서 보고 들으실 수 있습니다">${ICO.book}해설·음성은 매일성경에서 ↗</a></div>
+      <a class="btn small ghost" href="https://sum.su.or.kr:8888/bible/today#bibleTab" target="_blank" rel="noopener" onclick="return popBible(this.href)" title="매일성경 누리집을 화면 오른쪽 성경 창으로 엽니다(컴퓨터에서는 아침 서재가 왼쪽에 나란히). 해설과 음성은 그곳에서 보고 들으실 수 있습니다">${ICO.book}해설·음성은 매일성경에서 ↗</a></div>
     <details class="more"><summary>말씀 앞에서 묻기 <small class="hint" style="display:inline">· 오늘의 질문</small></summary><ol class="q" style="margin:4px 0 0">${pickQ("bible",today()+"b").map(q=>`<li>${esc(q)}</li>`).join("")}</ol></details>
     ${open?`<div class="row" style="gap:6px;margin-top:10px;flex-wrap:wrap"><span class="muted" style="font-size:12.5px">보기</span><span class="pills">${SU_VIEWS.map(([k,n,tip])=>`<button class="pill ${suView()===k?"on":""}" style="padding:3px 10px;font-size:13px" data-tip="${tip}" onclick="lookSet('suview','${k}');paintSuText()">${n}</button>`).join("")}</span><span class="spacer"></span><span class="row" style="gap:4px" title="매일성경 글자 크기 (이 기기만)"><button class="fsbtn" onclick="suFont(-1)">가−</button><button class="fsbtn" onclick="suFont(1)">가＋</button></span><button class="fsbtn" onclick="lookSet('sutall',applyLook().sutall?'':1);paintSuText()" title="본문 칸을 다 펼쳐 스크롤 없이 봅니다">${applyLook().sutall?"칸 줄이기":"다 펼치기"}</button><button class="fsbtn sufold" onclick="suToggle()" title="성경 본문 칸을 완전히 접습니다 (이 기기에 기억)">접기 ▴</button></div>
       <div class="sutext" id="sutext"><span class="muted">본문을 불러오는 중…</span></div>`:`<button type="button" class="suopenbar" onclick="suToggle()" title="접어 둔 성경 본문 칸을 다시 폅니다"><span>▾ 성경 본문 펼치기</span><small>개역한글 · 영어</small></button>`}`;   // 접으면 그 자리에 펴는 띠(2026-11-02 팀장님 「성경 보기 창을 완전히 접도록」)
@@ -5166,7 +5166,7 @@ const jots=()=>(S.jots||[]).slice().sort((a,b)=>(b.updated||"").localeCompare(a.
 function jotBox(){
   return `<div class="sheet tape b jotbox" style="margin-top:22px">
     <p class="label">끄적이기</p>
-    <small class="hint" style="margin-bottom:6px">글감 창고 — 생각나는 것을 그때그때 적어 두고, 글을 쓸 때 꺼내 씁니다. 모든 기기에서 같이 보이고 노션에는 가지 않습니다.</small>
+    <small class="hint" style="margin-bottom:6px">글감 창고 — 생각나는 것을 그때그때 적어 두고, 글을 쓸 때 꺼내 씁니다.</small>
     <textarea id="jotin" placeholder="떠오른 한 줄…${isTouch()?"":" (⌘/Ctrl+엔터로 보관)"}" onkeydown="if((event.metaKey||event.ctrlKey)&&event.key==='Enter'){event.preventDefault();jotAdd()}" style="min-height:62px"></textarea>
     <div class="row" style="margin-top:6px"><button class="btn small ink" onclick="jotAdd()">끄적여 두기</button><span class="spacer"></span>${(S.jots||[]).length>6?`<input id="jotq" placeholder="찾기" value="${esc(JOT_Q)}" oninput="JOT_Q=this.value;jotPaint()" style="width:120px;font-size:13px;padding:4px 8px">`:""}</div>
     <div id="jotlist" class="jotlines">${jotList()}</div><button class="btn small ghost" style="margin-top:8px" onclick="stOpen('jots')">끄적이기 판에서 모두 보기 · 분류·정렬 →</button></div>`;
@@ -5226,7 +5226,7 @@ function jbChips(){ const all=jots(), n=k=>k==="all"?all.length:k==="none"?all.f
   return chip("all","전체")+JOT_CATS.filter(([k])=>n(k)||JB_CAT===k).map(([k,l,ic])=>chip(k,`${ic} ${l}`)).join("")+(n("none")?chip("none","분류 없음"):""); }
 function jotBoard(){ const all=jots(), wk=new Date(Date.now()-7*864e5).toISOString(), nw=all.filter(j=>(j.at||j.updated||"")>=wk).length, used=all.filter(j=>(j.used||[]).length).length;
   return `<section class="sthome jboard"><h2 class="sthello" style="font-size:24px">끄적이기</h2>
-    <p class="sub" style="text-align:center;margin:-14px 0 14px">공통 창고 — 모든 기기에서 같이 보이고 노션에는 가지 않습니다 · 모두 ${all.length} · 이번 주 ${nw}${used?` · 꺼내 쓴 것 ${used}`:""}</p>
+    <p class="sub" style="text-align:center;margin:-14px 0 14px">공통 창고 — 어느 원고에서나 꺼내 씁니다 · 모두 ${all.length} · 이번 주 ${nw}${used?` · 꺼내 쓴 것 ${used}`:""}</p>
     <div class="jbin"><textarea id="jbin" rows="2" placeholder="떠오른 한 줄…${isTouch()?"":" (⌘/Ctrl+엔터로 붙이기)"}" onkeydown="if((event.metaKey||event.ctrlKey)&&event.key==='Enter'&&!event.isComposing){event.preventDefault();jbAdd()}"></textarea>
       <div class="row" style="gap:6px"><select id="jbcat" title="분류 (고르지 않으면 모양을 보고 짐작합니다)"><option value="">분류 — 저절로</option>${JOT_CATS.map(([k,l,ic])=>`<option value="${k}">${ic} ${l}</option>`).join("")}</select><button class="btn ink" onclick="jbAdd()">붙이기</button></div></div>
     <div class="jbbar"><div class="jchips" id="jbchips">${jbChips()}</div>
@@ -5735,7 +5735,7 @@ write0(){
     <button class="btn small nofocus ${DOC_MODE?"on":""}" onclick="docToggle()" id="docbtn" title="워드처럼: 흰 쪽에 글꼴·크기·줄 간격·정렬·들여쓰기 (글은 그대로)">${DOC_MODE?"✎ 노트로":"📄 문서 모드"}</button>
     <button class="btn small nofocus" onclick="toggleFocus()" title="종이만 남기고 모두 숨깁니다 (나가기: Esc 또는 오른쪽 위 ✕)">⛶ 집중</button>
     <button class="btn small" onclick="toggleRead()" id="readbtn" title="글을 건드리지 않고 보기만 합니다. 설교문은 슬라이드·전달 큐가 강단용 모양으로 보입니다">${ICO.eye}읽기 모드</button></span>
-    ${track!=="bible"||(dtype&&dtype!=="묵상")?`<button class="btn small nofocus" onclick="sendOpen('w')" title="노션·PDF·워드로 보냅니다 (묵상 말고는 구글에만 간직되어 있습니다)">보내기</button>`:""}${serBtns()}
+    ${track!=="bible"||(dtype&&dtype!=="묵상")?`<button class="btn small nofocus" onclick="sendOpen('w')" title="PDF·워드 같은 파일로 내보냅니다">보내기</button>`:""}${serBtns()}
     <button class="btn small aibtn nofocus" id="aitog" onclick="aiToggle()" title="AI 글쓰기 도우미 — 누르면 열고, 다시 누르면 닫습니다 (글은 바꾸지 않고 제안만)">✦ AI</button>
     ${track==="bible"?`<button class="btn small nofocus" id="cmtgo" onclick="cmtGo()" title="이 본문을 권위 있는 주석에서 찾아 요약합니다. 다 되면 주석 요약이 화면에 나옵니다. 본문 칸이 비었으면 그날 묵상 본문으로 찾습니다">${ICO.books}주석 보기</button>`:""}
     <button class="btn small ghost sidebtn nofocus" onclick="toggleSide()" id="sidebtn" title="오른쪽 칸(달력·글 정보·간직)을 접거나 폅니다">${sideBtnInner(track==="book"?!document.body.classList.contains("staside"):document.body.classList.contains("sidefold"),track!=="book"&&!!wMs(w))}</button>
@@ -5771,9 +5771,9 @@ write0(){
           <details class="more field" ${selTopics.length?"":""}><summary>주제 <small class="hint" style="display:inline">${selTopics.length?"· "+esc(selTopics.join(", ")):"· 3개까지 고를 수 있습니다"}</small></summary>
             <div id="topics">${allTopics().map(t=>`<span class="chip ${selTopics.includes(t)?"on":""}" onclick="toggleTopic(this.textContent)">${esc(t)}</span>`).join("")}</div>
             <input id="newtopic" placeholder="＋ 새 주제 (적고 엔터)" style="margin-top:6px" onkeydown="if(event.key==='Enter'&&!event.isComposing){event.preventDefault();addTopic(this.value)}"></details>
-          ${track==="bible"?`<details class="more field"><summary>상황 <small class="hint" style="display:inline">${selSits.length?"· "+esc(selSits.join(", ")):"· 특별한 자리에 쓸 설교라면 (노션 「상황별」 보기에 모임)"}</small></summary>
+          ${track==="bible"?`<details class="more field"><summary>상황 <small class="hint" style="display:inline">${selSits.length?"· "+esc(selSits.join(", ")):"· 특별한 자리에 쓸 설교라면"}</small></summary>
             <div id="sits">${SITUATIONS.map(t=>`<span class="chip ${selSits.includes(t)?"on":""}" onclick="toggleSit(this.textContent)">${esc(t)}</span>`).join("")}</div></details>`:""}
-          ${track==="bible"?`<div class="field" id="lenbox" style="${dtype==="묵상을설교로"?"":"display:none"}"><span>설교 길이 <small class="hint" style="display:inline">· 노션 태그와 완성 뒤 색인 종류(긴설교→주일설교, 짧은설교→새벽설교)에 쓰입니다</small></span>
+          ${track==="bible"?`<div class="field" id="lenbox" style="${dtype==="묵상을설교로"?"":"display:none"}"><span>설교 길이</span>
             <div class="pills">${SLEN.map(([n,d])=>`<button type="button" class="pill ${selLen===n?"on":""}" data-tip="${d}" onclick="selLen=selLen==='${n}'?null:'${n}';this.parentNode.querySelectorAll('.pill').forEach(b=>b.classList.toggle('on',b.textContent===selLen))">${n}</button>`).join("")}</div></div>`:""}
           <label class="field"><span>글의 상태</span><select id="wstatus" style="width:auto">${WSTATUS.map(x=>`<option ${(w?.status||"초고")===x?"selected":""}>${x}</option>`).join("")}</select><small class="hint">씨앗 → 초고 → 다듬는 중 → 완성. 서랍에서 상태가 보입니다.</small></label>
           <label class="field"><span>${w&&wMs(w)?"다른 원고에도 넣기":"원고에 넣기"}</span><select id="wms"><option value="">${w&&wMs(w)?"더 넣지 않음":"고르지 않음"}</option>${liveMs().filter(m=>!m.rule&&!(w&&m.items.includes(w.id))).map(m=>`<option value="${m.id}" ${SEL_MS===m.id?"selected":""}>${esc(m.title)}</option>`).join("")}</select>            <small class="hint">${(()=>{ const inMs=w?msOf(w):[]; return inMs.length?`지금 들어 있는 원고: ${inMs.map(m=>`${ICO.closed}${esc(m.title)}`).join(", ")}`:"직접 고른 원고에 넣을 수 있습니다. 조건으로 모으는 원고에는 주제·본문·종류에 맞으면 저절로 들어갑니다."; })()}</small></label>
@@ -5792,7 +5792,7 @@ write0(){
             +(ups.length?`<p class="muted" style="margin-top:6px">→ 이 묵상으로 쓴 설교초안: ${ups.map(ln).join(", ")}</p>`:""); })():""}
         ${w?.prev?.length?`<details class="more" style="margin-top:10px"><summary>이전 판 ${w.prev.length}개</summary><ol class="prevs">${w.prev.map((v,k)=>`<li><span class="muted">${esc((v.at||"").slice(0,16).replace("T"," "))} · ${chars(v.body).toLocaleString()}자</span> <button class="btn small ghost" onclick="restorePrev('${w.id}',${k})">본문 되돌리기</button></li>`).join("")}</ol><small class="hint">간직할 때마다 바로 앞의 본문을 3개까지 남겨 둡니다.</small></details>`:""}
         ${w?snapHtml(w):""}
-        ${canSync()?"":`<p class="muted" style="margin-top:10px">노션이 아직 연결되지 않아 ${PLACE()}에만 간직됩니다. <a href="#" onclick="go('settings');return false">연결하기</a></p>`}
+        ${canSync()||PUB?"":`<p class="muted" style="margin-top:10px">노션이 아직 연결되지 않아 ${PLACE()}에만 간직됩니다. <a href="#" onclick="go('settings');return false">연결하기</a></p>`}
       </div>
       ${track==="bible"?"":sideTabs(w)}
     </aside>
@@ -6659,7 +6659,7 @@ async function pullNotion(id){
     save(); render(); toast("노션의 글을 가져왔습니다");
   }catch(e){ toast("서버에 닿지 못했습니다"); }
 }
-function toggleSit(t){ const i=selSits.indexOf(t); if(i>=0) selSits.splice(i,1); else selSits.push(t); document.querySelectorAll("#sits .chip").forEach(c=>c.classList.toggle("on",selSits.includes(c.textContent))); const sm=$("#sits")?.parentElement?.querySelector("summary small"); if(sm) sm.textContent=selSits.length?"· "+selSits.join(", "):"· 특별한 자리에 쓸 설교라면 (노션 「상황별」 보기에 모임)"; draftInput(); }
+function toggleSit(t){ const i=selSits.indexOf(t); if(i>=0) selSits.splice(i,1); else selSits.push(t); document.querySelectorAll("#sits .chip").forEach(c=>c.classList.toggle("on",selSits.includes(c.textContent))); const sm=$("#sits")?.parentElement?.querySelector("summary small"); if(sm) sm.textContent=selSits.length?"· "+selSits.join(", "):"· 특별한 자리에 쓸 설교라면"; draftInput(); }
 function restorePrev(id,k){ const w=S.writings.find(x=>x.id===id), v=w?.prev?.[k], b=$("#wbody"); if(!v||!b) return;
   if(b.value.trim()&&!confirm("지금 본문 대신 이전 판을 넣을까요? (간직해야 확정됩니다)")) return; tInsert(b,v.body,0,b.value.length); toast("이전 판을 불러왔습니다. 봉인을 누르면 간직됩니다 (↶ 로 되돌리기)"); }
 // 원고 안 글이면 원고 성격의 길잡이·틀을 먼저 (논문·소설·시집 꼭지의 글 종류가 「자유 글」이라 엉뚱한 틀이 들어가던 것)
@@ -7552,7 +7552,7 @@ function sendOpen(kind,mid){
     const sent=(S.sends||[]).filter(x=>!(S.deleted||{})[x.id]&&(kind==="w"?(x.ids||[]).includes(w.id):x.ms===mid)).slice(-4).reverse();
     ov.innerHTML=`<section class="sheet" style="max-width:640px;margin:36px auto;display:grid;gap:14px">
       <div class="row"><p class="label" style="margin:0">보내기 · 가져오기</p><span class="spacer"></span><button class="btn small ghost" data-x>닫기</button></div>
-      <p class="hint" style="margin:-6px 0 0">${kind==="w"?"이 글은":"이 원고의 글은"} 구글에만 간직되어 있습니다(노션에 저절로 가는 것은 묵상뿐). 여기서 고른 곳으로 보냅니다.</p>
+      <p class="hint" style="margin:-6px 0 0">${kind==="w"?"이 글을":"이 원고의 글을"} 고른 모양의 파일로 내보냅니다.</p>
       <div class="sendto-wrap"><span class="k">어디로</span><div class="sendto">${SEND_TO.map(([k,n])=>{ const [ic,d]=SEND_IC[k]||["",""]; return `<button type="button" class="${to===k?"on":""}" data-to="${k}"><i>${ic}</i><b>${esc(n.replace(/\s*\(.*\)/,""))}</b><small>${d}</small></button>`; }).join("")}</div><small class="hint">전자책(EPUB)·구글 문서는 다음에 더해집니다.</small></div>
       <div class="setrow"><span class="k">무엇을</span><div class="pills">${kind==="w"?`<button class="pill ${scope==="one"?"on":""}" data-scope="one">이 글</button>`:""}${m?`<button class="pill ${scope==="all"?"on":""}" data-scope="all">원고 전체 (${msList(m).length})</button><button class="pill ${scope==="done"?"on":""}" data-scope="done">완성만 (${msList(m).filter(x=>x.status==="완성").length})</button><button class="pill ${scope==="pick"?"on":""}" data-scope="pick">고르기</button>`:""}</div></div>
       ${scope==="pick"&&m?`<div class="sendpick">${msList(m).map(x=>`<label class="chk"><input type="checkbox" data-pick="${x.id}" ${!sel||sel.includes(x.id)?"checked":""}> ${esc(x.title||"(제목 없음)")} <span class="muted">${esc(x.status||"")}</span></label>`).join("")}</div>`:""}
@@ -8005,7 +8005,7 @@ const HELP_TXT={
  "이름 바꾸기":"이름(가제)을 바꿉니다",
  "원고 검토 받기 (AI)":"AI가 원고 전체를 원고 성격의 기준으로 검토합니다",
  "부·장 골라 검토":"긴 원고는 부·장을 골라 나눠 검토합니다",
- "보내기 · 가져오기":"PDF·워드·노션 등으로 보내거나, 노션·워드에서 가져옵니다",
+ "보내기 · 가져오기":"PDF·워드 등으로 내보내거나, 워드 교정본을 가져와 비교합니다",
  "나오기":"이 화면에서 나옵니다",
  "내용만":"설명 없이 내용만 봅니다","다 고침":"모두 고친 것으로 표시합니다",
  "쓰기 화면":"글 쓰는 화면으로 돌아갑니다",
@@ -8087,7 +8087,7 @@ const HELP_TXT={
  "부 나누기":"목차에 부(큰 칸)를 더합니다 — 칸막이일 뿐 글은 아님","장 나누기":"목차에 장(작은 칸)을 더합니다","골라:자유 글":"이 원고의 성격 — 바꾸면 부·장 이름, 틀, 목표 단위, 검토 관점이 달라집니다",
  "화 단위로 연재":"웹소설처럼 「화」 단위로 — 분량·연재 요일·비축분을 셉니다",
  "목차":"부·장·글 차례를 줄이나 카드로 봅니다","플롯":"장면을 이야기 단계(발단·전개…)에 놓고 봅니다","설정 점검":"인물·장소가 글에 실제로 쓰였는지, 계획과 맞는지 점검합니다","상태":"글의 상태(초고·다듬는 중·완성)로 칸반처럼 봅니다","이어 읽기":"원고 전체를 한 줄로 이어 읽고 바로 고칩니다",
- "관계도":"항목 사이의 관계를 그림으로 봅니다", "휴지통":"지운 글·원고 — 30일 안에 되살릴 수 있습니다","가−":"글자를 한 단계 작게 (이 기기만)","가＋":"글자를 한 단계 크게 (이 기기만)","골라:줄 노트":"쓰는 칸의 종이 — 줄 노트·모눈·무지","보내기 · 가져오기 PDF·워드·노션":"PDF·워드·노션 등으로 보내거나, 노션·워드에서 가져옵니다","저장":"고친 내용을 저장합니다","항목":"새 노트 항목을 만듭니다","이름 ↓":"이름순으로 정렬","이름":"이름순으로 정렬","수정일":"고친 날짜순으로 정렬"
+ "관계도":"항목 사이의 관계를 그림으로 봅니다", "휴지통":"지운 글·원고 — 30일 안에 되살릴 수 있습니다","가−":"글자를 한 단계 작게 (이 기기만)","가＋":"글자를 한 단계 크게 (이 기기만)","골라:줄 노트":"쓰는 칸의 종이 — 줄 노트·모눈·무지","보내기 · 가져오기 PDF·워드":"PDF·워드 등으로 내보내거나, 워드 교정본을 가져와 비교합니다","저장":"고친 내용을 저장합니다","항목":"새 노트 항목을 만듭니다","이름 ↓":"이름순으로 정렬","이름":"이름순으로 정렬","수정일":"고친 날짜순으로 정렬"
 };
 let HELP_ON=(()=>{ try{ return localStorage.getItem("seojae-open.helpMode")!=="0"; }catch(_){ return true; } })();
 function helpSet(on){ HELP_ON=on; try{ localStorage.setItem("seojae-open.helpMode",on?"1":"0"); }catch(_){} document.body.classList.toggle("helpon",on); helpHide(); toast(on?"도움말 모드를 켰습니다 — 단추에 마우스를 올리면 쓰임새가 보입니다":"도움말 모드를 껐습니다"); }
@@ -8647,7 +8647,7 @@ function msPageHtml(m){ const g=G(m), ws=msList(m), chs=msChars(m), pages=msPage
         ${sr.on?`<label class="mrow"><span>화당 분량</span><input type="number" min="0" style="width:80px" value="${a}" onchange="serSet('${m.id}','min',this.value)"> ~ <input type="number" min="0" style="width:80px" value="${b}" onchange="serSet('${m.id}','max',this.value)"><em>자(공백 포함)</em></label>
         <label class="mrow"><span>연재 요일</span><span class="pills">${[..."일월화수목금토"].map((d,i)=>`<button type="button" class="pill ${(sr.days||[]).includes(i)?"on":""}" onclick="event.preventDefault();serSet('${m.id}','days',${i})">${d}</button>`).join("")}</span></label>
         <label class="mrow"><span>화 복사</span><label class="chk"><input type="checkbox" ${sr.gap!==false?"checked":""} onchange="serSet('${m.id}','gap',this.checked)"> 문단 사이 빈 줄</label></label>`:""}`; })():""}
-        <hr><button onclick="this.closest('details').open=false;msFindOpen('${m.id}')"><i>⌕</i>찾아 바꾸기</button>${PUB?"":`<button onclick="this.closest('details').open=false;msVerOpen('${m.id}')"><i>⧉</i>원고 판 <small>전체 남기기·비교</small></button>`}<hr><button onclick="roomRename('${m.id}')"><i>✎</i>이름 바꾸기</button><button onclick="reviewMs('${m.id}')"><i>✦</i>원고 검토 받기 (AI)</button>${(m.parts&&Object.keys(m.parts).length)?`<button onclick="this.closest('details').open=false;reviewPartMenu('${m.id}')"><i>✦</i>부·장 골라 검토 <small>장편은 나눠서</small></button>`:""}<button onclick="sendOpen('ms','${m.id}')"><i>↗</i>보내기 · 가져오기 <small>PDF·워드·노션</small></button><hr><button class="danger" onclick="delMs('${m.id}')"><i>${ICO.trash.replace('class="ico"','class="ico" style="margin:0;width:14px;height:14px"')}</i>휴지통에</button></div></details></div>
+        <hr><button onclick="this.closest('details').open=false;msFindOpen('${m.id}')"><i>⌕</i>찾아 바꾸기</button>${PUB?"":`<button onclick="this.closest('details').open=false;msVerOpen('${m.id}')"><i>⧉</i>원고 판 <small>전체 남기기·비교</small></button>`}<hr><button onclick="roomRename('${m.id}')"><i>✎</i>이름 바꾸기</button><button onclick="reviewMs('${m.id}')"><i>✦</i>원고 검토 받기 (AI)</button>${(m.parts&&Object.keys(m.parts).length)?`<button onclick="this.closest('details').open=false;reviewPartMenu('${m.id}')"><i>✦</i>부·장 골라 검토 <small>장편은 나눠서</small></button>`:""}<button onclick="sendOpen('ms','${m.id}')"><i>↗</i>보내기 · 가져오기 <small>PDF·워드</small></button><hr><button class="danger" onclick="delMs('${m.id}')"><i>${ICO.trash.replace('class="ico"','class="ico" style="margin:0;width:14px;height:14px"')}</i>휴지통에</button></div></details></div>
     <div class="stviews">${views.map(([k,n])=>`<button class="${(["research","cork"].includes(ROOM_VIEW)?"binder":ROOM_VIEW)===k?"on":""}" onclick="roomSetView('${k==="binder"&&ROOM_VIEW==="cork"?"cork":k}')">${n}</button>`).join("")}</div>
     ${viewNote(m,ROOM_VIEW==="research"?"binder":ROOM_VIEW)}
     ${msBodyHtml(m,ROOM_VIEW==="research"?"binder":ROOM_VIEW)}
@@ -10413,7 +10413,7 @@ function ctxWriting(id){ const w=S.writings.find(v=>v.id===id); if(!w) return nu
     wMs(w)&&!wMs(w).rule?{t:`${G(wMs(w)).parts[stx(wMs(w)).main-1]} 칸으로 바꾸기 (빈 글)`,ic:"▤",fn:()=>pieceToPart(id)}:null,
     rm?{t:`「${rm.title}」에서 빼기`,ic:"⤴",fn:()=>{ rm.items=rm.items.filter(x=>x!==id); rm.updated=now(); save(); toast("원고에서 뺐습니다 (글은 서랍에 그대로)"); render(); }}:null,"-",
     {t:"제목과 본문 복사",ic:"⧉",fn:()=>clip((w.title?w.title+"\n\n":"")+plainWithNotes(stripMemo(w.body||"").split("\n").filter(l=>!SLIDE_RE.test(l)).join("\n")),"제목과 본문을 복사했습니다")},
-    {t:"보내기 (PDF·워드·노션)",ic:"↗",fn:()=>{ if(here) return sendOpen('w'); go('write',{edit:id}); setTimeout(()=>sendOpen('w'),400); }},"-",
+    {t:"보내기 (PDF·워드)",ic:"↗",fn:()=>{ if(here) return sendOpen('w'); go('write',{edit:id}); setTimeout(()=>sendOpen('w'),400); }},"-",
     {t:"휴지통에",ic:"🗑",danger:true,fn:()=>delWriting(id)}]]; }
 function ctxBook(id){ const b=S.books.find(x=>x.id===id); if(!b) return null; const cur=S.settings.currentBook===id;
   return [b.title||"책",[{t:"열기",ic:"📖",fn:()=>openBook(id)},b.status!=="완료"&&!cur?{t:"지금 읽는 책으로",ic:"★",fn:()=>{ pickBook(id); render(); }}:null,
