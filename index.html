@@ -342,7 +342,7 @@ body.focus .appfoot,body.readmode .appfoot,body.typing .appfoot{display:none}
 .portion{display:flex;align-items:center;gap:10px;width:100%;text-align:left;font:inherit;color:var(--ink);background:none;border:0;border-bottom:1px dashed var(--edge);padding:9px 2px;cursor:pointer}
 .portion:last-child{border-bottom:0}
 .portion .tick{color:var(--ink-soft);display:flex}
-.portion .plab{font-family:"Gamja Flower";font-size:18px;color:var(--bible);min-width:44px}
+.portion .plab{font:600 13px/1.4 var(--ui-font);color:var(--bible);min-width:44px}
 .portion .ptext{font-family:"Nanum Myeongjo";font-weight:700;font-size:18px}
 .portion.on .ptext{color:var(--faint);text-decoration:line-through;text-decoration-color:var(--stamp);text-decoration-thickness:1.5px}
 .portions-flow{font-family:"Nanum Myeongjo";font-weight:700;font-size:16px;line-height:1.9}
@@ -740,7 +740,7 @@ body.focus main.wrap{padding-top:40px}
 .rcby{margin:0;font-size:13.5px;color:var(--ink-soft)}
 .rcmeta{display:flex;flex-wrap:wrap;gap:4px 10px;margin:4px 0 0;font-size:12.5px;color:var(--ink-soft)}
 .rcstar{color:#b8862f;letter-spacing:1px}
-.rcone{margin:0;font-family:"Gamja Flower",cursive;font-size:21px;line-height:1.4;color:var(--sepia)}
+.rcone{margin:0;font:500 15.5px/1.6 var(--memo-font);color:var(--sepia)}
 .rcbody{font-family:"Gowun Batang",serif;font-size:15.5px;line-height:1.85;max-height:52vh;overflow:auto;overflow-wrap:anywhere;padding-right:4px}
 .rctext{min-height:220px;font-size:16px;line-height:1.8;width:100%;box-sizing:border-box}
 .rcact{gap:6px;flex-wrap:wrap;align-items:center}
@@ -2225,7 +2225,7 @@ body.typew #wbody{padding-bottom:45vh}
 .sunote{margin-top:12px;padding:12px 14px;background:var(--paper-2);border-radius:4px;font-size:var(--su-fs,15px);line-height:1.75}
 .sutext{margin-top:12px;max-height:var(--su-max,46vh);overflow:auto;border-top:1px dashed var(--deco);padding-top:10px}
 .suv{display:grid;grid-template-columns:2.4em 1fr 1fr;gap:4px 16px;padding:5px 0;border-bottom:1px dotted var(--edge);font-size:var(--su-fs,15px);line-height:1.75}
-.suv .n{font-family:"Gamja Flower";font-size:calc(var(--su-fs,15px) + 3px);color:var(--bible);text-align:right}
+.suv .n{font:600 calc(var(--su-fs,15px) - 3px)/2.2 var(--ui-font);color:var(--bible);text-align:right;font-variant-numeric:tabular-nums}
 .suv .en{font-family:Georgia,serif;font-size:calc(var(--su-fs,15px) - 1px);color:var(--ink-soft)}
 /* 매일성경 보기 방식 (이 기기): 나란히 · 한글만 · 영어만 · 위아래 */
 .sutext.v-ko .suv,.sutext.v-en .suv,.sutext.v-stack .suv{grid-template-columns:2.4em 1fr}
@@ -3229,7 +3229,7 @@ async function pushSave(){
 // ───────── 새 버전 자동 새로 고침 ─────────
 // 올릴 때마다 version.json 의 번호가 바뀝니다. 앱이 열릴 때·다시 화면에 올라올 때·5분마다 확인해서,
 // 쓰는 중인 글이 없고 저장이 끝났을 때 새 버전으로 새로 고칩니다.
-const APP_BUILD="71bddfda23"; const APP_VER="7.0";   // 판 번호: 배포할 때마다 도구/판올리기.py 가 0.1씩 올림 (1.9 다음은 2.0) — 손으로 고치지 말 것
+const APP_BUILD="2380546f39"; const APP_VER="7.1";   // 판 번호: 배포할 때마다 도구/판올리기.py 가 0.1씩 올림 (1.9 다음은 2.0) — 손으로 고치지 말 것
 let NEW_BUILD=null, UPDATE_NOTICED=false;
 async function checkUpdate(){
   if(APP_BUILD.startsWith("__")) return;                 // 원본 파일로 열었을 때(고치는 중)는 건너뜁니다
@@ -3823,8 +3823,8 @@ const NEWS=[
   ["📖","해설·음성은 매일성경 누리집에서","매일성경 해설과 음성은 성서유니온이 정성껏 만든 저작물이라, 앱 안에서는 보여 드리지 않기로 했어요. 묵상 화면의 「해설·음성은 매일성경에서 ↗」를 누르면 매일성경 누리집이 열려요.",""],
   ["✓","나머지는 그대로예요","오늘 본문 위치·제목·찬송가 번호, 개역한글과 영어 본문, 묵상 노트는 전처럼 쓰실 수 있어요.",""]]},
  {id:"2026-11-16",date:"2026년 11월 16일",title:"메모 글씨가 또렷해졌어요",items:[
-  ["✎","끄적임·포스트잇은 읽기 쉬운 글씨로","끄적이기 판의 포스트잇, 쓰는 화면 곁 끄적임, 꼭지 메모, 밑줄에 붙인 한 줄 생각을 손글씨 대신 또렷한 글씨로 보여 드려요. 다시 찾아 읽을 때 한눈에 들어와요.","적어 두신 글은 그대로예요 — 보이는 글씨만 바뀌었어요"],
-  ["❀","손글씨는 마음을 담는 자리에만","일기장, 오늘의 한 줄, 책을 한 줄로 남기는 칸, 제목 같은 꾸밈 자리에는 손글씨가 그대로 남아요.",""]]},
+  ["✎","끄적임·포스트잇은 읽기 쉬운 글씨로","끄적이기 판의 포스트잇, 쓰는 화면 곁 끄적임, 꼭지 메모, 밑줄에 붙인 한 줄 생각, 책을 한 줄로 남긴 글을 손글씨 대신 또렷한 글씨로 보여 드려요. 다시 찾아 읽을 때 한눈에 들어와요.","적어 두신 글은 그대로예요 — 보이는 글씨만 바뀌었어요"],
+  ["❀","손글씨는 마음을 담는 자리에만","일기장, 오늘의 한 줄, 제목 같은 꾸밈 자리에는 손글씨가 그대로 남아요. 매일성경 절 번호와 오늘 읽을 분량의 이름표도 또렷한 글씨로 바꿨어요.",""]]},
  {id:"2026-11-14c",date:"2026년 11월 14일",title:"앱 그림이 도장으로 바뀌었어요",items:[
   ["🔖","새 앱 그림: 작가의 도장","앱 그림을 새로 바꿨어요. 글 쓰는 분이 책에 찍는 도장처럼 「아침 서재」 네 글자를 새겼어요. 인주는 아침 햇살 빛깔이에요.","휴대폰 홈 화면에 둔 그림은 앱을 다시 설치하거나, 기기에 따라 며칠 뒤에 바뀌어요"],
   ["◻","작은 자리에는 「아」 한 글자","브라우저 탭처럼 작은 자리에는 「아」 한 글자 도장이 보여요.",""],
@@ -7099,7 +7099,7 @@ function setCat(id,c){ const b=S.books.find(x=>x.id===id); if(!b) return; b.catM
 let REVIEW_OPEN=null;
 function reviewBox(b){
   return `${bookNotesHtml(b.id,true)}<div class="reviewbox" style="margin-top:12px"><p class="label book" style="font-size:19px">독후감 ${b.reviewNotion?.page?`<a class="nstate ok" href="${esc(safeUrl(b.reviewNotion.url)||"#")}" target="_blank" style="text-decoration:none;margin-left:8px"><i></i>노션 독서 노트에 보관됨</a>`:""}</p>
-    <input id="rv-one" class="pen" style="font-size:20px" placeholder="이 책을 한 줄로" value="${esc(b.oneLine||"")}" oninput="reviewKick('${b.id}')">
+    <input id="rv-one" style="font-family:var(--memo-font);font-weight:500" placeholder="이 책을 한 줄로" value="${esc(b.oneLine||"")}" oninput="reviewKick('${b.id}')">
     <textarea id="rv-text" oninput="reviewKick('${b.id}')" placeholder="읽고 난 뒤 남는 것 — 기억하고 싶은 문장, 내 삶과 설교에 가져올 것, 아쉬운 점…" style="margin-top:8px">${esc(b.review||"")}</textarea>
     <div class="row" style="margin-top:8px"><button class="btn small ink" onclick="saveReview('${b.id}')" title="독후감은 치는 대로 저절로 간직됩니다 — 이 단추는 노션 독서 노트로 보냅니다">노션 독서 노트로 보내기</button><button class="btn small ghost" onclick="reviewKick('${b.id}',true);REVIEW_OPEN=null;openBook('${b.id}')">접기</button><small class="muted" id="rvstate"></small></div></div>`;
 }
@@ -7245,7 +7245,7 @@ function openBook(id){
     <div class="row" style="margin-top:8px"><label class="field" style="width:90px"><span>${b.unit==="pct"?"읽은 %":"읽은 쪽"}</span><input id="bp" type="number" value="${b.page||0}" ${b.unit==="pct"?'max="100"':""}></label>${b.unit==="pct"?`<input id="bt" type="hidden" value="100">`:`<label class="field" style="width:90px"><span>전체 쪽</span><input id="bt" type="number" value="${b.total||""}"></label>`}
       <label class="field" style="flex:1;min-width:160px"><span>표지 바꾸기</span><input type="file" accept="image/*" onchange="uploadCover('${b.id}',this)" style="border:0"></label></div>
     <div class="row" style="margin-top:8px"><span class="stars">${[1,2,3,4,5].map(n=>`<span class="${(b.rating||0)>=n?"on":""}" onclick="rate('${b.id}',${n})">★</span>`).join("")}</span>${b.status==="완료"?`<span class="stamp round">완독</span>`:""}</div>
-    ${b.oneLine&&REVIEW_OPEN!==b.id?`<p class="pen" style="font-size:21px;margin:8px 0 0">“${esc(b.oneLine)}”</p>`:""}
+    ${b.oneLine&&REVIEW_OPEN!==b.id?`<p style="font:500 15.5px/1.6 var(--memo-font);color:var(--sepia);margin:8px 0 0">“${esc(b.oneLine)}”</p>`:""}
     ${b.review&&REVIEW_OPEN!==b.id?`<details class="more"><summary>독후감 ${b.reviewNotion?.page?`<a class="nstate ok" href="${esc(safeUrl(b.reviewNotion.url)||"#")}" target="_blank" style="text-decoration:none;margin-left:6px"><i></i>노션 독서 노트</a>`:""}</summary><p class="sub pre" style="margin:6px 0">${esc(b.review)}</p><button class="btn small" onclick="REVIEW_OPEN='${b.id}';openBook('${b.id}')">고치기</button></details>`:""}
     ${REVIEW_OPEN===b.id?reviewBox(b):""}
     <div class="row" style="margin-top:12px"><button class="btn ink small" onclick="saveBook('${b.id}')">간직</button>${b.status==="완료"&&REVIEW_OPEN!==b.id&&!b.review?`<button class="btn small" onclick="REVIEW_OPEN='${b.id}';openBook('${b.id}')">${ICO.pen}독후감 쓰기</button>`:""}
@@ -8405,7 +8405,7 @@ function rlCard(b){ if(!b) return `<div class="rcard rcard-empty"><p class="rck"
   const by=(b.authors||[]).join(", "), when=[b.started,b.finished].filter(Boolean).join(" → "), notes=S.notes.filter(n=>n.bookId===b.id).length;
   const head=`<div class="rch">${coverHtml(b,"cover rcov")}<div class="rchm"><p class="rck">${esc(libCatName(bookCat(b)||"미정"))}${RL_LOC[b.id]?` · ${esc(RL_LOC[b.id])}`:""}</p><h3>${esc(b.title)}</h3>${by?`<p class="rcby">${esc(by)}</p>`:""}<p class="rcmeta">${b.rating?`<span class="rcstar">${"★".repeat(b.rating)}${"☆".repeat(5-b.rating)}</span>`:""}${when?`<span>${esc(when)}</span>`:""}${notes?`<span>밑줄 ${notes}</span>`:""}</p></div></div>`;
   if(RL_EDIT) return `<div class="rcard">${head}
-    <input id="rv-one" class="pen" style="font-size:20px" placeholder="이 책을 한 줄로" value="${esc(b.oneLine||"")}" oninput="reviewKick('${b.id}')">
+    <input id="rv-one" style="font-family:var(--memo-font);font-weight:500" placeholder="이 책을 한 줄로" value="${esc(b.oneLine||"")}" oninput="reviewKick('${b.id}')">
     <textarea id="rv-text" class="rctext" oninput="reviewKick('${b.id}')" placeholder="읽고 난 뒤 남는 것 — 기억하고 싶은 문장, 내 삶과 글에 가져올 것, 아쉬운 점…">${esc(b.review||"")}</textarea>
     <div class="row rcact"><button class="btn small ink" onclick="reviewKick('${b.id}',true);RL_EDIT=false;rlPaint()">다 썼어요</button>${canSync()?`<button class="btn small" onclick="rlNotion('${b.id}')" title="노션 독서 노트로 보냅니다">노션 독서 노트로 보내기</button>`:""}<small class="muted" id="rvstate">치는 대로 저절로 간직됩니다</small></div></div>`;
   return `<div class="rcard">${head}
