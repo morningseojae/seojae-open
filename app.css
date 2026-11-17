@@ -2460,3 +2460,18 @@ details.more[open]>summary{margin-bottom:var(--sp-1)}
 }
 @media (max-width:1180px){ body.staside #main .studio .writegrid,body.staside.sidefold #main .studio .writegrid.hasbinder{grid-template-columns:minmax(0,1fr)!important} }   /* 좁은 화면: 곁 칸은 종이 아래로 */   /* 휴대폰: 곁 칸은 종이 아래로 */
 .mancards{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px;margin:10px 0} .mancard{display:grid;gap:6px;padding:12px 14px;border:1px solid var(--edge);border-radius:12px;background:color-mix(in srgb,var(--paper) 70%,#fff)} .mancard b{font:700 15px var(--ui-head,serif)} .mancard span{font:13px/1.5 var(--ui-font,sans-serif);color:var(--ink-soft)}
+
+/* 성경 인용 글자 대조(bqOpen) · 같은 본문 이력(sameCard) · 설교 씨앗 모음(seedOpen) — 2026-11-18 */
+.bqrow{padding:9px 8px;border-bottom:1px solid var(--edge);border-radius:8px;cursor:pointer} .bqrow:hover{background:color-mix(in srgb,var(--ink) 4%,transparent)}
+.bqh{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap} .bqh b{font-size:13.5px} .bqh small{color:var(--faint);font-size:12px}
+.bqtag{font-size:12px;font-weight:700;padding:1px 8px;border-radius:999px;background:color-mix(in srgb,var(--book) 14%,transparent);color:var(--book);white-space:nowrap}
+.bqrow.st-diff .bqtag,.bqrow.st-ref .bqtag{background:color-mix(in srgb,#d4a017 20%,transparent);color:#8a5a00} .bqrow.st-none .bqtag,.bqrow.st-err .bqtag,.bqrow.st-wait .bqtag{background:var(--paper-2);color:var(--ink-soft)}
+.bqa,.bqb,.bqn{margin:6px 0 0;font-size:13.5px;line-height:1.7;word-break:keep-all} .bqa small,.bqb small{display:inline-block;min-width:4.2em;color:var(--faint);font-size:12px}
+.bqa del{color:var(--bible);text-decoration-thickness:1.5px} .bqb ins{text-decoration:none;font-weight:700;background:color-mix(in srgb,var(--book) 16%,transparent);border-radius:3px;padding:0 2px}
+.bqn{color:var(--ink-soft);font-size:13px} .bqacts{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:8px} .bqlink{font-size:12.5px;color:var(--sepia)}
+.samebar .samelist{margin-top:8px} .samebar .thli b{font-weight:700} .sameone{flex-basis:100%;color:var(--ink-soft);font-size:13px;line-height:1.55}
+.seedcard{width:min(680px,100%);border-top-color:var(--bible)} .seedcard .newsk{color:var(--bible)}
+.seedbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:6px} .seedbar .pill{padding:4px 12px;font-size:13.5px} .seedbar input{flex:1;min-width:min(180px,100%);font-size:16px}
+.seedlist{list-style:none;margin:0;padding:0} .seedlist li{padding:12px 2px;border-top:1px dotted var(--edge)} .seedlist li:first-child{border-top:0}
+.seedm{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap} .seedm b{font-family:"Nanum Myeongjo",serif;font-weight:800;color:var(--bible);font-size:14.5px} .seedm small{color:var(--faint);font-size:12.5px}
+.seedt{margin:4px 0 8px;font-size:16px;line-height:1.65;word-break:keep-all} .seeda{display:flex;align-items:center;gap:8px;flex-wrap:wrap} .seeda a{font-size:13px;color:var(--sepia)} .seednone{color:var(--ink-soft);font-size:14px}

@@ -1247,6 +1247,10 @@ const MANUALS=[["quick","간단 매뉴얼","읽자마자 바로 써 보는 한 �
 // ───────── 새 소식 (공개판, 2026-10-31 팀장님): 중요한 고침은 앱을 열 때 한 번만 쉬운 말로 알림 ─────────
 // 새 소식을 더할 때: NEWS 맨 앞에 넣고 id 는 날짜(같은 날 둘째는 2026-11-02b 처럼 — 글자 순서로 새것이 뒤). 본 소식 id 는 이 기기에만(seojae-open.newsSeen)
 const NEWS=[
+ {id:"2026-11-18",date:"2026년 11월 18일",title:"설교 씨앗·같은 본문·성경 인용을 챙겨요",items:[
+  ["🌱","설교 씨앗이 한자리에","묵상 끝에 적어 둔 「설교 씨앗」 한 줄을 모아서 볼 수 있어요. 묵상 화면 「쓰기 ▾ → 설교 씨앗 모음」이나 서랍의 「🌱 설교 씨앗」을 누르세요.","「초안으로」를 누르면 그 묵상을 이어받은 설교초안이 열려요. 묵상은 그대로 남아요."],
+  ["🕰","같은 본문으로 쓴 글","같은 성경 장으로 쓴 묵상·설교초안·글이 종이 위 띠 「같은 본문으로 쓴 글」에 시간순으로 모여요. 줄을 누르면 그 글이 열려요.",""],
+  ["📖","성경 인용 대조","옮겨 적은 성경 구절이 맞는지 「다듬기 ▾ → 성경 인용 대조」로 확인해요. AI가 아니라 개역한글 본문과 글자를 하나하나 맞춰 봐요.","다른 곳이 있어도 저절로 바꾸지 않아요. 「개역한글로 바꾸기」를 눌러야 바뀌고, 개역개정으로 적은 인용은 성서공회 링크로 확인해요."]]},
  {id:"2026-11-16d",date:"2026년 11월 16일",title:"성경 창 옆으로 화면이 맞춰져요",items:[
   ["⇆","크롬에서도 성경 창과 나란히","다른 번역 성경이나 매일성경 누리집을 열면, 크롬 같은 브라우저에서도 아침 서재 화면이 성경 창 왼쪽으로 저절로 좁혀져요. 성경 창을 닫으면 원래대로 돌아와요.","전체 화면이거나 창이 아주 좁을 때는 되지 않아요. 창을 보통 크기로 두세요."],
   ["📖","해설은 「해설」 탭에서","매일성경 누리집은 늘 「본문」부터 열려요. 오른쪽 창 위쪽의 「해설」 탭을 한 번 눌러 주세요.",""],
@@ -2166,7 +2170,7 @@ function gearSvg(){
 let restPeek=false, selLen=null, promoAsk=null;   // 쉬는 날에도 '그래도 읽기'를 누르면 오늘 분량을 보여 줌
 let tab="today", track="bible", editId=null, selTopics=[], selSits=[], fromWriting=null, fromNote=null, noteOpen=null, drawerSub="all";
 let NAV=false;
-function go(t,o={}){ hlClose(); const lvId=tab==="write"?editId:null; if(t!=="room") nmAuto();
+function go(t,o={}){ hlClose(); bqClose(); const lvId=tab==="write"?editId:null; if(t!=="room") nmAuto();
   if(tab==="write"&&$("#wbody")&&writingUnsaved()){                    // 떠날 때: 쓴 만큼 되면 저절로 간직(노션에도), 아직 몇 줄이면 임시 보관
     autoKeepNow(); if(writingUnsaved()){ saveDraft(); if(t!=="write") toast(track==="bible"?"쓰던 글은 임시로 보관했습니다. 「묵상」을 다시 열면 이어집니다":editId?"쓰던 글은 임시로 보관했습니다. 그 글을 다시 열면 이어집니다":"쓰던 새 글은 임시로 보관했습니다. 위 「✎ 쓰던 새 글」 탭에서 이어 씁니다"); }
   }
@@ -3160,6 +3164,7 @@ write0(){
     <button class="btn small focusexit" onclick="toggleFocus()">집중 나가기</button>
     <details class="tgrp"><summary class="btn small">쓰기 ▾</summary><div class="tgmenu">
       ${wTplNow().tpl?`<button class="btn small tplbtn" onclick="tplToggle();tgClose()">${tplIn(w?.body??seed)?"틀 빼기":"틀 넣기"}</button>`:""}${w&&cardKindOf(w)&&!cardKindOf(w).sermon?`<button class="btn small" onclick="tgClose();cardOpen()" title="한 문장·기능·겨냥할 자리… 초안 전에 글을 설계합니다">설계 카드</button>`:""}<button class="btn small" onclick="tgClose();altHere()" title="커서가 있는 문장(또는 고른 글)을 바꿔 쓴 후보 4개">✦ 다른 표현</button>${w&&wMs(w)&&!wMs(w).rule?`<button class="btn small" onclick="tgClose();pieceSplit()" title="커서가 있는 줄부터 새 글로 (■ 소제목 줄이면 그 이름이 새 글 제목)">✂ 커서에서 나누기</button><button class="btn small" onclick="tgClose();pieceMerge()" title="다음 글을 이 글 끝에 붙입니다">⊕ 다음 글과 합치기</button>`:""}${w&&cardKindOf(w)?`<button class="btn small" onclick="tgClose();vfOpen()" title="사실 주장을 출처와 대조합니다">검증표</button><button class="btn small" onclick="tgClose();ckOpen()" title="완성 전 점검 질문 10개">점검 10문항</button>`:""}
+      ${track==="bible"?`<button class="btn small" onclick="tgClose();seedOpen()" title="묵상마다 적어 둔 「설교 씨앗」 한 줄을 한자리에 모아 봅니다 — 고른 씨앗으로 설교초안을 시작할 수 있습니다">🌱 설교 씨앗 모음</button>`:""}
       <button type="button" class="twsw ${TYPEW?"on":""}" onclick="toggleTypew()" id="twbtn" role="switch" aria-checked="${TYPEW}" title="쓰는 줄을 늘 화면 가운데에 둡니다 — 글이 길어져도 눈높이가 그대로"><span class="sw"><i></i></span><span class="twt"><b>타자기</b><small>쓰는 줄을 화면 가운데에</small></span><em>${TYPEW?"켬":"끔"}</em></button>
       <span class="row" style="gap:4px" title="글자 크기 (이 기기만)"><span class="muted" style="font-size:12.5px">글자</span><button class="fsbtn" onclick="fontStep(-1)">가−</button><button class="fsbtn" onclick="fontStep(1)">가＋</button></span>
       <div class="pp"><span class="muted" style="font-size:12.5px">펜</span>${INKS.map(([n,c])=>`<span class="inkdot ${ink===c?"on":""}" title="${n} 잉크" style="background:${c}" onclick="setInk('${c}')"></span>`).join("")}
@@ -3167,6 +3172,7 @@ write0(){
     <button class="btn small ghost" onclick="tgClose();discardPage()" title="${w?"이 글을 휴지통에 넣습니다 (30일 안에 서랍 → 휴지통에서 되살림)":"쓰던 내용을 버리고 빈 페이지로"}">${ICO.trash}${w?"휴지통에":"버리기"}</button></div></details>
     <details class="tgrp nofocus"><summary class="btn small">다듬기 ▾</summary><div class="tgmenu">
       <span class="row" style="gap:4px"><button class="btn small" onclick="tgClose();styOpen()" title="반복어·같은 시작과 끝·버릇 말·뻔한 표현·군더더기·수동과 명사화·대사 꼬리말·시점과 시제 (기계로 셈)">✎ 문체 점검</button><button class="btn small aibtn" onclick="tgClose();fbStart()" title="성격에 맞는 기준으로 점수·강점·약점, 고칠 문장마다 코멘트와 대안 (적용은 하나씩 직접)">✦ 피드백·첨삭</button>${w&&wMs(w)&&!wMs(w).rule?`<button class="btn small aibtn" onclick="tgClose();wsStart('piece')" title="이 글에 나온 인물·장소·관계를 노트와 견주어 제안">✦ 설정 정리</button>`:""}</span>
+      <span class="row" style="gap:4px"><button class="btn small" onclick="tgClose();bqOpen()" title="AI 없이, 따옴표로 옮겨 적은 성경 구절을 개역한글 본문과 글자로 맞춰 봅니다 — 다른 곳만 알려 주고, 바꾸는 것은 직접 눌러야 합니다">📖 성경 인용 대조</button></span>
       <span class="row" style="gap:4px"><button class="btn small" onclick="spellCheck()" id="spellbtn" title="쓰는 즉시 규칙으로 밑줄이 그어지고, 누르면 ${CONF.ai?(CONF.ai==="claude"?"클로드":"제미나이")+"가 모든 문단을 다시 살핍니다":"규칙 밑줄만 됩니다"}">맞춤법</button><span id="spellstate" class="muted" style="font-size:12.5px"></span></span>
       <button class="btn small" onclick="toggleStk();tgClose()">${ICO.flower}스티커</button>
     </div></details>
@@ -3185,6 +3191,7 @@ write0(){
   </div>
   <div id="draftpick"></div>
   ${srcCard(w,fws)}
+  ${w?sameCard(w):""}
   <div class="writegrid ${dtype==="설교초안"?"draftmode":""} ${wMs(w)?"hasbinder":""}">
     ${wBinder(w)}
     <div>
@@ -3664,7 +3671,7 @@ function paintHeads(){
   wongoFit(t); const cs=getComputedStyle(t); m.style.cssText=`top:${t.offsetTop}px;left:${t.offsetLeft}px;width:${t.clientWidth}px;padding:${cs.padding};font:${cs.font};letter-spacing:${cs.letterSpacing};word-spacing:${cs.wordSpacing};color:${cs.color};text-align:${cs.textAlign}`;
   if(wgOn(t)){ m.style.color="var(--penink,var(--ink))"; const n=wgPaint(t,m); if(t.offsetHeight&&t._wg.pt+n*t._wg.L>t.offsetHeight) grow(); fnPanePaint(t); sugDraw(); histPaint(); return; }   // 칸 줄 수가 글 칸 높이보다 많아지면(폭·글꼴이 바뀜) 높이를 다시 m.classList.remove("wgm");
   const errs=spellLines(t.value), rf=RF&&!RF.stale?RF:null;
-  const RG=[...(rf?[{s:rf.s,e:rf.e,c:"rf"}]:[]),...sugRanges(t.value),...styRanges(t.value),...(AIU_ON?aiuRanges(t.value):[])].sort((a,b)=>a.s-b.s).filter((r,i,A)=>!A.slice(0,i).some(q=>q.e>r.s));   // AI 다듬기(보라) · AI 제안(파랑) · 문체(노랑 물결)
+  const RG=[...(rf?[{s:rf.s,e:rf.e,c:"rf"}]:[]),...sugRanges(t.value),...styRanges(t.value),...bqRanges(t.value),...(AIU_ON?aiuRanges(t.value):[])].sort((a,b)=>a.s-b.s).filter((r,i,A)=>!A.slice(0,i).some(q=>q.e>r.s));   // AI 다듬기(보라) · AI 제안(파랑) · 문체(노랑 물결)
   m.innerHTML=edMirrorHtml(t,errs,RG,ownZones(t.value)); aiuPaint();   // 글 칸과 같은 모양(꾸밈째)으로 그리고 표시만 보이게
   fnPanePaint(t); sugDraw(); histPaint();
   const n=errs.reduce((a,x)=>a+x.length,0), st=$("#spellstate"); if(st&&!SPELL_AI_BUSY) st.textContent=n?`밑줄 ${n}`:"";
@@ -7230,6 +7237,88 @@ function styDraw(){ if(!STY) return $("#stypanel")?.remove(); let p=$("#stypanel
     <div class="row" style="gap:6px;margin-top:10px"><button class="btn small aibtn" onclick="styClose();fbStart()" title="AI가 읽고 점수·첨삭">✦ AI 피드백으로</button></div>`; }
 document.addEventListener("input",e=>{ if(STY&&e.target?.id==="wbody"){ clearTimeout(STY._t); STY._t=setTimeout(()=>{ if(!STY) return; const sel=STY.sel; STY.cats=styleCheck(e.target.value,aiGenre().kind); STY.sel=sel; styDraw(); paintHeads(); },600); } });
 
+// ───────── 성경 인용 글자 대조 (2026-11-18, 기획서 4판 E2): AI 없이, 개역한글 본문과 글자로 맞춰 다른 곳만 알려 줍니다 ─────────
+// 찾는 모양: 따옴표 뒤 괄호 속 장절 「…」 (요 3:16, 개역한글) · "…"(빌 4:4) / 장절 뒤 따옴표  요 3:16 "…"
+// 글은 사람이 눌러야만 바뀝니다(「개역한글로 바꾸기」, ⌘Z). 개역개정·새번역처럼 다른 번역이라고 적힌 인용은 바꾸지 않고 성서공회 링크만 보여 줍니다.
+var BQ=null;   // {wid, busy, items:[{s,e,qs,qe,q,P,ref,ver,other,st:"ok"|"part"|"diff"|"ref"|"none"|"err",kr,at,msg}], at}
+const BQ_REF="[가-힣]{1,7}(?:[123]서)?\\s*\\d{1,3}\\s*[:：장편]\\s*\\d{0,3}(?:\\s*[-~]\\s*(?:\\d{1,3}[:：])?\\d{1,3})?\\s*절?";
+const BQ_RE=new RegExp("([「『“\"])([^「」『』“”\"\\n]{4,700})([」』”\"])\\s*[\\(（]\\s*("+BQ_REF+")\\s*(?:[,，·]\\s*([^\\)）\\n]{1,20}))?[\\)）]","g");
+const BQ_RE2=new RegExp("(?:^|[\\s\\(（])("+BQ_REF+")\\s*[,:：]?\\s*([「『“\"])([^「」『』“”\"\\n]{4,700})([」』”\"])","gm");
+const bqNorm=t=>String(t||"").replace(/[^가-힣A-Za-z]/g,"");   // 글자만 (띄어쓰기·문장 부호·절 번호는 보지 않음)
+const bqLabel=P=>`${P.name} ${P.c1}${P.whole?(P.bi===18?"편":"장"):":"+P.v1+(P.c2!==P.c1?"-"+P.c2+":"+P.v2:P.v2!==P.v1?"-"+P.v2:"")}`;
+function bqFind(v){ const out=[], add=(s,e,qs,q,ref,ver)=>{ const P=parseRef(String(ref).replace(/\s+/g," ").trim()); if(!P||!bqNorm(stripMk(q))) return; const qe=qs+q.length; if(out.some(o=>qs<o.e&&qe>o.s)) return; out.push({s,e,qs,qe,q,P,ref:bqLabel(P),ver:String(ver||"").trim(),st:""}); };
+  for(const m of v.matchAll(BQ_RE)) add(m.index,m.index+m[0].length,m.index+m[1].length,m[2],m[4],m[5]);
+  for(const m of v.matchAll(BQ_RE2)){ const qs=m.index+m[0].length-m[4].length-m[3].length; add(m.index,m.index+m[0].length,qs,m[3],m[1],""); }
+  return out.sort((a,b)=>a.s-b.s); }
+async function bqJudge(x){ const P=x.P, vs=[];
+  for(let c=P.c1;c<=Math.min(P.c2,P.c1+2);c++){ const ch=await chapterKo(P.bi,c); ch.forEach(y=>{ if((c>P.c1||y.v>=P.v1)&&(c<P.c2||y.v<=P.v2)) vs.push({c,v:y.v,t:y.t}); }); }
+  x.other=!!x.ver&&!/개역\s*한글/.test(x.ver);
+  if(!vs.length){ x.st="none"; return; }
+  x.kr=vs.map(y=>(vs.length>1&&!P.whole?y.v+" ":"")+y.t).join(" "); x.krPlain=vs.map(y=>y.t).join(" ");
+  const plain=stripMk(x.q), nq=bqNorm(plain), nk=bqNorm(x.krPlain);
+  if(nq===nk){ x.st="ok"; return; }
+  let at=0, all=true; for(const p of plain.split(/…+|\.{3,}|\(\s*중략\s*\)/).map(bqNorm).filter(Boolean)){ const i=nk.indexOf(p,at); if(i<0){ all=false; break; } at=i+p.length; }
+  if(all){ x.st="part"; return; }
+  if(!P.whole){ const ch=await chapterKo(P.bi,P.c1), map=[]; let acc=""; ch.forEach(y=>{ const n=bqNorm(y.t); map.push([acc.length,acc.length+n.length,y.v]); acc+=n; });   // 글자는 맞는데 장절이 어긋났는지
+    const i=acc.indexOf(nq); if(i>=0){ const a=map.find(r=>i<r[1]), b=map.find(r=>i+nq.length<=r[1]); x.st="ref"; x.at=a&&b?(a[2]===b[2]?a[2]+"절":a[2]+"~"+b[2]+"절"):""; return; } }
+  x.st="diff"; }
+// 낱말 단위로 견줌: 내 글에만 있는 낱말은 줄 긋고, 개역한글에만 있는 낱말은 굵게
+function bqDiff(a,b){ const tk=t=>String(t).split(/\s+/).filter(w=>bqNorm(w)), A=tk(a), B=tk(b), n=A.length, m=B.length, K=A.map(bqNorm), Q=B.map(bqNorm), L=Array.from({length:n+1},()=>new Uint16Array(m+1));
+  for(let i=n-1;i>=0;i--) for(let j=m-1;j>=0;j--) L[i][j]=K[i]===Q[j]?L[i+1][j+1]+1:Math.max(L[i+1][j],L[i][j+1]);
+  const oa=[], ob=[]; let i=0, j=0;
+  while(i<n||j<m){ if(i<n&&j<m&&K[i]===Q[j]){ oa.push(esc(A[i++])); ob.push(esc(B[j++])); } else if(j<m&&(i>=n||L[i][j+1]>=L[i+1][j])) ob.push(`<ins>${esc(B[j++])}</ins>`); else oa.push(`<del>${esc(A[i++])}</del>`); }
+  return [oa.join(" "),ob.join(" ")]; }
+async function bqOpen(){ const b=$("#wbody"); if(!b) return; styClose(); const wid=editId||"new", v=b.value, my=BQ={wid,busy:true,items:bqFind(v),at:0,v};
+  bqDraw(); for(const x of my.items){ try{ await bqJudge(x); }catch(e){ x.st="err"; x.msg=e.message; } if(BQ!==my) return; }
+  my.busy=false; bqDraw(); paintHeads(); }
+function bqClose(){ if(!BQ) return; clearTimeout(BQ._t); BQ=null; $("#bqpanel")?.remove(); try{ paintHeads(); }catch(_){} }
+function bqRanges(v){ if(!BQ||BQ.busy||(editId||"new")!==BQ.wid) return []; return BQ.items.filter(x=>(x.st==="diff"||x.st==="ref")&&v.slice(x.qs,x.qe)===x.q).map(x=>({s:x.qs,e:x.qe,c:"sty"})); }
+function bqJump(i){ const b=$("#wbody"), x=BQ?.items[i]; if(!b||!x) return; if(b.value.slice(x.qs,x.qe)!==x.q) return bqOpen(); b.focus(); b.setSelectionRange(x.qs,x.qe); const y=b.getBoundingClientRect().top+scrollY+caretY(b); scrollTo({top:Math.max(0,y-innerHeight*.35),behavior:"smooth"}); }
+function bqFix(i){ const b=$("#wbody"), x=BQ?.items[i]; if(!b||!x||!x.kr) return; if(b.value.slice(x.qs,x.qe)!==x.q){ toast("그사이 글이 바뀌어 다시 맞춰 봅니다"); return bqOpen(); }
+  tInsert(b,x.kr,x.qs,x.qe,"성경 인용 바로잡기"); toast(`${x.ref} 인용을 개역한글 본문으로 바꿨습니다 (⌘Z로 되돌리기)`); bqOpen(); }
+function bqDraw(){ if(!BQ) return $("#bqpanel")?.remove(); let p=$("#bqpanel"); if(!p){ p=document.createElement("aside"); p.id="bqpanel"; p.className="fbpanel"; document.body.appendChild(p); p.onmousedown=e=>{ if(!e.target.closest("input,textarea,a")) e.preventDefault(); }; }
+  const L=BQ.items, bad=L.filter(x=>x.st==="diff"||x.st==="ref").length, TAG={ok:"✓ 글자 그대로",part:"✓ 글자 그대로 (일부 인용)",diff:"다른 곳 있음",ref:"장절 확인",none:"그 절을 찾지 못함",err:"본문을 받지 못함","":"맞춰 보는 중…"};
+  const link=x=>`<a class="bqlink" href="${esc(suOfficial({...x.P,v2:x.P.v2===999?x.P.v1:x.P.v2},/새번역/.test(x.ver)?"RNKSV":/새한글/.test(x.ver)?"NKT":"NKRV"))}" target="_blank" rel="noopener" onclick="event.stopPropagation();return popBible(this.href)" title="저작권이 있는 번역은 앱 안에 본문을 둘 수 없어, 대한성서공회 사이트에서 같은 구절을 엽니다">${/새번역/.test(x.ver)?"새번역":/새한글/.test(x.ver)?"새한글":"개역개정"}에서 확인 ↗</a>`;
+  p.innerHTML=`<div class="fbh"><b>📖 성경 인용 대조</b><small class="muted">${BQ.busy?"맞춰 보는 중…":L.length?`${L.length}곳 · ${bad?`살펴볼 곳 ${bad}`:"모두 맞음"}`:""}</small><span class="spacer"></span><button onclick="bqOpen()" title="다시 맞춰 보기">↻</button><button onclick="bqClose()" title="닫기">✕</button></div>
+    <p class="muted" style="margin:0 0 8px;font-size:12.5px">AI가 아니라 <b>개역한글</b> 본문과 글자를 하나하나 맞춰 봅니다(띄어쓰기·문장 부호는 보지 않음). 줄을 누르면 본문의 그 인용으로 갑니다.</p>
+    ${L.length?L.map((x,i)=>{ const d=x.st==="diff"?bqDiff(stripMk(x.q),x.krPlain):null;
+      return `<div class="bqrow st-${x.st||"wait"}" onclick="bqJump(${i})"><div class="bqh"><span class="bqtag">${TAG[x.st]||""}</span><b>${esc(x.ref)}</b>${x.ver?`<small>${esc(x.ver)}</small>`:""}</div>
+        ${d?`<p class="bqa"><small>내 글</small>${d[0]}</p><p class="bqb"><small>개역한글</small>${d[1]}</p>${x.other?`<p class="bqn">「${esc(x.ver)}」${jp(x.ver,"으로","로")} 옮겨 적은 인용이라면 개역한글과 다른 것이 정상입니다. 아래 링크에서 그 번역 본문과 견주어 보세요.</p>`:""}`:""}
+        ${x.st==="ref"?`<p class="bqn">적힌 글자는 맞는데, ${esc(x.P.name)} ${x.P.c1}${x.P.bi===18?"편":"장"} <b>${esc(x.at)}</b>에 있는 말씀입니다. 장절을 확인해 보세요.</p>`:""}
+        ${x.st==="none"?`<p class="bqn">개역한글에 그 장·절이 없습니다. 장절을 확인해 보세요.</p>`:""}${x.st==="err"?`<p class="bqn">${esc(x.msg||"")} — 인터넷이 닿으면 ↻ 로 다시 맞춰 보세요.</p>`:""}
+        ${x.st==="diff"||x.st==="ref"||x.other?`<div class="bqacts">${x.st==="diff"&&!x.other?`<button class="btn small" onclick="event.stopPropagation();bqFix(${i})" title="따옴표 안의 글을 개역한글 본문으로 바꿉니다 (⌘Z로 되돌리기)">개역한글로 바꾸기</button>`:""}${link(x)}</div>`:""}</div>`; }).join("")
+      :`<p class="muted" style="font-size:13px">장절이 붙은 인용을 찾지 못했습니다.<br>「…」 (요 3:16)처럼 따옴표 뒤 괄호에 장절을 적거나, 요 3:16 "…"처럼 장절 뒤에 따옴표로 적은 인용을 찾습니다.<br><br>한 줄에 「요 3:16」만 적고 Enter를 누르면 개역한글 본문이 그대로 들어옵니다.</p>`}`; }
+document.addEventListener("input",e=>{ if(BQ&&e.target?.id==="wbody"){ clearTimeout(BQ._t); BQ._t=setTimeout(()=>{ if(BQ&&$("#wbody")&&$("#wbody").value!==BQ.v) bqOpen(); },900); } });
+
+// ───────── 같은 본문 이력 (2026-11-18, 기획서 4판 E2): 책·장이 같은 묵상·설교초안·글을 시간순으로 — 사본 없이 그때그때 셈 ─────────
+// 「빌 4:4」·「빌립보서 4:4」·「빌4장」을 같은 자리로 읽음
+function refKey(p){ p=String(p||"").trim(); const m=p.match(/^([가-힣]+(?:[123]서)?)\s*(.*)$/); if(m){ const ab=BABBR.indexOf(m[1]); if(ab>=0) p=BIBLE[ab][0]+" "+m[2]; else if(BALIAS[m[1]]) p=BALIAS[m[1]]+" "+m[2]; } const r=bibleRef(p); return r&&r.ch?r:null; }
+function seedOf(w){ return medSections(w).filter(x=>/설교 씨앗/.test(x.h)).map(x=>stripMk(x.t).split("\n").map(l=>l.trim()).filter(Boolean).join(" ")).filter(Boolean).join(" / "); }
+function sameList(w){ const r=w&&refKey(w.passage); if(!r) return null;
+  return {r,L:live().filter(x=>{ if(x.id===w.id||!x.passage||wEmpty(x)) return false; const y=refKey(x.passage); return y&&y.book===r.book&&y.ch===r.ch; }).sort((a,b)=>(a.date||"").localeCompare(b.date||""))}; }
+function sameCard(w){ const o=sameList(w); if(!o||!o.L.length) return ""; const {r,L}=o, nm=`${BIBLE[r.book][0]} ${r.ch}${r.book===18?"편":"장"}`, ym=d=>(d||"").slice(0,7).replace("-",".");
+  return `<details class="sheet srcbar samebar" style="padding:12px 18px;margin-bottom:16px"><summary><span class="label bible" style="margin:0;font-size:19px">같은 본문으로 쓴 글 ${L.length}편</span> <small class="hint" style="display:inline">· ${esc(nm)} · ${ym(L[0].date)}${L.length>1&&ym(L.at(-1).date)!==ym(L[0].date)?" ~ "+ym(L.at(-1).date):""} · 이 본문을 언제 어떻게 썼는지</small></summary>
+    <ol class="thline samelist">${L.map(x=>{ const one=(x.summary||"").trim()||(x.type==="묵상"?seedOf(x):""); return `<li><span class="thdot" style="background:var(--${x.track==="bible"?"bible":"book"})"></span><button class="thli" onclick="go('write',{edit:'${x.id}'})" title="이 글을 엽니다"><b>${esc(x.title||x.passage||"(제목 없음)")}</b><small>${esc(x.type||"글")} · ${esc(x.date||"")} · ${esc(x.passage||"")}${x.place?" · "+esc(x.place):""}</small>${one?`<span class="sameone">${esc(one.slice(0,120))}</span>`:""}</button></li>`; }).join("")}</ol></details>`; }
+
+// ───────── 설교 씨앗 모음 (2026-11-18, 기획서 4판 E2): 묵상마다 적어 둔 「■ 설교 씨앗」을 사본 없이 한자리에 → 「초안으로」 ─────────
+var SEED_F="all";
+function seedItems(){ return live().filter(w=>w.track==="bible"&&w.type==="묵상").map(w=>{ const t=seedOf(w); return t?{w,t,dr:draftsOf(w)}:null; }).filter(Boolean).sort((a,b)=>(b.w.date||"").localeCompare(a.w.date||"")); }
+function seedRows(){ const q=($("#seedq")?.value||"").trim().toLowerCase(), all=seedItems(), L=all.filter(x=>(SEED_F==="all"||(SEED_F==="todo")===!x.dr.length)&&(!q||(x.t+" "+(x.w.passage||"")+" "+(x.w.title||"")).toLowerCase().includes(q)));
+  return L.length?L.map(x=>`<li><div class="seedm"><b>${esc(x.w.passage||x.w.title||"(본문 없음)")}</b><small>${esc(x.w.date||"")}${x.w.title&&x.w.passage?" · "+esc(x.w.title):""}</small></div><p class="seedt">${esc(x.t)}</p>
+      <div class="seeda"><button class="btn small ink" onclick="seedDraft('${x.w.id}')" title="이 묵상의 씨앗을 이어받아 설교초안을 새로 씁니다. 묵상은 그대로 남습니다">${x.dr.length?"초안 하나 더":"초안으로"}</button><button class="btn small ghost" onclick="seedGo('${x.w.id}')">묵상 열기</button>${x.dr.map(d=>`<a href="#" onclick="seedGo('${d.id}');return false" title="이 씨앗으로 이미 쓴 초안을 엽니다">✎ ${esc(d.title||d.date||"초안")}</a>`).join("")}</div></li>`).join("")
+    :`<li class="seednone">${all.length?"조건에 맞는 씨앗이 없습니다.":"아직 씨앗이 없습니다. 묵상 틀의 마지막 칸 「■ 설교 씨앗」에 한 줄을 적어 두면 여기에 모입니다."}</li>`; }
+function seedOpen(){ $("#seedview")?.remove(); const ov=document.createElement("div"); ov.id="seedview"; ov.className="newsview"; const all=seedItems(), todo=all.filter(x=>!x.dr.length).length;
+  const pill=(k,n)=>`<button class="pill ${SEED_F===k?"on":""}" data-f="${k}">${n}</button>`;
+  ov.innerHTML=`<article class="newscard seedcard" role="dialog" aria-modal="true" aria-labelledby="seedh"><div class="rthead"><p class="newsk" id="seedh">설교 씨앗 모음</p><button class="rtx" data-x aria-label="닫기" title="닫기 (Esc)">✕</button></div>
+    <p class="sub" style="margin:0 0 10px">묵상 끝에 적어 둔 「설교 씨앗」 한 줄을 모았습니다. 묵상은 그대로 있고, 여기서는 모아 보기만 합니다.</p>
+    <div class="seedbar"><span class="pills">${pill("all",`모두 ${all.length}`)}${pill("todo",`초안 아직 ${todo}`)}${pill("done",`초안 있음 ${all.length-todo}`)}</span><input id="seedq" type="search" placeholder="씨앗·본문에서 찾기" aria-label="씨앗·본문에서 찾기"></div>
+    <ol class="seedlist" id="seedlist">${seedRows()}</ol></article>`;
+  document.body.appendChild(ov); const close=()=>{ ov.remove(); removeEventListener("keydown",k,true); }, k=e=>{ if(e.key==="Escape"){ e.preventDefault(); e.stopImmediatePropagation(); close(); } };
+  ov._close=close; ov.onclick=e=>{ if(e.target===ov||e.target.closest("[data-x]")) return close(); const f=e.target.closest("[data-f]"); if(f){ SEED_F=f.dataset.f; ov.querySelectorAll("[data-f]").forEach(b=>b.classList.toggle("on",b===f)); $("#seedlist").innerHTML=seedRows(); } };
+  ov.querySelector("#seedq").oninput=()=>{ $("#seedlist").innerHTML=seedRows(); }; addEventListener("keydown",k,true); }
+function seedGo(id){ $("#seedview")?._close?.(); go("write",{edit:id}); }
+function seedDraft(id){ $("#seedview")?._close?.(); go("write",{new:true,track:"bible",fromWritings:[id]}); toast("묵상의 씨앗을 이어받은 설교초안입니다. 바탕 묵상은 "+(innerWidth<=700?"종이 위 띠에":"옆 칸에")+" 있습니다"); }
+
 // 첨삭 일괄 반영 (적용할 대안이 있는 것만, 시·직접 쓸 자리는 빼고)
 function fbApplyAll(){ const b=$("#wbody"); if(!b||!FB) return; const k=aiGenre(); if(k.poem) return toast("시는 행을 바꿔 쓰지 않습니다 — 코멘트를 보고 직접 고쳐 주세요");
   let n=0, skip=0; (FB.items||[]).forEach(x=>{ if(x.st!=="open"||!x.to) return; const a=b.value.indexOf(x.from); if(a<0||ownHit(b.value,a,a+x.from.length)){ skip++; return; } tInsert(b,x.to,a,a+x.from.length); x.st="done"; n++; });
@@ -8398,7 +8487,7 @@ function renderArchive(){
       <div class="row" style="gap:6px;margin-top:6px"><button class="btn small" onclick="roomPick('${m.id}');go('room')">목차 열기</button><button class="btn small ghost" onclick="archGroupSet(false)">낱장으로 펼치기</button></div></div>`}); });
   items.sort((a,b)=>b.d.localeCompare(a.d));
   const any=Object.values(f).some(v=>v!=="")||q;
-  $("#results").innerHTML=`<div class="row" style="margin-bottom:6px"><b class="pen" style="font-size:22px">${items.length}개</b><span class="chip ${ARCH_GROUP?"on":""}" style="margin-left:8px" onclick="archGroupSet(!ARCH_GROUP)" title="원고에 든 글을 원고별로 한 줄로 묶어 봅니다">원고 글 묶어 보기</span>${any?`<button class="btn small ghost" onclick="filt={track:'',kind:'',type:'',book:'',topic:''};$('#q').value='';render()">거르기 풀기</button>`:""}<span class="spacer"></span>${any?`<button class="btn small" onclick="saveFilter()">이 찾기 저장</button>`:""}${any&&items.some(i=>i.html.includes('class="label'))?`<button class="btn small" onclick="ruleFromFilter()">이 조건으로 원고 만들기</button>`:""}</div>`
+  $("#results").innerHTML=`<div class="row" style="margin-bottom:6px"><b class="pen" style="font-size:22px">${items.length}개</b><span class="chip ${ARCH_GROUP?"on":""}" style="margin-left:8px" onclick="archGroupSet(!ARCH_GROUP)" title="원고에 든 글을 원고별로 한 줄로 묶어 봅니다">원고 글 묶어 보기</span>${(n=>n?`<span class="chip" onclick="seedOpen()" title="묵상마다 적어 둔 「설교 씨앗」 한 줄을 한자리에 모아 봅니다">🌱 설교 씨앗 ${n}</span>`:"")(seedItems().length)}${any?`<button class="btn small ghost" onclick="filt={track:'',kind:'',type:'',book:'',topic:''};$('#q').value='';render()">거르기 풀기</button>`:""}<span class="spacer"></span>${any?`<button class="btn small" onclick="saveFilter()">이 찾기 저장</button>`:""}${any&&items.some(i=>i.html.includes('class="label'))?`<button class="btn small" onclick="ruleFromFilter()">이 조건으로 원고 만들기</button>`:""}</div>`
     +(items.length?items.slice(0,ARCH_MAX).map(i=>i.html).join("")+(items.length>ARCH_MAX?`<div class="row" style="margin-top:10px"><button class="btn small" onclick="ARCH_MAX+=80;renderArchive()">${items.length-ARCH_MAX}개 더 보기</button></div>`:""):`<p class="muted">찾은 기록이 없습니다.</p>`);
 }
 function ruleFromFilter(){ // 서랍에서 거른 조건을 그대로 원고로
