@@ -34,7 +34,7 @@ html{scrollbar-gutter:stable}   /* 글이 짧아 스크롤 막대가 없어져�
 html.bside body{margin-right:var(--bgap)}
 html.bside .bookview,html.bside .pgghost,html.bside .pstage,html.bside .newsview,html.bside .dslipview,html.bside .askview,html.bside .slview,html.bside .ctxback{right:var(--bgap)}
 html.bside .fbpanel,html.bside .focusx,html.bside .suplayer,html.bside #aipanel,html.bside .busy{right:calc(var(--bgap) + 16px)}
-html.bside .toast,html.bside .pisle,html.bside .dfullx,html.bside .stk-palette,html.bside #rfundo{left:calc((100vw - var(--bgap)) / 2)}
+html.bside .toast,html.bside .pisle,html.bside .dfullx,html.bside .stk-palette,html.bside #rfundo,html.bside #ubar{left:calc((100vw - var(--bgap)) / 2)}
 .pen{font-family:"Gamja Flower",cursive;font-weight:400}
 .myeongjo{font-family:"Nanum Myeongjo",serif}
 
@@ -2187,8 +2187,8 @@ sup.mmo{color:var(--sepia);cursor:pointer;font-size:12px;margin-left:1px;user-se
 .rfdiff ins{text-decoration:underline;text-decoration-color:#7a5aa8;text-decoration-thickness:2px;text-underline-offset:3px;font-weight:700;color:var(--ink)}
 #rfcard .rfb{display:flex;gap:6px;flex-wrap:wrap} #rfcard .rfb button{font:13px -apple-system,"Apple SD Gothic Neo",sans-serif;border:1px solid var(--edge);background:none;border-radius:999px;padding:4px 12px;cursor:pointer;color:var(--ink)} #rfcard .rfb button.p{background:#7a5aa8;border-color:#7a5aa8;color:#fff;font-weight:700} #rfcard .rfb button:disabled{opacity:.4;cursor:default}
 @media (max-width:700px){ #rfcard{left:0!important;right:0;bottom:0;top:auto!important;width:auto;border-radius:16px 16px 0 0;padding-bottom:calc(14px + env(safe-area-inset-bottom));max-height:60vh;overflow:auto;z-index:95} }
-#rfundo{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:96;background:var(--ink);color:var(--paper);border-radius:999px;padding:7px 8px 7px 16px;display:flex;gap:10px;align-items:center;font-size:14px;box-shadow:0 8px 22px -8px rgba(0,0,0,.5);white-space:nowrap} #rfundo button{border:0;border-radius:999px;background:var(--paper);color:var(--ink);padding:4px 12px;cursor:pointer;font:inherit;font-weight:700}
-@media (max-width:700px){ #rfundo{bottom:calc(84px + env(safe-area-inset-bottom))}
+#rfundo,#ubar{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:96;background:var(--ink);color:var(--paper);border-radius:999px;padding:7px 8px 7px 16px;display:flex;gap:10px;align-items:center;font-size:14px;box-shadow:0 8px 22px -8px rgba(0,0,0,.5);white-space:nowrap} #rfundo button,#ubar button{border:0;border-radius:999px;background:var(--paper);color:var(--ink);padding:4px 12px;cursor:pointer;font:inherit;font-weight:700}
+@media (max-width:700px){ #rfundo,#ubar{bottom:calc(84px + env(safe-area-inset-bottom))}
   #rfcard .rfb button{min-height:42px;padding:8px 15px;font-size:14px} #rfcard .rfh button{min-width:40px;min-height:40px}
   #aipanel .sug2 button,#aipanel .sug button,#aipanel .rsact button{min-height:38px;padding:6px 12px;font-size:13.5px} #aipanel .aichips span,#aipanel .aichips button{padding:5px 10px;font-size:12.5px}
   #aipanel .aih button{min-height:36px} #aipanel .aih [data-x]{min-width:40px} #aipanel .aimode button{min-height:32px;padding:4px 12px} }
@@ -2484,4 +2484,27 @@ details.more[open]>summary{margin-bottom:var(--sp-1)}
 .prmark{color:var(--bible)} .pryear{font-family:"Nanum Myeongjo",serif;font-weight:800;color:var(--bible);font-size:15px;padding:12px 2px 2px!important;border-top:0!important} .pryear small{font-family:var(--ui-font,sans-serif);font-weight:400;color:var(--faint);font-size:12px}
 .prall li{padding:2px 0} .prall .thli b{font-weight:700}
 @media (max-width:700px){ .prrow input{font-size:16px} }
+/* 원고 지침·날마다 쓴 양·책에 넣기·목차 줄 고치기 (4판 E3) — 2026-11-18 */
+.msinfo{display:grid;gap:8px;margin:10px 0 4px} .msinfo:empty{display:none}
+.gdstrip{display:flex;flex-wrap:wrap;gap:4px 12px;align-items:baseline;text-align:left;border:1px solid var(--edge);border-radius:10px;background:var(--field-bg,var(--paper));padding:8px 12px;cursor:pointer;font:inherit;font-size:13.5px;color:var(--ink-soft);min-width:0}
+.gdstrip b{color:var(--ink);font-weight:700;font-size:13px} .gdstrip span{min-width:0;overflow-wrap:anywhere} .gdstrip:hover{border-color:var(--sepia)}
+.gdcard{max-width:560px} .gdf{margin:0 0 10px} .gdf textarea{min-height:52px;resize:vertical}
+.hsband{display:flex;flex-wrap:wrap;gap:4px 14px;align-items:center;text-align:left;border:1px solid var(--edge);border-radius:10px;background:var(--field-bg,var(--paper));padding:8px 12px;cursor:pointer;font:inherit;font-size:13.5px;color:var(--ink-soft);min-width:0}
+.hsband:hover{border-color:var(--book)} .hsband .hsk{color:var(--ink);font-weight:700;font-size:13px} .hsband b{color:var(--book)} .hsband .hgwrap{margin-left:auto}
+.hgwrap{display:grid;gap:3px;min-width:0;max-width:100%;overflow-x:auto} .hgmon{display:flex;gap:2px;font-size:10px;color:var(--faint);line-height:1} .hgmon span{width:10px;flex:none;white-space:nowrap}
+.hgrid{display:flex;gap:2px} .hgcol{display:grid;grid-template-rows:repeat(7,10px);gap:2px} .hgrid i,.hgkey i{display:block;width:10px;height:10px;border-radius:2px;background:color-mix(in srgb,var(--ink) 8%,transparent)}
+.hgrid i.hg-x{background:none} .hg1{background:color-mix(in srgb,var(--book) 28%,transparent)!important} .hg2{background:color-mix(in srgb,var(--book) 50%,transparent)!important} .hg3{background:color-mix(in srgb,var(--book) 75%,transparent)!important} .hg4{background:var(--book)!important}
+.hgkey{display:flex;gap:3px;align-items:center;font-size:10.5px;color:var(--faint);justify-content:flex-end}
+.hscard{max-width:760px} .hsnums{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:14px;color:var(--ink-soft);margin-bottom:10px} .hsnums b{color:var(--book);font-size:17px}
+.hsyear{overflow-x:auto;padding-bottom:4px} .hsyear .hgwrap{overflow:visible}
+.hslist{list-style:none;margin:0;padding:0;display:grid;gap:0} .hslist li{display:flex;justify-content:space-between;gap:10px;padding:5px 2px;border-bottom:1px dotted var(--edge);font-size:14px} .hslist b{color:var(--book);font-weight:700} .hslist b.neg{color:var(--faint);font-weight:400}
+.binder .bdot{border:0;padding:0;cursor:pointer;margin:0;font:inherit} .binder .bdot::before{content:"";position:absolute;inset:-11px} .binder .bdot:focus-visible{outline:2px solid var(--sepia);outline-offset:3px}
+.binder .bsum{display:block;font-size:12.5px;color:var(--ink-soft);line-height:1.45;cursor:text;overflow-wrap:anywhere;margin-top:1px;border-radius:4px} .binder .bsum:hover{background:color-mix(in srgb,var(--ink) 5%,transparent)}
+.binder .bsum.none{color:var(--faint);display:none} @media (hover:hover){ .binder .bitem:hover .bsum.none{display:block} }
+.binder .bsumin{width:100%;font:inherit;font-size:13px;padding:3px 7px;border:1px solid var(--sepia);border-radius:6px;background:var(--field-bg,var(--paper));color:var(--ink)}
+.binder .btags{display:flex;flex-wrap:wrap;gap:4px;margin-top:2px} .binder .btags em{font-style:normal;font-size:11.5px;line-height:1.5;padding:0 7px;border-radius:999px;border:1px solid var(--edge);color:var(--ink-soft)} .binder .btags em.out{border-color:var(--bible);color:var(--bible)} .binder .btags em.bk{border-color:var(--book);color:var(--book)}
+.binder .bitem.bout a{color:var(--faint)} .binder .bcnt small{display:block;text-align:right;font-size:11.5px}
+.ctxmenu .ci .dot{width:10px;height:10px;vertical-align:middle}
+.bookofbar{display:flex;flex-wrap:wrap;gap:4px 12px;align-items:baseline;padding:10px 16px;margin-bottom:14px;font-size:14px}
+@media (max-width:700px){ .gdf textarea,.binder .bsumin{font-size:16px} .hsband .hgwrap{margin-left:0;width:100%} }
 
