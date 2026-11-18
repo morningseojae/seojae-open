@@ -2475,3 +2475,13 @@ details.more[open]>summary{margin-bottom:var(--sp-1)}
 .seedlist{list-style:none;margin:0;padding:0} .seedlist li{padding:12px 2px;border-top:1px dotted var(--edge)} .seedlist li:first-child{border-top:0}
 .seedm{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap} .seedm b{font-family:"Nanum Myeongjo",serif;font-weight:800;color:var(--bible);font-size:14.5px} .seedm small{color:var(--faint);font-size:12.5px}
 .seedt{margin:4px 0 8px;font-size:16px;line-height:1.65;word-break:keep-all} .seeda{display:flex;align-items:center;gap:8px;flex-wrap:wrap} .seeda a{font-size:13px;color:var(--sepia)} .seednone{color:var(--ink-soft);font-size:14px}
+/* 설교 기록(preachHtml) · 전한 설교 목록(prListOpen) — 2026-11-18 */
+.prbox{margin-top:12px} .prlist{list-style:none;margin:4px 0 6px;padding:0;display:grid;gap:2px}
+.prlist li{display:flex;align-items:center;gap:6px;font-size:13.5px;line-height:1.5;padding:3px 0;border-bottom:1px dotted var(--edge);word-break:keep-all} .prlist li span{flex:1;min-width:0}
+.prx{border:0;background:none;color:var(--faint);cursor:pointer;font-size:13px;width:32px;height:32px;border-radius:50%;flex:none} .prx:hover{background:var(--paper-2);color:var(--bible)}
+.prform>summary{font-size:13.5px} .prrow{gap:6px;margin:8px 0 6px;flex-wrap:wrap} .prrow input{flex:1;min-width:min(130px,100%)}
+.prsvc{gap:5px} .prsvc .pill{padding:3px 10px;font-size:13px}
+.prmark{color:var(--bible)} .pryear{font-family:"Nanum Myeongjo",serif;font-weight:800;color:var(--bible);font-size:15px;padding:12px 2px 2px!important;border-top:0!important} .pryear small{font-family:var(--ui-font,sans-serif);font-weight:400;color:var(--faint);font-size:12px}
+.prall li{padding:2px 0} .prall .thli b{font-weight:700}
+@media (max-width:700px){ .prrow input{font-size:16px} }
+

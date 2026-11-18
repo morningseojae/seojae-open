@@ -1247,6 +1247,10 @@ const MANUALS=[["quick","간단 매뉴얼","읽자마자 바로 써 보는 한 �
 // ───────── 새 소식 (공개판, 2026-10-31 팀장님): 중요한 고침은 앱을 열 때 한 번만 쉬운 말로 알림 ─────────
 // 새 소식을 더할 때: NEWS 맨 앞에 넣고 id 는 날짜(같은 날 둘째는 2026-11-02b 처럼 — 글자 순서로 새것이 뒤). 본 소식 id 는 이 기기에만(seojae-open.newsSeen)
 const NEWS=[
+ {id:"2026-11-18b",date:"2026년 11월 18일",title:"설교를 전한 날을 남겨요",items:[
+  ["✝","설교 기록","설교초안 옆 칸 「설교 기록」에 언제, 어느 예배에서, 어디서 전했는지 남겨요. 날짜를 고르면 요일에 맞는 예배가 먼저 골라져요.","같은 설교를 여러 번 전했으면 여러 줄을 남기면 돼요."],
+  ["📜","전한 설교 모아 보기","서랍 목록 위 「✝ 전한 설교」를 누르면 지금까지 전한 설교가 해마다 날짜순으로 모여요. 예배로 거르거나 제목·본문·장소로 찾을 수 있어요.",""],
+  ["🕰","같은 본문 띠에도","「같은 본문으로 쓴 글」 띠에 그 설교를 언제 전했는지 「✝ 전함」으로 함께 보여요.",""]]},
  {id:"2026-11-18",date:"2026년 11월 18일",title:"설교 씨앗·같은 본문·성경 인용을 챙겨요",items:[
   ["🌱","설교 씨앗이 한자리에","묵상 끝에 적어 둔 「설교 씨앗」 한 줄을 모아서 볼 수 있어요. 묵상 화면 「쓰기 ▾ → 설교 씨앗 모음」이나 서랍의 「🌱 설교 씨앗」을 누르세요.","「초안으로」를 누르면 그 묵상을 이어받은 설교초안이 열려요. 묵상은 그대로 남아요."],
   ["🕰","같은 본문으로 쓴 글","같은 성경 장으로 쓴 묵상·설교초안·글이 종이 위 띠 「같은 본문으로 쓴 글」에 시간순으로 모여요. 줄을 누르면 그 글이 열려요.",""],
@@ -3226,6 +3230,7 @@ write0(){
           <label class="field"><span>글의 상태</span><select id="wstatus" style="width:auto">${WSTATUS.map(x=>`<option ${(w?.status||"초고")===x?"selected":""}>${x}</option>`).join("")}</select><small class="hint">씨앗 → 초고 → 다듬는 중 → 완성. 서랍에서 상태가 보입니다.</small></label>
           <label class="field"><span>${w&&wMs(w)?"다른 원고에도 넣기":"원고에 넣기"}</span><select id="wms"><option value="">${w&&wMs(w)?"더 넣지 않음":"고르지 않음"}</option>${liveMs().filter(m=>!m.rule&&!(w&&m.items.includes(w.id))).map(m=>`<option value="${m.id}" ${SEL_MS===m.id?"selected":""}>${esc(m.title)}</option>`).join("")}</select>            <small class="hint">${(()=>{ const inMs=w?msOf(w):[]; return inMs.length?`지금 들어 있는 원고: ${inMs.map(m=>`${ICO.closed}${esc(m.title)}`).join(", ")}`:"직접 고른 원고에 넣을 수 있습니다. 조건으로 모으는 원고에는 주제·본문·종류에 맞으면 저절로 들어갑니다."; })()}</small></label>
         </details>
+        ${w?preachHtml(w):""}
         <hr class="dash">
         <p class="step"><span class="num">2</span>간직하기</p>
         <div class="sealrow">
@@ -7298,14 +7303,56 @@ function sameList(w){ const r=w&&refKey(w.passage); if(!r) return null;
   return {r,L:live().filter(x=>{ if(x.id===w.id||!x.passage||wEmpty(x)) return false; const y=refKey(x.passage); return y&&y.book===r.book&&y.ch===r.ch; }).sort((a,b)=>(a.date||"").localeCompare(b.date||""))}; }
 function sameCard(w){ const o=sameList(w); if(!o||!o.L.length) return ""; const {r,L}=o, nm=`${BIBLE[r.book][0]} ${r.ch}${r.book===18?"편":"장"}`, ym=d=>(d||"").slice(0,7).replace("-",".");
   return `<details class="sheet srcbar samebar" style="padding:12px 18px;margin-bottom:16px"><summary><span class="label bible" style="margin:0;font-size:19px">같은 본문으로 쓴 글 ${L.length}편</span> <small class="hint" style="display:inline">· ${esc(nm)} · ${ym(L[0].date)}${L.length>1&&ym(L.at(-1).date)!==ym(L[0].date)?" ~ "+ym(L.at(-1).date):""} · 이 본문을 언제 어떻게 썼는지</small></summary>
-    <ol class="thline samelist">${L.map(x=>{ const one=(x.summary||"").trim()||(x.type==="묵상"?seedOf(x):""); return `<li><span class="thdot" style="background:var(--${x.track==="bible"?"bible":"book"})"></span><button class="thli" onclick="go('write',{edit:'${x.id}'})" title="이 글을 엽니다"><b>${esc(x.title||x.passage||"(제목 없음)")}</b><small>${esc(x.type||"글")} · ${esc(x.date||"")} · ${esc(x.passage||"")}${x.place?" · "+esc(x.place):""}</small>${one?`<span class="sameone">${esc(one.slice(0,120))}</span>`:""}</button></li>`; }).join("")}</ol></details>`; }
+    <ol class="thline samelist">${L.map(x=>{ const one=(x.summary||"").trim()||(x.type==="묵상"?seedOf(x):""); return `<li><span class="thdot" style="background:var(--${x.track==="bible"?"bible":"book"})"></span><button class="thli" onclick="go('write',{edit:'${x.id}'})" title="이 글을 엽니다"><b>${esc(x.title||x.passage||"(제목 없음)")}</b><small>${esc(x.type||"글")} · ${esc(x.date||"")} · ${esc(x.passage||"")}${x.place?" · "+esc(x.place):""}${(L=>L.length?` · <span class="prmark">✝ 전함 ${esc(prLine(L[0]))}${L.length>1?` 외 ${L.length-1}번`:""}</span>`:"")(prOf(x))}</small>${one?`<span class="sameone">${esc(one.slice(0,120))}</span>`:""}</button></li>`; }).join("")}</ol></details>`; }
+
+// ───────── 설교 기록 (2026-11-18, 기획서 4판 E3): 이 설교를 언제·어느 예배에서·어디서 전했는지 ─────────
+// 저장: 글의 w.meta 칸에 전한 기록마다 한 칸 「pr_<번호>」 = {d:날짜, s:예배, p:장소}. 칸마다 시각(metaTs)으로 기기 사이에서 합쳐지고(mergeInner),
+// 지울 때도 칸 시각을 남겨(metaSet 빈 값) 옛 사본과 합쳐도 되살아나지 않습니다. 새 저장 칸·합치기 규칙은 그대로.
+const PR_SVC=["주일 낮","주일 오후","수요","금요","새벽","예식","특별"];
+var PR_SEL=null, PR_F="", PR_Q="";
+const isSermonW=w=>!!w&&(w.type==="설교초안"||w.type==="묵상을설교로"||wMs(w)?.genre==="sermon");
+function prOf(w){ return Object.entries(w?.meta||{}).filter(([k,v])=>k.startsWith("pr_")&&v&&typeof v==="object"&&v.d).map(([k,v])=>({k,d:String(v.d),s:String(v.s||""),p:String(v.p||"")})).sort((a,b)=>b.d.localeCompare(a.d)||a.k.localeCompare(b.k)); }
+function prAll(){ return live().flatMap(w=>prOf(w).map(r=>({w,...r}))).sort((a,b)=>b.d.localeCompare(a.d)); }
+function prPlaces(){ const seen=new Set(); return prAll().map(r=>r.p.trim()).filter(p=>p&&!seen.has(p)&&seen.add(p)); }
+const prDay=d=>{ const t=new Date(d+"T00:00"); return isNaN(t)?"":"일월화수목금토"[t.getDay()]; };
+const prSvcDef=d=>({0:"주일 낮",3:"수요",5:"금요"})[new Date(d+"T00:00").getDay()]||"새벽";
+const prLine=r=>`${r.d.replace(/-/g,".")}(${prDay(r.d)}) · ${r.s||"예배"}${r.p?" · "+r.p:""}`;
+function preachHtml(w){ if(!isSermonW(w)) return ""; const L=prOf(w), d0=today(), pl=prPlaces();
+  if(PR_SEL==null||!PR_SVC.includes(PR_SEL)) PR_SEL=prSvcDef(d0);
+  return `<div class="field prbox" id="prbox"><span>설교 기록 ${tipHtml("이 설교를 언제, 어느 예배에서, 어디서 전했는지 남깁니다. 같은 본문 이력과 「전한 설교」 목록에 함께 보여, 같은 본문을 다시 전할 때 지난번을 돌아볼 수 있습니다. 여러 번 전했으면 여러 줄을 남기세요.")}</span>
+    ${L.length?`<ul class="prlist">${L.map(r=>`<li><span>✝ ${esc(prLine(r))}</span><button type="button" class="prx" onclick="prDel('${w.id}','${r.k}')" title="이 기록을 지웁니다" aria-label="이 기록 지우기">✕</button></li>`).join("")}</ul>`:`<small class="hint">아직 전한 기록이 없습니다.</small>`}
+    <details class="more prform" ${L.length?"":"open"}><summary>＋ 전한 날 남기기</summary>
+      <div class="row prrow"><input type="date" id="prd" value="${d0}" aria-label="전한 날" onchange="PR_SEL=prSvcDef(this.value);document.querySelectorAll('#prbox .prsvc .pill').forEach(b=>b.classList.toggle('on',b.textContent===PR_SEL))"><input id="prp" list="prplaces" placeholder="장소 (예: 본당)" value="${esc(pl[0]||"")}" aria-label="장소" onkeydown="if(event.key==='Enter'&&!event.isComposing){event.preventDefault();prAdd('${w.id}')}"><datalist id="prplaces">${pl.map(p=>`<option value="${esc(p)}">`).join("")}</datalist></div>
+      <div class="pills prsvc">${PR_SVC.map(s=>`<button type="button" class="pill ${PR_SEL===s?"on":""}" onclick="PR_SEL='${s}';this.parentNode.querySelectorAll('.pill').forEach(b=>b.classList.toggle('on',b.textContent===PR_SEL))">${s}</button>`).join("")}</div>
+      <div class="row" style="margin-top:8px;gap:8px"><button type="button" class="btn small ink" onclick="prAdd('${w.id}')" title="고른 날·예배·장소를 이 설교의 기록으로 남깁니다">남기기</button>${prAll().length?`<button type="button" class="btn small ghost" onclick="prListOpen()" title="지금까지 전한 설교를 날짜순으로 모아 봅니다">전한 설교 모아 보기</button>`:""}</div></details></div>`; }
+function prPaint(wid){ const w=S.writings.find(x=>x.id===wid), box=$("#prbox"); if(w&&box) box.outerHTML=preachHtml(w); }
+function prAdd(wid){ const d=($("#prd")?.value||"").trim(), p=($("#prp")?.value||"").trim().slice(0,40), s=PR_SVC.includes(PR_SEL)?PR_SEL:"";
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(d)) return toast("전한 날을 골라 주세요");
+  const w=S.writings.find(x=>x.id===wid); if(!w) return; if(prOf(w).some(r=>r.d===d&&r.s===s&&r.p===p)) return toast("같은 기록이 이미 있습니다");
+  metaSet(wid,"pr_"+uid(),{d,s,p}); prPaint(wid); toast(`설교 기록을 남겼습니다 — ${prLine({d,s,p})}`); }
+function prDel(wid,k){ const w=S.writings.find(x=>x.id===wid), r=w&&prOf(w).find(x=>x.k===k); if(!r) return;
+  if(!confirm(`이 설교 기록을 지울까요?\n${prLine(r)}`)) return; metaSet(wid,k,""); prPaint(wid); toast("설교 기록을 지웠습니다"); }
+function prRows(){ const q=PR_Q.trim().toLowerCase(), L=prAll().filter(r=>(!PR_F||r.s===PR_F)&&(!q||(r.p+" "+(r.w.title||"")+" "+(r.w.passage||"")+" "+r.d).toLowerCase().includes(q)));
+  if(!L.length) return `<li class="seednone">${prAll().length?"조건에 맞는 기록이 없습니다.":"아직 전한 설교 기록이 없습니다. 설교초안을 열고 옆 칸 「설교 기록」에서 전한 날을 남기면 여기에 모입니다."}</li>`;
+  let y="", out=""; for(const r of L){ const yy=r.d.slice(0,4); if(yy!==y){ y=yy; out+=`<li class="pryear">${yy}년 <small>${L.filter(x=>x.d.startsWith(yy)).length}편</small></li>`; }
+    out+=`<li><button class="thli" onclick="seedGo('${r.w.id}')" title="이 설교를 엽니다"><b>${esc(r.w.title||r.w.passage||"(제목 없음)")}</b><small>${esc(prLine(r))}${r.w.passage&&r.w.title?" · "+esc(r.w.passage):""}</small></button></li>`; }
+  return out; }
+function prListOpen(){ $("#seedview")?._close?.(); const ov=document.createElement("div"); ov.id="seedview"; ov.className="newsview"; const all=prAll(), svc=PR_SVC.filter(s=>all.some(r=>r.s===s));
+  const pill=(k,n)=>`<button class="pill ${PR_F===k?"on":""}" data-f="${esc(k)}">${esc(n)}</button>`;
+  ov.innerHTML=`<article class="newscard seedcard" role="dialog" aria-modal="true" aria-labelledby="prh"><div class="rthead"><p class="newsk" id="prh">전한 설교</p><button class="rtx" data-x aria-label="닫기" title="닫기 (Esc)">✕</button></div>
+    <p class="sub" style="margin:0 0 10px">설교마다 남긴 「설교 기록」을 날짜순으로 모았습니다. 같은 본문을 언제 전했는지, 한 해에 몇 편을 전했는지 봅니다.</p>
+    <div class="seedbar"><span class="pills">${pill("",`모두 ${all.length}`)}${svc.map(s=>pill(s,`${s} ${all.filter(r=>r.s===s).length}`)).join("")}</span><input id="prq" type="search" placeholder="제목·본문·장소에서 찾기" aria-label="제목·본문·장소에서 찾기" value="${esc(PR_Q)}"></div>
+    <ol class="seedlist prall" id="prlist">${prRows()}</ol></article>`;
+  document.body.appendChild(ov); const close=()=>{ ov.remove(); removeEventListener("keydown",k,true); }, k=e=>{ if(e.key==="Escape"){ e.preventDefault(); e.stopImmediatePropagation(); close(); } };
+  ov._close=close; ov.onclick=e=>{ if(e.target===ov||e.target.closest("[data-x]")) return close(); const f=e.target.closest("[data-f]"); if(f){ PR_F=f.dataset.f; ov.querySelectorAll("[data-f]").forEach(b=>b.classList.toggle("on",b===f)); $("#prlist").innerHTML=prRows(); } };
+  ov.querySelector("#prq").oninput=e=>{ PR_Q=e.target.value; $("#prlist").innerHTML=prRows(); }; addEventListener("keydown",k,true); }
 
 // ───────── 설교 씨앗 모음 (2026-11-18, 기획서 4판 E2): 묵상마다 적어 둔 「■ 설교 씨앗」을 사본 없이 한자리에 → 「초안으로」 ─────────
 var SEED_F="all";
 function seedItems(){ return live().filter(w=>w.track==="bible"&&w.type==="묵상").map(w=>{ const t=seedOf(w); return t?{w,t,dr:draftsOf(w)}:null; }).filter(Boolean).sort((a,b)=>(b.w.date||"").localeCompare(a.w.date||"")); }
 function seedRows(){ const q=($("#seedq")?.value||"").trim().toLowerCase(), all=seedItems(), L=all.filter(x=>(SEED_F==="all"||(SEED_F==="todo")===!x.dr.length)&&(!q||(x.t+" "+(x.w.passage||"")+" "+(x.w.title||"")).toLowerCase().includes(q)));
   return L.length?L.map(x=>`<li><div class="seedm"><b>${esc(x.w.passage||x.w.title||"(본문 없음)")}</b><small>${esc(x.w.date||"")}${x.w.title&&x.w.passage?" · "+esc(x.w.title):""}</small></div><p class="seedt">${esc(x.t)}</p>
-      <div class="seeda"><button class="btn small ink" onclick="seedDraft('${x.w.id}')" title="이 묵상의 씨앗을 이어받아 설교초안을 새로 씁니다. 묵상은 그대로 남습니다">${x.dr.length?"초안 하나 더":"초안으로"}</button><button class="btn small ghost" onclick="seedGo('${x.w.id}')">묵상 열기</button>${x.dr.map(d=>`<a href="#" onclick="seedGo('${d.id}');return false" title="이 씨앗으로 이미 쓴 초안을 엽니다">✎ ${esc(d.title||d.date||"초안")}</a>`).join("")}</div></li>`).join("")
+      <div class="seeda"><button class="btn small ink" onclick="seedDraft('${x.w.id}')" title="이 묵상의 씨앗을 이어받아 설교초안을 새로 씁니다. 묵상은 그대로 남습니다">${x.dr.length?"초안 하나 더":"초안으로"}</button><button class="btn small ghost" onclick="seedGo('${x.w.id}')">묵상 열기</button>${x.dr.map(d=>`<a href="#" onclick="seedGo('${d.id}');return false" title="이 씨앗으로 이미 쓴 초안을 엽니다">✎ ${esc(d.title||d.date||"초안")}${prOf(d).length?` · ✝ 전함 ${prOf(d).length}`:""}</a>`).join("")}</div></li>`).join("")
     :`<li class="seednone">${all.length?"조건에 맞는 씨앗이 없습니다.":"아직 씨앗이 없습니다. 묵상 틀의 마지막 칸 「■ 설교 씨앗」에 한 줄을 적어 두면 여기에 모입니다."}</li>`; }
 function seedOpen(){ $("#seedview")?.remove(); const ov=document.createElement("div"); ov.id="seedview"; ov.className="newsview"; const all=seedItems(), todo=all.filter(x=>!x.dr.length).length;
   const pill=(k,n)=>`<button class="pill ${SEED_F===k?"on":""}" data-f="${k}">${n}</button>`;
@@ -8487,7 +8534,7 @@ function renderArchive(){
       <div class="row" style="gap:6px;margin-top:6px"><button class="btn small" onclick="roomPick('${m.id}');go('room')">목차 열기</button><button class="btn small ghost" onclick="archGroupSet(false)">낱장으로 펼치기</button></div></div>`}); });
   items.sort((a,b)=>b.d.localeCompare(a.d));
   const any=Object.values(f).some(v=>v!=="")||q;
-  $("#results").innerHTML=`<div class="row" style="margin-bottom:6px"><b class="pen" style="font-size:22px">${items.length}개</b><span class="chip ${ARCH_GROUP?"on":""}" style="margin-left:8px" onclick="archGroupSet(!ARCH_GROUP)" title="원고에 든 글을 원고별로 한 줄로 묶어 봅니다">원고 글 묶어 보기</span>${(n=>n?`<span class="chip" onclick="seedOpen()" title="묵상마다 적어 둔 「설교 씨앗」 한 줄을 한자리에 모아 봅니다">🌱 설교 씨앗 ${n}</span>`:"")(seedItems().length)}${any?`<button class="btn small ghost" onclick="filt={track:'',kind:'',type:'',book:'',topic:''};$('#q').value='';render()">거르기 풀기</button>`:""}<span class="spacer"></span>${any?`<button class="btn small" onclick="saveFilter()">이 찾기 저장</button>`:""}${any&&items.some(i=>i.html.includes('class="label'))?`<button class="btn small" onclick="ruleFromFilter()">이 조건으로 원고 만들기</button>`:""}</div>`
+  $("#results").innerHTML=`<div class="row" style="margin-bottom:6px"><b class="pen" style="font-size:22px">${items.length}개</b><span class="chip ${ARCH_GROUP?"on":""}" style="margin-left:8px" onclick="archGroupSet(!ARCH_GROUP)" title="원고에 든 글을 원고별로 한 줄로 묶어 봅니다">원고 글 묶어 보기</span>${(n=>n?`<span class="chip" onclick="seedOpen()" title="묵상마다 적어 둔 「설교 씨앗」 한 줄을 한자리에 모아 봅니다">🌱 설교 씨앗 ${n}</span>`:"")(seedItems().length)}${(n=>n?`<span class="chip" onclick="prListOpen()" title="설교마다 남긴 「설교 기록」을 날짜순으로 모아 봅니다">✝ 전한 설교 ${n}</span>`:"")(prAll().length)}${any?`<button class="btn small ghost" onclick="filt={track:'',kind:'',type:'',book:'',topic:''};$('#q').value='';render()">거르기 풀기</button>`:""}<span class="spacer"></span>${any?`<button class="btn small" onclick="saveFilter()">이 찾기 저장</button>`:""}${any&&items.some(i=>i.html.includes('class="label'))?`<button class="btn small" onclick="ruleFromFilter()">이 조건으로 원고 만들기</button>`:""}</div>`
     +(items.length?items.slice(0,ARCH_MAX).map(i=>i.html).join("")+(items.length>ARCH_MAX?`<div class="row" style="margin-top:10px"><button class="btn small" onclick="ARCH_MAX+=80;renderArchive()">${items.length-ARCH_MAX}개 더 보기</button></div>`:""):`<p class="muted">찾은 기록이 없습니다.</p>`);
 }
 function ruleFromFilter(){ // 서랍에서 거른 조건을 그대로 원고로
