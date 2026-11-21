@@ -1249,6 +1249,11 @@ const MANUALS=[["quick","간단 매뉴얼","읽자마자 바로 써 보는 한 �
 // ───────── 새 소식 (공개판, 2026-10-31 팀장님): 중요한 고침은 앱을 열 때 한 번만 쉬운 말로 알림 ─────────
 // 새 소식을 더할 때: NEWS 맨 앞에 넣고 id 는 날짜(같은 날 둘째는 2026-11-02b 처럼 — 글자 순서로 새것이 뒤). 본 소식 id 는 이 기기에만(seojae-open.newsSeen)
 const NEWS=[
+ {id:"2026-11-21",date:"2026년 11월 21일",title:"묵상한 성경이 책장에 꽂혀요",items:[
+  ["📚","성경 책장","묵상 화면 매일성경 칸의 「📚 성경 책장」을 누르면 성경 66권이 화면 가득 책장에 꽂혀요. 책장 메뉴와 서랍에서도 열 수 있어요.","오늘 읽는 책에는 붉은 책갈피 끈이 달려 있어요."],
+  ["●","점과 진하기","책등 머리의 점 하나가 그 책을 묵상한 때 한 번이에요. 묵상한 장이 많을수록 가죽 색이 짙어지고, 다 묵상한 책에는 금줄이 둘러져요.","가장 최근에 묵상한 때의 점이 가장 진해요."],
+  ["📖","표지와 펼치기","책등을 누르면 책이 꺼내지며 표지에 「26.11–12」처럼 묵상한 때가 적혀 있어요. 표지를 한 번 더 누르면 책이 펼쳐지며 그 책의 묵상 글이 때별로 모여 있어요.","장 칸을 누르면 그 장을 쓴 글만 보여서, 몇 해 뒤 같은 본문을 다시 만났을 때 견주어 볼 수 있어요."],
+  ["↩","닫기","Esc·뒤로 가기·바깥 누르기 한 번에 한 걸음씩 — 펼친 책 → 표지 → 책장 순으로 돌아가요.","화면이 좁으면 위 「목록으로 보기」로 66권을 한 줄씩 볼 수도 있어요."]]},
  {id:"2026-11-18c",date:"2026년 11월 18일",title:"원고를 책으로 묶기 쉬워졌어요",items:[
   ["☰","원고 지침","원고마다 독자·문체·호칭·피할 말을 적어 두면 AI가 그 원고의 글을 볼 때마다 먼저 읽어요. 「원고 관리 ▾ → 원고 지침」에서 정해요.","AI 창 위에 「✓ 원고 지침」이 보이면 함께 읽고 있는 거예요."],
   ["▦","날마다 쓴 양","원고 화면에 「꾸준히 쓴 날」이 생겼어요. 날마다 늘어난 글이 잔디처럼 쌓이고, 며칠째 이어 쓰는지 보여요.","다른 원고에서 옮겨 넣은 글은 세지 않아요."],
@@ -1703,7 +1708,7 @@ async function paintSu(){
   if(!SU||SU.date!==date){ box.innerHTML=`<span class="muted">오늘의 매일성경을 불러오는 중…</span>`;
     try{ SU=await suInfo(date); SUT=null; SUERR=""; }catch(e){ SU=null; SUERR=e.message; } if(gen!==SUGEN||!$("#sucard")) return; }
   const x=new Date(date+"T00:00"), P=suPassage(SU), dayWs=live().filter(w=>w.track==="bible"&&w.date===date), cur=editId&&S.writings.find(w=>w.id===editId), open=suOpen();
-  const nav=`<div class="row sunav" style="gap:6px"><span class="label bible" style="margin:0">${date===today()?`<span class="su-today">오늘의 </span>`:""}매일성경</span><span class="sunavd"><button class="fsbtn" onclick="suMove(-1)" title="전날 매일성경 · 묵상 노트도 그 날짜로" aria-label="전날">‹</button><span class="muted sudate">${x.getMonth()+1}.${x.getDate()}(${WEEK[x.getDay()]})${dayWs.some(w=>w.type==="묵상"&&!wEmpty(w))?`<span class="qtstamp" title="이날 묵상을 썼습니다">씀</span>`:""}</span><button class="fsbtn" onclick="suMove(1)" title="다음 날 매일성경 · 묵상 노트도 그 날짜로" aria-label="다음 날">›</button>${date!==today()?`<button class="fsbtn" onclick="suGo(today())">오늘</button>`:""}</span><span class="spacer"></span>${SU&&P?`<button class="btn small ghost" onclick="suToggle()">${open?"본문 접기":"본문 펼치기"}</button>`:""}</div>
+  const nav=`<div class="row sunav" style="gap:6px"><span class="label bible" style="margin:0">${date===today()?`<span class="su-today">오늘의 </span>`:""}매일성경</span><span class="sunavd"><button class="fsbtn" onclick="suMove(-1)" title="전날 매일성경 · 묵상 노트도 그 날짜로" aria-label="전날">‹</button><span class="muted sudate">${x.getMonth()+1}.${x.getDate()}(${WEEK[x.getDay()]})${dayWs.some(w=>w.type==="묵상"&&!wEmpty(w))?`<span class="qtstamp" title="이날 묵상을 썼습니다">씀</span>`:""}</span><button class="fsbtn" onclick="suMove(1)" title="다음 날 매일성경 · 묵상 노트도 그 날짜로" aria-label="다음 날">›</button>${date!==today()?`<button class="fsbtn" onclick="suGo(today())">오늘</button>`:""}</span><span class="spacer"></span><button class="btn small ghost bsentry" onclick="bsOpen()" title="묵상한 성경 66권을 책장으로 봅니다 — 책등의 점은 묵상한 때, 진하기는 묵상한 장">📚 성경 책장</button>${SU&&P?`<button class="btn small ghost" onclick="suToggle()">${open?"본문 접기":"본문 펼치기"}</button>`:""}</div>
     ${date!==today()&&!cur?`<div class="qtnew">${x.getMonth()+1}월 ${x.getDate()}일 묵상 노트입니다 · 쓰면 그날 묵상으로 간직됩니다</div>`:""}`;
   if(!SU||!P){ box.innerHTML=nav+`<p class="muted" style="margin:6px 0 0">본문을 불러오지 못했습니다${SUERR?" ("+esc(SUERR)+")":""}. <a class="muted" href="https://sum.su.or.kr:8888/bible/today#bibleTab" target="_blank" rel="noopener" onclick="return popBible(this.href)">성서유니온에서 보기 ↗</a></p>`; return; }   // 본문을 못 받아도 날짜는 넘길 수 있게
   // 새 묵상이면 본문 칸을 매일성경으로 (설정에서 '통독표 따라'를 고르면 그대로 둠)
@@ -2203,8 +2208,10 @@ function sjRoot(){ if(history.state&&(history.state.sj||history.state.sjRoot)) r
 ["pointerdown","keydown"].forEach(ev=>addEventListener(ev,()=>sjRoot(),{once:true,capture:true}));
 function sjOverlay(){ const b=document.body.classList;
   if(document.querySelector(".askview,.newsview,#vspop,#tippop,#dictpop,#rfcard,#sugcard")) return "esc";
+  if($("#bsview")) return "bs";
   if(b.contains("focus")) return "focus"; if(b.contains("dfull")) return "dfull"; if($("#aipanel")) return "ai"; if(document.querySelector("details.tgrp[open],details.stmore[open],details.stmenu[open]")) return "menu"; return null; }
 function sjCloseOverlay(k){
+  if(k==="bs"){ try{ bsBack(); }catch(_){} return; }
   if(k==="focus"){ try{ toggleFocus(); }catch(_){} return; } if(k==="dfull"){ try{ dFull(false); }catch(_){} return; } if(k==="ai"){ try{ aiClose(); }catch(_){} return; }
   if(k==="menu"){ document.querySelectorAll("details.tgrp[open],details.stmore[open],details.stmenu[open]").forEach(d=>d.open=false); return; }
   const top=[...document.querySelectorAll(".askview,.newsview,#vspop,#tippop,#dictpop,#rfcard,#sugcard")].pop();
@@ -3175,7 +3182,7 @@ write0(){
     <button class="btn small focusexit" onclick="toggleFocus()">집중 나가기</button>
     <details class="tgrp"><summary class="btn small">쓰기 ▾</summary><div class="tgmenu">
       ${wTplNow().tpl?`<button class="btn small tplbtn" onclick="tplToggle();tgClose()">${tplIn(w?.body??seed)?"틀 빼기":"틀 넣기"}</button>`:""}${w&&cardKindOf(w)&&!cardKindOf(w).sermon?`<button class="btn small" onclick="tgClose();cardOpen()" title="한 문장·기능·겨냥할 자리… 초안 전에 글을 설계합니다">설계 카드</button>`:""}<button class="btn small" onclick="tgClose();altHere()" title="커서가 있는 문장(또는 고른 글)을 바꿔 쓴 후보 4개">✦ 다른 표현</button>${w&&wMs(w)&&!wMs(w).rule?`<button class="btn small" onclick="tgClose();pieceSplit()" title="커서가 있는 줄부터 새 글로 (■ 소제목 줄이면 그 이름이 새 글 제목)">✂ 커서에서 나누기</button><button class="btn small" onclick="tgClose();pieceMerge()" title="다음 글을 이 글 끝에 붙입니다">⊕ 다음 글과 합치기</button>`:""}${w&&cardKindOf(w)?`<button class="btn small" onclick="tgClose();vfOpen()" title="사실 주장을 출처와 대조합니다">검증표</button><button class="btn small" onclick="tgClose();ckOpen()" title="완성 전 점검 질문 10개">점검 10문항</button>`:""}
-      ${track==="bible"?`<button class="btn small" onclick="tgClose();seedOpen()" title="묵상마다 적어 둔 「설교 씨앗」 한 줄을 한자리에 모아 봅니다 — 고른 씨앗으로 설교초안을 시작할 수 있습니다">🌱 설교 씨앗 모음</button>`:""}
+      ${track==="bible"?`<button class="btn small" onclick="tgClose();seedOpen()" title="묵상마다 적어 둔 「설교 씨앗」 한 줄을 한자리에 모아 봅니다 — 고른 씨앗으로 설교초안을 시작할 수 있습니다">🌱 설교 씨앗 모음</button>`:""}${track==="bible"?`<button class="btn small" onclick="tgClose();bsOpen()" title="묵상한 성경 66권을 책장으로 — 권마다 언제 묵상했는지와 그 글 목록">📚 성경 책장</button>`:""}
       <button type="button" class="twsw ${TYPEW?"on":""}" onclick="toggleTypew()" id="twbtn" role="switch" aria-checked="${TYPEW}" title="쓰는 줄을 늘 화면 가운데에 둡니다 — 글이 길어져도 눈높이가 그대로"><span class="sw"><i></i></span><span class="twt"><b>타자기</b><small>쓰는 줄을 화면 가운데에</small></span><em>${TYPEW?"켬":"끔"}</em></button>
       <span class="row" style="gap:4px" title="글자 크기 (이 기기만)"><span class="muted" style="font-size:12.5px">글자</span><button class="fsbtn" onclick="fontStep(-1)">가−</button><button class="fsbtn" onclick="fontStep(1)">가＋</button></span>
       <div class="pp"><span class="muted" style="font-size:12.5px">펜</span>${INKS.map(([n,c])=>`<span class="inkdot ${ink===c?"on":""}" title="${n} 잉크" style="background:${c}" onclick="setInk('${c}')"></span>`).join("")}
@@ -3280,7 +3287,7 @@ shelf(){
   const doneHtml=libCase({id:"libdone",crown:"서고 · 다 읽은 책",groups:doneGroups.map(({c,items})=>sortBy==="cat"?{name:libCatName(c),num:libCatNum(c),items}:{name:c?c+(/^\d{4}$/.test(c)?"년":""):"별점 높은 순",items}),item:spineHtml,order:{new:"새로 읽은 차례",old:"읽은 차례",cat:"지은이 가나다순",star:"별점 높은 차례"}[sortBy]||"",emptyName:"서고",empty:q?"찾은 책이 없습니다.":"다 읽은 책이 여기에 책등으로 꽂힙니다."});
   const bar=`<div class="shelfbar"><span class="muted" style="font-size:13px">보기</span><span class="pills">${[["new","새로 읽은 순"],["old","오래된 순"],["cat","분류별"],["star","별점순"]].map(([k,n])=>`<button class="pill ${sortBy===k?"on":""}" onclick="try{localStorage.setItem('seojae-open.shelfsort','${k}')}catch(_){};render()">${n}</button>`).join("")}</span>
     <input id="bqf" placeholder="책장에서 찾기 (제목·저자)" value="${esc(SHELF_Q||"")}" oninput="SHELF_Q=this.value;clearTimeout(window._sq);window._sq=setTimeout(shelfPaint,200)" style="width:auto;flex:1;min-width:160px;max-width:300px;margin-left:auto"></div>`;
-  return `<div class="row" style="margin-bottom:18px"><h2>책장</h2><span class="muted" style="font-size:14px">읽는 중 ${S.books.filter(b=>b.status!=="완료").length}권 · 다 읽은 책 ${S.books.filter(b=>b.status==="완료").length}권</span></div>
+  return `<div class="row" style="margin-bottom:18px"><h2>책장</h2><span class="muted" style="font-size:14px">읽는 중 ${S.books.filter(b=>b.status!=="완료").length}권 · 다 읽은 책 ${S.books.filter(b=>b.status==="완료").length}권</span><button class="btn small bsentry" style="margin-left:auto" onclick="bsOpen()" title="묵상한 성경 66권을 책장으로 봅니다 — 권마다 언제 묵상했는지와 그 글 목록">📚 성경 책장 <small class="muted">묵상한 말씀</small></button></div>
   <section class="sheet tape" style="margin-bottom:30px">
     <p class="label book">새 책 꽂기</p>
     <div class="row"><input id="bq" placeholder="책 이름, 저자, 또는 ISBN" style="flex:1" onkeydown="if(event.key==='Enter'&&!event.isComposing)searchBook()"><button class="btn ink" onclick="searchBook()">표지 찾기</button><button class="btn" onclick="if(!$('#bq').value.trim()) return toast('책 이름을 먼저 적어 주세요'); addBook(-1)" title="검색 없이 적은 제목 그대로 꽂습니다">제목만으로 꽂기</button>${storeMenu("",{live:true,big:true,label:"전자책에서 찾기"})}</div>
@@ -7323,6 +7330,116 @@ function sameCard(w){ const o=sameList(w); if(!o||!o.L.length) return ""; const 
   return `<details class="sheet srcbar samebar" style="padding:12px 18px;margin-bottom:16px"><summary><span class="label bible" style="margin:0;font-size:19px">같은 본문으로 쓴 글 ${L.length}편</span> <small class="hint" style="display:inline">· ${esc(nm)} · ${ym(L[0].date)}${L.length>1&&ym(L.at(-1).date)!==ym(L[0].date)?" ~ "+ym(L.at(-1).date):""} · 이 본문을 언제 어떻게 썼는지</small></summary>
     <ol class="thline samelist">${L.map(x=>{ const one=(x.summary||"").trim()||(x.type==="묵상"?seedOf(x):""); return `<li><span class="thdot" style="background:var(--${x.track==="bible"?"bible":"book"})"></span><button class="thli" onclick="go('write',{edit:'${x.id}'})" title="이 글을 엽니다"><b>${esc(x.title||x.passage||"(제목 없음)")}</b><small>${esc(x.type||"글")} · ${esc(x.date||"")} · ${esc(x.passage||"")}${x.place?" · "+esc(x.place):""}${(L=>L.length?` · <span class="prmark">✝ 전함 ${esc(prLine(L[0]))}${L.length>1?` 외 ${L.length-1}번`:""}</span>`:"")(prOf(x))}</small>${one?`<span class="sameone">${esc(one.slice(0,120))}</span>`:""}</button></li>`; }).join("")}</ol></details>`; }
 
+// ───────── 성경 책장 (2026-11-21 팀장님 — 디자인·전자책·목회·모션·접근성 다섯 전문가 검토, 기록 `기록/2026-11-21_성경책장.md`) ─────────
+// 묵상한 성경을 66권 책장으로. 새 저장 칸 없이 묵상·설교 글의 본문(passage)에서 그때그때 셈.
+//  · 책등: 책 이름 + 머리의 점(묵상한 때 하나에 점 하나, 가장 최근 점이 진함, 셋 넘으면 +) + 가죽 진하기 4단계(묵상한 장 1/3·2/3·다·전부=머리 금줄)
+//  · 누르면 책이 들려 나와 표지(묵상한 때 「26.11–12」 줄들) → 다시 누르면 표지가 열리며 그 책의 묵상 목록(PC는 왼쪽 쪽 = 장 칸, 휴대폰은 아래에서 올라오는 쪽)
+//  · 셈: 점·진하기·장 수는 묵상만, 목록에는 설교 글도 「설교」 꼬리표로 함께 · 한 절이라도 묵상한 장 = 묵상한 장 · 묵상한 때는 날짜 사이가 45일 안이면 한 때로 묶음
+const BS_GRP=[["율법서",0,5,168],["역사서",5,17,158],["시가서",17,22,172],["대선지서",22,27,164],["소선지서",27,39,146],["복음서",39,43,166],["역사서",43,44,158],["바울 서신",44,57,150],["일반 서신",57,65,144],["예언서",65,66,160]];
+const BS_LEAF=["#6f4a2e","#6b2f36"];   // 구약 밤색 가죽 · 신약 포도주 가죽 (두 가지만 — 진하기로 묵상한 정도)
+let BS=null, BS_LIST=false; try{ BS_LIST=localStorage.getItem("seojae-open.bsList")==="1"; }catch(_){}
+const bsRM=()=>matchMedia("(prefers-reduced-motion:reduce)").matches;
+// 본문 → {book, chs:[장…]} — 「고후 12:14-21」·「창 1:1-2:3」·「시편 23편」·「룻기 1-2장」
+function bsRange(p){ const r=refKey(p); if(!r) return null; const s=String(p), max=BIBLE[r.book][1]; let e=r.ch;
+  const m=s.match(/\d+\s*:\s*\d+\s*[-~–]\s*(\d+)\s*:/)||s.match(/(?:^|\s)\d+\s*[-~–]\s*(\d+)\s*[장편]/); if(m&&+m[1]>r.ch) e=Math.min(+m[1],max);
+  const chs=[]; for(let c=r.ch;c<=e&&c<=max;c++) chs.push(c); return chs.length?{book:r.book,chs}:null; }
+function bsSeasons(dates){ const ds=[...new Set(dates.filter(Boolean))].sort(), S=[]; ds.forEach(d=>{ const L=S.at(-1); if(L&&daysBetween(L.b,d)<=45) L.b=d; else S.push({a:d,b:d}); }); return S; }
+function bsSeasonText(s,open){ const y=d=>d.slice(2,4), mo=d=>+d.slice(5,7), a=`${y(s.a)}.${mo(s.a)}`;
+  if(open) return `${a}–`; if(s.a.slice(0,7)===s.b.slice(0,7)) return a; return y(s.a)===y(s.b)?`${a}–${mo(s.b)}`:`${a}–${y(s.b)}.${mo(s.b)}`; }
+function bsToday(){ try{ const P=SU&&suPassage(SU); return P?{book:P.bi,chs:Array.from({length:P.c2-P.c1+1},(_,k)=>P.c1+k)}:null; }catch(_){ return null; } }
+function bsData(){ const T=bsToday(), D=BIBLE.map(([n,c],i)=>({i,n,c,E:[],chs:new Map(),med:[],len:0,today:T&&T.book===i?T.chs:null}));
+  live().forEach(w=>{ if(w.track!=="bible"||!w.passage||wEmpty(w)) return; const r=bsRange(w.passage); if(!r) return; const d=D[r.book], med=w.type==="묵상";
+    d.E.push({w,chs:r.chs,med}); d.len+=stripMk(w.body||"").replace(/\s+/g," ").trim().length; if(med){ d.med.push(w.date); r.chs.forEach(c=>d.chs.set(c,(d.chs.get(c)||0)+1)); } });
+  D.forEach(d=>{ d.S=bsSeasons(d.med); const L=d.S.at(-1); d.open=!!(d.today&&L&&daysBetween(L.b,today())<=45); const k=d.chs.size; d.lv=!k?0:k>=d.c?4:k/d.c>=2/3?3:k/d.c>=1/3?2:1; });
+  return D; }
+const bsGrpOf=i=>BS_GRP.find(g=>i>=g[1]&&i<g[2]);
+function bsAria(d){ return `${d.n}, ${d.S.length?`묵상 ${d.S.length}번, ${d.c}${d.i===18?"편":"장"} 중 ${d.chs.size}${d.i===18?"편":"장"}`:"아직 묵상하지 않음"}${d.today?", 오늘 읽는 책":""}`; }
+function bsDots(d){ const n=d.S.length; if(!n) return ""; const k=Math.min(n,3); return Array.from({length:k},(_,j)=>`<i class="${j===k-1?"last":""}"></i>`).join("")+(n>3?`<b>+</b>`:""); }
+function bsSpine(d){ const g=bsGrpOf(d.i), w=Math.max(18,Math.round(15+5.2*Math.log2(d.c+1)));
+  return `<button type="button" class="bsp lv${d.lv}${d.today?" now":""}" data-i="${d.i}" style="--w:${w}px;--h:${g[3]}px;--lc:${BS_LEAF[d.i<39?0:1]}" aria-label="${esc(bsAria(d))}" title="${esc(d.n)}${d.S.length?" · "+d.S.map(s=>bsSeasonText(s)).join(", "):""}">${d.lv===4?`<i class="bsgold" aria-hidden="true"></i>`:""}<span class="bsdots" aria-hidden="true">${bsDots(d)}</span><span class="bsnm" aria-hidden="true">${esc(d.n)}</span>${d.today?`<i class="bsrib" aria-hidden="true"></i>`:""}</button>`; }
+function bsRow(d){ return `<button type="button" class="bsli lv${d.lv}${d.today?" now":""}" data-i="${d.i}" style="--lc:${BS_LEAF[d.i<39?0:1]}" aria-label="${esc(bsAria(d))}"><i class="bslisw" aria-hidden="true"></i><b>${esc(d.n)}</b><span class="bsdots" aria-hidden="true">${bsDots(d)}</span><small>${d.S.length?esc(d.S.map((s,k)=>bsSeasonText(s,d.open&&k===d.S.length-1)).join(" · "))+` · ${d.c}${d.i===18?"편":"장"} 중 ${d.chs.size}`:`${d.c}${d.i===18?"편":"장"}`}</small></button>`; }
+function bsShelfHtml(D){ const part=(nm,a,b)=>`<section class="bscase" aria-label="${nm}"><h3 class="bscase-h">${nm}</h3>${BS_LIST
+    ?`<div class="bslist">${D.slice(a,b).map(bsRow).join("")}</div>`
+    :`<div class="bsrow">${BS_GRP.filter(g=>g[1]>=a&&g[2]<=b).map(g=>`<div class="bsgrp"><div class="bsbooks">${D.slice(g[1],g[2]).map(bsSpine).join("")}</div><div class="bsplank"><span>${g[0]}</span></div></div>`).join("")}</div>`}</section>`;
+  return part("구약",0,39)+part("신약",39,66); }
+function bsOpen(){ $("#bsview")?.remove(); BS={D:bsData(),view:"shelf",i:-1,ch:0}; const D=BS.D, nb=D.filter(d=>d.S.length).length, nc=D.reduce((s,d)=>s+d.chs.size,0);
+  const ov=document.createElement("div"); ov.id="bsview"; ov.className="bsview"; ov.setAttribute("role","dialog"); ov.setAttribute("aria-modal","true"); ov.setAttribute("aria-labelledby","bsh");
+  ov.innerHTML=`<header class="bshead"><div class="bstitle"><h2 id="bsh">성경 책장</h2><p>묵상한 말씀 · 66권 중 <b>${nb}</b>권 · 1,189장 중 <b>${nc.toLocaleString()}</b>장</p></div>
+    <p class="bslegend" aria-hidden="true"><span><i class="lgdot"></i>묵상한 때</span><span><i class="lgsw"></i>진할수록 많이 묵상한 책</span>${D.some(d=>d.today)?`<span><i class="lgrib"></i>오늘 읽는 책</span>`:""}</p>
+    <button type="button" class="bsbtn" data-list title="${BS_LIST?"책등이 꽂힌 책장으로 봅니다":"66권을 한 줄에 하나씩 목록으로 봅니다 — 화면이 좁을 때 편합니다"}">${BS_LIST?"책장으로 보기":"목록으로 보기"}</button><button type="button" class="bsx" data-x aria-label="성경 책장 닫기" title="닫기 (Esc)">✕</button></header>
+    <div class="bsscroll" id="bsscroll">${bsShelfHtml(D)}${nb?"":`<p class="bsempty">묵상을 쓰면 그 본문의 책이 여기서 조금씩 짙어집니다.</p>`}</div>
+    <div class="bsstage" hidden><div class="bsdim" data-back></div><div class="bsbook"><div class="bsleaf"><div class="bsface bscov"></div><div class="bsface bsback"></div></div></div><div class="bspage" role="region" aria-label="묵상 목록"></div></div>`;
+  document.body.appendChild(ov); document.documentElement.classList.add("bson");
+  ov.onclick=bsClick; ov.addEventListener("keydown",bsKey);
+  const now=ov.querySelector(".bsp.now,.bsli.now")||ov.querySelector(".bsp,.bsli"); setTimeout(()=>{ if(now&&ov.querySelector(".bsp.now,.bsli.now")) now.scrollIntoView({block:"center",inline:"center"}); now?.focus({preventScroll:true}); },40); }
+function bsClose(){ const ov=$("#bsview"); if(!ov) return; clearTimeout(BS?.t); ov.classList.add("out"); document.documentElement.classList.remove("bson"); setTimeout(()=>ov.remove(),bsRM()?0:180); BS=null; }
+function bsClick(e){ const t=e.target;
+  if(t.closest("[data-x]")) return bsClose();
+  if(t.closest("[data-list]")){ BS_LIST=!BS_LIST; try{ localStorage.setItem("seojae-open.bsList",BS_LIST?"1":"0"); }catch(_){} const i=BS?.i; bsOpen(); return; }
+  const sp=t.closest(".bsp,.bsli"); if(sp&&BS?.view==="shelf") return bsCover(+sp.dataset.i,sp);
+  if(t.closest("[data-back]")) return bsBack();
+  const en=t.closest("[data-w]"); if(en){ const id=en.dataset.w; bsClose(); go("write",{edit:id}); return; }
+  const ch=t.closest("[data-ch]"); if(ch){ BS.ch=BS.ch===+ch.dataset.ch?0:+ch.dataset.ch; bsPaintPage(); return; }
+  if(t.closest(".bsleaf")&&BS?.view==="cover") return bsOpenBook();
+  if(t.closest("[data-shut]")) return bsBack(); }
+function bsKey(e){ if(e.key==="Escape"){ e.preventDefault(); e.stopPropagation(); return bsBack(); }
+  if(BS?.view!=="shelf") { if((e.key==="Enter"||e.key===" ")&&BS?.view==="cover"&&e.target.closest?.(".bsleaf")){ e.preventDefault(); bsOpenBook(); } return; }
+  const L=[...document.querySelectorAll("#bsview .bsp,#bsview .bsli")], k=L.indexOf(document.activeElement); if(k<0) return;
+  const step={ArrowRight:1,ArrowLeft:-1,ArrowDown:BS_LIST?1:8,ArrowUp:BS_LIST?-1:-8,Home:-99,End:99}[e.key]; if(step==null) return;
+  e.preventDefault(); L[Math.max(0,Math.min(L.length-1,k+step))].focus(); }
+function bsBack(){ if(!BS) return; if(BS.busy) bsFinish(); if(BS.view==="open") return bsShut(); if(BS.view==="cover") return bsReturn(); bsClose(); }
+// 움직이는 중에 다시 누르면 기다리지 않고 끝 모습으로
+function bsWait(ms,fn){ const ov=$("#bsview"); BS.busy=fn; clearTimeout(BS.t); BS.t=setTimeout(()=>{ if(BS&&BS.busy===fn){ BS.busy=null; fn(); } },bsRM()?0:ms); }
+function bsFinish(){ const f=BS?.busy; if(!f) return; clearTimeout(BS.t); BS.busy=null; const ov=$("#bsview"); ov?.classList.add("bsnoanim"); f(); ov?.offsetWidth; ov?.classList.remove("bsnoanim"); }
+function bsSize(){ const vw=innerWidth, vh=innerHeight, wide=vw>=760, W=Math.round(wide?Math.min(380,(vw-96)/2):Math.min(360,vw-48)), H=Math.round(Math.min(W*1.42,vh-(wide?132:150))); return {wide,W,H,L:Math.round((vw-W)/2),T:Math.round(Math.max(64,(vh-H)/2+12))}; }
+function bsCoverHtml(d){ const g=bsGrpOf(d.i), u=d.i===18?"편":"장", nW=d.E.length, nM=d.E.filter(x=>x.med).length;
+  return `<div class="bscv-in"><p class="bscv-k">${d.i<39?"구약":"신약"} · ${g[0]}</p><h3 class="bscv-t">${esc(d.n)}</h3><p class="bscv-n">${d.c}${u}</p><i class="bscv-rule" aria-hidden="true"></i>
+    ${d.S.length?`<p class="bscv-l">묵상한 때</p><ul class="bscv-s">${d.S.map((s,k)=>`<li>${bsSeasonText(s,d.open&&k===d.S.length-1)}${d.open&&k===d.S.length-1?` <small>읽는 중</small>`:""}</li>`).join("")}</ul>
+      <p class="bscv-c">${d.c}${u} 중 <b>${d.chs.size}</b>${u} 묵상</p>`:`<p class="bscv-none">아직 묵상하지 않은 책입니다.</p>`}
+    ${nW?`<p class="bscv-w">이 책에서 쓴 글 ${nW}편${nM!==nW?` (묵상 ${nM})`:""} · 약 ${d.len>=1000?(Math.round(d.len/100)/10).toLocaleString()+"천 자":d.len.toLocaleString()+"자"}</p>`:""}
+    <span class="bscv-hint">${nW?"표지를 누르면 펼쳐집니다":"표지를 누르면 빈 쪽이 펼쳐집니다"}</span></div>`; }
+function bsGridHtml(d){ const u=d.i===18?"편":"장"; return `<div class="bsgrid-h"><b>${esc(d.n)}</b> <small>${d.c}${u} · 칸을 누르면 그 ${u}의 글만</small></div><div class="bsgrid" role="group" aria-label="${esc(d.n)} ${u}">${Array.from({length:d.c},(_,k)=>{ const c=k+1, n=d.chs.get(c)||0, has=d.E.some(x=>x.chs.includes(c));
+    return `<button type="button" class="bsch${n?" m"+Math.min(n,2):""}${d.today?.includes(c)?" td":""}${BS.ch===c?" on":""}" data-ch="${c}"${has?"":" disabled"} aria-pressed="${BS.ch===c}" aria-label="${c}${u}${n?`, 묵상 ${n}번`:""}${d.today?.includes(c)?", 오늘 본문":""}">${c}</button>`; }).join("")}</div>
+  <p class="bsgrid-k" aria-hidden="true"><span><i class="m1"></i>묵상</span><span><i class="m2"></i>두 번 이상</span>${d.today?`<span><i class="td"></i>오늘 본문</span>`:""}</p>`; }
+function bsFirst(w){ const t=pv(w,400); const m=t.match(/^.{8,}?[.?!。…](?=\s|$)/); return (m?m[0]:t).slice(0,110); }
+function bsPageHtml(d){ const u=d.i===18?"편":"장", E=d.E.filter(x=>!BS.ch||x.chs.includes(BS.ch)), mk=x=>{ const w=x.w, ps=String(w.passage||"").replace(/^\S+\s*/,""), one=bsFirst(w);
+    return `<li><button type="button" class="bsent" data-w="${w.id}" title="이 글을 엽니다"><span class="bsdate">${+w.date.slice(5,7)}.${+w.date.slice(8,10)}</span><span class="bsbody"><b>${esc(w.title||w.passage||"(제목 없음)")}</b><small>${esc(ps)}${x.med?"":` · <em class="bstag">${esc(/설교/.test(w.type||"")?"설교":w.type||"글")}</em>`}</small>${one?`<span class="bsone">${esc(one)}</span>`:""}</span></button></li>`; };
+  // 묵상한 때별로 — 때는 최근 것이 위, 한 때 안은 날짜 순. 설교 글은 그 때(끝난 뒤 45일까지)에 함께, 어디에도 안 들면 「따로 쓴 글」
+  const G=d.S.map(s=>({s,L:[]})), other=[]; E.slice().sort((a,b)=>(a.w.date||"").localeCompare(b.w.date||"")).forEach(x=>{ const g=G.find(g=>x.w.date>=g.s.a&&daysBetween(g.s.b,x.w.date)<=45); (g?g.L:other).push(x); });
+  const yy=d=>d.slice(0,4), when=s=>`${yy(s.a)}년 ${+s.a.slice(5,7)}월${s.a.slice(0,7)===s.b.slice(0,7)?"":yy(s.a)===yy(s.b)?`–${+s.b.slice(5,7)}월`:` – ${yy(s.b)}년 ${+s.b.slice(5,7)}월`}`;
+  const again=BS.ch&&new Set(E.filter(x=>x.med).map(x=>d.S.findIndex(s=>x.w.date>=s.a&&x.w.date<=s.b))).size>1;
+  return `<div class="bspg-h"><div><p class="bspg-k">${esc(d.n)}${BS.ch?` ${BS.ch}${u}`:""}</p><p class="bspg-n">${BS.ch?`이 ${u}을 쓴 글 ${E.length}편${again?" · 다시 만난 본문":""}`:`묵상 ${d.E.filter(x=>x.med).length}편${d.E.some(x=>!x.med)?` · 설교 ${d.E.filter(x=>!x.med).length}편`:""}`}</p></div>${BS.ch?`<button type="button" class="bsbtn" data-ch="${BS.ch}">모두 보기</button>`:""}<button type="button" class="bsbtn bsshut" data-shut title="책을 덮습니다 (Esc)">덮기</button></div>
+    <div class="bspg-grid">${bsGridHtml(d)}</div>
+    <div class="bspg-list">${E.length?G.slice().reverse().concat(other.length?[{s:null,L:other}]:[]).filter(g=>g.L.length).map(g=>`<h4>${g.s?when(g.s):"따로 쓴 글"}</h4><ol>${g.L.map(mk).join("")}</ol>`).join("")
+      :`<p class="bsempty">${d.E.length?"이 장을 쓴 글이 없습니다.":"이 책을 묵상하면 그날의 글이 여기에 한 줄씩 모입니다."}</p>`}</div>`; }
+function bsPaintPage(){ const d=BS?.D[BS.i], ov=$("#bsview"); if(!d||!ov) return; const pg=ov.querySelector(".bspage"), sc=pg.querySelector(".bspg-list")?.scrollTop||0;
+  pg.innerHTML=bsPageHtml(d); ov.querySelector(".bsback").innerHTML=bsGridHtml(d)+bsBackFoot(d); }
+// 펼친 왼쪽 쪽 아래: 묵상한 때마다 몇 편 · 이 책에서 쓴 양 (점수가 아니라 쌓인 기록으로)
+function bsBackFoot(d){ if(!d.S.length&&!d.E.length) return ""; const yy=x=>x.slice(0,4), when=s=>`${yy(s.a)}년 ${+s.a.slice(5,7)}월${s.a.slice(0,7)===s.b.slice(0,7)?"":yy(s.a)===yy(s.b)?`–${+s.b.slice(5,7)}월`:` – ${yy(s.b)}년 ${+s.b.slice(5,7)}월`}`;
+  return `<div class="bsbackft">${d.S.length?`<p class="bsbackft-h">묵상한 때</p><ul>${d.S.map((s,k)=>`<li><span>${when(s)}${d.open&&k===d.S.length-1?` <small>읽는 중</small>`:""}</span><b>${d.med.filter(x=>x>=s.a&&x<=s.b).length}편</b></li>`).join("")}</ul>`:""}
+    <p class="bsbackft-w">이 책에서 쓴 글 ${d.E.length}편 · 약 ${d.len.toLocaleString()}자</p></div>`; }
+// 1. 책등 → 표지: 책이 선반에서 살짝 들린 뒤, 그 자리에서 가운데로 오며 표지 크기로 커짐 (2D, 크기·자리만)
+function bsCover(i,sp){ if(BS.busy) bsFinish(); const ov=$("#bsview"), st=ov.querySelector(".bsstage"), bk=st.querySelector(".bsbook"), lf=bk.querySelector(".bsleaf"), d=BS.D[i], Z=bsSize();
+  BS.i=i; BS.ch=0; BS.sp=sp; BS.view="cover"; BS.Z=Z;
+  bsPlace(st,Z); st.style.setProperty("--lc",BS_LEAF[i<39?0:1]); bk.style.cssText=""; bk.className="bsbook lv"+d.lv;
+  lf.querySelector(".bscov").innerHTML=bsCoverHtml(d); lf.setAttribute("tabindex","0"); lf.setAttribute("role","button"); lf.setAttribute("aria-label",`${d.n} 표지 — 누르면 펼쳐집니다`);
+  bsPaintPage(); st.hidden=false; st.className="bsstage "+(Z.wide?"wide":"narrow"); const r=sp.getBoundingClientRect(), from=`translate(${r.left-Z.L}px,${r.top-10-Z.T}px) scale(${r.width/Z.W},${r.height/Z.H})`;
+  if(bsRM()){ st.classList.add("show","cv"); lf.focus({preventScroll:true}); return; }
+  sp.classList.add("lift"); bk.style.transform=from; bk.classList.add("fly0");
+  bsWait(120,()=>{ sp.classList.add("gone"); sp.classList.remove("lift"); st.classList.add("show"); bk.classList.remove("fly0"); bk.offsetWidth; bk.style.transform=""; st.classList.add("cv");
+    bsWait(420,()=>{ lf.focus({preventScroll:true}); }); }); }
+// 2. 표지 → 펼침: PC는 왼쪽 가장자리를 축으로 표지가 넘어가며 두 쪽(왼쪽 = 장 칸, 오른쪽 = 목록) · 휴대폰은 아래에서 목록 쪽이 올라옴
+function bsOpenBook(){ if(BS.busy) bsFinish(); if(BS.view!=="cover") return; const st=$("#bsview .bsstage"); BS.view="open"; st.classList.add("op");
+  bsWait(560,()=>{ st.querySelector(".bspage .bsent,.bspage [data-shut]")?.focus({preventScroll:true}); }); }
+function bsShut(){ const st=$("#bsview .bsstage"); BS.view="cover"; BS.ch=0; st.classList.remove("op"); bsWait(420,()=>{ bsPaintPage(); st.querySelector(".bsleaf")?.focus({preventScroll:true}); }); }
+// 3. 표지 → 책장: 들려 나온 길을 거꾸로, 제자리에 꽂힘
+function bsReturn(){ const ov=$("#bsview"), st=ov.querySelector(".bsstage"), bk=st.querySelector(".bsbook"), sp=ov.querySelector(`.bsp[data-i="${BS.i}"],.bsli[data-i="${BS.i}"]`)||BS.sp, Z=BS.Z; BS.view="shelf";
+  const done=()=>{ st.hidden=true; st.className="bsstage "+(Z.wide?"wide":"narrow"); bk.style.transform=""; sp?.classList.remove("gone"); sp?.focus({preventScroll:true}); BS.i=-1; };
+  if(bsRM()||!sp) return done(); const r=sp.getBoundingClientRect(); st.classList.remove("cv"); bk.classList.add("back"); bk.style.transform=`translate(${r.left-Z.L}px,${r.top-Z.T}px) scale(${r.width/Z.W},${r.height/Z.H})`;
+  bsWait(330,()=>{ bk.classList.remove("back"); done(); }); }
+function bsPlace(st,Z){ ["L","T","W","H"].forEach(k=>st.style.setProperty("--"+k,Z[k]+"px")); st.classList.toggle("wide",Z.wide); st.classList.toggle("narrow",!Z.wide); }
+addEventListener("resize",()=>{ if(BS&&BS.view!=="shelf"&&$("#bsview")){ BS.Z=bsSize(); bsPlace($("#bsview .bsstage"),BS.Z); } });
+
 // ───────── 원고 지침 · 날마다 쓴 양 · 책에 넣기 · 책에 실을 판 (기획서 4판 E3, 2026-11-18 팀장님 「남은 후보도 물어보지 말고 계속」) ─────────
 // 저장은 새 큰 칸 없이 「칸마다 시각」 규칙(mergeInner) 그대로 — 원고는 m.meta·m.metaTs, 글은 w.meta·w.metaTs. 칸마다 나중에 고친 쪽이 남고, 지운 칸도 시각이 남아 되살아나지 않음.
 //  · 원고 지침: m.meta의 gd_reader·gd_style·gd_call·gd_avoid·gd_more (칸을 나눠 두 기기에서 다른 칸을 고쳐도 둘 다 남음) → 모든 글쓰기 AI가 「글쓴이가 정한 규칙」 맨 앞에서 읽음(vrFor)
@@ -8645,7 +8762,7 @@ function renderArchive(){
       <div class="row" style="gap:6px;margin-top:6px"><button class="btn small" onclick="roomPick('${m.id}');go('room')">목차 열기</button><button class="btn small ghost" onclick="archGroupSet(false)">낱장으로 펼치기</button></div></div>`}); });
   items.sort((a,b)=>b.d.localeCompare(a.d));
   const any=Object.values(f).some(v=>v!=="")||q;
-  $("#results").innerHTML=`<div class="row" style="margin-bottom:6px"><b class="pen" style="font-size:22px">${items.length}개</b><span class="chip ${ARCH_GROUP?"on":""}" style="margin-left:8px" onclick="archGroupSet(!ARCH_GROUP)" title="원고에 든 글을 원고별로 한 줄로 묶어 봅니다">원고 글 묶어 보기</span>${(n=>n?`<span class="chip" onclick="seedOpen()" title="묵상마다 적어 둔 「설교 씨앗」 한 줄을 한자리에 모아 봅니다">🌱 설교 씨앗 ${n}</span>`:"")(seedItems().length)}${(n=>n?`<span class="chip" onclick="prListOpen()" title="설교마다 남긴 「설교 기록」을 날짜순으로 모아 봅니다">✝ 전한 설교 ${n}</span>`:"")(prAll().length)}${any?`<button class="btn small ghost" onclick="filt={track:'',kind:'',type:'',book:'',topic:''};$('#q').value='';render()">거르기 풀기</button>`:""}<span class="spacer"></span>${any?`<button class="btn small" onclick="saveFilter()">이 찾기 저장</button>`:""}${any&&items.some(i=>i.html.includes('class="label'))?`<button class="btn small" onclick="ruleFromFilter()">이 조건으로 원고 만들기</button>`:""}</div>`
+  $("#results").innerHTML=`<div class="row" style="margin-bottom:6px"><b class="pen" style="font-size:22px">${items.length}개</b><span class="chip ${ARCH_GROUP?"on":""}" style="margin-left:8px" onclick="archGroupSet(!ARCH_GROUP)" title="원고에 든 글을 원고별로 한 줄로 묶어 봅니다">원고 글 묶어 보기</span>${(n=>n?`<span class="chip" onclick="seedOpen()" title="묵상마다 적어 둔 「설교 씨앗」 한 줄을 한자리에 모아 봅니다">🌱 설교 씨앗 ${n}</span>`:"")(seedItems().length)}${(n=>n?`<span class="chip" onclick="prListOpen()" title="설교마다 남긴 「설교 기록」을 날짜순으로 모아 봅니다">✝ 전한 설교 ${n}</span>`:"")(prAll().length)}<span class="chip" onclick="bsOpen()" title="묵상한 성경 66권을 책장으로 봅니다">📚 성경 책장</span>${any?`<button class="btn small ghost" onclick="filt={track:'',kind:'',type:'',book:'',topic:''};$('#q').value='';render()">거르기 풀기</button>`:""}<span class="spacer"></span>${any?`<button class="btn small" onclick="saveFilter()">이 찾기 저장</button>`:""}${any&&items.some(i=>i.html.includes('class="label'))?`<button class="btn small" onclick="ruleFromFilter()">이 조건으로 원고 만들기</button>`:""}</div>`
     +(items.length?items.slice(0,ARCH_MAX).map(i=>i.html).join("")+(items.length>ARCH_MAX?`<div class="row" style="margin-top:10px"><button class="btn small" onclick="ARCH_MAX+=80;renderArchive()">${items.length-ARCH_MAX}개 더 보기</button></div>`:""):`<p class="muted">찾은 기록이 없습니다.</p>`);
 }
 function ruleFromFilter(){ // 서랍에서 거른 조건을 그대로 원고로
