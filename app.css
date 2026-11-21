@@ -2510,10 +2510,10 @@ details.more[open]>summary{margin-bottom:var(--sp-1)}
 
 
 /* ───────── 성경 책장 (2026-11-21) — 화면 가득, 종이 톤 벽 · 참나무 선반 · 두 가지 가죽(구약 밤색·신약 포도주)을 진하기 4단계로 ───────── */
-.bsview{--bs-wall:#efe6d3;--bs-wall2:#e6dbc4;--bs-ink:#3d2a18;--bs-soft:#7a6650;--bs-pc:#ebdfc4;--bs-paper:#faf5ea;--bs-line:rgba(90,60,30,.16);--bs-gold:#e4c98e;--bs-dot:#8a5a2b;
+.bsview{--bs-ot:#6f4a2e;--bs-nt:#6b2f36;--bs-sp:#ebdfc4;--bs-l2:45%;--bs-tx-lo:#3d2a18;--bs-tx-hi:#f2e0b4;--bs-dot-lo:#8a5a2b;--bs-dot-hi:#e4c98e;--bs-wall:#efe6d3;--bs-wall2:#e6dbc4;--bs-ink:#3d2a18;--bs-soft:#7a6650;--bs-pc:#ebdfc4;--bs-paper:#faf5ea;--bs-line:rgba(90,60,30,.16);--bs-gold:#e4c98e;--bs-dot:#8a5a2b;
   position:fixed;inset:0;z-index:138;display:flex;flex-direction:column;color:var(--bs-ink);background:radial-gradient(120% 80% at 50% 0%,var(--bs-wall),var(--bs-wall2));animation:bsin .22s ease-out}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .bsview{--bs-wall:#231d17;--bs-wall2:#1a1511;--bs-ink:#ece2d2;--bs-soft:#b5a58c;--bs-pc:#5a4a38;--bs-paper:#2c251e;--bs-line:rgba(236,226,210,.14);--bs-dot:#e2c48a}}
-:root[data-theme="dark"] .bsview{--bs-wall:#231d17;--bs-wall2:#1a1511;--bs-ink:#ece2d2;--bs-soft:#b5a58c;--bs-pc:#5a4a38;--bs-paper:#2c251e;--bs-line:rgba(236,226,210,.14);--bs-dot:#e2c48a}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .bsview{--bs-ot:#dcaa7a;--bs-nt:#e09aa6;--bs-sp:#3a3028;--bs-l2:38%;--bs-tx-lo:#f2e0b4;--bs-tx-hi:#2a1c10;--bs-dot-lo:#e2c48a;--bs-dot-hi:#5a3a1c;--bs-wall:#231d17;--bs-wall2:#1a1511;--bs-ink:#ece2d2;--bs-soft:#b5a58c;--bs-pc:#5a4a38;--bs-paper:#2c251e;--bs-line:rgba(236,226,210,.14);--bs-dot:#e2c48a}}
+:root[data-theme="dark"] .bsview{--bs-ot:#dcaa7a;--bs-nt:#e09aa6;--bs-sp:#3a3028;--bs-l2:38%;--bs-tx-lo:#f2e0b4;--bs-tx-hi:#2a1c10;--bs-dot-lo:#e2c48a;--bs-dot-hi:#5a3a1c;--bs-wall:#231d17;--bs-wall2:#1a1511;--bs-ink:#ece2d2;--bs-soft:#b5a58c;--bs-pc:#5a4a38;--bs-paper:#2c251e;--bs-line:rgba(236,226,210,.14);--bs-dot:#e2c48a}
 .bsview.out{opacity:0;transition:opacity .18s ease-in}
 @keyframes bsin{from{opacity:0}to{opacity:1}}
 html.bson,html.bson body{overflow:hidden}
@@ -2526,7 +2526,7 @@ html.bson,html.bson body{overflow:hidden}
 .bslegend{display:flex;gap:6px 14px;flex-wrap:wrap;margin:0;font:12px/1.4 var(--ui-font);color:var(--bs-soft)}
 .bslegend span{display:inline-flex;align-items:center;gap:5px}
 .lgdot{width:6px;height:6px;border-radius:50%;background:var(--bs-dot)}
-.lgsw{width:22px;height:9px;border-radius:2px;background:linear-gradient(90deg,var(--bs-pc),#6f4a2e)}
+.lgsw{width:22px;height:9px;border-radius:2px;background:linear-gradient(90deg,var(--bs-sp),var(--bs-ot))}
 .lgrib{width:5px;height:12px;background:var(--bible);clip-path:polygon(0 0,100% 0,100% 100%,50% 78%,0 100%)}
 .bsbtn{font:13px/1 var(--ui-font);padding:8px 12px;border-radius:999px;border:1px solid var(--bs-line);background:var(--bs-paper);color:var(--bs-ink);cursor:pointer;box-shadow:0 1px 2px rgba(60,35,15,.12)}
 .bsbtn:hover{border-color:var(--bs-soft)}
@@ -2543,17 +2543,18 @@ html.bson .askview{z-index:160}
 .bsplank::before{content:"";position:absolute;left:-6px;right:-6px;top:0;height:10px;border-radius:2px;background:linear-gradient(180deg,#b08a5e,#8a6540 55%,#6e4f32);box-shadow:0 4px 8px -3px rgba(60,35,15,.5)}
 .bsplank span{display:block;text-align:center;font:12px/1.2 var(--ui-font);letter-spacing:.1em;color:var(--bs-soft);white-space:nowrap}
 /* 책등 */
-.bsp{--lv:5%;--tx:#5a3f26;--dt:var(--bs-dot);position:relative;flex:0 0 auto;width:var(--w);height:var(--h);padding:0;margin:0;border:0;border-radius:2px 2px 1px 1px;cursor:pointer;color:var(--tx);
-  background:linear-gradient(90deg,rgba(0,0,0,.13),rgba(255,255,255,.12) 28%,transparent 55%,rgba(0,0,0,.17)),color-mix(in srgb,var(--lc) var(--lv),var(--bs-pc));
+.bsp{--lv:5%;--tx:var(--bs-tx-lo);--dt:var(--bs-dot-lo);position:relative;flex:0 0 auto;width:var(--w);height:var(--h);padding:0;margin:0;border:0;border-radius:2px 2px 1px 1px;cursor:pointer;color:var(--tx);
+  background:linear-gradient(90deg,rgba(0,0,0,.13),rgba(255,255,255,.12) 28%,transparent 55%,rgba(0,0,0,.17)),color-mix(in srgb,var(--lc) var(--lv),var(--bs-sp));
   box-shadow:inset 0 0 0 1px rgba(60,35,15,.16),0 1px 2px rgba(40,25,10,.25);transition:transform .12s ease-out,box-shadow .12s ease-out}
-.bsp.lv1{--lv:44%}.bsp.lv2{--lv:62%;--tx:#f2e0b4;--dt:var(--bs-gold)}.bsp.lv3{--lv:82%;--tx:#f2e0b4;--dt:var(--bs-gold)}.bsp.lv4{--lv:100%;--tx:#f2e0b4;--dt:var(--bs-gold)}
+/* 글자 명도가 바뀌는 순간 = lv3(장의 2/3 이상 묵상) — 바탕과 글자의 대비를 재어 정함(2026-11-21): 62%였던 예전 lv2는 어두운 글자·밝은 글자 모두 대비 2.7~3.8로 읽기 어려운 자리였음.
+   단계마다 바탕을 그 경계에서 떼어 놓아, 어느 쪽 글자든 4.5:1 이상(작은 글자 기준). 바뀌는 자리에서 가죽이 한 번에 짙어져 「아주 짙어졌다」가 눈에 보임. 어두운 화면은 거꾸로 — 책등이 밝아지고 글자가 어두워짐 */
+.bsp.lv1{--lv:25%}.bsp.lv2{--lv:var(--bs-l2)}.bsp.lv3{--lv:88%;--tx:var(--bs-tx-hi);--dt:var(--bs-dot-hi)}.bsp.lv4{--lv:100%;--tx:var(--bs-tx-hi);--dt:var(--bs-dot-hi)}
 .bsp:hover{transform:translateY(-4px)}
 .bsp:focus-visible,.bsli:focus-visible,.bsleaf:focus-visible,.bsch:focus-visible,.bsent:focus-visible{outline:2px solid var(--sepia);outline-offset:2px}
 .bsp.lift{transform:translateY(-10px);transition:transform .12s ease-out}
 .bsp.gone{opacity:0}
 .bsp.now{box-shadow:inset 0 0 0 1px rgba(60,35,15,.16),0 3px 8px -1px rgba(40,25,10,.4)}
 .bsnm{position:absolute;left:0;right:0;top:34px;bottom:10px;display:flex;align-items:center;justify-content:flex-start;writing-mode:vertical-rl;text-orientation:upright;font:700 12px/1 "Nanum Myeongjo","Gowun Batang",serif;letter-spacing:.04em;white-space:nowrap;overflow:hidden}
-.bsp.lv2 .bsnm,.bsp.lv3 .bsnm,.bsp.lv4 .bsnm{text-shadow:0 1px 0 rgba(0,0,0,.3)}
 .bsdots{position:absolute;top:8px;left:0;right:0;display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--dt)}
 .bsdots i{width:5px;height:5px;border-radius:50%;background:currentColor;opacity:.42}
 .bsdots i.last{opacity:1}
@@ -2563,12 +2564,13 @@ html.bson .askview{z-index:160}
 /* 목록으로 보기 */
 .bslist{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(260px,100%),1fr));gap:6px}
 .bsli{--lv:5%;display:grid;grid-template-columns:14px auto 1fr;grid-template-rows:auto auto;column-gap:8px;align-items:center;text-align:left;padding:9px 12px;border-radius:10px;border:1px solid var(--bs-line);background:var(--bs-paper);color:var(--bs-ink);cursor:pointer;font:inherit}
-.bsli.lv1{--lv:44%}.bsli.lv2{--lv:62%}.bsli.lv3{--lv:82%}.bsli.lv4{--lv:100%}
+.bsli.lv1{--lv:25%}.bsli.lv2{--lv:var(--bs-l2)}.bsli.lv3{--lv:88%}.bsli.lv4{--lv:100%}
 .bsli.now{border-color:var(--bible)}
 .bsli.gone{opacity:0}
-.bslisw{grid-row:1/3;width:12px;height:30px;border-radius:2px;background:color-mix(in srgb,var(--lc) var(--lv),var(--bs-pc));box-shadow:inset 0 0 0 1px rgba(60,35,15,.16)}
+.bslisw{grid-row:1/3;width:12px;height:30px;border-radius:2px;background:color-mix(in srgb,var(--lc) var(--lv),var(--bs-sp));box-shadow:inset 0 0 0 1px rgba(60,35,15,.16)}
 .bsli b{font:700 15px/1.3 "Nanum Myeongjo",serif}
 .bsli .bsdots{position:static;flex-direction:row;justify-content:flex-start;color:var(--bs-dot)}
+.bsp .bsdots{color:var(--dt)}
 .bsli small{grid-column:2/4;font:12px/1.4 var(--ui-font);color:var(--bs-soft)}
 .bsempty{text-align:center;color:var(--bs-soft);font:14px/1.6 var(--ui-font);margin:20px auto}
 /* 꺼낸 책 */
@@ -2577,7 +2579,7 @@ html.bson .askview{z-index:160}
 .bsdim{position:absolute;inset:0;background:rgba(28,18,8,.42);opacity:0;transition:opacity .22s ease-out}
 .bsstage.show .bsdim{opacity:1}
 .bsstage.narrow.op .bsdim{background:rgba(28,18,8,.55)}
-.bsbook{--pc:var(--bs-pc);--lv:12%;position:absolute;left:var(--L);top:var(--T);width:var(--W);height:var(--H);transform-origin:0 0;transform-style:preserve-3d;transition:transform .42s cubic-bezier(.2,.8,.2,1)}
+.bsbook{--pc:#ebdfc4;--lv:12%;position:absolute;left:var(--L);top:var(--T);width:var(--W);height:var(--H);transform-origin:0 0;transform-style:preserve-3d;transition:transform .42s cubic-bezier(.2,.8,.2,1)}
 .bsbook.lv1,.bsbook.lv2{--lv:88%}.bsbook.lv3{--lv:95%}.bsbook.lv4{--lv:100%}   /* 표지는 묵상한 책이면 짙은 가죽 그대로 — 진하기 단계는 책등에서만 */
 .bsbook.fly0{transition:none}
 .bsbook.back{transition:transform .33s cubic-bezier(.4,0,1,1)}
