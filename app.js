@@ -1249,6 +1249,10 @@ const MANUALS=[["quick","간단 매뉴얼","읽자마자 바로 써 보는 한 �
 // ───────── 새 소식 (공개판, 2026-10-31 팀장님): 중요한 고침은 앱을 열 때 한 번만 쉬운 말로 알림 ─────────
 // 새 소식을 더할 때: NEWS 맨 앞에 넣고 id 는 날짜(같은 날 둘째는 2026-11-02b 처럼 — 글자 순서로 새것이 뒤). 본 소식 id 는 이 기기에만(seojae-open.newsSeen)
 const NEWS=[
+ {id:"2026-11-21d",date:"2026년 11월 21일",title:"긴 책도 바로 찾아가요",items:[
+  ["⇥","바로 가기 띠","펼친 책 목록 위에 장 번호(묵상한 때 순서면 「26.11–12」 같은 때)가 한 줄로 있어요. 누르면 그 자리로 바로 가고, 목록을 내리면 지금 보는 자리가 붉게 켜져요.","시편처럼 묵상이 많은 책에서 편해요."],
+  ["📌","붙어 따라오는 제목","목록을 내려도 「12장」 같은 묶음 제목이 위에 붙어 있어 지금 어디를 보는지 알 수 있어요.",""],
+  ["≡","한 줄씩","묵상이 8편을 넘는 책은 한 편이 한 줄로 촘촘히 보여요. 첫 문장은 마우스를 올리면 보여요.","휴대폰에서 장이 많은 책은 장 칸을 접어 두었어요 — 「장 칸 보기」를 누르면 펼쳐져요."]]},
  {id:"2026-11-21c",date:"2026년 11월 21일",title:"펼친 책을 장·절 순서로",items:[
   ["↕","두 가지 순서","성경 책장에서 책을 펼치면 목록 위에 「묵상한 때 | 장·절 순서」가 있어요. 장·절 순서를 누르면 1장 1절부터 성경 순서대로 묵상이 늘어서요.","시편은 「편·절 순서」로 보여요."],
   ["§","장마다 한 묶음","장·절 순서에서는 장마다 묶이고, 왼쪽에 「12:14」처럼 장절이, 아래에 쓴 날이 보여요. 같은 본문을 몇 해 뒤 다시 묵상했다면 나란히 놓여요.","고른 순서는 이 기기에서 기억해요."]]},
@@ -7387,6 +7391,7 @@ function bsClick(e){ const t=e.target;
   if(t.closest("[data-seed]")) return bsSeed();
   if(t.closest("[data-back]")) return bsBack();
   const en=t.closest("[data-w]"); if(en){ const id=en.dataset.w; bsClose(); go("write",{edit:id}); return; }
+  const jp=t.closest("[data-jump]"); if(jp){ bsJump(jp.dataset.jump); return; }
   const od=t.closest("[data-ord]"); if(od){ BS_ORD=od.dataset.ord==="ch"?"ch":"date"; try{ localStorage.setItem("seojae-open.bsOrd",BS_ORD); }catch(_){} bsPaintPage(); return; }
   const ch=t.closest("[data-ch]"); if(ch){ BS.ch=BS.ch===+ch.dataset.ch?0:+ch.dataset.ch; bsPaintPage(); return; }
   if(t.closest(".bsleaf")&&BS?.view==="cover") return bsOpenBook();
@@ -7413,16 +7418,18 @@ function bsGridHtml(d){ const u=d.i===18?"편":"장"; return `<div class="bsgrid
 function bsFirst(w){ const t=pv(w,400); const m=t.match(/^.{8,}?[.?!。…](?=\s|$)/); return (m?m[0]:t).slice(0,110); }
 // 장·절 순서: 시작 장 → 시작 절 → 날짜 순, 시작 장마다 한 묶음 (「창 1:1-2:3」은 1장에)
 function bsByCh(E,u){ const M=new Map(); E.slice().sort((a,b)=>a.chs[0]-b.chs[0]||(a.vs||0)-(b.vs||0)||(a.w.date||"").localeCompare(b.w.date||"")).forEach(x=>{ const c=x.chs[0]; if(!M.has(c)) M.set(c,[]); M.get(c).push(x); }); return [...M]; }
-function bsPageHtml(d){ const u=d.i===18?"편":"장", E=d.E.filter(x=>!BS.ch||x.chs.includes(BS.ch)), mk=x=>{ const w=x.w, ps=String(w.passage||"").replace(/^\S+\s*/,""), one=bsFirst(w);
+function bsPageHtml(d){ const u=d.i===18?"편":"장", E=d.E.filter(x=>!BS.ch||x.chs.includes(BS.ch)), dense=E.length>8, mk=x=>{ const w=x.w, ps=String(w.passage||"").replace(/^\S+\s*/,""), one=bsFirst(w);
     const tg=x.med?"":` · <em class="bstag">${esc(/설교/.test(w.type||"")?"설교":w.type||"글")}</em>`, byCh=BS_ORD==="ch";
-    return `<li><button type="button" class="bsent" data-w="${w.id}" title="이 글을 엽니다"><span class="bsdate${byCh?" bsref":""}">${byCh?(x.vs?`${x.chs[0]}:${x.vs}`:`${x.chs[0]}${u}`):`${+w.date.slice(5,7)}.${+w.date.slice(8,10)}`}</span><span class="bsbody"><b>${esc(w.title||w.passage||"(제목 없음)")}</b><small>${byCh?esc((w.date||"").replace(/-/g,".")):""}${byCh&&ps?" · ":""}${esc(ps)}${tg}</small>${one?`<span class="bsone">${esc(one)}</span>`:""}</span></button></li>`; };
+    return `<li><button type="button" class="bsent" data-w="${w.id}" title="${dense&&one?esc(one):"이 글을 엽니다"}"><span class="bsdate${byCh?" bsref":""}">${byCh?(x.vs?`${x.chs[0]}:${x.vs}`:`${x.chs[0]}${u}`):`${+w.date.slice(5,7)}.${+w.date.slice(8,10)}`}</span><span class="bsbody"><b>${esc(w.title||w.passage||"(제목 없음)")}</b><small>${byCh?esc((w.date||"").replace(/-/g,".")):""}${byCh&&ps?" · ":""}${esc(ps)}${tg}</small>${one?`<span class="bsone">${esc(one)}</span>`:""}</span></button></li>`; };
   // 묵상한 때별로 — 때는 최근 것이 위, 한 때 안은 날짜 순. 설교 글은 그 때(끝난 뒤 45일까지)에 함께, 어디에도 안 들면 「따로 쓴 글」
   const G=d.S.map(s=>({s,L:[]})), other=[]; E.slice().sort((a,b)=>(a.w.date||"").localeCompare(b.w.date||"")).forEach(x=>{ const g=G.find(g=>x.w.date>=g.s.a&&daysBetween(g.s.b,x.w.date)<=45); (g?g.L:other).push(x); });
   const yy=d=>d.slice(0,4), when=s=>`${yy(s.a)}년 ${+s.a.slice(5,7)}월${s.a.slice(0,7)===s.b.slice(0,7)?"":yy(s.a)===yy(s.b)?`–${+s.b.slice(5,7)}월`:` – ${yy(s.b)}년 ${+s.b.slice(5,7)}월`}`;
+  // 긴 책(시편 150편 등): 묶음마다 바로 가기 띠(위에 붙음) + 묶음 제목이 붙어 따라옴 + 8편이 넘으면 한 줄씩(첫 문장은 마우스를 올리면)
+  const GR=!E.length?[]:BS_ORD==="ch"?bsByCh(E,u).map(([c,L])=>({k:"c"+c,h:`${c}${u}`,t:String(c),L})):G.slice().reverse().concat(other.length?[{s:null,L:other}]:[]).filter(g=>g.L.length).map((g,j)=>({k:"s"+j,h:g.s?when(g.s):"따로 쓴 글",t:g.s?bsSeasonText(g.s):"따로",L:g.L}));
   const again=BS.ch&&new Set(E.filter(x=>x.med).map(x=>d.S.findIndex(s=>x.w.date>=s.a&&x.w.date<=s.b))).size>1;
   return `<div class="bspg-h"><div><p class="bspg-k">${esc(d.n)}${BS.ch?` ${BS.ch}${u}`:""}</p><p class="bspg-n">${BS.ch?`이 ${u}을 쓴 글 ${E.length}편${again?" · 다시 만난 본문":""}`:`묵상 ${d.E.filter(x=>x.med).length}편${d.E.some(x=>!x.med)?` · 설교 ${d.E.filter(x=>!x.med).length}편`:""}`}</p></div>${BS.ch?`<button type="button" class="bsbtn" data-ch="${BS.ch}">모두 보기</button>`:d.E.some(x=>x.med)?(m=>`<button type="button" class="bsbtn bsseed" data-seed title="${m?`이 책의 묵상을 모아 둔 글방 원고 「${esc(m.title)}」를 엽니다`:`이 책의 묵상을 성경 순서로 모아 글방 원고를 만듭니다 — 앞으로 쓰는 이 책의 묵상도 저절로 들어옵니다. 묵상은 그대로이고 사본을 만들지 않습니다`}">${m?"✎ 원고 열기":"✎ 원고 씨앗으로"}</button>`)(bsSeedMs(d.i)):""}<button type="button" class="bsbtn bsshut" data-shut title="책을 덮습니다 (Esc)">덮기</button></div>
-    <div class="bspg-grid">${bsGridHtml(d)}</div>
-    <div class="bspg-list">${E.length?`<div class="bsord" role="group" aria-label="목록 순서">${[["date","묵상한 때"],["ch",`${u}·절 순서`]].map(([k,n])=>`<button type="button" data-ord="${k}" aria-pressed="${BS_ORD===k}" class="${BS_ORD===k?"on":""}">${n}</button>`).join("")}</div>`:""}${!E.length?"":BS_ORD==="ch"?bsByCh(E,u).map(([c,L])=>`<h4>${c}${u}</h4><ol>${L.map(mk).join("")}</ol>`).join(""):G.slice().reverse().concat(other.length?[{s:null,L:other}]:[]).filter(g=>g.L.length).map(g=>`<h4>${g.s?when(g.s):"따로 쓴 글"}</h4><ol>${g.L.map(mk).join("")}</ol>`).join("")}${E.length?""
+    <div class="bspg-grid">${d.c>24?`<details class="bsgridd"${BS.ch?" open":""}><summary>${u} 칸 보기 <small>${d.c}${u} 중 ${d.chs.size}${u} 묵상 · 누르면 그 ${u}의 글만</small></summary>${bsGridHtml(d)}</details>`:bsGridHtml(d)}</div>
+    <div class="bspg-list${dense?" dense":""}">${E.length?`<div class="bsnav"><div class="bsord" role="group" aria-label="목록 순서">${[["date","묵상한 때"],["ch",`${u}·절 순서`]].map(([k,n])=>`<button type="button" data-ord="${k}" aria-pressed="${BS_ORD===k}" class="${BS_ORD===k?"on":""}">${n}</button>`).join("")}</div>${GR.length>=4?`<div class="bsrail" role="group" aria-label="${BS_ORD==="ch"?u:"묵상한 때"} 바로 가기">${GR.map(g=>`<button type="button" data-jump="${g.k}" title="${esc(g.h)} — 글 ${g.L.length}">${esc(g.t)}${g.L.length>1?`<small>${g.L.length}</small>`:""}</button>`).join("")}</div>`:""}</div>`:""}${GR.map(g=>`<section class="bssec" data-g="${g.k}"><h4>${esc(g.h)}${GR.length>=4?` <small>· 글 ${g.L.length}</small>`:""}</h4><ol>${g.L.map(mk).join("")}</ol></section>`).join("")}${E.length?""
       :`<p class="bsempty">${d.E.length?"이 장을 쓴 글이 없습니다.":"이 책을 묵상하면 그날의 글이 여기에 한 줄씩 모입니다."}</p>`}</div>`; }
 // 이 책 묵상을 원고 씨앗으로 (2026-11-21 팀장님 허락): 서랍 「조건으로 모으는 원고」(m.rule — 성경책 하나 + 묵상) 그대로 — 사본 없이, 앞으로 쓰는 묵상도 저절로. 같은 조건의 원고가 있으면 그것을 엶
 const bsSeedMs=i=>liveMs().find(m=>m.rule&&(m.rule.books||[]).length===1&&+m.rule.books[0]===i&&(m.rule.types||[]).join()==="묵상"&&!(m.rule.topics||[]).length&&!(m.rule.readBooks||[]).length&&!m.rule.year);
@@ -7433,7 +7440,13 @@ async function bsSeed(){ const d=BS?.D[BS.i]; if(!d) return; const old=bsSeedMs(
   const m={id:uid(),title:tt,rule:{...blankRule(),types:["묵상"],books:[d.i]},order:"bible"}; S.manuscripts.push(m); save();
   bsClose(); toast(`「${tt}」 원고에 묵상 ${msList(m).length}편이 모였습니다 — 순서를 직접 바꾸려면 원고 홈 「직접 다듬기로 바꾸기」`); stOpen("ms:"+m.id); }
 function bsPaintPage(){ const d=BS?.D[BS.i], ov=$("#bsview"); if(!d||!ov) return; const pg=ov.querySelector(".bspage"), sc=pg.querySelector(".bspg-list")?.scrollTop||0;
-  pg.innerHTML=bsPageHtml(d); ov.querySelector(".bsback").innerHTML=bsGridHtml(d)+bsBackFoot(d); }
+  pg.innerHTML=bsPageHtml(d); ov.querySelector(".bsback").innerHTML=bsGridHtml(d)+bsBackFoot(d);
+  const L=pg.querySelector(".bspg-list"); if(L){ L.onscroll=()=>{ clearTimeout(L._t); L._t=setTimeout(bsSpy,30); }; bsSpy(); } }
+// 바로 가기: 누르면 그 묶음으로 · 목록을 내리면 지금 묶음의 단추가 켜지고 띠 가운데로
+function bsJump(k){ const L=$("#bsview .bspg-list"), h=L?.querySelector(`[data-g="${k}"]`); if(!h) return; L.scrollTo({top:Math.max(0,h.offsetTop-(L.querySelector(".bsnav")?.offsetHeight||0)),behavior:bsRM()?"auto":"smooth"}); L.querySelectorAll(".bsrail [data-jump]").forEach(b=>b.classList.toggle("on",b.dataset.jump===k)); clearTimeout(L._t); L._t=setTimeout(bsSpy,600); }
+function bsSpy(){ const L=$("#bsview .bspg-list"); if(!L) return; const nh=L.querySelector(".bsnav")?.offsetHeight||0; L.style.setProperty("--navh",nh+"px");
+  const secs=[...L.querySelectorAll("[data-g]")]; let cur=secs[0]; for(const x of secs){ if(x.offsetTop-nh-6<=L.scrollTop) cur=x; else break; }
+  L.querySelectorAll(".bsrail [data-jump]").forEach(b=>{ const on=!!cur&&b.dataset.jump===cur.dataset.g; if(on===b.classList.contains("on")) return; b.classList.toggle("on",on); b.setAttribute("aria-current",on?"true":"false"); if(on){ const r=b.parentElement; r.scrollTo({left:Math.max(0,b.offsetLeft-r.clientWidth/2+b.offsetWidth/2),behavior:"auto"}); } }); }
 // 펼친 왼쪽 쪽 아래: 묵상한 때마다 몇 편 · 이 책에서 쓴 양 (점수가 아니라 쌓인 기록으로)
 function bsBackFoot(d){ if(!d.S.length&&!d.E.length) return ""; const yy=x=>x.slice(0,4), when=s=>`${yy(s.a)}년 ${+s.a.slice(5,7)}월${s.a.slice(0,7)===s.b.slice(0,7)?"":yy(s.a)===yy(s.b)?`–${+s.b.slice(5,7)}월`:` – ${yy(s.b)}년 ${+s.b.slice(5,7)}월`}`;
   return `<div class="bsbackft">${d.S.length?`<p class="bsbackft-h">묵상한 때</p><ul>${d.S.map((s,k)=>`<li><span>${when(s)}${d.open&&k===d.S.length-1?` <small>읽는 중</small>`:""}</span><b>${d.med.filter(x=>x>=s.a&&x<=s.b).length}편</b></li>`).join("")}</ul>`:""}
@@ -7450,7 +7463,7 @@ function bsCover(i,sp){ if(BS.busy) bsFinish(); const ov=$("#bsview"), st=ov.que
     bsWait(420,()=>{ lf.focus({preventScroll:true}); }); }); }
 // 2. 표지 → 펼침: PC는 왼쪽 가장자리를 축으로 표지가 넘어가며 두 쪽(왼쪽 = 장 칸, 오른쪽 = 목록) · 휴대폰은 아래에서 목록 쪽이 올라옴
 function bsOpenBook(){ if(BS.busy) bsFinish(); if(BS.view!=="cover") return; const st=$("#bsview .bsstage"); BS.view="open"; st.classList.add("op");
-  bsWait(560,()=>{ st.querySelector(".bspage .bsent,.bspage [data-shut]")?.focus({preventScroll:true}); }); }
+  bsSpy(); bsWait(560,()=>{ bsSpy(); st.querySelector(".bspage .bsent,.bspage [data-shut]")?.focus({preventScroll:true}); }); }
 function bsShut(){ const st=$("#bsview .bsstage"); BS.view="cover"; BS.ch=0; st.classList.remove("op"); bsWait(420,()=>{ bsPaintPage(); st.querySelector(".bsleaf")?.focus({preventScroll:true}); }); }
 // 3. 표지 → 책장: 들려 나온 길을 거꾸로, 제자리에 꽂힘
 function bsReturn(){ const ov=$("#bsview"), st=ov.querySelector(".bsstage"), bk=st.querySelector(".bsbook"), sp=ov.querySelector(`.bsp[data-i="${BS.i}"],.bsli[data-i="${BS.i}"]`)||BS.sp, Z=BS.Z; BS.view="shelf";

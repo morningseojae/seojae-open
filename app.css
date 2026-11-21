@@ -2618,12 +2618,27 @@ html.bson .askview{z-index:160}
 .bspg-k{margin:0;font:800 20px/1.25 "Nanum Myeongjo",serif}
 .bspg-n{margin:3px 0 0;font:12.5px/1.4 var(--ui-font);color:var(--bs-soft)}
 .bspg-grid{padding:12px 18px 4px}
-.bspg-list{flex:1;overflow:auto;padding:6px 18px max(20px,env(safe-area-inset-bottom))}
+.bspg-list{position:relative;flex:1;overflow:auto;padding:6px 18px max(20px,env(safe-area-inset-bottom))}
 .bspg-list h4{margin:16px 0 6px;font:700 12.5px/1 var(--ui-font);letter-spacing:.12em;color:var(--bs-soft)}
 .bspg-list ol{list-style:none;margin:0;padding:0}
 .bsent{display:flex;gap:12px;width:100%;text-align:left;padding:10px 6px;border:0;border-bottom:1px solid var(--bs-line);background:none;color:inherit;cursor:pointer;font:inherit;border-radius:6px}
 .bsent:hover{background:color-mix(in srgb,var(--bs-dot) 8%,transparent)}
-.bsord{position:sticky;top:0;z-index:1;display:flex;gap:4px;margin:4px 0 2px;padding:6px 0;background:var(--bs-paper)}
+.bsnav{position:sticky;top:0;z-index:2;margin:0 -2px;padding:4px 2px 6px;background:var(--bs-paper);box-shadow:0 6px 8px -8px rgba(60,35,15,.35)}
+.bsord{display:flex;gap:4px;margin:4px 0 0;padding:2px 0}
+.bsrail{position:relative;display:flex;gap:4px;margin-top:8px;overflow-x:auto;scrollbar-width:none;overscroll-behavior-x:contain;padding:1px}
+.bsrail::-webkit-scrollbar{display:none}
+.bsrail button{flex:0 0 auto;min-width:36px;height:30px;padding:0 9px;border-radius:8px;border:1px solid var(--bs-line);background:transparent;color:var(--bs-ink);font:600 12.5px/1 var(--ui-font);font-variant-numeric:tabular-nums;cursor:pointer;white-space:nowrap}
+.bsrail button small{margin-left:3px;font-size:10px;font-weight:400;color:var(--bs-soft)}
+.bsrail button.on{background:var(--bible);border-color:var(--bible);color:#fff}
+.bsrail button.on small{color:rgba(255,255,255,.8)}
+.bspg-list .bssec h4{position:sticky;top:var(--navh,0px);z-index:1;margin:0;padding:12px 0 6px;background:var(--bs-paper)}
+.bspg-list .bssec h4 small{font-weight:400;letter-spacing:0;margin-left:4px}
+.bspg-list.dense .bsone{display:none}
+.bspg-list.dense .bsent{padding:7px 6px}
+.bspg-list.dense .bsbody b{font-size:14.5px}
+.bsgridd summary{cursor:pointer;font:600 13px/1.4 var(--ui-font);color:var(--bs-ink);padding:4px 0}
+.bsgridd summary small{font-weight:400;color:var(--bs-soft);margin-left:4px}
+.bsgridd[open] summary{margin-bottom:8px}
 .bsord button{font:12.5px/1 var(--ui-font);padding:7px 12px;border-radius:999px;border:1px solid var(--bs-line);background:transparent;color:var(--bs-soft);cursor:pointer}
 .bsord button.on{background:var(--bs-ink);border-color:var(--bs-ink);color:var(--bs-paper)}
 .bsdate{flex:0 0 46px;font:700 14px/1.5 var(--ui-font);color:var(--bible);font-variant-numeric:tabular-nums}
