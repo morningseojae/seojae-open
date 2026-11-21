@@ -2621,7 +2621,10 @@ html.bson .askview{z-index:160}
 .bspg-list ol{list-style:none;margin:0;padding:0}
 .bsent{display:flex;gap:12px;width:100%;text-align:left;padding:10px 6px;border:0;border-bottom:1px solid var(--bs-line);background:none;color:inherit;cursor:pointer;font:inherit;border-radius:6px}
 .bsent:hover{background:color-mix(in srgb,var(--bs-dot) 8%,transparent)}
-.bsdate{flex:0 0 40px;font:700 14px/1.5 var(--ui-font);color:var(--bible);font-variant-numeric:tabular-nums}
+.bsord{position:sticky;top:0;z-index:1;display:flex;gap:4px;margin:4px 0 2px;padding:6px 0;background:var(--bs-paper)}
+.bsord button{font:12.5px/1 var(--ui-font);padding:7px 12px;border-radius:999px;border:1px solid var(--bs-line);background:transparent;color:var(--bs-soft);cursor:pointer}
+.bsord button.on{background:var(--bs-ink);border-color:var(--bs-ink);color:var(--bs-paper)}
+.bsdate{flex:0 0 46px;font:700 14px/1.5 var(--ui-font);color:var(--bible);font-variant-numeric:tabular-nums}
 .bsbody{display:flex;flex-direction:column;gap:2px;min-width:0}
 .bsbody b{font:700 15px/1.4 "Nanum Myeongjo",serif;word-break:keep-all}
 .bsbody small{font:12px/1.4 var(--ui-font);color:var(--bs-soft)}

@@ -1249,6 +1249,9 @@ const MANUALS=[["quick","간단 매뉴얼","읽자마자 바로 써 보는 한 �
 // ───────── 새 소식 (공개판, 2026-10-31 팀장님): 중요한 고침은 앱을 열 때 한 번만 쉬운 말로 알림 ─────────
 // 새 소식을 더할 때: NEWS 맨 앞에 넣고 id 는 날짜(같은 날 둘째는 2026-11-02b 처럼 — 글자 순서로 새것이 뒤). 본 소식 id 는 이 기기에만(seojae-open.newsSeen)
 const NEWS=[
+ {id:"2026-11-21c",date:"2026년 11월 21일",title:"펼친 책을 장·절 순서로",items:[
+  ["↕","두 가지 순서","성경 책장에서 책을 펼치면 목록 위에 「묵상한 때 | 장·절 순서」가 있어요. 장·절 순서를 누르면 1장 1절부터 성경 순서대로 묵상이 늘어서요.","시편은 「편·절 순서」로 보여요."],
+  ["§","장마다 한 묶음","장·절 순서에서는 장마다 묶이고, 왼쪽에 「12:14」처럼 장절이, 아래에 쓴 날이 보여요. 같은 본문을 몇 해 뒤 다시 묵상했다면 나란히 놓여요.","고른 순서는 이 기기에서 기억해요."]]},
  {id:"2026-11-21b",date:"2026년 11월 21일",title:"한 권의 묵상을 원고 씨앗으로",items:[
   ["✎","원고 씨앗으로","성경 책장에서 책을 펼치고 위 「✎ 원고 씨앗으로」를 누르면, 그 책의 묵상이 성경 순서로 모인 글방 원고가 생겨요.","묵상은 그대로이고 사본을 만들지 않아요."],
   ["🌱","저절로 자라는 원고","앞으로 그 책을 묵상하면 원고에도 저절로 들어와요. 몇 해 뒤 다시 묵상해도 같은 원고에 쌓여요.","이미 만든 책이면 단추가 「✎ 원고 열기」로 바뀌어요."],
@@ -7341,19 +7344,19 @@ function sameCard(w){ const o=sameList(w); if(!o||!o.L.length) return ""; const 
 //  · 셈: 점·진하기·장 수는 묵상만, 목록에는 설교 글도 「설교」 꼬리표로 함께 · 한 절이라도 묵상한 장 = 묵상한 장 · 묵상한 때는 날짜 사이가 45일 안이면 한 때로 묶음
 const BS_GRP=[["율법서",0,5,168],["역사서",5,17,158],["시가서",17,22,172],["대선지서",22,27,164],["소선지서",27,39,146],["복음서",39,43,166],["역사서",43,44,158],["바울 서신",44,57,150],["일반 서신",57,65,144],["예언서",65,66,160]];
 const BS_LEAF=["#6f4a2e","#6b2f36"];   // 구약 밤색 가죽 · 신약 포도주 가죽 (두 가지만 — 진하기로 묵상한 정도)
-let BS=null, BS_LIST=false; try{ BS_LIST=localStorage.getItem("seojae-open.bsList")==="1"; }catch(_){}
+let BS=null, BS_LIST=false, BS_ORD="date"; try{ BS_LIST=localStorage.getItem("seojae-open.bsList")==="1"; BS_ORD=localStorage.getItem("seojae-open.bsOrd")==="ch"?"ch":"date"; }catch(_){}   // 펼친 책 목록 순서: date 묵상한 때 · ch 장·절 순서 (2026-11-21 팀장님)
 const bsRM=()=>matchMedia("(prefers-reduced-motion:reduce)").matches;
 // 본문 → {book, chs:[장…]} — 「고후 12:14-21」·「창 1:1-2:3」·「시편 23편」·「룻기 1-2장」
 function bsRange(p){ const r=refKey(p); if(!r) return null; const s=String(p), max=BIBLE[r.book][1]; let e=r.ch;
   const m=s.match(/\d+\s*:\s*\d+\s*[-~–]\s*(\d+)\s*:/)||s.match(/(?:^|\s)\d+\s*[-~–]\s*(\d+)\s*[장편]/); if(m&&+m[1]>r.ch) e=Math.min(+m[1],max);
-  const chs=[]; for(let c=r.ch;c<=e&&c<=max;c++) chs.push(c); return chs.length?{book:r.book,chs}:null; }
+  const chs=[]; for(let c=r.ch;c<=e&&c<=max;c++) chs.push(c); return chs.length?{book:r.book,chs,vs:r.vs||0}:null; }
 function bsSeasons(dates){ const ds=[...new Set(dates.filter(Boolean))].sort(), S=[]; ds.forEach(d=>{ const L=S.at(-1); if(L&&daysBetween(L.b,d)<=45) L.b=d; else S.push({a:d,b:d}); }); return S; }
 function bsSeasonText(s,open){ const y=d=>d.slice(2,4), mo=d=>+d.slice(5,7), a=`${y(s.a)}.${mo(s.a)}`;
   if(open) return `${a}–`; if(s.a.slice(0,7)===s.b.slice(0,7)) return a; return y(s.a)===y(s.b)?`${a}–${mo(s.b)}`:`${a}–${y(s.b)}.${mo(s.b)}`; }
 function bsToday(){ try{ const P=SU&&suPassage(SU); return P?{book:P.bi,chs:Array.from({length:P.c2-P.c1+1},(_,k)=>P.c1+k)}:null; }catch(_){ return null; } }
 function bsData(){ const T=bsToday(), D=BIBLE.map(([n,c],i)=>({i,n,c,E:[],chs:new Map(),med:[],len:0,today:T&&T.book===i?T.chs:null}));
   live().forEach(w=>{ if(w.track!=="bible"||!w.passage||wEmpty(w)) return; const r=bsRange(w.passage); if(!r) return; const d=D[r.book], med=w.type==="묵상";
-    d.E.push({w,chs:r.chs,med}); d.len+=stripMk(w.body||"").replace(/\s+/g," ").trim().length; if(med){ d.med.push(w.date); r.chs.forEach(c=>d.chs.set(c,(d.chs.get(c)||0)+1)); } });
+    d.E.push({w,chs:r.chs,vs:r.vs,med}); d.len+=stripMk(w.body||"").replace(/\s+/g," ").trim().length; if(med){ d.med.push(w.date); r.chs.forEach(c=>d.chs.set(c,(d.chs.get(c)||0)+1)); } });
   D.forEach(d=>{ d.S=bsSeasons(d.med); const L=d.S.at(-1); d.open=!!(d.today&&L&&daysBetween(L.b,today())<=45); const k=d.chs.size; d.lv=!k?0:k>=d.c?4:k/d.c>=2/3?3:k/d.c>=1/3?2:1; });
   return D; }
 const bsGrpOf=i=>BS_GRP.find(g=>i>=g[1]&&i<g[2]);
@@ -7384,6 +7387,7 @@ function bsClick(e){ const t=e.target;
   if(t.closest("[data-seed]")) return bsSeed();
   if(t.closest("[data-back]")) return bsBack();
   const en=t.closest("[data-w]"); if(en){ const id=en.dataset.w; bsClose(); go("write",{edit:id}); return; }
+  const od=t.closest("[data-ord]"); if(od){ BS_ORD=od.dataset.ord==="ch"?"ch":"date"; try{ localStorage.setItem("seojae-open.bsOrd",BS_ORD); }catch(_){} bsPaintPage(); return; }
   const ch=t.closest("[data-ch]"); if(ch){ BS.ch=BS.ch===+ch.dataset.ch?0:+ch.dataset.ch; bsPaintPage(); return; }
   if(t.closest(".bsleaf")&&BS?.view==="cover") return bsOpenBook();
   if(t.closest("[data-shut]")) return bsBack(); }
@@ -7407,15 +7411,18 @@ function bsGridHtml(d){ const u=d.i===18?"편":"장"; return `<div class="bsgrid
     return `<button type="button" class="bsch${n?" m"+Math.min(n,2):""}${d.today?.includes(c)?" td":""}${BS.ch===c?" on":""}" data-ch="${c}"${has?"":" disabled"} aria-pressed="${BS.ch===c}" aria-label="${c}${u}${n?`, 묵상 ${n}번`:""}${d.today?.includes(c)?", 오늘 본문":""}">${c}</button>`; }).join("")}</div>
   <p class="bsgrid-k" aria-hidden="true"><span><i class="m1"></i>묵상</span><span><i class="m2"></i>두 번 이상</span>${d.today?`<span><i class="td"></i>오늘 본문</span>`:""}</p>`; }
 function bsFirst(w){ const t=pv(w,400); const m=t.match(/^.{8,}?[.?!。…](?=\s|$)/); return (m?m[0]:t).slice(0,110); }
+// 장·절 순서: 시작 장 → 시작 절 → 날짜 순, 시작 장마다 한 묶음 (「창 1:1-2:3」은 1장에)
+function bsByCh(E,u){ const M=new Map(); E.slice().sort((a,b)=>a.chs[0]-b.chs[0]||(a.vs||0)-(b.vs||0)||(a.w.date||"").localeCompare(b.w.date||"")).forEach(x=>{ const c=x.chs[0]; if(!M.has(c)) M.set(c,[]); M.get(c).push(x); }); return [...M]; }
 function bsPageHtml(d){ const u=d.i===18?"편":"장", E=d.E.filter(x=>!BS.ch||x.chs.includes(BS.ch)), mk=x=>{ const w=x.w, ps=String(w.passage||"").replace(/^\S+\s*/,""), one=bsFirst(w);
-    return `<li><button type="button" class="bsent" data-w="${w.id}" title="이 글을 엽니다"><span class="bsdate">${+w.date.slice(5,7)}.${+w.date.slice(8,10)}</span><span class="bsbody"><b>${esc(w.title||w.passage||"(제목 없음)")}</b><small>${esc(ps)}${x.med?"":` · <em class="bstag">${esc(/설교/.test(w.type||"")?"설교":w.type||"글")}</em>`}</small>${one?`<span class="bsone">${esc(one)}</span>`:""}</span></button></li>`; };
+    const tg=x.med?"":` · <em class="bstag">${esc(/설교/.test(w.type||"")?"설교":w.type||"글")}</em>`, byCh=BS_ORD==="ch";
+    return `<li><button type="button" class="bsent" data-w="${w.id}" title="이 글을 엽니다"><span class="bsdate${byCh?" bsref":""}">${byCh?(x.vs?`${x.chs[0]}:${x.vs}`:`${x.chs[0]}${u}`):`${+w.date.slice(5,7)}.${+w.date.slice(8,10)}`}</span><span class="bsbody"><b>${esc(w.title||w.passage||"(제목 없음)")}</b><small>${byCh?esc((w.date||"").replace(/-/g,".")):""}${byCh&&ps?" · ":""}${esc(ps)}${tg}</small>${one?`<span class="bsone">${esc(one)}</span>`:""}</span></button></li>`; };
   // 묵상한 때별로 — 때는 최근 것이 위, 한 때 안은 날짜 순. 설교 글은 그 때(끝난 뒤 45일까지)에 함께, 어디에도 안 들면 「따로 쓴 글」
   const G=d.S.map(s=>({s,L:[]})), other=[]; E.slice().sort((a,b)=>(a.w.date||"").localeCompare(b.w.date||"")).forEach(x=>{ const g=G.find(g=>x.w.date>=g.s.a&&daysBetween(g.s.b,x.w.date)<=45); (g?g.L:other).push(x); });
   const yy=d=>d.slice(0,4), when=s=>`${yy(s.a)}년 ${+s.a.slice(5,7)}월${s.a.slice(0,7)===s.b.slice(0,7)?"":yy(s.a)===yy(s.b)?`–${+s.b.slice(5,7)}월`:` – ${yy(s.b)}년 ${+s.b.slice(5,7)}월`}`;
   const again=BS.ch&&new Set(E.filter(x=>x.med).map(x=>d.S.findIndex(s=>x.w.date>=s.a&&x.w.date<=s.b))).size>1;
   return `<div class="bspg-h"><div><p class="bspg-k">${esc(d.n)}${BS.ch?` ${BS.ch}${u}`:""}</p><p class="bspg-n">${BS.ch?`이 ${u}을 쓴 글 ${E.length}편${again?" · 다시 만난 본문":""}`:`묵상 ${d.E.filter(x=>x.med).length}편${d.E.some(x=>!x.med)?` · 설교 ${d.E.filter(x=>!x.med).length}편`:""}`}</p></div>${BS.ch?`<button type="button" class="bsbtn" data-ch="${BS.ch}">모두 보기</button>`:d.E.some(x=>x.med)?(m=>`<button type="button" class="bsbtn bsseed" data-seed title="${m?`이 책의 묵상을 모아 둔 글방 원고 「${esc(m.title)}」를 엽니다`:`이 책의 묵상을 성경 순서로 모아 글방 원고를 만듭니다 — 앞으로 쓰는 이 책의 묵상도 저절로 들어옵니다. 묵상은 그대로이고 사본을 만들지 않습니다`}">${m?"✎ 원고 열기":"✎ 원고 씨앗으로"}</button>`)(bsSeedMs(d.i)):""}<button type="button" class="bsbtn bsshut" data-shut title="책을 덮습니다 (Esc)">덮기</button></div>
     <div class="bspg-grid">${bsGridHtml(d)}</div>
-    <div class="bspg-list">${E.length?G.slice().reverse().concat(other.length?[{s:null,L:other}]:[]).filter(g=>g.L.length).map(g=>`<h4>${g.s?when(g.s):"따로 쓴 글"}</h4><ol>${g.L.map(mk).join("")}</ol>`).join("")
+    <div class="bspg-list">${E.length?`<div class="bsord" role="group" aria-label="목록 순서">${[["date","묵상한 때"],["ch",`${u}·절 순서`]].map(([k,n])=>`<button type="button" data-ord="${k}" aria-pressed="${BS_ORD===k}" class="${BS_ORD===k?"on":""}">${n}</button>`).join("")}</div>`:""}${!E.length?"":BS_ORD==="ch"?bsByCh(E,u).map(([c,L])=>`<h4>${c}${u}</h4><ol>${L.map(mk).join("")}</ol>`).join(""):G.slice().reverse().concat(other.length?[{s:null,L:other}]:[]).filter(g=>g.L.length).map(g=>`<h4>${g.s?when(g.s):"따로 쓴 글"}</h4><ol>${g.L.map(mk).join("")}</ol>`).join("")}${E.length?""
       :`<p class="bsempty">${d.E.length?"이 장을 쓴 글이 없습니다.":"이 책을 묵상하면 그날의 글이 여기에 한 줄씩 모입니다."}</p>`}</div>`; }
 // 이 책 묵상을 원고 씨앗으로 (2026-11-21 팀장님 허락): 서랍 「조건으로 모으는 원고」(m.rule — 성경책 하나 + 묵상) 그대로 — 사본 없이, 앞으로 쓰는 묵상도 저절로. 같은 조건의 원고가 있으면 그것을 엶
 const bsSeedMs=i=>liveMs().find(m=>m.rule&&(m.rule.books||[]).length===1&&+m.rule.books[0]===i&&(m.rule.types||[]).join()==="묵상"&&!(m.rule.topics||[]).length&&!(m.rule.readBooks||[]).length&&!m.rule.year);
