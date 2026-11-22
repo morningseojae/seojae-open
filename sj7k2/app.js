@@ -195,9 +195,9 @@ async function drvSave(json,baseRev){   // 서버판 saveData_ 와 같은 지킴
 const gwNl=()=>{ try{ return localStorage.getItem("seojae-open.gwNl")==="1"; }catch(_){ return false; } };   // 창구에 국립중앙도서관 열쇠가 있는지 (책을 찾을 때 창구가 알려 줌)
 const drvConf=()=>{ const m=aiMode(), k=aiKeys(); return {notion:false,kakao:true,nl:gwNl(),ai:m==="own"?(k.claude?"claude":"gemini"):m==="shared"?"gemini":"",aiKeys:{gemini:m==="shared"||(m==="own"&&!!k.gemini),claude:m==="own"&&!!k.claude},aiShared:m==="shared",cmtFolder:"",yt:true,claude:null,local:false,gas:true,drive:!LOCALMODE,devOnly:LOCALMODE,email:DRV?.email||"",driveUrl:LOCALMODE?"":"https://drive.google.com/drive/folders/"+(DRV?.root||"")}; };
 // 공개판 전용 창구(구글 앱스 스크립트, 4gospel — 개인 기록과 무관): 브라우저가 직접 닿지 못하는 성서유니온 「매일성경」을 대신 받아 줌. 로그인 없이 날짜만 보냄
-const PUB_GW="https://script.google.com/macros/s/AKfycbxRPmEN9s2BMkKZ4nQuEzCqalgn_SBqEztJT7b5Af5dXJdmOBsmmgUMlfpbxbB8DIYAAQ/exec", GW_FN=new Set(["bookSuggest","dailyBible","musicFind","searchBooks","bookDetail"]);   // 찬송가·CCM 찾기도 창구가 함께(창구의 유튜브 열쇠, 찾은 곡은 모두가 함께 기억)
+const PUB_GW="https://script.google.com/macros/s/AKfycbxRPmEN9s2BMkKZ4nQuEzCqalgn_SBqEztJT7b5Af5dXJdmOBsmmgUMlfpbxbB8DIYAAQ/exec", GW_FN=new Set(["bookSuggest","dailyBible","dailyBibleNote","dailyLL","musicFind","searchBooks","bookDetail"]);   // 찬송가·CCM 찾기도 창구가 함께(창구의 유튜브 열쇠, 찾은 곡은 모두가 함께 기억)
 async function gwCall(fn,args){
-  const r=await fetch(PUB_GW,{method:"POST",body:JSON.stringify({fn,args}),signal:AbortSignal.timeout?AbortSignal.timeout(60000):undefined});
+  const r=await fetch(PUB_GW,{method:"POST",body:JSON.stringify({fn,args,inv:invCode()}),signal:AbortSignal.timeout?AbortSignal.timeout(60000):undefined});
   let j; try{ j=await r.json(); }catch(_){ throw new Error("매일성경 창구가 알아볼 수 없는 답을 보냈습니다 ("+r.status+")"); }
   if(!j.ok) throw new Error(j.error||"매일성경 창구가 답하지 않습니다"); return j.result;
 }
@@ -311,7 +311,7 @@ function aiCall(fn,args){
   const bg=(fn==="coWrite"&&args?.[0]?.mode==="dayline")||(fn==="spellCheck"&&!!args?.[0]?.fast);   // 저절로 하는 일은 따로 줄에
   return new Promise((ok,no)=>{ const t=setTimeout(()=>{ if(AIW_WAIT.has(id)) aiLaneDrop(bg,"AI가 너무 오래 답하지 않습니다 — 잠시 뒤 다시 해 주세요"); },150000);
     AIW_WAIT.set(id,{bg,ok:r=>{ clearTimeout(t); ok(r); },no:e=>{ clearTimeout(t); no(e); }});
-    aiWorker(bg).postMessage({id,fn,args,keys:mode==="shared"?{geminiKey:"__SHARED__",claudeKey:""}:{geminiKey:k.gemini||"",claudeKey:k.claude||""},props,gw:PUB_GW,dev:devId()}); });
+    aiWorker(bg).postMessage({id,fn,args,keys:mode==="shared"?{geminiKey:"__SHARED__",claudeKey:""}:{geminiKey:k.gemini||"",claudeKey:k.claude||""},props,gw:PUB_GW,inv:invCode(),dev:devId()}); });
 }
 let DRV_VER=null;
 async function drvCall(fn,args){
@@ -949,6 +949,32 @@ function sideTip(){ if(document.querySelector(".sidetip")) return; const mac=/Ma
   document.body.appendChild(ov); const done=()=>{ try{ localStorage.setItem("seojae-open.sideTip","1"); }catch(_){} ov.remove(); };
   ov.querySelector("[data-ok]").onclick=done; ov.querySelector("[data-x]").onclick=done; ov.onclick=e=>{ if(e.target===ov) done(); }; }
 // 매일성경 해설·음성 듣기는 공개판에서 뺐습니다(2026-11-16 팀장님 — 성서유니온 저작물, 허락을 여쭙는 중). 해설·음성은 「매일성경에서 보기 ↗」로
+// ───────── 매일성경 듣기: 앱 안 작은 재생기 — 메뉴를 옮겨도 계속, 빠르기·10초 이동, 들은 자리 기억, 잠금 화면 조절 ─────────
+function suListen(){ if(!SU?.audio) return; let el=$("#suplayer"); const a0=el?.querySelector("audio");
+  if(el&&el.dataset.src===SU.audio){ el.hidden=false; el.classList.remove("min"); suPlace(el); if(a0.paused) a0.play().catch(()=>{}); return; }
+  if(!el){ el=document.createElement("div"); el.id="suplayer"; el.className="suplayer"; document.body.appendChild(el); }
+  let rate=1; try{ rate=+localStorage.getItem("seojae-open.suRate")||1; }catch(_){}
+  const src=SU.audio, title=`${SU.title||"매일성경"}`, sub=`${SU.book||""} ${SU.range||""}`.trim();
+  el.dataset.src=src; el.hidden=false; el.classList.remove("min");
+  el.innerHTML=`<div class="spl-t"><span class="spl-ic">🎧</span><div><b>${esc(title)}</b><small>매일성경 · ${esc(sub)}</small></div><span class="spacer"></span><button class="spl-pp" data-pp title="재생 / 멈춤">▶</button><button data-min title="작게 / 크게">▾</button><button data-x title="닫기">✕</button></div>
+    <audio controls preload="metadata" src="${esc(src)}"></audio>
+    <div class="spl-b"><button data-sk="-10">↺ 10초</button><button data-sk="10">10초 ↻</button><span class="spacer"></span>${[0.8,1,1.2,1.5].map(r=>`<button data-r="${r}" class="${r===rate?"on":""}">${r}×</button>`).join("")}</div>`;
+  const a=el.querySelector("audio"); a.playbackRate=rate;
+  try{ const p=JSON.parse(localStorage.getItem("seojae-open.suAudio")||"null"); if(p?.src===src&&p.t>5) a.addEventListener("loadedmetadata",()=>{ if(p.t<a.duration-5) a.currentTime=p.t; },{once:true}); }catch(_){}
+  let lastSave=0; a.ontimeupdate=()=>{ if(Date.now()-lastSave<4000) return; lastSave=Date.now(); try{ localStorage.setItem("seojae-open.suAudio",JSON.stringify({src,t:Math.floor(a.currentTime)})); }catch(_){} };
+  a.onended=()=>{ try{ localStorage.removeItem("seojae-open.suAudio"); }catch(_){} el.classList.remove("playing"); };
+  const pp=el.querySelector("[data-pp]"); a.onplay=()=>{ el.classList.add("playing"); pp.textContent="❚❚"; try{ if(MUSIC.playing) MP?.pauseVideo(); }catch(_){} }; a.onpause=()=>{ el.classList.remove("playing"); pp.textContent="▶"; };   // 말씀 듣기를 켜면 찬송가·CCM은 멈춤
+  pp.onclick=()=>{ a.paused?a.play().catch(()=>{}):a.pause(); };
+  a.addEventListener("timeupdate",()=>{ if(a.duration) el.style.setProperty("--p",(a.currentTime/a.duration*100).toFixed(1)); });
+  a.onerror=()=>toast("듣기 파일을 받지 못했습니다 — 인터넷 연결을 확인해 주세요");
+  el.querySelector("[data-x]").onclick=()=>{ a.pause(); el.hidden=true; };
+  el.querySelector("[data-min]").onclick=()=>{ el.classList.toggle("min"); suPlace(el); };
+  suDrag(el); suPlace(el);
+  el.querySelectorAll("[data-sk]").forEach(b=>b.onclick=()=>{ a.currentTime=Math.max(0,Math.min((a.duration||1e9)-1,a.currentTime+(+b.dataset.sk))); });
+  el.querySelectorAll("[data-r]").forEach(b=>b.onclick=()=>{ a.playbackRate=+b.dataset.r; try{ localStorage.setItem("seojae-open.suRate",b.dataset.r); }catch(_){} el.querySelectorAll("[data-r]").forEach(x=>x.classList.toggle("on",x===b)); });
+  if("mediaSession" in navigator){ try{ navigator.mediaSession.metadata=new MediaMetadata({title,artist:"매일성경 · 성서유니온",album:sub});
+    navigator.mediaSession.setActionHandler("seekbackward",()=>{ a.currentTime=Math.max(0,a.currentTime-10); }); navigator.mediaSession.setActionHandler("seekforward",()=>{ a.currentTime+=10; }); }catch(_){} }
+  a.play().catch(()=>{}); }
 // 재생기 끌어 옮기기: 위 줄(작게일 때는 어디든)을 잡고 끕니다. 자리는 이 기기에 기억(seojae.suPos), 화면 밖으로는 못 나감
 function suPlace(el,key="seojae-open.suPos"){ let p=null; try{ p=JSON.parse(localStorage.getItem(key)||"null"); }catch(_){} if(!p){ el.style.left=el.style.top=el.style.right=el.style.bottom=""; return; }
   Object.assign(el.style,{right:"auto",bottom:"auto"}); const r=el.getBoundingClientRect(), x=Math.max(6,Math.min(innerWidth-r.width-6,p.x)), y=Math.max(6,Math.min(innerHeight-r.height-6,p.y)); Object.assign(el.style,{left:x+"px",top:y+"px"}); }   // 크기가 바뀐 즉시 화면 안으로
@@ -1249,6 +1275,11 @@ const MANUALS=[["quick","간단 매뉴얼","읽자마자 바로 써 보는 한 �
 // ───────── 새 소식 (공개판, 2026-10-31 팀장님): 중요한 고침은 앱을 열 때 한 번만 쉬운 말로 알림 ─────────
 // 새 소식을 더할 때: NEWS 맨 앞에 넣고 id 는 날짜(같은 날 둘째는 2026-11-02b 처럼 — 글자 순서로 새것이 뒤). 본 소식 id 는 이 기기에만(seojae-open.newsSeen)
 const NEWS=[
+ {id:"2026-11-22",date:"2026년 11월 22일",title:"생명의 삶으로도 묵상해요",items:[
+  ["🌿","묵상지를 골라요","묵상 화면 위 「매일성경 ▾」를 누르면 「생명의 삶」으로 바꿀 수 있어요. 오늘 본문·제목·찬송가가 그 묵상지를 따라와요.","설정 → 성경 통독 → 「묵상지」에서도 고를 수 있어요."],
+  ["🎧","매일성경 해설을 앱 안에서","매일성경의 「해설 보기」와 「해설 듣기」가 앱 안으로 돌아왔어요. 듣는 동안 다른 메뉴로 옮겨도 계속 들려요.",""],
+  ["📖","생명의 삶 해설·영상","생명의 삶 본문 해설과 영상 QT는 두란노 구독자 화면이라, 「해설은 두란노에서 ↗」로 옆 창에 열어 드려요.",""],
+  ["🔑","초대받은 분만","아침 서재는 이제 이 주소에서 초대 암호를 받은 분들과 함께 써요. 주소를 다른 분께 알릴 때는 초대 암호도 함께 알려 주세요.",""]]},
  {id:"2026-11-21d",date:"2026년 11월 21일",title:"긴 책도 바로 찾아가요",items:[
   ["⇥","바로 가기 띠","펼친 책 목록 위에 장 번호(묵상한 때 순서면 「26.11–12」 같은 때)가 한 줄로 있어요. 누르면 그 자리로 바로 가고, 목록을 내리면 지금 보는 자리가 붉게 켜져요.","시편처럼 묵상이 많은 책에서 편해요."],
   ["📌","붙어 따라오는 제목","목록을 내려도 「12장」 같은 묶음 제목이 위에 붙어 있어 지금 어디를 보는지 알 수 있어요.",""],
@@ -1367,7 +1398,7 @@ const NEWS=[
   ["🔖","책갈피·이어 읽기","위 띠의 🔖를 누르면 지금 읽는 자리에 책갈피가 꽂혀요. 다시 열면 「지난번 읽던 곳」으로 이어 읽을 수 있어요.",""],
   ["✎","내 표시","「✎ 내 표시」에서 책갈피와 밑줄·메모를 모아 보고, 누르면 그 자리로 가요. 차례에는 다 읽은 장에 ✓가 붙어요.","이 표시들은 이 기기에만 간직돼요"]]},
  {id:"2026-11-01i",date:"2026년 11월 1일",title:"새 주소로 옮겼어요",items:[
-  ["🏠","새 주소","아침 서재 공개판이 더 안전한 새 주소 morningseojae.github.io/seojae-open 으로 이사했어요. 예전 주소로 들어오시면 이리로 안내해 드려요.","홈 화면에 앱으로 설치하셨다면 새 주소에서 한 번 더 설치해 주세요"],
+  ["🏠","새 주소","아침 서재 공개판이 더 안전한 새 주소 morningseojae.github.io/seojae-open/sj7k2 으로 이사했어요. 예전 주소로 들어오시면 이리로 안내해 드려요.","홈 화면에 앱으로 설치하셨다면 새 주소에서 한 번 더 설치해 주세요"],
   ["☁","구글로 쓰셨다면","기록은 내 구글 드라이브에 그대로 있어요. 「구글로 시작하기」를 한 번만 누르시면 이어서 쓰실 수 있어요.","「구글 없이 이 기기에서」 쓰셨다면 예전 주소에서 백업 파일을 받아 설정 → 기록 지키기 → 「파일로 복원하기」로 옮겨 주세요"]]},
  {id:"2026-11-01g",date:"2026년 11월 1일",title:"익명 사용 통계를 알려 드려요",items:[
   ["◔","익명 사용 통계","아침 서재를 더 낫게 고치려고 하루에 한 번 숫자만 보내요 — 판 번호, 휴대폰·PC, 화면·기능별 사용 횟수 같은 것이에요. 글·제목·이름·메일은 보내지 않아요.","원하지 않으시면 설정 → 도움 → 「익명 사용 통계」에서 「보내지 않기」를 누르세요"]]},
@@ -1458,11 +1489,11 @@ const FROM_OLD=(()=>{ try{ const q=new URLSearchParams(location.search); if(q.ge
 const GO_TO=(()=>{ try{ const q=new URLSearchParams(location.search), g=q.get("go"); if(!g) return null; q.delete("go"); history.replaceState(history.state,"",location.pathname+(q.toString()?"?"+q:"")+location.hash); return /^(qt|diary|shelf|today)$/.test(g)?g:null; }catch(_){ return null; } })();
 function goToStart(){ if(!GO_TO||NEED_CONNECT) return; try{ if(GO_TO==="qt") go("write",{track:"bible"}); else if(GO_TO!=="today") go(GO_TO); }catch(_){} }
 function moveWelcome(){ if(!FROM_OLD) return; let seen=""; try{ seen=localStorage.getItem("seojae-open.movedWelcome")||""; localStorage.setItem("seojae-open.movedWelcome","1"); localStorage.setItem("seojae-open.manualShown","1"); }catch(_){} if(seen) return;
-  newsMark(); const NEWU="https://morningseojae.github.io/seojae-open/";   // 쓰시던 분이라 새 소식·간단 매뉴얼 창은 띄우지 않음
+  newsMark(); const NEWU="https://morningseojae.github.io/seojae-open/sj7k2/";   // 쓰시던 분이라 새 소식·간단 매뉴얼 창은 띄우지 않음
   const cloud=["☁","구글로 쓰셨다면","「구글로 시작하기」를 한 번만 누르시면 내 구글 드라이브의 기록이 그대로 이어져요.",""],
     local=["💾","「구글 없이 이 기기에서」 쓰셨다면","예전 주소에서 받은 백업 파일을 옮겨 주세요 — 시작한 뒤 설정 → 기록 지키기 → 「자동 백업 · 간직된 곳」 → 「파일로 복원하기」에서 그 파일을 고르면 돼요.","백업 파일을 아직 안 받으셨다면 예전 주소에 다시 들어가 「백업 파일로 받기」를 눌러 주세요"],
     app=["📱","홈 화면 앱은 다시 설치","아이폰은 사파리 아래 공유 단추 → 「홈 화면에 추가」, 안드로이드는 크롬 ⋮ → 「앱 설치」를 눌러 주세요.","예전 아이콘은 여기서 기록이 잘 보이는 것을 확인한 뒤에 지워 주세요"];
-  const items=[["🏠","앞으로는 이 주소로","morningseojae.github.io/seojae-open — 즐겨찾기(북마크)도 이 주소로 다시 저장해 주세요.","다른 분께 알려 주셨다면 아래 「주소 복사」로 새 주소를 보내 주세요"]].concat(FROM_OLD.g?[cloud,app,local]:FROM_OLD.app?[app,cloud,local]:[cloud,local,app]);
+  const items=[["🏠","앞으로는 이 주소로","morningseojae.github.io/seojae-open/sj7k2 — 즐겨찾기(북마크)도 이 주소로 다시 저장해 주세요.","다른 분께 알려 주셨다면 아래 「주소 복사」로 새 주소를 보내 주세요"]].concat(FROM_OLD.g?[cloud,app,local]:FROM_OLD.app?[app,cloud,local]:[cloud,local,app]);
   $("#newsview")?.remove(); const ov=document.createElement("div"); ov.id="newsview"; ov.className="newsview";
   ov.innerHTML=`<article class="newscard" role="dialog" aria-modal="true" aria-labelledby="mvh"><p class="newsk" id="mvh">새 주소</p>${newsHtml({date:"주소가 바뀌었어요",title:"새 주소에 잘 오셨어요",items})}<div class="newsacts"><button class="btn" data-copy>주소 복사</button><button class="btn ink newsok" data-x>확인했어요</button></div><p class="newsfoot" data-msg>이 안내는 설정 맨 앞 「도움 → 새 소식」에서 다시 볼 수 있습니다.</p></article>`;
   document.body.appendChild(ov); const close=()=>{ ov.remove(); removeEventListener("keydown",k,true); }, k=e=>{ if(e.key==="Escape"){ e.preventDefault(); e.stopImmediatePropagation(); close(); } };
@@ -1675,13 +1706,24 @@ function setBibleVer(v){ S.settings.bibleVer=v; save(); render(); toast(`${bible
 // ───────── 매일성경(성서유니온): 그날 본문 위치를 받아, 공개본(개역한글·WEB)으로 나란히 보여 줍니다 ─────────
 const BEN="Genesis|Exodus|Leviticus|Numbers|Deuteronomy|Joshua|Judges|Ruth|1 Samuel|2 Samuel|1 Kings|2 Kings|1 Chronicles|2 Chronicles|Ezra|Nehemiah|Esther|Job|Psalm|Proverbs|Ecclesiastes|Song of Songs|Isaiah|Jeremiah|Lamentations|Ezekiel|Daniel|Hosea|Joel|Amos|Obadiah|Jonah|Micah|Nahum|Habakkuk|Zephaniah|Haggai|Zechariah|Malachi|Matthew|Mark|Luke|John|Acts|Romans|1 Corinthians|2 Corinthians|Galatians|Ephesians|Philippians|Colossians|1 Thessalonians|2 Thessalonians|1 Timothy|2 Timothy|Titus|Philemon|Hebrews|James|1 Peter|2 Peter|1 John|2 John|3 John|Jude|Revelation".split("|");
 const BALIAS={"요한일서":"요한1서","요한이서":"요한2서","요한삼서":"요한3서","예레미야 애가":"예레미야애가"};
+// ───────── 묵상지 고르기 (2026-11-22 팀장님 「매일성경처럼 생명의 삶도 — 둘 중 하나를 골라서」) ─────────
+// 설정 S.settings.qtBook = "su"(매일성경, 기본) | "ll"(생명의 삶) — 설정은 칸마다 나중에 바꾼 쪽으로 기기 사이에서 합쳐짐(새 저장 형식 없음).
+// 생명의 삶(두란노): 본문 위치·제목·오늘의 찬송만 받아 옴(오늘부터 15일 전까지, 다음 날 것은 그날 아침에 열림). 본문 해설·영상 QT는 두란노 구독자(로그인)만 — 앱은 두란노로 잇는 길만.
+const QB={su:{n:"매일성경",org:"성서유니온",fn:"dailyBible",home:()=>"https://sum.su.or.kr:8888/bible/today#bibleTab"},ll:{n:"생명의 삶",org:"두란노",fn:"dailyLL",home:d=>"https://www.duranno.com/qt/view/bible.asp?qtDate="+(d||today())}};
+const qbK=()=>S.settings.qtBook==="ll"?"ll":"su", qbN=()=>QB[qbK()].n;
+function qbSet(k){ if(!QB[k]||qbK()===k) return; const pl=suPassage(SU)?.label, f=$("#wpassage"); if(f&&pl&&f.value===pl) f.value=f.defaultValue;   // 아직 손대지 않은 본문 칸이면 새 묵상지 본문으로 다시 채움
+  S.settings.qtBook=k; save(); SU=null; SUT=null; SUN=null; $("#sunote")&&($("#sunote").innerHTML=""); if($("#sucard")) paintSu(); else render(); toast(`오늘의 묵상 본문을 「${QB[k].n}」에서 받아 옵니다`); }
+function qbMenu(ev){ const r=ev.currentTarget.getBoundingClientRect(); ctxOpen(r.left,r.bottom+4,"묵상지 고르기",Object.entries(QB).map(([k,q])=>({t:(qbK()===k?"✓ ":"")+q.n+" · "+q.org,ic:k==="su"?"📘":"🌿",fn:()=>qbSet(k)})),isTouch()&&innerWidth<=700,"고른 묵상지의 오늘 본문·제목·찬송가가 이 칸에 옵니다"); }
+// 생명의 삶: 해설·영상은 두란노 구독자 화면으로 (앱 안에 넣지 않음 — 로그인이 필요한 유료 저작물)
+function llLinks(date){ return `<a class="btn small ghost" href="${esc(QB.ll.home(date))}" target="_blank" rel="noopener" onclick="return popBible(this.href)" title="두란노 「오늘의 QT」 화면을 오른쪽 성경 창으로 엽니다 — 본문 해설·묵상 에세이는 생명의삶 구독(로그인)으로 볼 수 있습니다">${ICO.book}해설은 두란노에서 ↗</a><a class="btn small ghost pconly" href="https://www.duranno.com/qt/view/video.asp?qtDate=${esc(date||today())}" target="_blank" rel="noopener" onclick="return popBible(this.href)" title="CGN 「영상 QT」 — 두란노 누리집에서 오늘 것은 컴퓨터로 볼 수 있고, 지난 날은 로그인이 필요합니다">🎬 영상 QT ↗</a>`; }
 let SU=null, SUT=null, SUERR="";
 async function suInfo(date){
-  try{ const c=JSON.parse(localStorage.getItem("seojae-open.su."+date)||"null"); if(c){ delete c.audio; return c; } }catch(_){}
+  const kb=qbK(), pre="seojae-open."+(kb==="ll"?"ll2.":"su2.");   // su2·ll2: 해설 음성 주소를 되살린 뒤의 사본(예전 su. 사본에는 음성이 빠져 있음)
+  try{ const c=JSON.parse(localStorage.getItem(pre+date)||"null"); if(c){ c.src=kb; return c; } }catch(_){}
   if(!GAS) throw new Error("구글 서버에 연결되어 있어야 합니다");
-  const r=await gcall("dailyBible",date); delete r.audio;
-  try{ localStorage.setItem("seojae-open.su."+date,JSON.stringify(r));
-    const old=addMonths(today(),-1); for(let i=localStorage.length-1;i>=0;i--){ const k=localStorage.key(i); if(k?.startsWith("seojae-open.su.")&&k.slice("seojae-open.su.".length)<old) localStorage.removeItem(k); } }catch(_){}   // 한 달 지난 것은 정리
+  const r=await gcall(QB[kb].fn,date); r.src=kb;
+  try{ localStorage.setItem(pre+date,JSON.stringify(r));
+    const old=addMonths(today(),-1); for(let i=localStorage.length-1;i>=0;i--){ const k=localStorage.key(i), m=k?.match(/^seojae-open\.(?:su|ll|su2|ll2)\.(.+)$/); if(m&&(m[1]<old||/^seojae-open\.su\./.test(k))) localStorage.removeItem(k); } }catch(_){}   // 한 달 지난 것은 정리
   return r;
 }
 function suPassage(su){
@@ -1699,10 +1741,23 @@ async function suTexts(P){
     en=(d.verses||[]).map(v=>({c:v.chapter,v:v.verse,t:String(v.text).replace(/\s+/g," ").trim()})); }catch(_){}
   return {ko,en};
 }
+// 성서유니온 해설: 누를 때만 받아 와서 보여 주고, 기록에는 남기지 않습니다 (성서유니온 저작물)
+let SUN=null;
+async function suNoteToggle(){
+  const box=$("#sunote"), b=$("#subtn"); if(!box) return;
+  if(box.innerHTML){ box.innerHTML=""; b.innerHTML=ICO.book+"해설 보기"; return; }
+  const date=suDate(); b.textContent="해설 받는 중…";
+  try{ if(!SUN||SUN.date!==date) SUN=await gcall("dailyBibleNote",date); }catch(e){ b.innerHTML=ICO.book+"해설 보기"; return toast("해설을 받아 오지 못했습니다 ("+e.message+")"); }
+  b.textContent="해설 접기";
+  const para=t=>String(t||"").split(/<br\s*\/?>|\n/).map(x=>x.trim()).filter(Boolean).map(x=>`<p style="margin:0 0 6px">${esc(x)}</p>`).join("");
+  box.innerHTML=`<div class="sunote">${SUN.brief?`<p class="sub" style="margin:0 0 10px">${esc(SUN.brief)}</p>`:""}
+    ${SUN.sections.map(x=>`<div class="suhead" style="margin-top:8px">${esc(x.label)}</div>${para(x.text)}`).join("")}
+    <p class="hint" style="margin-top:8px">매일성경 해설 © 성서유니온선교회 · 개인 묵상용으로만 보여 드리며 기록·노션에는 남기지 않습니다. <a href="https://sum.su.or.kr:8888/bible/today#bibleTab" target="_blank" rel="noopener" onclick="return popBible(this.href)">성서유니온에서 보기 ↗</a></p></div>`;
+}
 // 휴대폰은 처음엔 접힘(쓸 종이가 먼저 보이게) — 한 번 펼치면 그 뒤로는 기억
 const suOpen=()=>{ try{ const v=localStorage.getItem("seojae-open.suOpen"); return v==null?innerWidth>700:v!=="0"; }catch(_){ return innerWidth>700; } };
 function suToggle(){ try{ localStorage.setItem("seojae-open.suOpen",suOpen()?"0":"1"); }catch(_){} paintSu(); }
-function suUse(){ const P=suPassage(SU), f=$("#wpassage"); if(!P||!f) return; f.value=P.label; if(!$("#wtitle").value.trim()&&SU.title) $("#wtitle").value=SU.title; draftInput(); toast("매일성경 본문을 넣었습니다"); }
+function suUse(){ const P=suPassage(SU), f=$("#wpassage"); if(!P||!f) return; f.value=P.label; if(!$("#wtitle").value.trim()&&SU.title) $("#wtitle").value=SU.title; draftInput(); toast(`${qbN()} 본문을 넣었습니다`); }
 // 매일성경 앞뒤 날짜 보기: 그날 쓴 묵상이 있으면 그 글을 바로 열고(쓰던 글은 임시 보관), 없으면 그날 본문만 보여 줍니다
 // 묵상 노트도 날짜를 따라갑니다(2026-11-01): 그날 쓴 묵상이 있으면 그 글, 없으면 그 날짜의 새 묵상 노트(쓰던 글은 간직·임시 보관)
 function suGo(k){ const box=$("#sucard"); if(!box) return;
@@ -1716,20 +1771,21 @@ function suMove(n){ const box=$("#sucard"); if(!box) return; const d=new Date(bo
 let SUGEN=0;
 async function paintSu(){
   const box=$("#sucard"); if(!box) return; const date=box.dataset.date, gen=++SUGEN;   // 늦게 끝난 옛 호출은 버립니다
-  if(!SU||SU.date!==date){ box.innerHTML=`<span class="muted">오늘의 매일성경을 불러오는 중…</span>`;
+  if(!SU||SU.date!==date||(SU.src||"su")!==qbK()){ box.innerHTML=`<span class="muted">오늘의 ${qbN()}을 불러오는 중…</span>`;
     try{ SU=await suInfo(date); SUT=null; SUERR=""; }catch(e){ SU=null; SUERR=e.message; } if(gen!==SUGEN||!$("#sucard")) return; }
   const x=new Date(date+"T00:00"), P=suPassage(SU), dayWs=live().filter(w=>w.track==="bible"&&w.date===date), cur=editId&&S.writings.find(w=>w.id===editId), open=suOpen();
-  const nav=`<div class="row sunav" style="gap:6px"><span class="label bible" style="margin:0">${date===today()?`<span class="su-today">오늘의 </span>`:""}매일성경</span><span class="sunavd"><button class="fsbtn" onclick="suMove(-1)" title="전날 매일성경 · 묵상 노트도 그 날짜로" aria-label="전날">‹</button><span class="muted sudate">${x.getMonth()+1}.${x.getDate()}(${WEEK[x.getDay()]})${dayWs.some(w=>w.type==="묵상"&&!wEmpty(w))?`<span class="qtstamp" title="이날 묵상을 썼습니다">씀</span>`:""}</span><button class="fsbtn" onclick="suMove(1)" title="다음 날 매일성경 · 묵상 노트도 그 날짜로" aria-label="다음 날">›</button>${date!==today()?`<button class="fsbtn" onclick="suGo(today())">오늘</button>`:""}</span><span class="spacer"></span><button class="btn small ghost bsentry" onclick="bsOpen()" title="묵상한 성경 66권을 책장으로 봅니다 — 책등의 점은 묵상한 때, 진하기는 묵상한 장">📚 성경 책장</button>${SU&&P?`<button class="btn small ghost" onclick="suToggle()">${open?"본문 접기":"본문 펼치기"}</button>`:""}</div>
+  const nav=`<div class="row sunav" style="gap:6px"><span class="label bible" style="margin:0">${date===today()?`<span class="su-today">오늘의 </span>`:""}<button type="button" class="qbname" onclick="qbMenu(event)" title="묵상지 고르기 — 매일성경 · 생명의 삶">${qbN()}<i>▾</i></button></span><span class="sunavd"><button class="fsbtn" onclick="suMove(-1)" title="전날 매일성경 · 묵상 노트도 그 날짜로" aria-label="전날">‹</button><span class="muted sudate">${x.getMonth()+1}.${x.getDate()}(${WEEK[x.getDay()]})${dayWs.some(w=>w.type==="묵상"&&!wEmpty(w))?`<span class="qtstamp" title="이날 묵상을 썼습니다">씀</span>`:""}</span><button class="fsbtn" onclick="suMove(1)" title="다음 날 매일성경 · 묵상 노트도 그 날짜로" aria-label="다음 날">›</button>${date!==today()?`<button class="fsbtn" onclick="suGo(today())">오늘</button>`:""}</span><span class="spacer"></span><button class="btn small ghost bsentry" onclick="bsOpen()" title="묵상한 성경 66권을 책장으로 봅니다 — 책등의 점은 묵상한 때, 진하기는 묵상한 장">📚 성경 책장</button>${SU&&P?`<button class="btn small ghost" onclick="suToggle()">${open?"본문 접기":"본문 펼치기"}</button>`:""}</div>
     ${date!==today()&&!cur?`<div class="qtnew">${x.getMonth()+1}월 ${x.getDate()}일 묵상 노트입니다 · 쓰면 그날 묵상으로 간직됩니다</div>`:""}`;
-  if(!SU||!P){ box.innerHTML=nav+`<p class="muted" style="margin:6px 0 0">본문을 불러오지 못했습니다${SUERR?" ("+esc(SUERR)+")":""}. <a class="muted" href="https://sum.su.or.kr:8888/bible/today#bibleTab" target="_blank" rel="noopener" onclick="return popBible(this.href)">성서유니온에서 보기 ↗</a></p>`; return; }   // 본문을 못 받아도 날짜는 넘길 수 있게
+  if(!SU||!P){ box.innerHTML=nav+`<p class="muted" style="margin:6px 0 0">본문을 불러오지 못했습니다${SUERR?" ("+esc(SUERR)+")":""}. <a class="muted" href="${esc(QB[qbK()].home(date))}" target="_blank" rel="noopener" onclick="return popBible(this.href)">${QB[qbK()].org}에서 보기 ↗</a></p>`; return; }   // 본문을 못 받아도 날짜는 넘길 수 있게
   // 새 묵상이면 본문 칸을 매일성경으로 (설정에서 '통독표 따라'를 고르면 그대로 둠)
   const f=$("#wpassage"); if(f&&!fromNote&&!fromWriting&&S.settings.qtSource!=="plan"&&$("#wtype")?.value==="묵상"&&(editId?cur?.date===date&&cmtBare(f.value):f.value===f.defaultValue)){ f.value=P.label; }   // 본문 칸이 빈 그날 묵상에는 저절로
   box.innerHTML=`${nav}
     <div class="sut"><b>${esc(SU.title)}</b> · ${esc(P.label)}${SU.hymn?` · <span class="muted hymnbox" id="hymnbox">찬송가 ${esc(SU.hymn)}장${hymnCtl()}</span>`:""}</div>
     <div class="links"><button class="btn small ink" onclick="suUse()">이 본문으로 쓰기</button>
       <a class="verlink" href="${esc(suOfficial(P,"NKRV"))}" target="_blank" rel="noopener" onclick="return popBible(this.href)" title="개역개정은 저작권 때문에 앱 안에 넣을 수 없어 대한성서공회 사이트에서 같은 구절을 엽니다">개역개정</a><a class="verlink" href="${esc(suOfficial(P,"NKT"))}" target="_blank" rel="noopener" onclick="return popBible(this.href)">새한글</a><a class="verlink" href="${esc(suOfficial(P,"RNKSV"))}" target="_blank" rel="noopener" onclick="return popBible(this.href)">새번역</a><a class="verlink" href="${esc(suNiv(P))}" target="_blank" rel="noopener" onclick="return popBible(this.href)">NIV</a><button class="btn small ghost pconly" onclick="sideTip()" title="성경 창을 띄워 둔 채 쓰는 법">ⓘ</button><button class="btn small ghost pconly" onclick="pipBible()" title="오늘 본문(개역한글·영어)을 다른 창보다 늘 위에 떠 있는 작은 창으로 띄웁니다 (크롬·엣지)">${ICO.closed}위에 띄우기</button>
-      <a class="btn small ghost" href="https://sum.su.or.kr:8888/bible/today#bibleTab" target="_blank" rel="noopener" onclick="return popBible(this.href)" title="매일성경 누리집을 화면 오른쪽 성경 창으로 엽니다(컴퓨터에서는 아침 서재가 왼쪽에 나란히). 열린 창 위쪽의 「해설」 탭을 누르면 해설을, 그 아래에서 음성을 보고 들으실 수 있습니다">${ICO.book}해설·음성은 매일성경에서 ↗</a></div>
+      ${SU.src==="ll"?llLinks(date):`${SU.audio?`<button class="btn small ghost" onclick="suListen()" title="매일성경 해설(본문 낭독과 해설)을 앱 안 작은 재생기로 듣습니다. 다른 메뉴로 옮겨도 계속 들립니다">${ICO.audio}해설 듣기</button>`:""}<button class="btn small ghost" id="subtn" onclick="suNoteToggle()">${ICO.book}해설 보기</button>`}</div>
     <details class="more"><summary>말씀 앞에서 묻기 <small class="hint" style="display:inline">· 오늘의 질문</small></summary><ol class="q" style="margin:4px 0 0">${pickQ("bible",today()+"b").map(q=>`<li>${esc(q)}</li>`).join("")}</ol></details>
+    <div id="sunote"></div>
     ${open?`<div class="row" style="gap:6px;margin-top:10px;flex-wrap:wrap"><span class="muted" style="font-size:12.5px">보기</span><span class="pills">${SU_VIEWS.map(([k,n,tip])=>`<button class="pill ${suView()===k?"on":""}" style="padding:3px 10px;font-size:13px" data-tip="${tip}" onclick="lookSet('suview','${k}');paintSuText()">${n}</button>`).join("")}</span><span class="spacer"></span><span class="row" style="gap:4px" title="매일성경 글자 크기 (이 기기만)"><button class="fsbtn" onclick="suFont(-1)">가−</button><button class="fsbtn" onclick="suFont(1)">가＋</button></span><button class="fsbtn" onclick="lookSet('sutall',applyLook().sutall?'':1);paintSuText()" title="본문 칸을 다 펼쳐 스크롤 없이 봅니다">${applyLook().sutall?"칸 줄이기":"다 펼치기"}</button><button class="fsbtn sufold" onclick="suToggle()" title="성경 본문 칸을 완전히 접습니다 (이 기기에 기억)">접기 ▴</button></div>
       <div class="sutext" id="sutext"><span class="muted">본문을 불러오는 중…</span></div>`:`<button type="button" class="suopenbar" onclick="suToggle()" title="접어 둔 성경 본문 칸을 다시 폅니다"><span>▾ 성경 본문 펼치기</span><small>개역한글 · 영어</small></button>`}`;   // 접으면 그 자리에 펴는 띠(2026-11-02 팀장님 「성경 보기 창을 완전히 접도록」)
   if(!open) return;
@@ -8839,8 +8895,10 @@ function planSettings(){
       <div class="pills">${BVERS.map(([v,n])=>`<button class="pill ${bibleVer()[0]===v?"on":""}" data-tip="「오늘의 말씀」의 책 그림을 누르면 대한성서공회 성경플랫폼에서 ${n}으로 그 장을 엽니다" onclick="setBibleVer('${v}')">${n}</button>`).join("")}</div></div>
     <div class="setrow pconly"><span class="k">성경 창</span>
       <div class="pills"><button class="pill ${bibleTileOn()?"on":""}" data-tip="성경 창을 화면 오른쪽 끝에 세로로, 앱 창은 그 왼쪽에 겹치지 않게 놓습니다 — 앱을 눌러도 성경 창이 가려지지 않아 읽으며 밑줄·묵상을 남기기 좋습니다. 설치한 앱은 창 크기가, 크롬 같은 브라우저 탭은 화면이 성경 창 옆으로 좁혀집니다" onclick="bibleTileSet(true);render()">나란히 놓기</button><button class="pill ${bibleTileOn()?"":"on"}" data-tip="앱 창 크기는 그대로 두고 성경 창만 엽니다" onclick="bibleTileSet(false);render()">창만 열기</button></div></div>
+    <div class="setrow"><span class="k">묵상지</span>
+      <div class="pills">${Object.entries(QB).map(([k,q])=>`<button class="pill ${qbK()===k?"on":""}" data-tip="묵상 화면 위 칸에 ${q.org} 「${q.n}」의 오늘 본문·제목·찬송가를 받아 옵니다${k==="ll"?" — 본문 해설·영상 QT는 두란노 구독자 화면으로 이어 드립니다":" — 해설 보기·해설 듣기도 앱 안에서"}" onclick="qbSet('${k}');render()">${q.n}</button>`).join("")}</div></div>
     <div class="setrow"><span class="k">묵상 본문</span>
-      <div class="pills"><button class="pill ${S.settings.qtSource!=="plan"?"on":""}" data-tip="새 묵상을 쓸 때 성서유니온 매일성경의 오늘 본문을 본문 칸에 넣습니다" onclick="S.settings.qtSource='su';save();render()">매일성경 따라</button><button class="pill ${S.settings.qtSource==="plan"?"on":""}" data-tip="새 묵상을 쓸 때 통독표의 오늘 분량을 본문 칸에 넣습니다" onclick="S.settings.qtSource='plan';save();render()">통독표 따라</button></div></div>
+      <div class="pills"><button class="pill ${S.settings.qtSource!=="plan"?"on":""}" data-tip="새 묵상을 쓸 때 고른 묵상지(매일성경·생명의 삶)의 오늘 본문을 본문 칸에 넣습니다" onclick="S.settings.qtSource='su';save();render()">${qbN()} 따라</button><button class="pill ${S.settings.qtSource==="plan"?"on":""}" data-tip="새 묵상을 쓸 때 통독표의 오늘 분량을 본문 칸에 넣습니다" onclick="S.settings.qtSource='plan';save();render()">통독표 따라</button></div></div>
     <div class="setrow"><span class="k">읽는 요일</span>
       <div class="pills">${[1,2,3,4,5,6,0].map(d=>`<button class="pill day ${wk.includes(d)?"on":""}" onclick="toggleWeekday(${d})">${WEEK[d]}</button>`).join("")}</div>
       <div class="pills"><button class="pill ${wk.length===7?"on":""}" onclick="setWeek([0,1,2,3,4,5,6])">매일</button><button class="pill ${wk.length===6&&!wk.includes(0)?"on":""}" onclick="setWeek([1,2,3,4,5,6])">주일 빼고</button></div>
@@ -9096,4 +9154,25 @@ function ensurePlan(){
 { const W=(n,f)=>function(...a){ if(n==="rtPaint"&&RT_PLAN===-1) return rtPaintAll(...a); return RT_PLAN>0&&plansAlso()[RT_PLAN-1]?withPlan(RT_PLAN,()=>f.apply(this,a)):f.apply(this,a); };
   for(const n of ["rtPaint","rtPick","rtUndo","rtJumpBk","rtPickBook","rtAct","rtChAct","rtResetAll","rtRestore"]) window[n]=W(n,window[n]);
   const o=window.rtOpen; window.rtOpen=function(j){ RT_PLAN=+j||0; if(RT_PLAN>0&&!plansAlso()[RT_PLAN-1]) RT_PLAN=0; RT_TAB=0; return RT_PLAN>0?withPlan(RT_PLAN,()=>o()):o(); }; }
-load().then(()=>{ ensurePlan(); ensureMs(); render(); try{ splashOff(); }catch(_){} goToStart(); setTimeout(checkUpdate,1500); setTimeout(moveWelcome,1200); setTimeout(newsCheck,1800); setTimeout(manualFirst,2200); setTimeout(streakBreakCheck,2600); setTimeout(statPing,5000); });
+// ───────── 초대 암호 (2026-11-22 팀장님 「새 주소를 받는 사람만 쓸 수 있도록」) ─────────
+// 처음 한 번 초대 암호를 넣으면 이 기기에 기억(seojae-open.inv). 앱은 암호의 SHA-256 지문만 알고, 공개 창구(매일성경·AI·찬송가·책 찾기)도 같은 암호를 확인함.
+const INV_HASH="773bed80006b474e636fbad806c38a1a6c5af338d8d819f210da07e899d1da91", INV_KEY="seojae-open.inv";
+const invNorm=s=>String(s||"").replace(/\s+/g,"").toLowerCase();
+const invCode=()=>{ try{ return localStorage.getItem(INV_KEY)||""; }catch(_){ return ""; } };
+async function invHash(s){ const b=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(invNorm(s))); return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,"0")).join(""); }
+async function invReady(){ try{ if(invCode()&&await invHash(invCode())===INV_HASH) return; }catch(_){ }
+  try{ splashOff(); }catch(_){}
+  return new Promise(done=>{ const ov=document.createElement("div"); ov.id="invgate"; ov.className="invgate";
+    ov.innerHTML=`<article class="newscard" role="dialog" aria-modal="true" aria-labelledby="invh"><p class="newsk" id="invh">아침 서재</p>
+      <h2 style="margin:4px 0 10px">초대 암호를 넣어 주세요</h2>
+      <p class="sub" style="margin:0 0 12px">아침 서재는 초대받은 분들과 함께 씁니다. 초대해 주신 분께 받은 암호를 한 번만 넣으면, 이 기기에서는 다시 묻지 않습니다.</p>
+      <form id="invf"><label class="field"><span>초대 암호</span><input id="invin" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="초대 암호" style="font-size:18px"></label>
+      <p class="hint" id="invmsg" style="min-height:1.4em;margin:6px 0"></p>
+      <button class="btn ink" type="submit" style="width:100%">들어가기</button></form></article>`;
+    document.body.appendChild(ov); const inp=ov.querySelector("#invin"), msg=ov.querySelector("#invmsg"); setTimeout(()=>inp.focus(),60);
+    ov.querySelector("#invf").onsubmit=async e=>{ e.preventDefault(); const v=invNorm(inp.value); if(!v){ msg.textContent="초대 암호를 넣어 주세요"; return; }
+      let ok=false; try{ ok=await invHash(v)===INV_HASH; }catch(_){ msg.textContent="이 브라우저에서는 확인할 수 없습니다 — 다른 브라우저로 열어 주세요"; return; }
+      if(!ok){ msg.textContent="암호가 맞지 않습니다. 초대해 주신 분께 다시 확인해 주세요"; inp.select(); return; }
+      try{ localStorage.setItem(INV_KEY,v); }catch(_){}
+      ov.remove(); done(); }; }); }
+invReady().then(()=>load()).then(()=>{ ensurePlan(); ensureMs(); render(); try{ splashOff(); }catch(_){} goToStart(); setTimeout(checkUpdate,1500); setTimeout(moveWelcome,1200); setTimeout(newsCheck,1800); setTimeout(manualFirst,2200); setTimeout(streakBreakCheck,2600); setTimeout(statPing,5000); });

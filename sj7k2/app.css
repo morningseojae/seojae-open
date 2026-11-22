@@ -2683,3 +2683,9 @@ html.bson .askview{z-index:160}
   .bsstage.narrow.op .bspage{opacity:1}
   .bscv-in{transition:opacity .15s}
 }
+/* 묵상지 고르기(매일성경 · 생명의 삶) — 2026-11-22 */
+.qbname{border:0;background:none;padding:0 2px;margin:0;font:inherit;color:inherit;cursor:pointer;border-bottom:1px dashed currentColor;display:inline-flex;align-items:baseline;gap:3px} .qbname i{font-style:normal;font-size:.75em;opacity:.7} .qbname:hover{color:var(--sepia)} .qbname:focus-visible{outline:2px solid var(--sepia);outline-offset:2px}
+/* 초대 암호 창(2026-11-22) — 닫는 길 없이 앱 앞에 (뒤로가기로 닫히지 않게 .newsview 와 이름을 나눔) */
+.invgate{position:fixed;inset:0;z-index:300;background:var(--desk,#efe6d8);display:flex;align-items:center;justify-content:center;padding:max(16px,env(safe-area-inset-top)) 16px max(16px,env(safe-area-inset-bottom))}
+.invgate .newscard{width:min(460px,100%)} .invgate input{width:100%}
+
