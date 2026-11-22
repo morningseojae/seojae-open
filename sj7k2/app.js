@@ -199,6 +199,7 @@ const PUB_GW="https://script.google.com/macros/s/AKfycbxRPmEN9s2BMkKZ4nQuEzCqalg
 async function gwCall(fn,args){
   const r=await fetch(PUB_GW,{method:"POST",body:JSON.stringify({fn,args,inv:invCode()}),signal:AbortSignal.timeout?AbortSignal.timeout(60000):undefined});
   let j; try{ j=await r.json(); }catch(_){ throw new Error("매일성경 창구가 알아볼 수 없는 답을 보냈습니다 ("+r.status+")"); }
+  if(j.gone){ try{ localStorage.removeItem(INV_KEY); }catch(_){} throw new Error("초대 암호가 바뀌었습니다 — 앱을 다시 열어 새 초대 암호를 넣어 주세요"); }   // 암호를 바꾼 뒤(2026-11-23): 다음에 열 때 암호 문이 다시 뜸
   if(!j.ok) throw new Error(j.error||"매일성경 창구가 답하지 않습니다"); return j.result;
 }
 // ───────── AI (공개판): 내 열쇠로, 이 브라우저 안의 일꾼(ai-worker.js — 개인용 서버의 AI 원칙·지침을 그대로 옮긴 것)이 바로 부름 ─────────
@@ -9156,8 +9157,8 @@ function ensurePlan(){
   const o=window.rtOpen; window.rtOpen=function(j){ RT_PLAN=+j||0; if(RT_PLAN>0&&!plansAlso()[RT_PLAN-1]) RT_PLAN=0; RT_TAB=0; return RT_PLAN>0?withPlan(RT_PLAN,()=>o()):o(); }; }
 // ───────── 초대 암호 (2026-11-22 팀장님 「새 주소를 받는 사람만 쓸 수 있도록」) ─────────
 // 처음 한 번 초대 암호를 넣으면 이 기기에 기억(seojae-open.inv). 앱은 암호의 SHA-256 지문만 알고, 공개 창구(매일성경·AI·찬송가·책 찾기)도 같은 암호를 확인함.
-const INV_HASH="773bed80006b474e636fbad806c38a1a6c5af338d8d819f210da07e899d1da91", INV_KEY="seojae-open.inv";
-const invNorm=s=>String(s||"").replace(/\s+/g,"").toLowerCase();
+const INV_HASH="0bc5d60454ead4db06031b3b9e48ab34ce1fc489d3e13241683063cacf972f80", INV_KEY="seojae-open.inv";
+const invNorm=s=>String(s||"").normalize("NFC").replace(/\s+/g,"").toLowerCase();
 const invCode=()=>{ try{ return localStorage.getItem(INV_KEY)||""; }catch(_){ return ""; } };
 async function invHash(s){ const b=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(invNorm(s))); return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,"0")).join(""); }
 async function invReady(){ try{ if(invCode()&&await invHash(invCode())===INV_HASH) return; }catch(_){ }
