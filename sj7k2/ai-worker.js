@@ -247,7 +247,7 @@ function cmtAuthority_(body) {
     if (!label) throw new Error("본문이 없습니다");
     if (body.known && body.noSearch) return cmtKnown_(label);
     const prompt = AI_PRINCIPLES_ + "\n당신은 성경 주석을 조사하는 조교입니다. 「" + label + "」을 이 성경 책의 권위 있는 주석들이 어떻게 풀었는지 웹 검색으로 직접 찾아 한국어로 요약합니다."
-      + (mine.length ? " 목회자가 이미 읽은 주석은 빼고 찾으세요: " + mine.join(", ") + "." : "") + "\n"
+      + (mine.length ? " 글쓴이가 이미 읽은 주석은 빼고 찾으세요: " + mine.join(", ") + "." : "") + "\n"
       + "고르는 기준:\n1) 이 성경 책에 대해 학계와 교회에서 널리 인정된 주석만 씁니다. 먼저 신학교의 주석 안내(예: Denver Seminary 주석 목록)나 주석 평가 자료로 어떤 주석이 권위 있는지 확인하고, 고전(칼뱅, 루터, 크리소스토무스, 카일-델리치, 매튜 헨리 등)과 현대 표준 시리즈(NICOT·NICNT, WBC, BECNT, Hermeneia, ICC, Anchor, Pillar, NIGTC 등) 가운데서 고릅니다. 개인 블로그, 설교 모음, 출처 없는 요약 사이트는 쓰지 않습니다.\n"
       + "2) items 에는 이 본문(장·절)의 주해가 담긴 페이지를 실제로 열어 읽은 주석만 넣습니다. 공개된 본문(biblehub, ccel, studylight, biblestudytools, archive.org 등)이나 출판사·학술지가 공개한 부분을 찾으세요. 서평이나 소개만 본 주석, 기억으로 아는 내용은 넣지 않습니다.\n"
       + "3) 그 페이지에 있는 해석만 씁니다. 문장을 옮기지 말고 2~4문장으로 내 말로 요약하며, 직접 인용은 한 문장 이내로 합니다. 주석끼리 견해가 다르면 그 차이가 드러나게 쓰고, t 에 전통과 시대를 적습니다(예: 개혁주의 · 16세기). 원어는 「원어, 한글 음독」 꼴로 적습니다.\n"
@@ -651,7 +651,7 @@ function genreKind_(d) { d = d || {}; const g = String(d.kind || "") + " " + Str
   if (d.sermon || /sermon|meditation|essay|설교|묵상|에세이|신앙/.test(g)) return "faith";
   if (/novel|소설/.test(g)) return "fiction"; if (/paper|논문/.test(g)) return "paper"; return "other"; }
 
-function who_(d) { return genreKind_(d) === "faith" ? "목회자이자 작가인 글쓴이" : "글쓴이"; }
+function who_(d) { return genreKind_(d) === "faith" ? "신앙인이자 작가인 글쓴이" : "글쓴이"; }
 
 let CALLNAME_ = "", NG_ = null;
 
