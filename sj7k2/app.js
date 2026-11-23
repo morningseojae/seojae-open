@@ -1292,6 +1292,9 @@ const MANUALS=[["quick","간단 매뉴얼","읽자마자 바로 써 보는 한 �
 // ───────── 새 소식 (공개판, 2026-10-31 팀장님): 중요한 고침은 앱을 열 때 한 번만 쉬운 말로 알림 ─────────
 // 새 소식을 더할 때: NEWS 맨 앞에 넣고 id 는 날짜(같은 날 둘째는 2026-11-02b 처럼 — 글자 순서로 새것이 뒤). 본 소식 id 는 이 기기에만(seojae-open.newsSeen)
 const NEWS=[
+ {id:"2026-11-23j",date:"2026년 11월 23일",title:"길잡이는 계속 남아요",items:[
+  ["📚","지난 길잡이도 언제든","지난 날의 묵상 길잡이를 지우지 않고 계속 간직해요. 날짜를 거슬러 가면 그날 길잡이를 다시 볼 수 있어요.",""],
+  ["🔁","같은 본문이 다시 오면 더 깊게","묵상지는 몇 해마다 같은 본문을 다시 읽어요. 그때는 지난 길잡이를 바탕으로, 그 시절의 계절과 우리 사회의 흐름에 맞게 더 깊게 다시 써 드려요.","길잡이 맨 위 「그날 길잡이 보기」로 지난 글도 함께 볼 수 있어요."]]},
  {id:"2026-11-23i",date:"2026년 11월 23일",title:"후원으로 지켜 가는 아침 서재",items:[
   ["☕","아침 서재는 후원으로 운영돼요","광고 없이, 누구나 끝까지 무료로 쓰시도록 서버·AI 비용과 새 기능을 여러분의 후원으로 이어 가고 있어요.","설정 맨 위 「후원하기」에서 토스·카카오페이·계좌로 보내실 수 있어요. 원하실 때, 원하시는 만큼이면 충분해요."]]},
  {id:"2026-11-23h",date:"2026년 11월 23일",title:"믿을 수 있는 길잡이",items:[
@@ -1858,9 +1861,15 @@ const llGuideHtml=()=>{ const G=SUN; if(G.pending) return `<p class="muted" styl
   const body=String(G.text||"").split("\n").map(x=>x.trim()).filter(Boolean).map(x=>/^■/.test(x)?`<div class="suhead">${esc(x.replace(/^■\s*/,""))}</div>`:/^\(출처[:：]/.test(x)?`<p class="susrc">${esc(x)}</p>`:`<p class="sup">${suVtag(x)}</p>`).join("");   // 끝 줄 (출처: …)는 작게(2026-11-23)
   const su=G.qb==="su", org=su?"성서유니온 「매일성경」":"두란노 「생명의 삶」", bk=su?"「매일성경」":"「생명의 삶」";
   const notLL=`<p class="llnot">이 길잡이는 ${org}이 제공한 해설이 아닙니다. ${bk} 본문(장절)에 맞춰 아침 서재에서 정리해 제공하는 글입니다.</p>`;
-  return `${notLL}${G.partial?`<p class="hint" style="margin:0 0 8px">주석을 읽은 길잡이는 아직 만드는 중이라, 먼저 본문·검색으로 만든 길잡이를 보여 드립니다.</p>`:""}${body}
+  const kd=x=>`${+x.slice(0,4)}년 ${+x.slice(5,7)}월 ${+x.slice(8,10)}일`, qn=q=>q==="su"?"매일성경":"생명의 삶";
+  const back=SU&&G.date&&SU.date!==G.date?`<p class="suprev"><button type="button" class="linkbtn" onclick="suNoteReload()">← 오늘 길잡이로</button> · ${kd(G.date)} ${qn(G.qb)} 길잡이를 보고 계세요</p>`:"";
+  const prev=G.prev?.date?`<p class="suprev">🔁 이 본문은 ${kd(G.prev.date)}(${qn(G.prev.src)})에도 묵상했어요. 이번 길잡이는 그 글을 바탕으로 지금의 때에 맞게 다시 쓴 판이에요. <button type="button" class="linkbtn" onclick="sunPrev('${esc(G.prev.date)}','${G.prev.src==="su"?"su":"ll"}')">그날 길잡이 보기</button></p>`:"";
+  return `${back}${notLL}${prev}${G.partial?`<p class="hint" style="margin:0 0 8px">주석을 읽은 길잡이는 아직 만드는 중이라, 먼저 본문·검색으로 만든 길잡이를 보여 드립니다.</p>`:""}${body}
     <p class="hint">아침 서재가 ${G.sources?.length?`주석 ${G.sources.length}권(${esc(G.sources.join(" · "))})을 함께 읽고`:"본문을 중심으로 주석과 성경 사전 같은 믿을 만한 자료를 살펴"} 정리해 제공하는 길잡이입니다. 날마다 새벽 3시에 올라옵니다. 말씀을 곁에 펴 놓고 함께 읽으시면 더 깊이 묵상하실 수 있어요.${su?"":" 두란노 「생명의 삶」의 해설은 두란노 구독자 화면에서 볼 수 있어요."}</p>`; };
-const suNoteHtml=()=>llGuideHtml();   // 매일성경·생명의 삶 모두 아침 서재 길잡이(성서유니온 해설 원문은 앱에 보이지 않음 — 서버가 참고만)
+const suNoteHtml=()=>llGuideHtml();
+// 같은 본문의 지난 길잡이 보기(2026-11-23 — 같은 본문이 다시 오면 지난 글을 바탕으로 다시 씀): 묵상 카드 날짜는 그대로, 해설 자리만 그날 길잡이로
+async function sunPrev(d,q){ try{ const r=await gcall(q==="su"?"suGuide":"llGuide",d); SUN={...r,ll:true,qb:q}; }catch(e){ return toast("지난 길잡이를 받아 오지 못했습니다 ("+e.message+")"); }
+  if($("#sunpanel")) return sunPaint(); const b=$("#sunote"); if(b){ b.innerHTML=`<div class="sunote">${suNoteHtml()}</div>`; b.scrollIntoView({block:"nearest"}); } }   // 매일성경·생명의 삶 모두 아침 서재 길잡이(성서유니온 해설 원문은 앱에 보이지 않음 — 서버가 참고만)
 function suBtnLabel(){ const b=$("#subtn"); if(b){ const o=!!($("#sunpanel")||$("#sunote")?.innerHTML); b.classList.toggle("on",o); b.setAttribute("aria-expanded",o); } if(b) b.innerHTML=ICO.book+($("#sunpanel")?"해설 창 닫기":$("#sunote")?.innerHTML?"해설 접기":"묵상 길잡이(해설)"); }
 // 생명의 삶 묵상 길잡이(2026-11-23): 서버가 새벽 3시에 만들어 둔 글 — 매일성경 해설과 같은 칸·창(SUN.ll)
 const suNoteGet=d=>{ const q=SU?.src==="ll"?"ll":"su"; return gcall(q==="ll"?"llGuide":"suGuide",d).then(r=>({...r,ll:true,qb:q})); };   // 매일성경도 아침 서재 길잡이(2026-11-23 팀장님 「해설을 바로 보여 주지 말고 아침 서재 제공으로」)
