@@ -209,7 +209,7 @@ async function drvSave(json,baseRev){   // 서버판 saveData_ 와 같은 지킴
 const gwNl=()=>{ try{ return localStorage.getItem("seojae-open.gwNl")==="1"; }catch(_){ return false; } };   // 창구에 국립중앙도서관 열쇠가 있는지 (책을 찾을 때 창구가 알려 줌)
 const drvConf=()=>{ const m=aiMode(), k=aiKeys(); return {notion:false,kakao:true,nl:gwNl(),ai:m==="own"?(k.claude?"claude":"gemini"):m==="shared"?"gemini":"",aiKeys:{gemini:m==="shared"||(m==="own"&&!!k.gemini),claude:m==="own"&&!!k.claude},aiShared:m==="shared",cmtFolder:"",yt:true,claude:null,local:false,gas:true,drive:!LOCALMODE,devOnly:LOCALMODE,email:DRV?.email||"",driveUrl:LOCALMODE?"":"https://drive.google.com/drive/folders/"+(DRV?.root||"")}; };
 // 공개판 전용 창구(구글 앱스 스크립트, 4gospel — 개인 기록과 무관): 브라우저가 직접 닿지 못하는 성서유니온 「매일성경」을 대신 받아 줌. 로그인 없이 날짜만 보냄
-const PUB_GW="https://script.google.com/macros/s/AKfycbxRPmEN9s2BMkKZ4nQuEzCqalgn_SBqEztJT7b5Af5dXJdmOBsmmgUMlfpbxbB8DIYAAQ/exec", GW_FN=new Set(["bookSuggest","dailyBible","dailyBibleNote","dailyLL","llGuide","musicFind","searchBooks","bookDetail"]);   // 찬송가·CCM 찾기도 창구가 함께(창구의 유튜브 열쇠, 찾은 곡은 모두가 함께 기억)
+const PUB_GW="https://script.google.com/macros/s/AKfycbxRPmEN9s2BMkKZ4nQuEzCqalgn_SBqEztJT7b5Af5dXJdmOBsmmgUMlfpbxbB8DIYAAQ/exec", GW_FN=new Set(["bookSuggest","dailyBible","dailyBibleNote","dailyLL","llGuide","llMonth","musicFind","searchBooks","bookDetail"]);   // 찬송가·CCM 찾기도 창구가 함께(창구의 유튜브 열쇠, 찾은 곡은 모두가 함께 기억)
 async function gwCall(fn,args){
   const r=await fetch(PUB_GW,{method:"POST",body:JSON.stringify({fn,args,inv:invCode()}),signal:AbortSignal.timeout?AbortSignal.timeout(60000):undefined});
   let j; try{ j=await r.json(); }catch(_){ throw new Error("매일성경 창구가 알아볼 수 없는 답을 보냈습니다 ("+r.status+")"); }
@@ -1290,6 +1290,9 @@ const MANUALS=[["quick","간단 매뉴얼","읽자마자 바로 써 보는 한 �
 // ───────── 새 소식 (공개판, 2026-10-31 팀장님): 중요한 고침은 앱을 열 때 한 번만 쉬운 말로 알림 ─────────
 // 새 소식을 더할 때: NEWS 맨 앞에 넣고 id 는 날짜(같은 날 둘째는 2026-11-02b 처럼 — 글자 순서로 새것이 뒤). 본 소식 id 는 이 기기에만(seojae-open.newsSeen)
 const NEWS=[
+ {id:"2026-11-23d",date:"2026년 11월 23일",title:"이달의 표지",items:[
+  ["🍂","묵상 화면에 이달의 표지","묵상을 열면 본문 카드 위에 「11월호 · 늦가을 — 거두며 감사하는 달」처럼 그달의 표지가 보여요. 색과 무늬가 달마다 바뀌어요.","그달 처음 열 때 한 번 크게 펼쳐지고, 「접기 ▴」로 한 줄로 둘 수 있어요."],
+  ["🕯️","절기에는 절기 무늬","사순절·고난 주간·부활의 아침·대림절·성탄에는 무늬가 바뀌어요. 생명의 삶이면 「이달의 본문」도 함께 보여요.",""]]},
  {id:"2026-11-23c",date:"2026년 11월 23일",title:"짬 묵상 틀",items:[
   ["🌱","새 묵상에 틀이 처음부터","「짧게」(기본)는 말씀 → 하나님 → 응답 → 기도 네 칸이에요. 한 칸만 써도 오늘 묵상이에요.","여유 있는 날은 「천천히」(일곱 칸), 빈 종이가 좋으면 「틀 없이」를 고르세요."],
   ["📖","틀 제목은 인쇄된 글처럼","틀의 제목 줄은 지워지거나 고쳐지지 않아요. 빼고 싶으면 「틀 빼기」나 「틀 없이」를 누르세요.",""],
@@ -1749,6 +1752,46 @@ function qbSet(k){ if(!QB[k]||qbK()===k) return; const pl=suPassage(SU)?.label, 
 function qbMenu(ev){ const r=ev.currentTarget.getBoundingClientRect(); ctxOpen(r.left,r.bottom+4,"묵상지 고르기",Object.entries(QB).map(([k,q])=>({t:(qbK()===k?"✓ ":"")+q.n+" · "+q.org,ic:k==="su"?"📘":"🌿",fn:()=>qbSet(k)})),isTouch()&&innerWidth<=700,"고른 묵상지의 오늘 본문·제목·찬송가가 이 칸에 옵니다"); }
 // 생명의 삶: 해설·영상은 두란노 구독자 화면으로 (앱 안에 넣지 않음 — 로그인이 필요한 유료 저작물)
 function llLinks(date){ return `<button class="btn small ghost" id="subtn" onclick="suNoteToggle()" title="그날 생명의 삶 본문(장절)에 맞춰 아침 서재가 새벽 3시에 AI로 정리해 둔 묵상 길잡이를 봅니다 — 두란노 「생명의 삶」이 제공한 해설이 아닙니다 — 컴퓨터에서는 오른쪽 창으로, 휴대폰에서는 카드 아래에">${ICO.book}${$("#sunpanel")?"길잡이 닫기":"묵상 길잡이"}</button><a class="btn small ghost" href="${esc(QB.ll.home(date))}" target="_blank" rel="noopener" onclick="return popBible(this.href)" title="두란노 「오늘의 QT」 화면을 오른쪽 성경 창으로 엽니다 — 본문 해설·묵상 에세이는 생명의삶 구독(로그인)으로 볼 수 있습니다">${ICO.book}해설은 두란노에서 ↗</a><a class="btn small ghost pconly" href="https://www.duranno.com/qt/view/video.asp?qtDate=${esc(date||today())}" target="_blank" rel="noopener" onclick="return popBible(this.href)" title="CGN 「영상 QT」 — 두란노 누리집에서 오늘 것은 컴퓨터로 볼 수 있고, 지난 날은 로그인이 필요합니다">🎬 영상 QT ↗</a>`; }
+// ───────── 이달의 표지 (2026-11-23 팀장님 「생명의 삶·매일성경처럼 매월 계절과 본문 분위기의 표지 — 월별 다짐이 새로워지게」, 북디자이너·UI 디자이너 검토) ─────────
+// 묵상 화면 본문 카드 위 띠 하나와 카드 왼쪽 선만 그 달 색(--mo, [data-mo]) — 전역 색·단추·본문·쓰기 종이는 그대로. 카드 날짜의 달을 따름(‹ ›로 지난달이면 지난달 호).
+// 계절과 한 마디는 직접 지은 말(묵상지 표지·문구를 따라 하지 않음), 무늬는 선 그림 SVG. 절기(사순절·고난 주간·부활·대림·성탄)에는 무늬만 바꿈. 그달 처음 열 때 한 번 크게, 접기는 이 기기에.
+const MO=[null,["한겨울","첫 마음을 세우는 달"],["늦겨울","언 땅 아래 기다리는 달"],["이른 봄","묻혀 다시 심기는 달"],["봄","다시 살아 일어서는 달"],["늦봄","가지로 붙어 있는 달"],["초여름","뿌리 내리는 달"],["한여름","쉬며 깊어지는 달"],["늦여름","무르익기를 기다리는 달"],["초가을","거둘 것을 헤아리는 달"],["가을","말씀으로 다시 고쳐지는 달"],["늦가을","거두며 감사하는 달"],["초겨울","기다림으로 빛을 맞는 달"]];
+const MO_ART={
+  1:'<path d="M88 8v48M67 20l42 24M67 44l42-24M88 15l-6-6M88 15l6-6M88 49l-6 6M88 49l6 6M73 23l-8 1M73 23l-3-7M103 41l8-1M103 41l3 7M73 41l-3 7M73 41l-8-1M103 23l3-7M103 23l8 1"/><circle cx="88" cy="32" r="4"/>',
+  2:'<path d="M60 56h56M88 56c0-12 1-20 3-28M91 28c-7-4-7-15 0-21 7 6 7 17 0 21zM89 40c-6-1-10-5-11-10 6 0 10 4 11 10z"/><circle cx="70" cy="18" r="1.4"/><circle cx="108" cy="24" r="1.4"/><circle cx="100" cy="10" r="1.4"/>',
+  3:'<path d="M60 52c10-3 46-3 56 0M88 50v-12M88 38c-9 0-14-6-14-14 9 0 14 6 14 14zM88 38c8 0 12-5 12-12-8 0-12 5-12 12z"/><ellipse cx="88" cy="56" rx="5" ry="3"/>',
+  4:'<g transform="translate(88 32)"><ellipse cx="0" cy="-12" rx="7" ry="11"/><ellipse cx="0" cy="-12" rx="7" ry="11" transform="rotate(72)"/><ellipse cx="0" cy="-12" rx="7" ry="11" transform="rotate(144)"/><ellipse cx="0" cy="-12" rx="7" ry="11" transform="rotate(216)"/><ellipse cx="0" cy="-12" rx="7" ry="11" transform="rotate(288)"/><circle r="3"/></g>',
+  5:'<path d="M58 54c14-6 30-10 50-30M78 46C66 40 66 26 76 18c8 8 8 20 2 28zM94 34c0-12 8-20 20-20-2 12-8 20-20 20zM66 24c0-6-4-10-10-10M108 24c4-2 8 0 8 4"/>',
+  6:'<path d="M88 44V28M88 28c-12 0-16-14-5-18 2-6 13-6 15 0 11 4 7 18-4 18M82 44c-4 4-10 4-14 2M94 44c4 4 10 4 14 2M64 52q6-4 12 0t12 0 12 0 12 0M70 58q6-4 12 0t12 0 12 0"/>',
+  7:'<path d="M56 22q8-6 16 0t16 0 16 0 16 0M56 34q8-6 16 0t16 0 16 0 16 0M56 46q8-6 16 0t16 0 16 0 16 0"/>',
+  8:'<path d="M88 6v8M88 10c6-4 14-2 16 4"/><circle cx="82" cy="20" r="5"/><circle cx="94" cy="20" r="5"/><circle cx="76" cy="30" r="5"/><circle cx="88" cy="30" r="5"/><circle cx="100" cy="30" r="5"/><circle cx="82" cy="40" r="5"/><circle cx="94" cy="40" r="5"/><circle cx="88" cy="50" r="5"/>',
+  9:'<path d="M74 58c4-20 10-36 22-50M80 46c-6-2-9-7-9-12 6 2 9 6 9 12zM84 36c-6-2-9-7-9-12 6 2 9 6 9 12zM89 26c-6-2-8-7-8-12 6 2 8 6 8 12zM84 40c6-4 11-4 14-1-5 4-10 4-14 1zM89 30c6-4 11-4 14-1-5 4-10 4-14 1zM94 20c5-4 10-4 12-1-4 4-9 4-12 1z"/>',
+  10:'<path d="M88 56V40M88 40l-4-8-10 2 4-8-10-6 10-3-2-9 9 4 3-10 3 10 9-4-2 9 10 3-10 6 4 8-10-2z"/>',
+  11:'<path d="M88 58V38M88 38C74 36 66 26 68 12c8 6 32 6 40 0 2 14-6 24-20 26zM88 38V14M88 38l-10-22M88 38l10-22M88 14c0 0-2 6 0 8 2-2 0-8 0-8"/>',
+  12:'<path d="M66 18l3 6 6 1-5 4 1 6-5-3-5 3 1-6-5-4 6-1zM92 58V34h12v24M98 34v-6M98 28c-3-3-3-7 0-10 3 3 3 7 0 10zM84 58h28"/>',
+  lent:'<path d="M88 8v48M76 22h24M70 58h36"/>',
+  holy:'<path d="M60 52h56M70 52a18 18 0 0 1 36 0M88 26v-10M74 32l-6-6M102 32l6-6M66 42h-8M110 42h8"/>',
+  advent:'<path d="M62 56h52M66 56V40h8v16M80 56V34h8v22M94 56V40h8v16M108 56V44h0"/><path d="M84 34c-2-3-2-6 0-9 2 3 2 6 0 9zM70 40c-2-3-2-5 0-8 2 3 2 5 0 8z"/>',
+  xmas:'<path d="M88 6l5 12 13 1-10 8 3 13-11-7-11 7 3-13-10-8 13-1zM88 46v12M80 58h16"/>'};
+function moEaster(y){ const a=y%19,b=Math.floor(y/100),c=y%100,d=Math.floor(b/4),e=b%4,f=Math.floor((b+8)/25),g=Math.floor((b-f+1)/3),h=(19*a+b-d-g+15)%30,i=Math.floor(c/4),k=c%4,l=(32+2*e+2*i-h-k)%7,m=Math.floor((a+11*h+22*l)/451); return new Date(y,Math.floor((h+l-7*m+114)/31)-1,((h+l-7*m+114)%31)+1); }
+function moFeast(dk){ const d=new Date(dk+"T00:00"), y=d.getFullYear(), E=moEaster(y), dd=(x)=>Math.round((d-x)/864e5);
+  const e=dd(E); if(e>=-6&&e<=6) return e<0?["holy","고난 주간"]:["holy","부활의 아침"]; if(e>=-46&&e<-6) return ["lent","사순절"];
+  const xm=new Date(y,11,25), adv=new Date(y,11,25-((xm.getDay()||7))-21); if(d>=new Date(y,11,24)&&d<=new Date(y,11,26)) return ["xmas","성탄"]; if(d>=adv&&d<xm) return ["advent","대림절"]; return null; }
+function moFoldOn(){ try{ return localStorage.getItem("seojae-open.moFold")==="1"; }catch(_){ return false; } }
+function moFold(){ try{ localStorage.setItem("seojae-open.moFold",moFoldOn()?"0":"1"); }catch(_){} moPaint(); }
+let MO_BOOKS={};
+function moBooks(ym){ if(qbK()!=="ll") return null; if(MO_BOOKS[ym]) return MO_BOOKS[ym];
+  try{ const c=JSON.parse(localStorage.getItem("seojae-open.mob."+ym)||"null"); if(c){ MO_BOOKS[ym]=c; return c; } }catch(_){}
+  MO_BOOKS[ym]={books:[],labels:[]}; if(GAS) gcall("llMonth",ym).then(r=>{ if(r&&r.books?.length){ MO_BOOKS[ym]=r; try{ localStorage.setItem("seojae-open.mob."+ym,JSON.stringify(r)); }catch(_){} moPaint(); } }).catch(()=>{}); return MO_BOOKS[ym]; }
+function moPaint(){ const box=$("#mocover"), card=$("#sucard"); if(!box||!card) return; const dk=card.dataset.date||today(), y=+dk.slice(0,4), m=+dk.slice(5,7), ym=dk.slice(0,7), [season,word]=MO[m], f=moFeast(dk), fold=moFoldOn();
+  box.dataset.mo=m; card.dataset.mo=m; box.classList.toggle("fold",fold);
+  let first=false; try{ first=localStorage.getItem("seojae-open.moSeen")!==ym&&ym===today().slice(0,7); if(first) localStorage.setItem("seojae-open.moSeen",ym); }catch(_){}
+  const B=moBooks(ym), cur=SU&&SU.date===dk?suPassage(SU)?.book||SU.book:"", bl=B&&B.books.length?`<p class="moc-b"><span>이달의 본문</span>${B.books.map(b=>b===cur?`<b>${esc(b)}</b>`:esc(b)).join(" · ")}${B.labels.length?` · ${B.labels.map(esc).join(" · ")}`:""}</p>`:"";
+  if(fold){ box.innerHTML=`<p class="moc-rib"><b>${m}월호</b> · ${esc(season)}${f?` · ${esc(f[1])}`:""} · <span>${esc(word)}</span></p><button type="button" class="moc-fold" onclick="moFold()" aria-expanded="false" title="이달의 표지를 펼칩니다">펴기 ▾</button>`; return; }
+  box.innerHTML=`<div class="moc-t"><p class="moc-k"><b class="moc-n">${m}</b><span class="moc-h">월호</span><span class="moc-s">${esc(season)}${f?` · ${esc(f[1])}`:""}</span><small>${y}</small></p><p class="moc-w">${esc(word)}</p>${bl}</div>
+    <svg class="moc-art" viewBox="0 0 128 64" aria-hidden="true" focusable="false">${MO_ART[f?f[0]:m]}</svg>
+    <button type="button" class="moc-fold" onclick="moFold()" aria-expanded="true" title="이달의 표지를 접어 한 줄로 둡니다 (이 기기에 기억)">접기 ▴</button>`;
+  if(first&&!box.classList.contains("first")){ box.classList.add("first"); const off=()=>{ box.classList.remove("first"); removeEventListener("scroll",off); document.removeEventListener("pointerdown",off,true); }; setTimeout(()=>{ addEventListener("scroll",off,{passive:true,once:true}); document.addEventListener("pointerdown",off,{capture:true,once:true}); },600); setTimeout(off,9000); } }
 let SU=null, SUT=null, SUERR="";
 async function suInfo(date){
   const kb=qbK(), pre="seojae-open."+(kb==="ll"?"ll2.":"su2.");   // su2·ll2: 해설 음성 주소를 되살린 뒤의 사본(예전 su. 사본에는 음성이 빠져 있음)
@@ -1832,7 +1875,7 @@ function suGo(k){ const box=$("#sucard"); if(!box) return;
 function suMove(n){ const box=$("#sucard"); if(!box) return; const d=new Date(box.dataset.date+"T00:00"); d.setDate(d.getDate()+n); suGo(dkey(d)); }
 let SUGEN=0;
 async function paintSu(){
-  const box=$("#sucard"); if(!box) return; const date=box.dataset.date, gen=++SUGEN;   // 늦게 끝난 옛 호출은 버립니다
+  const box=$("#sucard"); if(!box) return; const date=box.dataset.date, gen=++SUGEN; try{ moPaint(); }catch(_){}   // 늦게 끝난 옛 호출은 버립니다
   if(!SU||SU.date!==date||(SU.src||"su")!==qbK()){ box.innerHTML=`<span class="muted">오늘의 ${qbN()}을 불러오는 중…</span>`;
     try{ SU=await suInfo(date); SUT=null; SUERR=""; }catch(e){ SU=null; SUERR=e.message; } if(gen!==SUGEN||!$("#sucard")) return; }
   const x=new Date(date+"T00:00"), P=suPassage(SU), dayWs=live().filter(w=>w.track==="bible"&&w.date===date), cur=editId&&S.writings.find(w=>w.id===editId), open=suOpen();
@@ -1850,7 +1893,7 @@ async function paintSu(){
     <div id="sunote"></div>
     ${open?`<div class="row" style="gap:6px;margin-top:10px;flex-wrap:wrap"><span class="muted" style="font-size:12.5px">보기</span><span class="pills">${SU_VIEWS.map(([k,n,tip])=>`<button class="pill ${suView()===k?"on":""}" style="padding:3px 10px;font-size:13px" data-tip="${tip}" onclick="lookSet('suview','${k}');paintSuText()">${n}</button>`).join("")}</span><span class="spacer"></span><span class="row" style="gap:4px" title="매일성경 글자 크기 (이 기기만)"><button class="fsbtn" onclick="suFont(-1)">가−</button><button class="fsbtn" onclick="suFont(1)">가＋</button></span><button class="fsbtn" onclick="lookSet('sutall',applyLook().sutall?'':1);paintSuText()" title="본문 칸을 다 펼쳐 스크롤 없이 봅니다">${applyLook().sutall?"칸 줄이기":"다 펼치기"}</button><button class="fsbtn sufold" onclick="suToggle()" title="성경 본문 칸을 완전히 접습니다 (이 기기에 기억)">접기 ▴</button></div>
       <div class="sutext" id="sutext"><span class="muted">본문을 불러오는 중…</span></div>`:`<button type="button" class="suopenbar" onclick="suToggle()" title="접어 둔 성경 본문 칸을 다시 폅니다"><span>▾ 성경 본문 펼치기</span><small>개역한글 · 영어</small></button>`}`;   // 접으면 그 자리에 펴는 띠(2026-11-02 팀장님 「성경 보기 창을 완전히 접도록」)
-  sunSync();
+  sunSync(); try{ moPaint(); }catch(_){}
   if(!open) return;
   try{ if(!SUT||SUT.label!==P.label){ const t=await suTexts(P); if(gen!==SUGEN) return; SUT=t; SUT.label=P.label; } }catch(e){ const t=$("#sutext"); if(t) t.innerHTML=`<span class="muted">본문을 불러오지 못했습니다. 위 단추로 열어 주세요.</span>`; return; }
   paintSuText();
@@ -3295,7 +3338,7 @@ write0(){
   const books=S.books;
   const defPassage=w?.passage ?? fw?.passage ?? (fn?.track==="bible"&&fn.source?fn.source:(!dtype||dtype==="묵상")&&S.settings.qtSource==="plan"?todayPassageHint():"");
   return `
-  ${track==="bible"?`<div class="sucard" id="sucard" data-date="${esc(w?.date||NEW_DATE||today())}"></div>`:""}
+  ${track==="bible"?`<section class="mocover" id="mocover" aria-label="이달의 표지"></section><div class="sucard" id="sucard" data-date="${esc(w?.date||NEW_DATE||today())}"></div>`:""}
   <div class="toolbar">
     ${track!=="bible"?`<button class="btn small ghost nofocus backroom" onclick="go('room')" title="글방(원고·서가)으로">‹ 글방</button>`:""}
     ${modeBand(w)}

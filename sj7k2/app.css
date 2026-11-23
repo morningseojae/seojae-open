@@ -2728,3 +2728,31 @@ html.bson .askview{z-index:160}
 .sucard .qone .qq{flex:1 1 220px;min-width:min(220px,100%);font-size:15px;line-height:1.5;color:var(--ink)}
 /* 틀 제목 줄 = 인쇄된 글(고칠 수 없음, 2026-11-23) — 거울 층에 옅은 띠 */
 #hmirror i.tplh,.mirror i.tplh{font-style:normal;background:color-mix(in srgb,var(--sepia) 9%,transparent);border-radius:3px;box-decoration-break:clone;-webkit-box-decoration-break:clone;padding:1px 0}
+/* 이달의 표지(2026-11-23) — 달 색 --mo는 표지 띠·본문 카드 왼쪽 선에만. 색은 북디자이너가 대비를 잰 값(밝은 화면 4.7~8.5:1, 어두운 화면 7.6~9.5:1) */
+[data-mo="1"]{--mo:#4f5a66}[data-mo="2"]{--mo:#5e5a7a}[data-mo="3"]{--mo:#5f6b3c}[data-mo="4"]{--mo:#9a4f66}[data-mo="5"]{--mo:#3d6a52}[data-mo="6"]{--mo:#2f6a6a}[data-mo="7"]{--mo:#2e5f86}[data-mo="8"]{--mo:#6a3f6e}[data-mo="9"]{--mo:#6e6a26}[data-mo="10"]{--mo:#9a3f2a}[data-mo="11"]{--mo:#8c6a12}[data-mo="12"]{--mo:#2f4a6b}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]) [data-mo="1"]{--mo:#b5c1cd}:root:not([data-theme="light"]) [data-mo="2"]{--mo:#c0bcdc}:root:not([data-theme="light"]) [data-mo="3"]{--mo:#bfca9c}:root:not([data-theme="light"]) [data-mo="4"]{--mo:#eaaabd}:root:not([data-theme="light"]) [data-mo="5"]{--mo:#9fd0b4}:root:not([data-theme="light"]) [data-mo="6"]{--mo:#8fcaca}:root:not([data-theme="light"]) [data-mo="7"]{--mo:#95bfe2}:root:not([data-theme="light"]) [data-mo="8"]{--mo:#d1a8d4}:root:not([data-theme="light"]) [data-mo="9"]{--mo:#d2cd85}:root:not([data-theme="light"]) [data-mo="10"]{--mo:#eba48f}:root:not([data-theme="light"]) [data-mo="11"]{--mo:#e2c46a}:root:not([data-theme="light"]) [data-mo="12"]{--mo:#a3b9d9} }
+:root[data-theme="dark"] [data-mo="1"]{--mo:#b5c1cd}:root[data-theme="dark"] [data-mo="2"]{--mo:#c0bcdc}:root[data-theme="dark"] [data-mo="3"]{--mo:#bfca9c}:root[data-theme="dark"] [data-mo="4"]{--mo:#eaaabd}:root[data-theme="dark"] [data-mo="5"]{--mo:#9fd0b4}:root[data-theme="dark"] [data-mo="6"]{--mo:#8fcaca}:root[data-theme="dark"] [data-mo="7"]{--mo:#95bfe2}:root[data-theme="dark"] [data-mo="8"]{--mo:#d1a8d4}:root[data-theme="dark"] [data-mo="9"]{--mo:#d2cd85}:root[data-theme="dark"] [data-mo="10"]{--mo:#eba48f}:root[data-theme="dark"] [data-mo="11"]{--mo:#e2c46a}:root[data-theme="dark"] [data-mo="12"]{--mo:#a3b9d9}
+.sucard[data-mo]{border-left-color:var(--mo)}
+.mocover{position:relative;display:flex;align-items:center;gap:12px;min-height:92px;margin:0 0 10px;padding:12px 18px 12px 20px;border:1px solid var(--edge);border-left:3px solid var(--mo,var(--bible));border-radius:4px;background:color-mix(in srgb,var(--mo,var(--bible)) 7%,var(--paper)) var(--grain);overflow:hidden;container-type:inline-size;transition:min-height .5s ease,padding .5s ease}
+.mocover:empty{display:none}
+.mocover .moc-t{flex:1;min-width:0;position:relative;z-index:1;padding-right:min(34%,150px)}
+.mocover .moc-k{margin:0;display:flex;align-items:baseline;gap:6px;flex-wrap:wrap;font-family:"Nanum Myeongjo",serif;color:var(--mo)}
+.mocover .moc-n{font-size:34px;line-height:1;font-weight:800;letter-spacing:-.02em}
+.mocover .moc-h{font-size:14px;font-weight:700;letter-spacing:.08em}
+.mocover .moc-s{font-size:15px;font-weight:700;letter-spacing:.12em;margin-left:4px}
+.mocover .moc-k small{font:600 11px var(--ui-font);color:var(--faint);letter-spacing:.06em}
+.mocover .moc-w{margin:6px 0 0;font-family:"Gamja Flower",var(--ui-font);font-size:21px;line-height:1.2;color:var(--ink)}
+.mocover .moc-b{margin:6px 0 0;font:12.5px/1.45 var(--ui-font);color:var(--ink-soft)} .mocover .moc-b span{color:var(--mo);font-weight:700;margin-right:6px} .mocover .moc-b b{color:var(--ink)}
+.mocover .moc-art{position:absolute;right:56px;top:50%;transform:translateY(-50%);width:min(44%,230px);height:auto;max-height:86%;fill:none;stroke:var(--mo);stroke-width:1.3;stroke-linecap:round;stroke-linejoin:round;opacity:.42;pointer-events:none;-webkit-mask-image:linear-gradient(to left,#000 60%,transparent);mask-image:linear-gradient(to left,#000 60%,transparent)}
+.mocover .moc-fold{position:absolute;right:10px;top:10px;z-index:2;font:600 12px/1 var(--ui-font);color:var(--ink-soft);background:var(--paper);border:1px solid var(--edge);border-radius:999px;padding:6px 10px;cursor:pointer;min-height:28px}
+.mocover .moc-fold:hover{border-color:var(--mo)} .mocover .moc-fold:focus-visible{outline:2px solid var(--mo);outline-offset:2px}
+.mocover.fold{min-height:0;padding:7px 14px 7px 16px}
+.mocover .moc-rib{margin:0;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font:13px var(--ui-font);color:var(--ink-soft)} .mocover .moc-rib b{color:var(--mo);font-family:"Nanum Myeongjo",serif} .mocover .moc-rib span{font-family:"Gamja Flower",var(--ui-font);font-size:15px;color:var(--ink)}
+.mocover.fold .moc-fold{position:static}
+.mocover.first{min-height:150px;padding-top:22px;padding-bottom:22px} .mocover.first .moc-n{font-size:46px} .mocover.first .moc-w{font-size:25px}
+.mocover.first .moc-art{opacity:.55;stroke-dasharray:420;stroke-dashoffset:420;animation:mocDraw 1.4s ease forwards}
+@keyframes mocDraw{to{stroke-dashoffset:0}}
+@media (prefers-reduced-motion: reduce){ .mocover{transition:none} .mocover.first .moc-art{animation:none;stroke-dashoffset:0} }
+@media (max-width:700px){ .mocover{min-height:72px;padding:10px 14px 10px 16px} .mocover .moc-n{font-size:28px} .mocover .moc-w{font-size:18px} .mocover.first{min-height:112px} .mocover .moc-art{right:44px;width:min(46%,170px)} }
+@container (max-width:340px){ .mocover .moc-w{display:none} .mocover .moc-art{opacity:.22;right:6px} .mocover .moc-t{padding-right:56px} }
+@media print{ .mocover{display:none} }
