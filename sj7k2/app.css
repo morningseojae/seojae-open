@@ -2697,6 +2697,19 @@ html.bson .askview{z-index:160}
 .sunpbody{flex:1;overflow:auto;margin:0;border-radius:0;padding:16px 20px 28px;overscroll-behavior:contain}
 @media print{ .sunpanel{display:none} html.bside body{margin-right:0} }
 .llnot{margin:0 0 12px;padding:8px 11px;border-left:3px solid var(--sepia,#7a4a22);background:var(--paper-2);border-radius:0 8px 8px 0;font-family:var(--ui-font);font-size:13px;line-height:1.55;color:var(--ink-soft)}   /* 생명의 삶 길잡이: 두란노 해설이 아님 표기(2026-11-23) */
+/* 해설 창 읽기(2026-11-23 조판 전문가) — 해설은 고딕, 말씀은 바탕 · 문단 사이를 줄 간격보다 넓게 · 소제목은 고딕(손글씨 아님) */
+.sunote{font-family:var(--ui-font);font-size:calc(var(--su-fs,15px) + 1px);line-height:1.8;letter-spacing:-.01em;color:var(--ink);word-break:keep-all;overflow-wrap:break-word;text-align:left}
+.sunote .sup,.sunote .sulead,.sunote .suhead,.sunote .llnot,.sunote .hint{max-width:34em}
+.sunote .sup{margin:0 0 .9em}
+.sunote .sulead{margin:0 0 1.3em;padding:.1em 0 .1em .8em;border-left:3px solid color-mix(in srgb,var(--sepia) 45%,transparent);color:color-mix(in srgb,var(--ink) 85%,var(--paper-2));font-size:.97em}
+.sunote .suhead{font:700 .94em/1.45 var(--ui-font);letter-spacing:0;color:var(--sepia);margin:1.6em 0 .55em}
+.sunote .suhead:first-child,.sunote .sulead+.suhead,.sunote .llnot+.suhead{margin-top:.4em}
+.suvr{display:inline-block;margin:0 .45em 0 0;padding:0 .42em;border-radius:4px;font:600 .76em/1.6 var(--ui-font);letter-spacing:0;color:var(--bible);background:var(--bible-wash);vertical-align:.08em;font-variant-numeric:tabular-nums;white-space:nowrap}
+.sunote .hint{margin-top:1.6em;padding-top:.8em;border-top:1px dashed var(--deco);font-size:12.5px;line-height:1.6}
+.sunote .llnot{font-size:13px}
+@media (max-width:700px){ .sunote{padding:14px 16px;line-height:1.85} }
+.sunpbody{padding:18px 22px 32px}
+.sunphead .sunfs{padding:3px 7px;font-size:12.5px;min-width:0}
 /* 매일성경 카드 도구 줄(2026-11-23 팀장님 「누르고 싶게, 읽고 쓰는 곳과 달라 보이게」 — UI·사용성 전문가 검토):
    단추 줄은 옅은 띠(선반)로 본문과 나누고, 보조 단추는 늘 테두리가 보이는 칩, 번역은 한 묶음, 열려 있으면 채움(.on). 글꼴은 UI 고딕 */
 .sucard .btn,.sucard .verlink,.sunav .fsbtn{font-family:var(--ui-font)}
@@ -2794,3 +2807,11 @@ html.bson .askview{z-index:160}
 .tgpomo .pomocard{padding:14px 16px} .tgpomo .pomobody2{display:flex!important;flex-direction:row!important;align-items:center;gap:16px;margin-top:8px} .tgpomo .pdialbtn{flex:none} .tgpomo .pomoside{align-items:flex-start;text-align:left;gap:6px} .tgpomo .pomoside b{font-size:30px!important;line-height:1} .tgpomo .plen{flex-wrap:wrap;gap:6px} .tgpomo .plen .pill{padding:4px 10px;font-size:13px} .tgpomo .pomotip{display:none}
 .tgpomo .pomoside{min-width:0;justify-items:start!important;text-align:left!important} .tgpomo .pomobody2{flex-wrap:nowrap;justify-content:flex-start!important}
 @media (min-width:1000px){ .tgrid1>.tweek{align-self:start} }
+/* 묵상 화면 도구 줄은 꼭 필요한 것만(2026-11-23 팀장님 「묵상에 방해되지 않게 — 글방 메뉴는 글방에서만」): 나머지(.qx)는 「⋯ 더 보기」 안 */
+.toolbar.qtmin:not(.open) .qx{display:none!important}
+.toolbar.qtmin .tmore{display:inline-flex}
+.toolbar.qtmin.open .tools2{display:contents!important}
+.toolbar.qtmin .tmore[aria-expanded="true"]{background:color-mix(in srgb,var(--sepia) 10%,var(--paper));border-color:var(--sepia)}
+/* 바깥으로 나가는 링크는 톤을 낮춰(2026-11-23 팀장님) — 테두리만 옅게, 밑줄·굵기 없이 */
+.sucard .links a.quietlink{color:var(--ink-soft)!important;font-weight:400!important;text-decoration:none!important;background:transparent!important;border-color:color-mix(in srgb,var(--edge) 80%,transparent)!important;box-shadow:none!important;font-size:12.5px}
+.sucard .links a.quietlink:hover{color:var(--ink)!important;border-color:var(--edge)!important}
