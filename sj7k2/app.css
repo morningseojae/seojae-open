@@ -2825,3 +2825,19 @@ html.bson .askview{z-index:160}
 .dnband-t b{font-size:15px;color:var(--ink)} .dnband-t span{font-size:13px;line-height:1.55;color:var(--ink-soft)}
 .dnband-b{flex:none;display:flex;gap:6px}
 @media (max-width:640px){ .dnband{flex-wrap:wrap} .dnband-ic{display:none} .dnband-t{flex-basis:100%} .dnband-b{flex-basis:100%;justify-content:flex-end} }
+
+/* 공개판 묵상 도구 줄: 설교초안·겹치는 틀 빼기는 펴도 숨김(2026-11-23 실제 사용자 점검 — 평신도용, 틀은 짧게·천천히·틀 없이로) */
+.toolbar.qtmin .qxs{display:none!important}
+/* 아주 크게 보기(폭 288px)에서 넘치던 곳(2026-11-23 실제 사용자 점검) */
+@media (max-width:320px){
+  .hymnbox{display:flex;flex-wrap:wrap;align-items:center;row-gap:4px}
+  .hymnbox .hkind{margin-left:0}
+  nav button.navai{margin-left:1px;padding-left:0;padding-right:0;min-width:0}
+  nav{column-gap:1px}
+  .sucard .links{flex-wrap:wrap;row-gap:4px}
+  .dnacts{flex-wrap:wrap} .dnacts .dnbtn{white-space:normal;min-width:0}
+  .tgreet{flex-wrap:wrap}
+  .grid.tgrid1,.grid.tgrid2{grid-template-columns:minmax(0,1fr)} .grid.tgrid1>*,.grid.tgrid2>*{min-width:0}
+}
+.dnamt button.on{border-width:2px;border-color:#c98a3a;font-weight:800;box-shadow:0 0 0 2px color-mix(in srgb,#f2c066 35%,transparent)} .dnamt button.on::before{content:"✓";margin-right:2px;color:#a66a1f}   /* 고른 금액이 또렷하게(2026-11-23 사용자 점검) */
+.dncard .dnnote{margin:8px 0 0;font-size:12px;line-height:1.55;color:var(--ink-soft);font-family:var(--ui-font)}
