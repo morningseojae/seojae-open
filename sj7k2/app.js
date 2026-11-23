@@ -195,7 +195,7 @@ async function drvSave(json,baseRev){   // 서버판 saveData_ 와 같은 지킴
 const gwNl=()=>{ try{ return localStorage.getItem("seojae-open.gwNl")==="1"; }catch(_){ return false; } };   // 창구에 국립중앙도서관 열쇠가 있는지 (책을 찾을 때 창구가 알려 줌)
 const drvConf=()=>{ const m=aiMode(), k=aiKeys(); return {notion:false,kakao:true,nl:gwNl(),ai:m==="own"?(k.claude?"claude":"gemini"):m==="shared"?"gemini":"",aiKeys:{gemini:m==="shared"||(m==="own"&&!!k.gemini),claude:m==="own"&&!!k.claude},aiShared:m==="shared",cmtFolder:"",yt:true,claude:null,local:false,gas:true,drive:!LOCALMODE,devOnly:LOCALMODE,email:DRV?.email||"",driveUrl:LOCALMODE?"":"https://drive.google.com/drive/folders/"+(DRV?.root||"")}; };
 // 공개판 전용 창구(구글 앱스 스크립트, 4gospel — 개인 기록과 무관): 브라우저가 직접 닿지 못하는 성서유니온 「매일성경」을 대신 받아 줌. 로그인 없이 날짜만 보냄
-const PUB_GW="https://script.google.com/macros/s/AKfycbxRPmEN9s2BMkKZ4nQuEzCqalgn_SBqEztJT7b5Af5dXJdmOBsmmgUMlfpbxbB8DIYAAQ/exec", GW_FN=new Set(["bookSuggest","dailyBible","dailyBibleNote","dailyLL","musicFind","searchBooks","bookDetail"]);   // 찬송가·CCM 찾기도 창구가 함께(창구의 유튜브 열쇠, 찾은 곡은 모두가 함께 기억)
+const PUB_GW="https://script.google.com/macros/s/AKfycbxRPmEN9s2BMkKZ4nQuEzCqalgn_SBqEztJT7b5Af5dXJdmOBsmmgUMlfpbxbB8DIYAAQ/exec", GW_FN=new Set(["bookSuggest","dailyBible","dailyBibleNote","dailyLL","llGuide","musicFind","searchBooks","bookDetail"]);   // 찬송가·CCM 찾기도 창구가 함께(창구의 유튜브 열쇠, 찾은 곡은 모두가 함께 기억)
 async function gwCall(fn,args){
   const r=await fetch(PUB_GW,{method:"POST",body:JSON.stringify({fn,args,inv:invCode()}),signal:AbortSignal.timeout?AbortSignal.timeout(60000):undefined});
   let j; try{ j=await r.json(); }catch(_){ throw new Error("매일성경 창구가 알아볼 수 없는 답을 보냈습니다 ("+r.status+")"); }
@@ -1276,6 +1276,9 @@ const MANUALS=[["quick","간단 매뉴얼","읽자마자 바로 써 보는 한 �
 // ───────── 새 소식 (공개판, 2026-10-31 팀장님): 중요한 고침은 앱을 열 때 한 번만 쉬운 말로 알림 ─────────
 // 새 소식을 더할 때: NEWS 맨 앞에 넣고 id 는 날짜(같은 날 둘째는 2026-11-02b 처럼 — 글자 순서로 새것이 뒤). 본 소식 id 는 이 기기에만(seojae-open.newsSeen)
 const NEWS=[
+ {id:"2026-11-23b",date:"2026년 11월 23일",title:"생명의 삶 묵상 길잡이",items:[
+  ["🌿","날마다 새벽 3시에","묵상지를 생명의 삶으로 고르면 묵상 카드에 「묵상 길잡이」가 생겨요. 그날 본문의 흐름·배경·본문이 보여 주는 하나님을 짚고, 묵상 질문으로 맺어요.","컴퓨터에서는 오른쪽 창으로, 휴대폰에서는 카드 아래에 펼쳐져요."],
+  ["🔎","AI가 정리한 글이에요","본문과 믿을 만한 자료로 정리해요. 지어내지 않고, 결론이나 기도는 대신 쓰지 않아요.","틀린 곳이 있을 수 있으니 본문과 견주어 읽고, 답은 묵상 노트에 직접 적어 보세요."]]},
  {id:"2026-11-23",date:"2026년 11월 23일",title:"아침 서재 1.0 — 정식으로 함께해요",items:[
   ["🎉","정식 1.0이 되었어요","시험하던 「베타」 표시를 걷고, 화면 맨 아래 판 번호가 1.0부터 새로 시작해요.","글과 기록은 그대로예요."],
   ["🌱","묵상 틀이 쉬워졌어요","「틀 넣기」를 누르면 본문 → 관찰 → 하나님 → 깨달음 → 적용 → 기도 → 나눔 씨앗 차례로 칸이 들어와요. 「말씀 앞에서 묻기」의 오늘의 질문도 우리 삶의 말로 바꿨어요.","마지막 칸 「나눔 씨앗」에 가족·소그룹과 나누고 싶은 한 줄을 적어 두면 「쓰기 ▾ → 나눔 씨앗 모음」에 모여요."],
@@ -1726,7 +1729,7 @@ function qbSet(k){ if(!QB[k]||qbK()===k) return; const pl=suPassage(SU)?.label, 
   S.settings.qtBook=k; save(); SU=null; SUT=null; SUN=null; if($("#sunpanel")) sunClose(); $("#sunote")&&($("#sunote").innerHTML=""); if($("#sucard")) paintSu(); else render(); toast(`오늘의 묵상 본문을 「${QB[k].n}」에서 받아 옵니다`); }
 function qbMenu(ev){ const r=ev.currentTarget.getBoundingClientRect(); ctxOpen(r.left,r.bottom+4,"묵상지 고르기",Object.entries(QB).map(([k,q])=>({t:(qbK()===k?"✓ ":"")+q.n+" · "+q.org,ic:k==="su"?"📘":"🌿",fn:()=>qbSet(k)})),isTouch()&&innerWidth<=700,"고른 묵상지의 오늘 본문·제목·찬송가가 이 칸에 옵니다"); }
 // 생명의 삶: 해설·영상은 두란노 구독자 화면으로 (앱 안에 넣지 않음 — 로그인이 필요한 유료 저작물)
-function llLinks(date){ return `<a class="btn small ghost" href="${esc(QB.ll.home(date))}" target="_blank" rel="noopener" onclick="return popBible(this.href)" title="두란노 「오늘의 QT」 화면을 오른쪽 성경 창으로 엽니다 — 본문 해설·묵상 에세이는 생명의삶 구독(로그인)으로 볼 수 있습니다">${ICO.book}해설은 두란노에서 ↗</a><a class="btn small ghost pconly" href="https://www.duranno.com/qt/view/video.asp?qtDate=${esc(date||today())}" target="_blank" rel="noopener" onclick="return popBible(this.href)" title="CGN 「영상 QT」 — 두란노 누리집에서 오늘 것은 컴퓨터로 볼 수 있고, 지난 날은 로그인이 필요합니다">🎬 영상 QT ↗</a>`; }
+function llLinks(date){ return `<button class="btn small ghost" id="subtn" onclick="suNoteToggle()" title="그날 생명의 삶 본문으로 새벽 3시에 만들어 둔 묵상 길잡이(AI 정리)를 봅니다 — 컴퓨터에서는 오른쪽 창으로, 휴대폰에서는 카드 아래에">${ICO.book}${$("#sunpanel")?"길잡이 닫기":"묵상 길잡이"}</button><a class="btn small ghost" href="${esc(QB.ll.home(date))}" target="_blank" rel="noopener" onclick="return popBible(this.href)" title="두란노 「오늘의 QT」 화면을 오른쪽 성경 창으로 엽니다 — 본문 해설·묵상 에세이는 생명의삶 구독(로그인)으로 볼 수 있습니다">${ICO.book}해설은 두란노에서 ↗</a><a class="btn small ghost pconly" href="https://www.duranno.com/qt/view/video.asp?qtDate=${esc(date||today())}" target="_blank" rel="noopener" onclick="return popBible(this.href)" title="CGN 「영상 QT」 — 두란노 누리집에서 오늘 것은 컴퓨터로 볼 수 있고, 지난 날은 로그인이 필요합니다">🎬 영상 QT ↗</a>`; }
 let SU=null, SUT=null, SUERR="";
 async function suInfo(date){
   const kb=qbK(), pre="seojae-open."+(kb==="ll"?"ll2.":"su2.");   // su2·ll2: 해설 음성 주소를 되살린 뒤의 사본(예전 su. 사본에는 음성이 빠져 있음)
@@ -1759,30 +1762,37 @@ let SUN=null;
 // 다른 메뉴로 옮겨도 닫기 전까지 그대로, 묵상 날짜를 옮기면 그날 해설로. 휴대폰·좁은 창은 예전처럼 카드 아래에 펼침.
 const sunW=()=>Math.round(Math.min(480,Math.max(340,innerWidth*.34)));
 const sunWide=()=>innerWidth-sunW()>=640&&matchMedia("(pointer:fine)").matches;
-const suNoteHtml=()=>{ const para=t=>String(t||"").split(/<br\s*\/?>|\n/).map(x=>x.trim()).filter(Boolean).map(x=>`<p style="margin:0 0 6px">${esc(x)}</p>`).join("");
+const llGuideHtml=()=>{ const G=SUN; if(G.pending) return `<p class="muted" style="margin:0 0 10px">${esc(G.note||"묵상 길잡이를 준비하는 중입니다")}</p>${G.none?"":`<button class="btn small" onclick="suNoteReload()">다시 불러오기</button>`}`;
+  const body=String(G.text||"").split("\n").map(x=>x.trim()).filter(Boolean).map(x=>/^■/.test(x)?`<div class="suhead" style="margin-top:10px">${esc(x.replace(/^■\s*/,""))}</div>`:`<p style="margin:0 0 6px">${esc(x)}</p>`).join("");
+  return `${G.partial?`<p class="hint" style="margin:0 0 8px">주석을 읽은 길잡이는 아직 만드는 중이라, 먼저 본문·검색으로 만든 길잡이를 보여 드립니다.</p>`:""}${body}
+    <p class="hint" style="margin-top:10px">${/claude/i.test(G.ai||"")?"AI(클로드)":/gemini/i.test(G.ai||"")?"AI(제미나이)":"AI"}가 ${G.sources?.length?`주석 ${G.sources.length}권(${esc(G.sources.join(" · "))})의 발췌를 읽고`:"본문과 검색 자료로"} 정리한 길잡이입니다. 날마다 새벽 3시에 올라옵니다. 틀린 곳이 있을 수 있으니 본문과 견주어 읽어 주세요 · 두란노 생명의 삶 해설은 「해설은 두란노에서 ↗」로.</p>`; };
+const suNoteHtml=()=>{ if(SUN?.ll) return llGuideHtml(); const para=t=>String(t||"").split(/<br\s*\/?>|\n/).map(x=>x.trim()).filter(Boolean).map(x=>`<p style="margin:0 0 6px">${esc(x)}</p>`).join("");
   return `${SUN.brief?`<p class="sub" style="margin:0 0 10px">${esc(SUN.brief)}</p>`:""}
     ${SUN.sections.map(x=>`<div class="suhead" style="margin-top:8px">${esc(x.label)}</div>${para(x.text)}`).join("")}
     <p class="hint" style="margin-top:8px">매일성경 해설 © 성서유니온선교회 · 개인 묵상용으로만 보여 드리며 기록에는 남기지 않습니다. <a href="https://sum.su.or.kr:8888/bible/today#bibleTab" target="_blank" rel="noopener" onclick="return popBible(this.href)">성서유니온에서 보기 ↗</a></p>`; };
-function suBtnLabel(){ const b=$("#subtn"); if(b) b.innerHTML=ICO.book+($("#sunpanel")?"해설 창 닫기":$("#sunote")?.innerHTML?"해설 접기":"해설 보기"); }
+function suBtnLabel(){ const b=$("#subtn"), ll=SU?.src==="ll"; if(b) b.innerHTML=ICO.book+($("#sunpanel")?(ll?"길잡이 닫기":"해설 창 닫기"):$("#sunote")?.innerHTML?(ll?"길잡이 접기":"해설 접기"):(ll?"묵상 길잡이":"해설 보기")); }
+// 생명의 삶 묵상 길잡이(2026-11-23): 서버가 새벽 3시에 만들어 둔 글 — 매일성경 해설과 같은 칸·창(SUN.ll)
+const suNoteGet=d=>SU?.src==="ll"?gcall("llGuide",d).then(r=>({...r,ll:true})):gcall("dailyBibleNote",d);
+function suNoteReload(){ SUN=null; if($("#sunpanel")) return sunSync(); const box=$("#sunote"); if(box) box.innerHTML=""; suNoteToggle(); }
 async function suNoteToggle(){
   const box=$("#sunote"), b=$("#subtn");
   if($("#sunpanel")) return sunClose();
   if(box&&box.innerHTML){ box.innerHTML=""; return suBtnLabel(); }
   const date=suDate()||SU?.date; if(!date) return; if(b) b.textContent="해설 받는 중…";
-  try{ if(!SUN||SUN.date!==date) SUN=await gcall("dailyBibleNote",date); }catch(e){ suBtnLabel(); return toast("해설을 받아 오지 못했습니다 ("+e.message+")"); }
+  try{ if(!SUN||SUN.date!==date||!!SUN.ll!==(SU?.src==="ll")||SUN.pending) SUN=await suNoteGet(date); }catch(e){ suBtnLabel(); return toast((SU?.src==="ll"?"묵상 길잡이를":"해설을")+" 받아 오지 못했습니다 ("+e.message+")"); }
   if(sunWide()) return sunOpen();
   if(box) box.innerHTML=`<div class="sunote">${suNoteHtml()}</div>`; suBtnLabel();
 }
-function sunOpen(){ let p=$("#sunpanel"); if(!p){ p=document.createElement("aside"); p.id="sunpanel"; p.className="sunpanel"; p.setAttribute("aria-label","매일성경 해설 창"); document.body.appendChild(p); }
+function sunOpen(){ let p=$("#sunpanel"); if(!p){ p=document.createElement("aside"); p.id="sunpanel"; p.className="sunpanel"; p.setAttribute("aria-label","묵상 해설 창"); document.body.appendChild(p); }
   NSIDE=sunW(); p.style.width=NSIDE+"px"; sideGapPaint(); sunPaint(); suBtnLabel();
   let seen=false; try{ seen=localStorage.getItem("seojae-open.sunTip")==="1"; localStorage.setItem("seojae-open.sunTip","1"); }catch(_){} if(!seen) toast("해설을 오른쪽 창에 띄웠습니다 · 지금 화면은 왼쪽에 그대로 · ✕로 닫으면 원래 폭으로"); }
 function sunPaint(){ const p=$("#sunpanel"); if(!p||!SUN) return; const d=SUN.date, lb=`${+d.slice(5,7)}월 ${+d.slice(8,10)}일`, same=SU&&SU.date===d;
-  p.innerHTML=`<div class="sunphead"><b>${ICO.book}매일성경 해설</b><span class="muted" title="${esc(same&&SU.title?SU.title:"")}">${lb}${same&&SU.title?" · "+esc(SU.title):""}</span><span class="spacer"></span>${same&&SU.audio?`<button class="btn small ghost" onclick="suListen()" title="본문 낭독과 해설을 앱 안 작은 재생기로 듣습니다">${ICO.audio}듣기</button>`:""}<button class="btn small ghost sunx" onclick="sunClose()" title="해설 창 닫기 — 화면이 원래 폭으로 돌아갑니다" aria-label="해설 창 닫기">✕</button></div>
+  p.innerHTML=`<div class="sunphead"><b>${ICO.book}${SUN.ll?"생명의 삶 묵상 길잡이":"매일성경 해설"}</b><span class="muted" title="${esc(same&&SU.title?SU.title:"")}">${lb}${same&&SU.title?" · "+esc(SU.title):""}</span><span class="spacer"></span>${same&&SU.audio&&!SUN.ll?`<button class="btn small ghost" onclick="suListen()" title="본문 낭독과 해설을 앱 안 작은 재생기로 듣습니다">${ICO.audio}듣기</button>`:""}<button class="btn small ghost sunx" onclick="sunClose()" title="해설 창 닫기 — 화면이 원래 폭으로 돌아갑니다" aria-label="해설 창 닫기">✕</button></div>
     <div class="sunpbody sunote">${suNoteHtml()}</div>`; }
 function sunClose(){ $("#sunpanel")?.remove(); NSIDE=0; sideGapPaint(); suBtnLabel(); }
 // 묵상 카드를 다시 그린 뒤: 해설 창이 열려 있으면 그 날짜·묵상지에 맞춤
-function sunSync(){ if(!$("#sunpanel")) return; if(!SU||SU.src==="ll") return sunClose(); suBtnLabel(); if(SUN&&SUN.date===SU.date) return sunPaint();
-  const d=SU.date; gcall("dailyBibleNote",d).then(r=>{ if(SU&&SU.date===d&&$("#sunpanel")){ SUN=r; sunPaint(); } }).catch(()=>{}); }
+function sunSync(){ if(!$("#sunpanel")) return; if(!SU) return sunClose(); suBtnLabel(); const ll=SU.src==="ll"; if(SUN&&SUN.date===SU.date&&!!SUN.ll===ll&&!SUN.pending) return sunPaint();
+  const d=SU.date; suNoteGet(d).then(r=>{ if(SU&&SU.date===d&&(SU.src==="ll")===!!r.ll&&$("#sunpanel")){ SUN=r; sunPaint(); } }).catch(e=>toast((ll?"묵상 길잡이를":"해설을")+" 받아 오지 못했습니다 ("+e.message+")")); }
 addEventListener("resize",()=>{ const p=$("#sunpanel"); if(!p) return; const w=sunW();
   if(innerWidth-w<640){ sunClose(); toast("창이 좁아져 해설 창을 닫았습니다 — 「해설 보기」를 누르면 카드 아래에 펼쳐집니다"); }
   else if(w!==NSIDE){ NSIDE=w; p.style.width=w+"px"; sideGapPaint(); } });
