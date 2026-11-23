@@ -400,6 +400,7 @@ function connectView(){
       <div class="startcard rec"><span class="startbadge">권해 드려요</span>
         <button class="btn ink startbtn" onclick="drvStart(this)">구글로 시작하기</button>
         <p class="sub"><b>휴대폰을 잃거나 바꿔도 글이 남습니다.</b> 쓰는 글이 모두 내 구글 드라이브 「아침 서재」 폴더에 간직되고, 휴대폰·컴퓨터 어디서나 같은 구글 계정으로 이어 씁니다.</p>
+        <p class="sub"><b>예전 주소에서 구글로 쓰셨나요?</b> 그때와 같은 구글 계정으로 시작하면 예전 글이 그대로 이어지고, 이 기기에만 있던 글도 덮지 않고 합쳐집니다.</p>
         <details class="more"><summary>구글로 시작하면 어떻게 되나요?</summary><ul class="steps sub">
           <li>구글 계정으로 로그인하고 「허용」을 누르면 끝입니다.</li>
           <li>아침 서재는 <b>이 앱이 만든 파일만</b> 볼 수 있습니다. 드라이브의 다른 파일·메일·사진은 보지도 고치지도 못합니다.</li>
@@ -1291,6 +1292,11 @@ const MANUALS=[["quick","간단 매뉴얼","읽자마자 바로 써 보는 한 �
 // ───────── 새 소식 (공개판, 2026-10-31 팀장님): 중요한 고침은 앱을 열 때 한 번만 쉬운 말로 알림 ─────────
 // 새 소식을 더할 때: NEWS 맨 앞에 넣고 id 는 날짜(같은 날 둘째는 2026-11-02b 처럼 — 글자 순서로 새것이 뒤). 본 소식 id 는 이 기기에만(seojae-open.newsSeen)
 const NEWS=[
+ {id:"2026-11-23h",date:"2026년 11월 23일",title:"믿을 수 있는 길잡이",items:[
+  ["📚","검증된 주석으로","길잡이는 복음주의(장로교·감리교·성결교)에서 검증된 주석으로 써요. 성경 각 권마다 권위 있게 꼽히는 주석을 살펴요.",""],
+  ["🔖","출처는 맨 끝에","어떤 주석을 살폈는지 길잡이 맨 끝에 한 줄로 알려 드려요.",""],
+  ["📖","말씀 그대로","성경 구절은 개역한글 본문 그대로 옮겨요.",""]
+  ["🔗","예전 글도 그대로","예전 주소에서 구글로 쓰셨다면, 같은 구글 계정으로 시작하면 예전 글이 그대로 이어져요.",""],]},
  {id:"2026-11-23g",date:"2026년 11월 23일",title:"매일성경도 묵상 길잡이로",items:[
   ["📖","매일성경 묵상 길잡이","매일성경 카드의 「묵상 길잡이(해설)」를 누르면, 아침 서재에서 그날 본문으로 정리해 드리는 길잡이가 앱 안에서 펼쳐져요. 「해설 듣기」는 그대로예요.",""],
   ["🤲","따뜻한 말로","생명의 삶·매일성경 길잡이 모두, 곁에 앉아 다독이듯 따뜻한 말로 써요. 「지친 마음에 건네는 말」 한 칸이 새로 생겼어요.",""],
@@ -1845,7 +1851,7 @@ const sunWide=()=>innerWidth-sunW()>=640&&matchMedia("(pointer:fine)").matches;
 // 해설 읽기(2026-11-23 팀장님 「해설 글이 가독성이 떨어져」 — 조판 전문가): 문단 첫머리의 「1-3절」·「(5-6절)」만 작은 꼬리표로, 나머지 글은 그대로
 const suVtag=x=>{ const m=x.match(/^[(\[]?\s*(\d+(?:\s*[-–~]\s*\d+)?(?:\s*,\s*\d+)*)\s*절\s*[)\]]?\s*[:.·]?\s*/); return m&&m[0].length<x.length?`<span class="suvr">${m[1].replace(/\s*[-–~]\s*/g,"–")}절</span>`+esc(x.slice(m[0].length)):esc(x); };
 const llGuideHtml=()=>{ const G=SUN; if(G.pending) return `<p class="muted" style="margin:0 0 10px">${esc(G.note||"묵상 길잡이를 준비하는 중입니다")}</p>${G.none?"":`<button class="btn small" onclick="suNoteReload()">다시 불러오기</button>`}`;
-  const body=String(G.text||"").split("\n").map(x=>x.trim()).filter(Boolean).map(x=>/^■/.test(x)?`<div class="suhead">${esc(x.replace(/^■\s*/,""))}</div>`:`<p class="sup">${suVtag(x)}</p>`).join("");
+  const body=String(G.text||"").split("\n").map(x=>x.trim()).filter(Boolean).map(x=>/^■/.test(x)?`<div class="suhead">${esc(x.replace(/^■\s*/,""))}</div>`:/^\(출처[:：]/.test(x)?`<p class="susrc">${esc(x)}</p>`:`<p class="sup">${suVtag(x)}</p>`).join("");   // 끝 줄 (출처: …)는 작게(2026-11-23)
   const su=G.qb==="su", org=su?"성서유니온 「매일성경」":"두란노 「생명의 삶」", bk=su?"「매일성경」":"「생명의 삶」";
   const notLL=`<p class="llnot">이 길잡이는 ${org}이 제공한 해설이 아닙니다. ${bk} 본문(장절)에 맞춰 아침 서재에서 정리해 제공하는 글입니다.</p>`;
   return `${notLL}${G.partial?`<p class="hint" style="margin:0 0 8px">주석을 읽은 길잡이는 아직 만드는 중이라, 먼저 본문·검색으로 만든 길잡이를 보여 드립니다.</p>`:""}${body}

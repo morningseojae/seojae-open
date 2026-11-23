@@ -2707,6 +2707,7 @@ html.bson .askview{z-index:160}
 .suvr{display:inline-block;margin:0 .45em 0 0;padding:0 .42em;border-radius:4px;font:600 .76em/1.6 var(--ui-font);letter-spacing:0;color:var(--bible);background:var(--bible-wash);vertical-align:.08em;font-variant-numeric:tabular-nums;white-space:nowrap}
 .sunote .hint{margin-top:1.6em;padding-top:.8em;border-top:1px dashed var(--deco);font-size:12.5px;line-height:1.6}
 .sunote .llnot{font-size:13px}
+.sunote .susrc{max-width:34em;margin:1.3em 0 0;font-size:.82em;line-height:1.6;color:var(--ink-soft)}
 @media (max-width:700px){ .sunote{padding:14px 16px;line-height:1.85} }
 .sunpbody{padding:18px 22px 32px}
 .sunphead .sunfs{padding:3px 7px;font-size:12.5px;min-width:0}
