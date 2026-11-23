@@ -2819,12 +2819,20 @@ html.bson .askview{z-index:160}
 .sucard .links a.quietlink:hover{color:var(--ink)!important;border-color:var(--edge)!important}
 
 /* 설정 맨 위 후원 띠(2026-11-23) */
-.dnband{display:flex;align-items:center;gap:12px;margin:0 0 14px;padding:12px 14px;border:1px solid color-mix(in srgb,var(--sepia) 35%,var(--edge));border-radius:12px;background:color-mix(in srgb,var(--sepia) 7%,var(--paper));font-family:var(--ui-font)}
-.dnband-ic{flex:none;width:40px;height:40px;border-radius:50%;display:grid;place-items:center;font-size:20px;background:color-mix(in srgb,var(--sepia) 14%,var(--paper))}
-.dnband-t{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px;word-break:keep-all}
-.dnband-t b{font-size:15px;color:var(--ink)} .dnband-t span{font-size:13px;line-height:1.55;color:var(--ink-soft)}
-.dnband-b{flex:none;display:flex;gap:6px}
-@media (max-width:640px){ .dnband{flex-wrap:wrap} .dnband-ic{display:none} .dnband-t{flex-basis:100%} .dnband-b{flex-basis:100%;justify-content:flex-end} }
+/* 설정 맨 위 후원 띠 — 부드럽게 권하기(2026-11-24 팀장님 「조금 더 부드러운 디자인, 후원하기 단추는 파스텔 톤 옅은 파랑」) */
+.dnband{--dnb:#dbeaf6;--dnb-ink:#2f5875;--dnb-line:#cfe0ee;--dnb-wash:#f5f9fc;display:flex;align-items:flex-end;gap:14px;margin:0 0 16px;padding:14px 16px 13px;border:1px solid var(--dnb-line);border-radius:16px;background:linear-gradient(180deg,var(--dnb-wash),color-mix(in srgb,var(--dnb-wash) 55%,var(--paper)));font-family:var(--ui-font);box-shadow:0 1px 0 rgba(255,255,255,.6) inset}
+.dnband-t{flex:1;min-width:0;display:flex;flex-direction:column;gap:5px;word-break:keep-all}
+.dnband-t b{display:flex;align-items:center;gap:7px;font-size:15px;font-weight:700;color:var(--ink)}
+.dnband-ic{flex:none;width:26px;height:26px;border-radius:50%;display:inline-grid;place-items:center;font-size:14px;background:var(--dnb)}
+.dnband-t span{font-size:13px;line-height:1.6;color:var(--ink-soft)}
+.dnband-b{flex:none;display:flex;align-items:center;gap:4px}
+.dnband-go{border:0;border-radius:999px;padding:8px 18px;background:var(--dnb);color:var(--dnb-ink);font:700 14px/1.2 var(--ui-font);cursor:pointer;box-shadow:0 1px 2px rgba(47,88,117,.12);transition:background .15s,transform .15s}
+.dnband-go:hover{background:color-mix(in srgb,var(--dnb) 82%,#9cc3e2)} .dnband-go:active{transform:translateY(1px)}
+.dnband-go:focus-visible,.dnband-copy:focus-visible{outline:2px solid #8db7d8;outline-offset:2px}
+.dnband-copy{border:0;background:none;padding:8px 8px;color:var(--ink-soft);font:500 13px/1.2 var(--ui-font);cursor:pointer;text-decoration:underline;text-underline-offset:3px;text-decoration-color:color-mix(in srgb,currentColor 35%,transparent)}
+@media (prefers-color-scheme:dark){ :root:not([data-theme="light"]) .dnband{--dnb:#35536b;--dnb-ink:#e3eef7;--dnb-line:#3d4d5a;--dnb-wash:#232a30} }
+:root[data-theme="dark"] .dnband{--dnb:#35536b;--dnb-ink:#e3eef7;--dnb-line:#3d4d5a;--dnb-wash:#232a30}
+@media (max-width:640px){ .dnband{flex-wrap:wrap;align-items:stretch} .dnband-t{flex-basis:100%} .dnband-b{flex-basis:100%;justify-content:flex-end} }
 
 /* 공개판 묵상 도구 줄: 설교초안·겹치는 틀 빼기는 펴도 숨김(2026-11-23 실제 사용자 점검 — 평신도용, 틀은 짧게·천천히·틀 없이로) */
 .toolbar.qtmin .qxs{display:none!important}
