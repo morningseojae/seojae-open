@@ -236,7 +236,7 @@ function aiLaneDrop(bg,msg){ const W=bg?AIW_BG:AIW; try{ W&&W.terminate(); }catc
 // ───────── 익명 사용 통계(공개판만, 2026-11-01): 하루 한 번 숫자만 공개 창구로(stat). 글·제목·이름·메일·기기 번호는 보내지 않음 ─────────
 // 이 기기에 남는 것(seojae-open.stat): 처음 쓴 날·보낸 날·오늘 기능 횟수. 설정 → 도움 → 「익명 사용 통계」에서 끄면 보내지 않음. 브라우저 「추적 안 함」이면 처음부터 보내지 않음
 const ST_KEY="seojae-open.stat", ST_ADMIN="4gospel@gmail.com";
-const ST_FEATS=new Set(["today","qt","write","room","diary","shelf","drawer","settings","rt","rtcheck","read","ai","save","also","install"]);
+const ST_FEATS=new Set(["today","qt","write","room","diary","shelf","drawer","settings","rt","rtcheck","read","ai","save","also","install","guide","listen","hymn","qk","bs","book","fb","donate"]);   // 새로 세려면 창구 ST_FEATS·스튜디오 FN에도(2026-11-24 길잡이·해설 듣기·찬송가·빠른 메모·성경 책장·책·의견·후원 더함)
 const statCfg=()=>{ try{ return JSON.parse(localStorage.getItem(ST_KEY)||"null")||{}; }catch(_){ return {}; } };
 const statSet=o=>{ try{ localStorage.setItem(ST_KEY,JSON.stringify(Object.assign(statCfg(),o))); }catch(_){} };
 const statDnt=()=>navigator.doNotTrack==="1"||window.doNotTrack==="1"||navigator.globalPrivacyControl===true;
@@ -247,7 +247,7 @@ async function statPing(){ if(!statOn()||NEED_CONNECT||AUTH_FAIL) return; const 
   if(c.f&&c.f.d!==d&&!c.p){ c.p=c.f; c.f=null; }
   const coarse=matchMedia("(pointer:coarse)").matches, mn=Math.min(screen.width,screen.height), since=c.since||d, age=daysBetween(since,d);
   const body={v:typeof APP_VER==="string"?APP_VER:"", m:coarse?(mn<=700?"phone":"tablet"):"pc", s:LOCALMODE?"local":"drive", app:isApp()?"app":"web",
-    first:!c.since, age:!c.since?"new":age<7?"d1":age<30?"w1":age<90?"m1":"m3", ai:!!aiMode(), also:plansAlso().length>0, f:c.p&&c.p.d!==d?c.p:null};
+    first:!c.since, age:!c.since?"new":age<7?"d1":age<30?"w1":age<90?"m1":"m3", ai:!!aiMode(), also:plansAlso().length>0, qb:qbK(), f:c.p&&c.p.d!==d?c.p:null};
   try{ await gwCall("stat",[body]); statSet({sent:d,since,p:null,f:c.f||null}); }catch(_){} }
 function statSection(){ const on=statOn(), dnt=statDnt()&&statCfg().off==null;
   return `<section class="sheet tape c compact"><p class="label">익명 사용 통계</p>
@@ -294,7 +294,7 @@ function studioPaint(){ const ov=$("#studioview"); if(!ov) return; const D=STU.d
   const lab=[0,Math.floor((days.length-1)/2),days.length-1].filter((v,i,a)=>a.indexOf(v)===i).map(i=>`<text x="${X(i)}" y="${H-4}" class="stut" text-anchor="middle">${+days[i].d.slice(5,7)}.${+days[i].d.slice(8,10)}</text>`).join("");
   const chart=`<svg class="stuchart" viewBox="0 0 ${W} ${H}" role="img" aria-label="날마다 연 기기와 새로 시작한 기기">${ticks}${lab}<path d="${line("dev")}" class="stul1"/><path d="${line("new")}" class="stul2"/>${days.map((x,i)=>`<circle cx="${X(i)}" cy="${Y(+x.a.dev||0)}" r="${days.length>60?1.5:2.5}" class="stud1"/>`).join("")}<g class="stuhov" style="display:none"><line class="stuvl" y1="${Y(mx)}" y2="${Y(0)}"/><circle class="stuh1" r="4.5"/><circle class="stuh2" r="4"/></g></svg>`;
   STU.cd={days,X,Y,W,H};
-  const FN={today:"오늘",qt:"묵상",write:"글방 글쓰기",room:"글방",diary:"일기",shelf:"책장",drawer:"서랍",settings:"설정",rt:"성경읽기표 열기",rtcheck:"읽기표 장 체크",read:"말씀 다 읽음",ai:"AI 부르기",save:"글 간직",also:"함께 읽기 더함",install:"앱 설치"};
+  const FN={today:"오늘",qt:"묵상",write:"글방 글쓰기",room:"글방",diary:"일기",shelf:"책장",drawer:"서랍",settings:"설정",rt:"성경읽기표 열기",rtcheck:"읽기표 장 체크",read:"말씀 다 읽음",ai:"AI 부르기",save:"글 간직",also:"함께 읽기 더함",install:"앱 설치",guide:"묵상 길잡이(해설) 보기",listen:"해설 듣기",hymn:"찬송가·CCM 듣기",qk:"빠른 메모(＋)",bs:"성경 책장",book:"상세 매뉴얼 책 펴기",fb:"의견 보내기",donate:"후원 창 열기"};
   const feats=Object.keys(FN).map(k=>({k,n:sum("f."+k),u:sum("u."+k)})).filter(x=>x.n).sort((a,b)=>b.n-a.n), fmx=Math.max(1,...feats.map(x=>x.n));
   const bars=(rows,unit)=>rows.length?rows.map(r=>`<div class="stub"><span class="stubn">${esc(r.l)}</span><span class="stubb"><i style="width:${Math.max(2,Math.round(r.v/r.mx*100))}%"></i></span><span class="stubv">${r.v.toLocaleString()}${unit||""}${r.s?`<small>${r.s}</small>`:""}</span></div>`).join(""):`<p class="hint">아직 숫자가 없습니다.</p>`;
   const grp=(pre,names)=>{ const rows=Object.entries(names).map(([k,l])=>({l,v:sum(pre+k)})).filter(r=>r.v); const m=Math.max(1,...rows.map(r=>r.v)); return bars(rows.map(r=>({...r,mx:m}))); };
@@ -308,15 +308,16 @@ function studioPaint(){ const ov=$("#studioview"); if(!ov) return; const D=STU.d
       <section class="stus"><h4>많이 쓰는 기능 <small>(${STU.days}일 · 횟수 / 쓴 기기 날 수)</small></h4>${bars(feats.map(f=>({l:FN[f.k],v:f.n,s:` · ${f.u}`,mx:fmx})))}</section>
       <section class="stus"><h4>기기·저장</h4>${grp("m.",{phone:"휴대폰",tablet:"태블릿",pc:"PC"})}<hr class="dash">${grp("s.",{drive:"구글 드라이브",local:"이 기기만"})}<hr class="dash">${grp("app.",{app:"앱으로",web:"브라우저로"})}</section>
       <section class="stus"><h4>얼마나 써 왔나 <small>(연 날 기준)</small></h4>${grp("age.",{new:"처음",d1:"1주 안",w1:"1주~1달",m1:"1~3달",m3:"3달 넘게"})}</section>
+      <section class="stus"><h4>묵상지 <small>(연 날 기준 · 2026-11-24부터)</small></h4>${grp("qb.",{su:"매일성경",ll:"생명의 삶"})}</section>
       <section class="stus"><h4>판 번호</h4>${bars(vrows.map(([l,v])=>({l:"판 "+l,v,mx:vmx})))}</section>
-      <section class="stus"><h4>창구가 대신 한 일 <small>(${STU.days}일)</small></h4>${grp("gw.",{aiShared:"함께 쓰는 AI",searchBooks:"책 찾기",musicFind:"찬송가·CCM 찾기"})}<p class="hint" style="margin-top:8px">AI 켠 기기 날 수 ${sum("aiOn").toLocaleString()} · 함께 읽기 쓰는 기기 날 수 ${sum("alsoOn").toLocaleString()}</p></section>
+      <section class="stus"><h4>창구가 대신 한 일 <small>(${STU.days}일)</small></h4>${grp("gw.",{aiShared:"함께 쓰는 AI",llGuide:"생명의 삶 길잡이",suGuide:"매일성경 길잡이",dailyLL:"생명의 삶 본문",dailyBible:"매일성경 본문",searchBooks:"책 찾기",bookDetail:"책 정보",musicFind:"찬송가·CCM 찾기",feedback:"의견 보내기"})}<p class="hint" style="margin-top:8px">AI 켠 기기 날 수 ${sum("aiOn").toLocaleString()} · 함께 읽기 쓰는 기기 날 수 ${sum("alsoOn").toLocaleString()}</p></section>
       <section class="stus"><h4>창구 열쇠</h4>${[["gemini","함께 쓰는 AI(제미나이)"],["youtube","찬송가·CCM(유튜브)"],["kakao","책 찾기(카카오)"],["nl","목차·쪽수(국립중앙도서관)"],["gClient","구글 자동 잇기"]].map(([k,l])=>`<p class="stukey ${K[k]?"on":""}"><i></i>${l} <b>${K[k]?"켜짐":"꺼짐"}</b></p>`).join("")}</section>
     </div>
     <p class="hint stufoot">모든 숫자는 기기가 하루 한 번 보낸 <b>익명 합계</b>입니다(통계를 끈 기기·「추적 안 함」 기기는 빠짐). 기능 횟수는 다음에 앱을 열 때 보내져 하루 늦게 채워집니다. 받은 시각 ${esc(bkWhen(D.at))}</p></article>`; }
 
 function aiCall(fn,args){
   if(tab==="diary") return Promise.reject(new Error("일기는 AI로 보내지 않습니다"));
-  statHit("ai");
+  const bg0=(fn==="coWrite"&&args?.[0]?.mode==="dayline")||(fn==="spellCheck"&&!!args?.[0]?.fast); if(!bg0) statHit("ai");   // 저절로 하는 AI(오늘의 한 줄·맞춤법 뒷검사)는 「AI 부르기」에 세지 않음(2026-11-24)
   const mode=aiMode();
   if(!mode) return Promise.reject(new Error("AI가 꺼져 있습니다 — 설정 → 쓰기 → AI 열쇠에서 켜 주세요"));
   if(mode==="shared"){ let ok=false; try{ ok=localStorage.getItem("seojae-open.aiShareOk")==="1"; }catch(_){}
@@ -966,7 +967,7 @@ function sideTip(){ if(document.querySelector(".sidetip")) return; const mac=/Ma
   ov.querySelector("[data-ok]").onclick=done; ov.querySelector("[data-x]").onclick=done; ov.onclick=e=>{ if(e.target===ov) done(); }; }
 // 매일성경 해설·음성 듣기는 공개판에서 뺐습니다(2026-11-16 팀장님 — 성서유니온 저작물, 허락을 여쭙는 중). 해설·음성은 「매일성경에서 보기 ↗」로
 // ───────── 매일성경 듣기: 앱 안 작은 재생기 — 메뉴를 옮겨도 계속, 빠르기·10초 이동, 들은 자리 기억, 잠금 화면 조절 ─────────
-function suListen(){ if(!SU?.audio) return; let el=$("#suplayer"); const a0=el?.querySelector("audio");
+function suListen(){ if(!SU?.audio) return; statHit("listen"); let el=$("#suplayer"); const a0=el?.querySelector("audio");
   if(el&&el.dataset.src===SU.audio){ el.hidden=false; el.classList.remove("min"); suPlace(el); if(a0.paused) a0.play().catch(()=>{}); return; }
   if(!el){ el=document.createElement("div"); el.id="suplayer"; el.className="suplayer"; document.body.appendChild(el); }
   let rate=1; try{ rate=+localStorage.getItem("seojae-open.suRate")||1; }catch(_){}
@@ -1097,7 +1098,7 @@ async function mpNext(){ if(mpAutoMode()==="r"){ try{ MP.seekTo(0,true); MP.play
   if(s==="ccm:old"&&MUSIC.ccm?.length) return ccmPlay(0);   // 듣는 사이 갈래를 바꿨으면 새 목록 첫 곡으로
   const m=s.match(/^ccm:(\d+)$/); if(m&&MUSIC.ccm?.[+m[1]+1]) ccmPlay(+m[1]+1); }
 function mpClose(){ try{ MP?.stopVideo(); }catch(_){} const el=$("#mplayer"); if(el) el.hidden=true; MUSIC.playing=false; MUSIC.cur=null; MUSIC.slot=""; paintHymnCtl(); paintCcm(); }
-async function mpPlay(id,title,sub,slot,ym){ mpCard(); $("#mp-t").textContent=title||"찬송가"; $("#mp-s").innerHTML=(ym?`<span class="ymb" title="유튜브뮤직 공식 음원">MUSIC</span>`:"")+esc(sub||"유튜브");
+async function mpPlay(id,title,sub,slot,ym){ statHit("hymn"); mpCard(); $("#mp-t").textContent=title||"찬송가"; $("#mp-s").innerHTML=(ym?`<span class="ymb" title="유튜브뮤직 공식 음원">MUSIC</span>`:"")+esc(sub||"유튜브");
   try{ await ytLoad(); }catch(e){ return toast(e.message); }
   MUSIC.cur=id; MUSIC.slot=slot||""; MUSIC.view=slot==="hymn"?"hymn":"ccm"; MUSIC.playing=false; MUSIC.q=slot==="hymn"?`새찬송가 ${hymnNo()}장`:[title,sub].filter(Boolean).join(" "); MUSIC.ym=!!ym;   // 유튜브뮤직으로 넘길 때 찾을 말
   if(MP&&MP.loadVideoById){ MP.loadVideoById(id); MP.setVolume(mpVol()); }
@@ -1293,6 +1294,11 @@ const MANUALS=[["quick","간단 매뉴얼","읽자마자 바로 써 보는 한 �
 // 새 소식을 더할 때: NEWS 맨 앞에 넣고 id 는 날짜(같은 날 둘째는 2026-11-02b 처럼 — 글자 순서로 새것이 뒤). 본 소식 id 는 이 기기에만(seojae-open.newsSeen)
 // 새 소식 — 후원하기는 무엇을 바꿔도 여기에 넣지 않음(2026-11-24 팀장님 「팝업 알림으로 가지 않도록」)
 const NEWS=[
+ {id:"2026-11-24d",date:"2026년 11월 24일",title:"책에 예문과 연습이 늘었어요",items:[
+  ["✍️","글쓰기 수업이 더 풍성하게","상세 매뉴얼 4부에 장면과 요약, 첫 문장 네 가지, 한 문단을 네 번 보는 퇴고, 고백을 꾸미지 않는 신앙 에세이 같은 예문을 더했어요.",""],
+  ["🌿","묵상을 실제로 써 본 한 편","「짧게」 틀로 쓴 묵상 한 편, 묵상 길잡이를 곁에 두는 법, 쓰기 싫은 아침에 건네는 말을 담았어요.",""],
+  ["🗓️","첫째 달과 둘째 달","부록 「30일 시작 계획」은 앱에 손을 익히는 첫째 달, 4부 「4주 글쓰기 기초 과정」은 둘째 달로 이어져요. 첫 주 하루 10분 차림표도 있어요.",""],
+  ["🚇","책상이 없는 아침에도","출퇴근길·점심시간에 휴대폰으로 쓰는 법과 쓴 글을 블로그·SNS에 옮기는 길도 적었어요.",""]]},
  {id:"2026-11-24c",date:"2026년 11월 24일",title:"아침 서재가 드리는 책",items:[
   ["📖","설정 맨 위에 책 한 권","설정 맨 위에 상세 매뉴얼 『한 잔의 아침, 한 줄의 글』을 바로 펼 수 있는 카드를 두었어요. 「웹으로 읽기」는 머리말부터, 「글쓰기 수업부터」는 4부로 바로 가요.",""],
   ["✍️","더 읽기 쉽게 다듬었어요","편집·국어·실제 사용자 눈으로 책을 다시 읽고 다듬었어요. 묵상 장은 꼭 필요한 순서만 남기고, 장마다 「작가에게 왜 필요한가」를 되살렸어요.",""],
@@ -1651,7 +1657,7 @@ function donateBody(){ const a=DONATE_PICK;
   <p class="newsfoot">마음만으로도 고맙습니다. — 임요한 · 임하은</p>`; }
 function donatePaint(){ const c=$("#donateview .newscard"); if(!c) return; const top=c.scrollTop; c.innerHTML=donateBody()+`<div class="newsacts"><button class="btn newsok" data-x>괜찮아요, 닫기</button></div>`; c.scrollTop=top; donateQr(); }
 function donateQr(){ const el=$("#dnqr"); if(!el) return; el.innerHTML=""; let n=0; const draw=()=>window.QRCode?new QRCode(el,{text:donateToss(DONATE_PICK),width:96,height:96,correctLevel:QRCode.CorrectLevel.M}):(++n<20?setTimeout(draw,150):null); draw(); }
-function donateOpen(){ $("#donateview")?.remove(); const ov=document.createElement("div"); ov.id="donateview"; ov.className="newsview";
+function donateOpen(){ statHit("donate"); $("#donateview")?.remove(); const ov=document.createElement("div"); ov.id="donateview"; ov.className="newsview";
   ov.innerHTML=`<article class="newscard dncard" role="dialog" aria-modal="true" aria-label="후원하기"></article>`; document.body.appendChild(ov); donatePaint();
   const close=()=>{ ov.remove(); removeEventListener("keydown",k,true); }, k=e=>{ if(e.key==="Escape"){ e.preventDefault(); e.stopImmediatePropagation(); close(); } };
   ov.onclick=e=>{ if(e.target===ov||e.target.closest("[data-x]")) close(); }; addEventListener("keydown",k,true); }
@@ -1667,7 +1673,7 @@ function newsSection(){ return `<section class="sheet tape c compact"><p class="
 // 문구는 편집장·실제 사용자 패널 점검 합의안. 「웹으로 읽기」는 머리말부터(#p1 — 「이 책을 읽는 방법」을 건너뜀), 「글쓰기 수업부터」는 4부(#p5). PDF는 크기를 알려 드리고 휴대폰에서는 한 번 여쭘(데이터)
 const BOOK_T="한 잔의 아침, 한 줄의 글";
 function bookBand(){ return `<div class="bkband" role="note"><img class="bkband-cv" src="book-cover.jpg" alt="" width="72" height="100" loading="lazy" decoding="async"><div class="bkband-t"><small>아침 서재가 드리는 책 · 상세 매뉴얼</small><b>『${BOOK_T}』</b><span>앱 쓰는 법과 함께, 날마다 한 줄로 작가가 되어 가는 글쓰기 수업이에요.</span><em>임요한 · 임하은 지음</em>
-  <div class="bkband-b"><a class="bkband-go" href="manual/book.html#p1" target="_blank" rel="noopener"><span aria-hidden="true">📖</span>웹으로 읽기</a><a class="bkband-lk" href="manual/book.html#p5" target="_blank" rel="noopener">글쓰기 수업부터 ›</a><a class="bkband-lk" id="bkpdf" href="manual/book.pdf" target="_blank" rel="noopener" download onclick="return bookPdfAsk(event)">PDF 받기${BOOK_MB?` · ${BOOK_MB}MB`:""}</a></div></div></div>`; }
+  <div class="bkband-b"><a class="bkband-go" href="manual/book.html#p1" target="_blank" rel="noopener" onclick="statHit('book')"><span aria-hidden="true">📖</span>웹으로 읽기</a><a class="bkband-lk" href="manual/book.html#p5" target="_blank" rel="noopener" onclick="statHit('book')">글쓰기 수업부터 ›</a><a class="bkband-lk" id="bkpdf" href="manual/book.pdf" target="_blank" rel="noopener" download onclick="const ok=bookPdfAsk(event); if(ok) statHit('book'); return ok">PDF 받기${BOOK_MB?` · ${BOOK_MB}MB`:""}</a></div></div></div>`; }
 let BOOK_MB=0;
 function bookPdfSize(){ if(BOOK_MB||bookPdfSize.busy) return; bookPdfSize.busy=1; fetch("manual/book.pdf",{method:"HEAD",cache:"no-store"}).then(r=>{ const n=+r.headers.get("content-length")||0; if(n){ BOOK_MB=Math.round(n/1048576); const a=$("#bkpdf"); if(a) a.textContent="PDF 받기 · "+BOOK_MB+"MB"; } }).catch(()=>{}).finally(()=>{ bookPdfSize.busy=0; }); }
 function bookPdfAsk(e){ if(!matchMedia("(pointer:coarse)").matches) return true; const ok=confirm(`책 PDF(${BOOK_MB?BOOK_MB+"MB":"20MB 남짓"})를 받아요. 데이터가 많이 드니 와이파이에서 받으시길 권해요.\n\n휴대폰에서는 「웹으로 읽기」가 더 가볍고 편해요. 그래도 받을까요?`); if(!ok) e.preventDefault(); return ok; }
@@ -1916,6 +1922,7 @@ function suNoteReload(){ SUN=null; if($("#sunpanel")) return sunSync(); const bo
 async function suNoteToggle(){
   const box=$("#sunote"), b=$("#subtn");
   if($("#sunpanel")) return sunClose();
+  if(!(box&&box.classList.contains("on"))) statHit("guide");
   if(box&&box.innerHTML){ box.innerHTML=""; return suBtnLabel(); }
   const date=suDate()||SU?.date; if(!date) return; if(b) b.textContent="길잡이 받는 중…";
   try{ if(!SUN||SUN.date!==date||SUN.qb!==(SU?.src==="ll"?"ll":"su")||SUN.pending) SUN=await suNoteGet(date); }catch(e){ suBtnLabel(); return toast("묵상 길잡이를 받아 오지 못했습니다 ("+e.message+")"); }
@@ -2466,7 +2473,7 @@ function sjRoot(){ if(history.state&&(history.state.sj||history.state.sjRoot)) r
 function qkFab(){ let b=$("#qkfab"); if(!b){ b=document.createElement("button"); b.id="qkfab"; b.className="qkfab"; b.type="button"; b.setAttribute("aria-label","빠른 메모 · AI"); b.title="빠른 메모 — 떠오른 한 줄을 바로 끄적여 둡니다 · AI에게 묻기";
     b.innerHTML=`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5.5v13M5.5 12h13"/></svg>`; b.onclick=qkOpen; document.body.appendChild(b); }
   b.hidden=tab==="write"||tab==="settings"||tab==="diary"; }   // 일기는 쪽 가장자리를 눌러 넘기므로 가리지 않게
-function qkOpen(){ if($("#qksheet")) return qkClose();
+function qkOpen(){ if($("#qksheet")) return qkClose(); statHit("qk");
   const ic=p=>`<svg viewBox="0 0 24 24" aria-hidden="true">${p}</svg>`;
   const d=document.createElement("div"); d.id="qksheet"; d.className="qksheet";
   d.innerHTML=`<div class="qk-back" onclick="qkClose()"></div><div class="qk-card" role="dialog" aria-modal="true" aria-label="빠른 메모"><span class="qk-grip" aria-hidden="true"></span>
@@ -7818,7 +7825,7 @@ function bsShelfHtml(D){ const part=(nm,a,b)=>`<section class="bscase" aria-labe
     ?`<div class="bslist">${D.slice(a,b).map(bsRow).join("")}</div>`
     :`<div class="bsrow">${BS_GRP.filter(g=>g[1]>=a&&g[2]<=b).map(g=>`<div class="bsgrp"><div class="bsbooks">${D.slice(g[1],g[2]).map(bsSpine).join("")}</div><div class="bsplank"><span>${g[0]}</span></div></div>`).join("")}</div>`}</section>`;
   return part("구약",0,39)+part("신약",39,66); }
-function bsOpen(){ $("#bsview")?.remove(); BS={D:bsData(),view:"shelf",i:-1,ch:0}; const D=BS.D, nb=D.filter(d=>d.S.length).length, nc=D.reduce((s,d)=>s+d.chs.size,0);
+function bsOpen(){ statHit("bs"); $("#bsview")?.remove(); BS={D:bsData(),view:"shelf",i:-1,ch:0}; const D=BS.D, nb=D.filter(d=>d.S.length).length, nc=D.reduce((s,d)=>s+d.chs.size,0);
   const ov=document.createElement("div"); ov.id="bsview"; ov.className="bsview"; ov.setAttribute("role","dialog"); ov.setAttribute("aria-modal","true"); ov.setAttribute("aria-labelledby","bsh");
   ov.innerHTML=`<header class="bshead"><div class="bstitle"><h2 id="bsh">성경 책장</h2><p>묵상한 말씀 · 66권 중 <b>${nb}</b>권 · 1,189장 중 <b>${nc.toLocaleString()}</b>장</p></div>
     <p class="bslegend" aria-hidden="true"><span><i class="lgdot"></i>묵상한 때</span><span><i class="lgsw"></i>진할수록 많이 묵상한 책</span>${D.some(d=>d.today)?`<span><i class="lgrib"></i>오늘 읽는 책</span>`:""}</p>

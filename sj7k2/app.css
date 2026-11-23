@@ -3044,6 +3044,7 @@ html:not(:has(#main .studio)) .sheet{border-radius:var(--r-lg);border-color:var(
 }
 @media (max-width:340px){ .hdrdrawer,header .vsbtn,header .gearbtn{width:33px;height:33px} .hdrdrawer svg{width:18px;height:18px} header .topright{gap:4px} header .streak{padding:0 7px} }
 html.use-nopastor button[onclick^="draftPick("]{display:none!important}
+html.use-nopastor button[onclick^="seedDraft("]{display:none!important}   /* 나눔 씨앗 「초안으로」는 설교초안을 엶 — 「설교·목회」를 고른 분께만(2026-11-24 목회자 점검) */
 html.use-nowriter #wcount{display:none!important}
 /* 나의 쓰임 고르기 */
 .usecard{max-width:460px;font-family:var(--ui-font)}
