@@ -1293,6 +1293,10 @@ const MANUALS=[["quick","간단 매뉴얼","읽자마자 바로 써 보는 한 �
 // 새 소식을 더할 때: NEWS 맨 앞에 넣고 id 는 날짜(같은 날 둘째는 2026-11-02b 처럼 — 글자 순서로 새것이 뒤). 본 소식 id 는 이 기기에만(seojae-open.newsSeen)
 // 새 소식 — 후원하기는 무엇을 바꿔도 여기에 넣지 않음(2026-11-24 팀장님 「팝업 알림으로 가지 않도록」)
 const NEWS=[
+ {id:"2026-11-24",date:"2026년 11월 24일",title:"때에 맞는 한 줄",items:[
+  ["🌙","새벽·아침·한낮·저녁·밤에 맞게","오늘 화면 인사 아래 한 줄과 그림이 지금 시간에 맞게 바뀌어요. 밤에 아침 햇살 이야기가 나오던 것을 고쳤어요.",""],
+  ["✍️","글방 인사도 같은 때로","글방 첫 화면 인사도 오늘 화면과 같은 다섯 때를 따라요.",""],
+  ["🔔","새 소식이 다시 잘 열려요","새 소식 창이 열리다 멈추던 것을 고쳤어요. 설정 → 도움 → 「새 소식」에서도 지난 소식을 다시 볼 수 있어요.",""]]},
  {id:"2026-11-23o",date:"2026년 11월 23일",title:"더 가볍고 또렷하게",items:[
   ["🔄","휴대폰과 컴퓨터가 함께","「나의 쓰임」을 한 기기에서 고르면 다른 기기에도 똑같이 따라가요. 휴대폰에서 고르셨다면 컴퓨터에서 다시 고르지 않으셔도 돼요.",""],
   ["⚡","메뉴를 누르면 바로","화면이 넘어갈 때 천천히 사라졌다 떠오르던 것을 짧고 가볍게 바꿨어요.",""],
@@ -1321,7 +1325,7 @@ const NEWS=[
  {id:"2026-11-23h",date:"2026년 11월 23일",title:"믿을 수 있는 길잡이",items:[
   ["📚","검증된 주석으로","길잡이는 복음주의(장로교·감리교·성결교)에서 검증된 주석으로 써요. 성경 각 권마다 권위 있게 꼽히는 주석을 살펴요.",""],
   ["🔖","출처는 맨 끝에","어떤 주석을 살폈는지 길잡이 맨 끝에 한 줄로 알려 드려요.",""],
-  ["📖","말씀 그대로","성경 구절은 개역한글 본문 그대로 옮겨요.",""]
+  ["📖","말씀 그대로","성경 구절은 개역한글 본문 그대로 옮겨요.",""],
   ["🔗","예전 글도 그대로","예전 주소에서 구글로 쓰셨다면, 같은 구글 계정으로 시작하면 예전 글이 그대로 이어져요.",""],]},
  {id:"2026-11-23g",date:"2026년 11월 23일",title:"매일성경도 묵상 길잡이로",items:[
   ["📖","매일성경 묵상 길잡이","매일성경 카드의 「묵상 길잡이(해설)」를 누르면, 아침 서재에서 그날 본문으로 정리해 드리는 길잡이가 앱 안에서 펼쳐져요. 「해설 듣기」는 그대로예요.",""],
@@ -2395,8 +2399,8 @@ const dayPart=()=>kstMinutes()<4*60+30?"새벽":"아침";   // 밤 12시 ~ 새�
 function streakShown(){ const l=S.log[today()], done=!!(l&&(l.read||l.book||l.note||l.write)), n=streak(); return done?n:(n?n+1:0); }
 function paintStreak(){ const el=$("#streak"); if(!el) return; const s=streakShown();
   el.innerHTML=(isReadDay()?"":`<span class="rest">쉬는 날</span>`)+(s?`<span class="n">${s}</span><span>일째 이어지는 ${dayPart()}</span>`:`<span>오늘의 첫 페이지</span>`); }
-let SHOWN_DAY=today(), SHOWN_PART=dayPart();
-setInterval(()=>{ const d=today(), p=dayPart(); if(d===SHOWN_DAY&&p===SHOWN_PART) return; const dayChanged=d!==SHOWN_DAY; SHOWN_DAY=d; SHOWN_PART=p; paintStreak(); if(tab==="today"||(dayChanged&&tab!=="write")) render(); },30000);   // 밤 12시·새벽 4시 30분을 넘으면 바로 바뀜
+let SHOWN_DAY=today(), SHOWN_PART=tgPart();
+setInterval(()=>{ const d=today(), p=tgPart(); if(d===SHOWN_DAY&&p===SHOWN_PART) return; const dayChanged=d!==SHOWN_DAY; SHOWN_DAY=d; SHOWN_PART=p; paintStreak(); if(tab==="today"||(dayChanged&&tab!=="write")) render(); },30000);   // 밤 12시·새벽 4시 30분을 넘으면 바로 바뀜
 
 // ───────── 화면 ─────────
 // 흐름: 밑줄(읽다 붙잡은 문장) → 글(그 문장으로 쓴 묵상·설교·에세이) → 원고(글을 모아 엮는 책)
@@ -3412,7 +3416,7 @@ today(){
   return `
   <header class="tgreet" data-part="${tgPart()}">
     <div class="tg-date"><small><span class="tgm">${d.getMonth()+1}월 · </span>${"일월화수목금토"[d.getDay()]}요일</small><b>${d.getDate()}</b></div>
-    <div class="tg-main"><p class="tg-hi">${esc(TG_HI[tgPart()])}, ${esc(callName())}</p><p class="tg-line"><span id="wkline">${esc(dlCached()?.t||pick(DAY_LINES,1,t+"w")[0])}</span><span class="tg-dood" id="wkdood" aria-hidden="true">${DOODLE[dlIcon()]}</span></p></div>
+    <div class="tg-main"><p class="tg-hi">${esc(TG_HI[tgPart()])}, ${esc(callName())}</p><p class="tg-line"><span id="wkline">${esc(dlCached()?.t||dlFallLine())}</span><span class="tg-dood" id="wkdood" aria-hidden="true">${DOODLE[dlIcon()]}</span></p></div>
     <span class="tg-art" aria-hidden="true">${TG_ART[tgPart()]}</span>
     ${tgClockHtml()}
   </header>
@@ -3937,9 +3941,10 @@ const DOODLE={   // 잉크 선으로 그린 작은 그림 (색은 currentColor)
   snow:`<svg viewBox="0 0 64 56" aria-hidden="true"><path d="M14 32h34a9 9 0 0 0 0-18 13 13 0 0 0-25-3 9 9 0 0 0-9 21z" fill="var(--paper)" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M22 40v8M18.5 42l7 4M18.5 46l7-4M40 40v8M36.5 42l7 4M36.5 46l7-4" stroke="color-mix(in srgb,#7fa6c9 80%,currentColor)" stroke-width="1.3" stroke-linecap="round"/></svg>`,
   fog:`<svg viewBox="0 0 64 56" aria-hidden="true"><path d="M8 18h40M14 28h44M6 38h38M16 48h34" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-dasharray="1 5 18 4" opacity=".8"/></svg>`,
   storm:`<svg viewBox="0 0 64 56" aria-hidden="true"><path d="M14 32h34a9 9 0 0 0 0-18 13 13 0 0 0-25-3 9 9 0 0 0-9 21z" fill="var(--paper)" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M33 34l-6 10h7l-4 9" fill="none" stroke="color-mix(in srgb,#d4a017 85%,currentColor)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
-  sun:`<svg viewBox="0 0 64 48" aria-hidden="true"><path d="M14 40a18 18 0 0 1 36 0" fill="color-mix(in srgb,var(--sepia) 14%,transparent)" stroke="currentColor" stroke-width="1.6"/><path d="M32 12v6M14 20l4 4M50 20l-4 4M6 34h6M52 34h6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M4 42h56" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>`};
+  sun:`<svg viewBox="0 0 64 48" aria-hidden="true"><path d="M14 40a18 18 0 0 1 36 0" fill="color-mix(in srgb,var(--sepia) 14%,transparent)" stroke="currentColor" stroke-width="1.6"/><path d="M32 12v6M14 20l4 4M50 20l-4 4M6 34h6M52 34h6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M4 42h56" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>`,
+  moon:`<svg viewBox="0 0 64 48" aria-hidden="true"><path d="M36 8a16 16 0 1 0 16 24 13 13 0 0 1-16-24z" fill="color-mix(in srgb,var(--sepia) 12%,transparent)" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M14 12l1.4 2.8 3 .4-2.2 2 .5 3-2.7-1.4-2.7 1.4.5-3-2.2-2 3-.4zM54 38v4M52 40h4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>`};
 // ───────── 홈 「아침 인사 띠」·작은 집중 시계·빈 자리 그림 (2026-11-23 팀장님 「덩그러니 빈 화면이 안 예쁘다 — 들어갈 때부터 새로운 마음」, 모바일 UI·편집 디자이너 검토) ─────────
-const tgPart=()=>{ const m=kstMinutes(); return m<4*60+30?"dawn":m<11*60?"morning":m<17*60?"noon":m<21*60?"evening":"night"; };
+function tgPart(){ const m=kstMinutes(); return m<4*60+30?"dawn":m<11*60?"morning":m<17*60?"noon":m<21*60?"evening":"night"; }   // 함수 선언 — 앞에서 불러도 되게(2026-11-24)
 const TG_HI={dawn:"고요한 새벽이에요",morning:"좋은 아침이에요",noon:"한낮에도 잠깐 숨 돌려요",evening:"수고한 하루, 저녁이 왔어요",night:"하루를 조용히 덮는 밤이에요"};
 const TG_ART={dawn:'<svg viewBox="0 0 72 48"><path d="M44 10a12 12 0 1 0 10 18 10 10 0 0 1-10-18z" fill="color-mix(in srgb,var(--sepia) 14%,transparent)" stroke="currentColor" stroke-width="1.5"/><path d="M18 14v6M15 17h6M26 30v4M24 32h4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><path d="M6 44h60" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>',
   morning:'<svg viewBox="0 0 72 48"><path d="M18 40a18 18 0 0 1 36 0" fill="color-mix(in srgb,#e8b04a 22%,transparent)" stroke="currentColor" stroke-width="1.6"/><path d="M36 12v6M18 20l4 4M54 20l-4 4M8 34h6M58 34h6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M4 42h64" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>',
@@ -3966,18 +3971,27 @@ function weekCard(){ const t=today(), d0=new Date(t+"T00:00"), back=(d0.getDay()
     ${n?"":`<div class="row" style="margin-top:10px"><button class="btn small" onclick="rtGoBible()">${ICO.book}말씀 펴기</button></div>`}</section>`; }
 // 오늘의 한 줄 (2026-10-31 팀장님: 「그날그날 랜덤으로 한 문장」 — 날씨·위치는 쓰지 않음)
 // AI(서버 coWrite mode dayline)가 날마다 다른 주제로 한 문장 + 어울리는 그림 하나를 고름 → 이 기기에 그날 하루 기억. AI가 없으면 날짜로 고른 손글씨 문장과 그림
-const DL_ICONS=["cup","sun2","partly","cloud","rain","snow","fog","pot","pencil","sun"];
+const DL_ICONS=["cup","sun2","partly","cloud","rain","snow","fog","pot","pencil","sun","moon"];
+// 오늘의 한 줄은 시간대(tgPart — 인사 띠와 같은 다섯 때)마다 따로 만들고 따로 기억(2026-11-24 팀장님 「날짜 옆은 밤인데 그 아래 문장은 아침 — 어긋나지 않게」)
+const DL_SUNNY=["sun","sun2","partly"], DL_OK={dawn:["cup","pot","pencil","fog","moon"],morning:DL_ICONS.filter(x=>x!=="moon"),noon:["cup","sun2","partly","cloud","rain","snow","pot","pencil"],evening:["cup","pot","pencil","cloud","rain","snow"],night:["cup","pencil","pot","moon","cloud","rain","snow"]};
+const DL_FALL={dawn:["고요한 새벽, 한 줄이면 충분해요","잠든 집 안에서 말씀 한 줄과 함께","새벽의 기도는 서두르지 않아도 돼요"],
+  morning:["말씀 한 줄, 커피 한 잔","천천히, 그러나 날마다","한 문장이면 충분한 아침","오늘의 한 줄이 내일의 한 장"],
+  noon:["바쁜 한낮에도 잠깐 숨 돌려요","읽은 만큼 깊어지고, 쓴 만큼 자랍니다","서두르지 않아도 괜찮아요"],
+  evening:["수고한 하루, 한 줄로 내려놓아요","오늘 받은 은혜를 한 줄로 남겨요","오늘도 이 자리에서"],
+  night:["오늘 하루를 한 줄로 덮어요","고요한 밤, 마음을 내려놓아요","내일 아침을 위해 편히 쉬어요"]};
+const dlKey=()=>"seojae-open.dayline."+today()+"."+tgPart();
 const seasonOf=d=>{ const m=d.getMonth()+1; return m>=3&&m<=5?"봄":m>=6&&m<=8?"여름":m>=9&&m<=11?"가을":"겨울"; };
-const dlCached=()=>{ try{ return JSON.parse(localStorage.getItem("seojae-open.dayline."+today())||"null"); }catch(_){ return null; } };
-const dlIcon=()=>{ const c=dlCached(); return c&&DL_ICONS.includes(c.icon)?c.icon:pick(["cup","pot","pencil","sun"],1,today()+"i")[0]; };
+const dlCached=()=>{ try{ return JSON.parse(localStorage.getItem(dlKey())||"null"); }catch(_){ return null; } };
+const dlFallLine=()=>pick(DL_FALL[tgPart()]||DL_FALL.morning,1,today()+tgPart())[0];
+const dlIcon=()=>{ const c=dlCached(), ok=DL_OK[tgPart()]||DL_ICONS; return c&&ok.includes(c.icon)?c.icon:pick(ok.filter(x=>!["rain","snow","cloud","fog"].includes(x)),1,today()+tgPart()+"i")[0]; };
 function dlAiOk(){ if(typeof aiMode==="function"){ const m=aiMode(); if(m==="own") return true; if(m==="shared"){ try{ return localStorage.getItem("seojae-open.aiShareOk")==="1"; }catch(_){ return false; } } return false; } return !!(GAS&&SERVER&&CONF.ai); }   // 공개판: 함께 쓰는 AI는 동의한 기기에서만(저절로 동의 창을 띄우지 않게)
 async function dayLinePaint(){ if(tab!=="today"||!$("#wkline")) return; const c=dlCached();
   if(c){ $("#wkline").textContent=c.t; $("#wkline").classList.toggle("ai",!!c.ai); const d=$("#wkdood"); if(d) d.innerHTML=DOODLE[dlIcon()]; return; }
   if(!dlAiOk()||dayLinePaint.busy) return; dayLinePaint.busy=true;
   let avoid=""; try{ const y=new Date(); y.setDate(y.getDate()-1); avoid=(JSON.parse(localStorage.getItem("seojae-open.dayline.prev")||"null")||{}).t||""; }catch(_){}
-  try{ const r=await gcall("coWrite",{mode:"dayline",date:today(),season:seasonOf(new Date()),avoid,callName:callName()});
-    if(r&&r.line){ const v={t:r.line,icon:DL_ICONS.includes(r.icon)?r.icon:"cup",ai:1}; try{ localStorage.setItem("seojae-open.dayline."+today(),JSON.stringify(v)); localStorage.setItem("seojae-open.dayline.prev",JSON.stringify(v));
-        for(let i=localStorage.length-1;i>=0;i--){ const k=localStorage.key(i); if(/^seojae-open\.(wx|dayline)\.\d{4}-/.test(k||"")&&!k.endsWith(today())) localStorage.removeItem(k); } }catch(_){}
+  const part=tgPart(); try{ const r=await gcall("coWrite",{mode:"dayline",date:today(),part,season:seasonOf(new Date()),avoid,callName:callName()});
+    if(r&&r.line&&part===tgPart()){ const v={t:r.line,icon:(DL_OK[part]||DL_ICONS).includes(r.icon)?r.icon:"cup",ai:1}; try{ localStorage.setItem(dlKey(),JSON.stringify(v)); localStorage.setItem("seojae-open.dayline.prev",JSON.stringify(v));
+        for(let i=localStorage.length-1;i>=0;i--){ const k=localStorage.key(i); if(/^seojae-open\.(wx|dayline)\.\d{4}-/.test(k||"")&&k!==dlKey()&&!k.endsWith(today())) localStorage.removeItem(k); } }catch(_){}
       const l=$("#wkline"), d=$("#wkdood"); if(l){ l.textContent=r.line; l.classList.add("ai"); } if(d) d.innerHTML=DOODLE[v.icon]; } }catch(_){}
   finally{ dayLinePaint.busy=false; } }
 function todayDeco(){ document.querySelectorAll(".tdood").forEach(x=>x.remove()); return; document.querySelectorAll(".tdood").forEach(x=>x.remove()); if(innerWidth<1000) return;
@@ -6272,7 +6286,7 @@ function rlPick(id){ RL_SEL=RL_SEL===id&&!RL_EDIT?null:id; RL_EDIT=false; rlPain
 function rlWrite(id){ RL_SEL=id; RL_EDIT=true; rlPaint(); setTimeout(()=>{ $("#rlside")?.scrollIntoView({block:"start"}); $("#rv-one")?.focus(); },40); }
 async function rlNotion(id){ reviewKick(id,true); const b=S.books.find(x=>x.id===id); if(!b?.review) return toast("본문을 먼저 적어 주세요"); await syncReview(b); rlPaint(); }
 function studioWrap(cur,main){ stAdd(cur); return `<div class="studio">${stSide(cur)}<div class="stmain">${stTabs(cur)}${main}</div></div><div class="stback" onclick="document.body.classList.remove('stnav')"></div>`; }
-const stHello=()=>{ const h=Math.floor(kstMinutes()/60); return h<5?"고요한 새벽입니다":h<12?"좋은 아침입니다":h<18?"좋은 오후입니다":"평안한 저녁입니다"; };
+const stHello=()=>({dawn:"고요한 새벽입니다",morning:"좋은 아침입니다",noon:"좋은 오후입니다",evening:"평안한 저녁입니다",night:"평안한 밤입니다"})[tgPart()];   // 오늘 화면 인사 띠와 같은 다섯 때(2026-11-24)
 const stAgo=t=>{ const d=(Date.now()-Date.parse(t||0))/6e4; return !t||isNaN(d)?"":d<1?"방금":d<60?Math.round(d)+"분 전":d<1440?Math.round(d/60)+"시간 전":d<10080?Math.round(d/1440)+"일 전":String(t).slice(0,10); };
 let ST_REC_MORE=false;
 function stHome(m){ const rec=live().filter(w=>w.track==="book"||liveMs().some(x=>!x.rule&&(x.items||[]).includes(w.id))).filter(w=>(w.title||"").trim()||pv(w,1)).sort((a,b)=>(b.updated||b.date||"").localeCompare(a.updated||a.date||"")).slice(0,ST_REC_MORE?12:6);   // 빈 글은 빼고, 처음엔 6개 · 더 보기 12개
