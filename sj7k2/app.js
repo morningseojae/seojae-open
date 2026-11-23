@@ -1293,6 +1293,10 @@ const MANUALS=[["quick","간단 매뉴얼","읽자마자 바로 써 보는 한 �
 // 새 소식을 더할 때: NEWS 맨 앞에 넣고 id 는 날짜(같은 날 둘째는 2026-11-02b 처럼 — 글자 순서로 새것이 뒤). 본 소식 id 는 이 기기에만(seojae-open.newsSeen)
 // 새 소식 — 후원하기는 무엇을 바꿔도 여기에 넣지 않음(2026-11-24 팀장님 「팝업 알림으로 가지 않도록」)
 const NEWS=[
+ {id:"2026-11-24c",date:"2026년 11월 24일",title:"아침 서재가 드리는 책",items:[
+  ["📖","설정 맨 위에 책 한 권","설정 맨 위에 상세 매뉴얼 『한 잔의 아침, 한 줄의 글』을 바로 펼 수 있는 카드를 두었어요. 「웹으로 읽기」는 머리말부터, 「글쓰기 수업부터」는 4부로 바로 가요.",""],
+  ["✍️","더 읽기 쉽게 다듬었어요","편집·국어·실제 사용자 눈으로 책을 다시 읽고 다듬었어요. 묵상 장은 꼭 필요한 순서만 남기고, 장마다 「작가에게 왜 필요한가」를 되살렸어요.",""],
+  ["📶","PDF는 와이파이에서","PDF는 20MB가 넘어요. 휴대폰에서는 「웹으로 읽기」가 더 가볍고 편해요.",""]]},
  {id:"2026-11-24b",date:"2026년 11월 24일",title:"계절과 교회 절기를 따라",items:[
   ["🕯️","오늘 화면에 절기가 보여요","날짜 아래 작은 꼬리표에 대림절·성탄절·사순절·부활절 같은 교회 절기가 떠요. 절기가 아닌 날엔 「늦가을」처럼 계절을 알려 드려요.",""],
   ["⭐","인사와 한 줄도 그날에 맞게","성탄절·부활주일 같은 큰 날엔 인사가 바뀌고, 한 줄과 작은 그림도 그 절기에 어울리게 바뀌어요. 시간대(아침·저녁·밤)와는 여전히 어긋나지 않아요.",""],
@@ -1659,6 +1663,14 @@ function donateSection(){ return `<section class="sheet tape c compact"><p class
 function newsSection(){ return `<section class="sheet tape c compact"><p class="label">새 소식</p><p class="sub">중요한 고침이 올라가면 앱을 열 때 한 번 알려 드립니다. 지난 소식도 여기서 다시 봅니다.</p>
   <div class="row" style="margin:6px 0 10px"><button class="btn small ink" onclick="newsOpen(NEWS)">새 소식 모두 보기</button></div>
   ${NEWS.map(n=>`<p class="hint" style="margin:4px 0">· ${esc(n.date)} — ${esc(n.title)}</p>`).join("")}</section>`; }
+// 상세 매뉴얼 책 카드(2026-11-24 팀장님 「후원하기 바로 아래에 책 이름과 내려받기 — 사람들이 상세 매뉴얼을 잘 모르고 넘어감」) — 설정 맨 위 후원 띠 바로 아래.
+// 문구는 편집장·실제 사용자 패널 점검 합의안. 「웹으로 읽기」는 머리말부터(#p1 — 「이 책을 읽는 방법」을 건너뜀), 「글쓰기 수업부터」는 4부(#p5). PDF는 크기를 알려 드리고 휴대폰에서는 한 번 여쭘(데이터)
+const BOOK_T="한 잔의 아침, 한 줄의 글";
+function bookBand(){ return `<div class="bkband" role="note"><img class="bkband-cv" src="book-cover.jpg" alt="" width="72" height="100" loading="lazy" decoding="async"><div class="bkband-t"><small>아침 서재가 드리는 책 · 상세 매뉴얼</small><b>『${BOOK_T}』</b><span>앱 쓰는 법과 함께, 날마다 한 줄로 작가가 되어 가는 글쓰기 수업이에요.</span><em>임요한 · 임하은 지음</em>
+  <div class="bkband-b"><a class="bkband-go" href="manual/book.html#p1" target="_blank" rel="noopener"><span aria-hidden="true">📖</span>웹으로 읽기</a><a class="bkband-lk" href="manual/book.html#p5" target="_blank" rel="noopener">글쓰기 수업부터 ›</a><a class="bkband-lk" id="bkpdf" href="manual/book.pdf" target="_blank" rel="noopener" download onclick="return bookPdfAsk(event)">PDF 받기${BOOK_MB?` · ${BOOK_MB}MB`:""}</a></div></div></div>`; }
+let BOOK_MB=0;
+function bookPdfSize(){ if(BOOK_MB||bookPdfSize.busy) return; bookPdfSize.busy=1; fetch("manual/book.pdf",{method:"HEAD",cache:"no-store"}).then(r=>{ const n=+r.headers.get("content-length")||0; if(n){ BOOK_MB=Math.round(n/1048576); const a=$("#bkpdf"); if(a) a.textContent="PDF 받기 · "+BOOK_MB+"MB"; } }).catch(()=>{}).finally(()=>{ bookPdfSize.busy=0; }); }
+function bookPdfAsk(e){ if(!matchMedia("(pointer:coarse)").matches) return true; const ok=confirm(`책 PDF(${BOOK_MB?BOOK_MB+"MB":"20MB 남짓"})를 받아요. 데이터가 많이 드니 와이파이에서 받으시길 권해요.\n\n휴대폰에서는 「웹으로 읽기」가 더 가볍고 편해요. 그래도 받을까요?`); if(!ok) e.preventDefault(); return ok; }
 function manualSection(){ return `<section class="sheet tape c compact"><p class="label">사용 설명서</p>
   <p class="sub">처음이라면 간단 매뉴얼부터, 더 깊이 알고 싶을 때 상세 매뉴얼을 펴 보세요. 둘 다 새 창으로 열립니다.</p>
   <div class="mancards">${MANUALS.map(([k,n,d])=>`<div class="mancard"><b>${n}</b><span>${d}</span><div class="row" style="gap:6px;flex-wrap:wrap"><a class="btn small ink" href="manual/${k}.html" target="_blank" rel="noopener" title="${n}을 웹 페이지로 엽니다 (차례·검색·밝게/어둡게)">웹으로 보기 ↗</a><a class="btn small" href="manual/${k}.pdf" target="_blank" rel="noopener" download title="${n}을 PDF 책으로 받습니다 (인쇄용)">PDF 받기</a></div></div>`).join("")}</div>
@@ -3640,6 +3652,7 @@ drawer(){
 settings(){ const g=setGroups(), need=g.flatMap(x=>x.rows).filter(r=>r.st==="need"&&r.body);
   return `<div class="setpage"><div class="sethead"><h2>설정</h2><span class="spacer"></span>${need.length?`<a href="#" class="setneed" onclick="setJump('${need[0].k}');return false">설정 필요 ${need.length}곳 →</a>`:""}<button class="setall" onclick="setAll()">${g.flatMap(x=>x.rows).filter(r=>r.body).some(r=>!(r.k in SET_OPEN?SET_OPEN[r.k]:r.st==="need"))?"모두 펼치기":"모두 접기"}</button></div>
   ${donateBand()}
+  ${bookBand()}
   <div class="setlay"><nav class="setnav" aria-label="설정 갈래">${g.map(x=>`<a href="#setg-${x.id}" data-g="${x.id}" style="--acc:${x.acc}" onclick="setGo('${x.id}');return false"><span>${x.ic}</span>${x.t}</a>`).join("")}</nav>
   <div class="setlist">${g.map(x=>{ const rows=x.rows.map(r=>setItem(r)).join(""); return rows?`<section class="setgrp" id="setg-${x.id}" style="--acc:${x.acc}"><h3>${x.t}</h3><div class="setpanel">${rows}</div></section>`:""; }).join("")}</div></div></div>`;
 }
@@ -3652,6 +3665,7 @@ const AFTER={
   shelf(){ libInit(); setTimeout(libInit,600); },   // 표지 그림이 늦게 와 폭이 바뀌면 다시
   today(){ pomoPaint(); dayLinePaint(); todayDeco(); setTimeout(todayDeco,700); setTimeout(todayDeco,1600); },   // 표지 그림·글꼴이 늦게 와 높이가 바뀌면 다시 셈
   settings(){
+    bookPdfSize();
     if(CONF.notion&&CONF.local!==false) checkNotion();
     try{ const nav=document.querySelectorAll(".setnav a"); const io=new IntersectionObserver(es=>{ es.forEach(e=>{ if(e.isIntersecting) nav.forEach(a=>a.classList.toggle("on",a.dataset.g===e.target.id.slice(5))); }); },{rootMargin:"-20% 0px -70% 0px"}); document.querySelectorAll(".setgrp").forEach(g=>io.observe(g)); }catch(_){}
     const el=$("#qr"); if(el&&CONF.phoneUrl){ let n=0; const draw=()=>window.QRCode?new QRCode(el,{text:CONF.phoneUrl,width:168,height:168,correctLevel:QRCode.CorrectLevel.M}):(++n<20?setTimeout(draw,300):(el.innerHTML='<p class="muted">QR 그림을 못 받았습니다 — 아래 「연결 링크 복사」를 쓰세요.</p>')); draw(); }
