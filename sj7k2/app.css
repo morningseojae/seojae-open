@@ -3005,7 +3005,7 @@ html:not(:has(#main .studio)) .sheet{border-radius:var(--r-lg);border-color:var(
 }
 /* 다듬기 3 (같은 날, 사용자 패널 재점검): 떠 있는 메뉴 아래 틈 채우기 · 글방 칸은 켜졌을 때만 남빛 · 어두운 화면 AI 글자 · 「＋」가 끝 내용을 가리지 않게 */
 @media (max-width:700px){
-  body::after{content:"";position:fixed;left:0;right:0;bottom:0;height:calc(44px + env(safe-area-inset-bottom));z-index:39;pointer-events:none;
+  body::after{content:"";position:fixed;left:0;right:0;bottom:0;height:calc(44px + env(safe-area-inset-bottom));z-index:37;pointer-events:none;
     background:linear-gradient(to bottom,color-mix(in srgb,var(--desk) 0%,transparent),var(--desk) 62%)}
   body.focus::after,body.dfull::after{display:none}
   nav{z-index:40}
@@ -3016,3 +3016,34 @@ html:not(:has(#main .studio)) .sheet{border-radius:var(--r-lg);border-color:var(
   .qkfab{width:50px;height:50px;border-radius:17px}
 }
 :root[data-theme="dark"] .aibtn{border-color:#a78bd0!important;color:#cdb8ee!important}
+
+/* ═══ 별도 제안 반영 (2026-11-23 팀장님 「제안도 진행」) ═══
+   ① 휴대폰 아래 메뉴 5칸(오늘·묵상·책장·일기·글방) — 서랍은 머리 줄 오른쪽 서랍 그림 ② 휴대폰 머리 줄은 위에 붙고, 내려 읽으면 숨음(hdr-hide)
+   ③ 나의 쓰임(use-nopastor·use-nowriter) — 관계없는 단추 숨김 */
+.hdrdrawer{display:none}
+@media (max-width:700px){
+  nav button.navdrawer,nav button.navdrawer:not(.navroom):not(.navai){display:none}
+  .hdrdrawer{display:grid;place-items:center;width:38px;height:38px;padding:0;border:0;border-radius:50%;background:var(--fill);color:var(--ink-soft);cursor:pointer;flex:none}
+  .hdrdrawer svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+  .hdrdrawer.on{background:var(--accent-soft);color:var(--sepia)}
+  .hdrdrawer:active{transform:scale(.94)}
+  body>header{position:sticky;top:0;z-index:38;background:var(--desk) var(--grain);transition:top .25s ease,box-shadow .25s;padding-bottom:6px}
+  html.hdr-hide body>header{top:calc(-1 * var(--hdr-h,64px) - 6px)}
+  html:not(.hdr-hide) body>header{box-shadow:0 8px 16px -14px rgba(40,25,10,.35)}
+  html:not(.hdr-hide) .setnav{top:var(--hdr-h,0px)}
+  body.focus>header,body.dfull>header{position:static}
+  @media (prefers-reduced-motion:reduce){ body>header{transition:none} }
+}
+@media (max-width:340px){ .hdrdrawer,header .vsbtn,header .gearbtn{width:33px;height:33px} .hdrdrawer svg{width:18px;height:18px} header .topright{gap:4px} header .streak{padding:0 7px} }
+html.use-nopastor button[onclick^="draftPick("]{display:none!important}
+html.use-nowriter #wcount{display:none!important}
+/* 나의 쓰임 고르기 */
+.usecard{max-width:460px;font-family:var(--ui-font)}
+.usegrid{display:grid;gap:8px;margin:14px 0 4px}
+.useopt{display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:12px 14px;border:1px solid var(--line-strong);border-radius:14px;background:color-mix(in srgb,var(--paper) 70%,transparent);color:var(--ink);font:inherit;font-family:var(--ui-font);cursor:pointer;transition:background .15s,border-color .15s}
+.useopt .ui{font-size:22px;line-height:1;flex:none;width:28px;text-align:center}
+.useopt .ut{flex:1;min-width:0} .useopt .ut b{display:block;font-size:15px;font-weight:600} .useopt .ut small{display:block;font-size:12.5px;color:var(--ink-soft);margin-top:2px;line-height:1.4}
+.useopt .uc{flex:none;width:24px;height:24px;border-radius:50%;border:1.5px solid var(--line-strong);display:grid;place-items:center;font-size:13px;font-weight:700;color:var(--paper)}
+.useopt.on{border-color:color-mix(in srgb,var(--sepia) 55%,transparent);background:var(--accent-soft)}
+.useopt.on .uc{background:var(--sepia);border-color:var(--sepia)}
+.useopt:active{transform:scale(.99)}

@@ -834,7 +834,7 @@ const jp=(w,a,b)=>jo(w,a,b).slice(String(w??"").length);   // 조사만
 const cnClean=v=>String(v||"").replace(/[^가-힣ㄱ-ㅎㅏ-ㅣA-Za-z0-9 ·]/g,"").replace(/\s+/g," ").trim().slice(0,20);
 if("serviceWorker" in navigator&&location.protocol==="https:") addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));   // 인터넷이 끊겨도 앱 화면은 열림 (자료는 이 기기 사본 → 다시 이어지면 구글로)
 const smartQ=()=>{ try{ return localStorage.getItem("seojae-open.smartq")==="1"; }catch(_){ return false; } };   // 따옴표 저절로 바꾸기 (이 기기, 설정 → 쓰기)
-const callName=()=>cnClean(S?.settings?.callName)||"작가님";
+const callName=()=>cnClean(S?.settings?.callName)||(useGet()?.length?(useGet().includes("pastor")?"목사님":"작가님"):"작가님");   // 쓰임을 고른 기기는 쓰임 따라(설교 → 목사님, 그 밖 → 작가님) — 2026-11-23
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
 const dkey=(d=new Date())=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
@@ -1272,7 +1272,8 @@ function setGroups(){ const R=S.reminder||{}, rOn=!!(R.on&&R.clock!==false), p=S
      {k:"streak",ic:"❋",t:"이어지는 아침",st:"",sum:`${streakShown()}일째${sf?` · ${+sf.slice(5,7)}월 ${+sf.slice(8,10)}일부터`:""}`,body:streakSection()}]},
    {id:"write",t:"쓰기",ic:"✎",acc:"var(--sepia)",rows:[
      {k:"smartq",ic:"“",t:"따옴표 저절로 바꾸기",st:"",pill:smartQ()?"켜짐":"꺼짐",sum:smartQ()?"\" → “ ” · ' → ‘ ’ · ... → … · -- → —":"꺼짐 — 출판사 원고 규칙에 맞추려면 켜세요",body:`<section class="sheet tape c compact"><p class="label">따옴표 저절로 바꾸기</p><label class="chk"><input type="checkbox" ${smartQ()?"checked":""} onchange="try{localStorage.setItem('seojae-open.smartq',this.checked?'1':'0')}catch(_){} toast(this.checked?'곧은 따옴표·말줄임·줄표를 바꿔 넣습니다':'그대로 넣습니다'); render()"> 글 칸에서 칠 때 " ' 는 “ ” ‘ ’ 로, ... 은 … 로, -- 는 — 로</label><p class="hint">이 기기에서만. 이미 쓴 글은 바꾸지 않습니다. 원고 전체를 바꾸려면 원고의 「찾아 바꾸기」를 쓰세요.</p></section>`},
-     {k:"callname",ic:"☺",t:"나를 부르는 호칭",st:"",sum:`「${esc(callName())}」${S.settings.callName?"":" (기본)"}`,body:callNameSection()},
+     {k:"use",ic:"🧭",t:"나의 쓰임",st:"",sum:esc(useSum()),body:useBody()},
+{k:"callname",ic:"☺",t:"나를 부르는 호칭",st:"",sum:`「${esc(callName())}」${S.settings.callName?"":" (기본)"}`,body:callNameSection()},
      {k:"quiet",ic:"◷",t:"쓰는 동안 조용히",st:"",sum:`집중 ${ps.focus}분 · 쉼 ${ps.short}분 · 긴 쉼 ${ps.long}분(${ps.rounds}번마다)`,body:quietSection()},
      {k:"aikey",ic:"✦",t:"AI 열쇠",st:aiOn()?"ok":"off",pill:aiMode()==="own"?"내 열쇠":aiMode()==="shared"?"무료 AI":"꺼짐",sum:aiMode()==="own"?`내 열쇠 — ${aiKeys().claude?"클로드":""}${aiKeys().claude&&aiKeys().gemini?" · ":""}${aiKeys().gemini?"제미나이":""} · 이 기기에만`:aiMode()==="shared"?"열쇠 없이 함께 쓰는 무료 AI · 내 열쇠를 넣으면 더 좋은 답":"꺼짐 — 켜면 열쇠 없이도 씁니다",body:aiKeySection()},
      {k:"vr",ic:"✎",t:"AI가 따를 것 — 규칙·말투",st:"",sum:rules||voice?`규칙 ${rules}개 · 말투 기준 ${voice}문장`:"아직 규칙 없음",body:vrSection()}]},
@@ -1291,6 +1292,11 @@ const MANUALS=[["quick","간단 매뉴얼","읽자마자 바로 써 보는 한 �
 // ───────── 새 소식 (공개판, 2026-10-31 팀장님): 중요한 고침은 앱을 열 때 한 번만 쉬운 말로 알림 ─────────
 // 새 소식을 더할 때: NEWS 맨 앞에 넣고 id 는 날짜(같은 날 둘째는 2026-11-02b 처럼 — 글자 순서로 새것이 뒤). 본 소식 id 는 이 기기에만(seojae-open.newsSeen)
 const NEWS=[
+ {id:"2026-11-23n",date:"2026년 11월 23일",title:"휴대폰을 더 단정하게",items:[
+  ["🧭","나에게 맞는 화면","처음 오시면 아침 서재를 어떻게 쓰실지(말씀 묵상·글쓰기·설교) 여쭤요. 고르신 쓰임에 맞춰 관계없는 단추는 숨겨 드려요.","설정 → 「나의 쓰임」에서 언제든 바꿀 수 있어요."],
+  ["🗂️","아래 메뉴는 다섯 칸","휴대폰 아래 메뉴를 오늘·묵상·책장·일기·글방 다섯 칸으로 줄였어요. 「서랍」은 위쪽 머리 줄의 서랍 그림이에요.",""],
+  ["📜","읽을 땐 화면을 넓게","글을 내려 읽으면 위쪽 머리 줄이 살짝 숨고, 조금 올리면 다시 나와요.",""],
+  ["✏️","제목은 직접","묵상지(매일성경·생명의 삶)의 제목이 글 제목 칸에 저절로 들어가지 않아요. 제목은 마음에 남은 말로 직접 붙여 주세요.",""]]},
  {id:"2026-11-23m",date:"2026년 11월 23일",title:"휴대폰 화면이 새 옷을 입었어요",items:[
   ["📱","가볍고 산뜻하게","휴대폰은 처음 크기를 「보통」으로 바꾸고, 단추와 메뉴 글씨를 또렷한 고딕으로 정리했어요. 읽고 쓰는 글은 그대로 정갈한 명조예요.","더 크게 보고 싶으시면 위쪽 「가가」에서 「크게 보기」를 고르세요. 전에 고르신 크기는 그대로예요."],
   ["🫧","떠 있는 아래 메뉴","화면 아래 메뉴가 살짝 떠 있는 유리 막대가 되었어요. 지금 있는 곳만 또렷하게 보여요.",""],
@@ -1534,7 +1540,7 @@ const newsMark=()=>{ try{ localStorage.setItem("seojae-open.newsSeen",NEWS[0]?.i
 const hasRecords=()=>!!(live().length||Object.keys(S.diary||{}).length||(S.books||[]).length||(S.notes||[]).length||(S.jots||[]).length);
 function manualFirst(){ if(NEED_CONNECT||AUTH_FAIL) return; let seen=""; try{ seen=localStorage.getItem("seojae-open.manualShown")||""; }catch(_){} if(seen) return;
   try{ localStorage.setItem("seojae-open.manualShown",today()); }catch(_){}
-  if(hasRecords()) return; if($("#newsview")||$("#manview")) return; manualOpen(true); }
+  if(hasRecords()) return; if($("#newsview")||$("#manview")) return; if(useGet()==null) return useOpen(()=>manualOpen(true)); manualOpen(true); }
 function manualOpen(first){ $("#manview")?.remove(); const ov=document.createElement("div"); ov.id="manview"; ov.className="newsview manview";
   ov.innerHTML=`<article class="newscard mancardx" role="dialog" aria-modal="true" aria-labelledby="manh"><div class="manhead"><div><p class="newsk" id="manh">${first?"처음 오셨군요":"간단 매뉴얼"}</p><h3 class="mant">아침 서재 간단 매뉴얼</h3>${first?`<p class="mansub">5분이면 다 읽어요. 닫아도 설정 → 도움 → 「사용 설명서」에서 다시 볼 수 있어요.</p>`:""}</div><button type="button" class="rtx" data-x aria-label="닫기" title="닫기 (Esc)">✕</button></div>
     <iframe class="manframe" src="manual/quick.html" title="아침 서재 간단 매뉴얼" loading="eager"></iframe>
@@ -1916,7 +1922,7 @@ function suToggle(){ try{ localStorage.setItem("seojae-open.suOpen",suOpen()?"0"
 function suUse(){ const P=suPassage(SU); if(!P) return; const W=editId?S.writings.find(x=>x.id===editId):null, cur=($("#wpassage")?.value||"").trim();
   if(W&&!wEmpty(W)&&cur&&cur!==P.label){ go("write",{new:true,track:"bible",type:"묵상"}); return setTimeout(()=>suUseFill(P,true),120); }
   suUseFill(P); }
-function suUseFill(P,fresh){ const f=$("#wpassage"); if(!f) return; f.value=P.label; if(!$("#wtitle").value.trim()&&SU?.title) $("#wtitle").value=SU.title; draftInput();
+function suUseFill(P,fresh){ const f=$("#wpassage"); if(!f) return; f.value=P.label; draftInput();   /* 제목은 저절로 넣지 않음(2026-11-23 팀장님 — 묵상지 제목이 글 제목 칸에 들어가던 것) */
   toast(fresh?`새 묵상에 ${qbN()} 본문을 넣었습니다 — 앞에 쓴 묵상은 그대로 있어요`:`${qbN()} 본문을 넣었습니다`);
   const b=$("#wbody"); if(b){ b.scrollIntoView({block:"center",behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth"}); try{ b.focus({preventScroll:true}); }catch(_){} } }
 // 매일성경 앞뒤 날짜 보기: 그날 쓴 묵상이 있으면 그 글을 바로 열고(쓰던 글은 임시 보관), 없으면 그날 본문만 보여 줍니다
@@ -2465,6 +2471,39 @@ function qkClose(){ const d=$("#qksheet"); if(!d) return; const t=($("#qkin")?.v
 function qkSave(){ const i=$("#qkin"); const t=(i?.value||"").trim(); if(!t){ toast("적을 것을 먼저 써 주세요"); i?.focus(); return; } (S.jots=S.jots||[]).push(jotNew(t)); save(); i.value=""; toast("끄적여 두었습니다 ✓"); qkClose(); if(tab==="today"||$("#jotlist")) render(); }
 function qkGo(k){ qkClose(); if(k==="qt") go('write',{track:'bible'}); else if(k==="diary") go('diary'); else if(k==="jots") stOpen('jots'); else if(k==="ai") rsToggle(); }
 addEventListener("keydown",e=>{ if(e.key==="Escape"&&$("#qksheet")&&!e.defaultPrevented){ qkClose(); } });
+// ───────── 나의 쓰임(2026-11-23 팀장님 「제안도 진행」 — 젊은 사용자 점검의 별도 제안): 처음 오신 분께 쓰임(묵상·글쓰기·설교)을 여쭙고, 관계없는 단추를 숨김
+//   이 기기에만(localStorage seojae-open.use — 기록 파일에 새 칸을 만들지 않음). 고른 적 없으면(기존 사용자) 아무것도 숨기지 않음. 설정 → 아침 「나의 쓰임」에서 바꿈
+//   설교·목회를 고르지 않으면: 「설교초안 만들기」 숨김 · 글쓰기를 고르지 않으면: 글자 수·원고지 매수 줄 숨김 · 호칭 기본값도 쓰임 따라(설교 → 목사님, 그 밖 → 작가님)
+const USE_OPTS=[["qt","🌿","말씀 묵상·QT","매일성경·생명의 삶 본문으로 묵상을 써요"],["writer","✍️","글쓰기·책 원고","에세이·소설·자기계발서 원고를 써요"],["pastor","✝️","설교·목회","묵상을 설교초안으로, 강단 PDF까지"]];
+const useGet=()=>{ try{ const v=localStorage.getItem("seojae-open.use"); return v==null?null:v.split(",").filter(Boolean); }catch(_){ return null; } };
+const useHas=k=>{ const u=useGet(); return !u||!u.length||u.includes(k); };
+function useApply(){ const u=useGet(), on=!!(u&&u.length), c=document.documentElement.classList; c.toggle("use-nopastor",on&&!u.includes("pastor")); c.toggle("use-nowriter",on&&!u.includes("writer")); }
+function useSet(list){ try{ localStorage.setItem("seojae-open.use",list.join(",")); }catch(_){} useApply(); }
+function useSum(){ const u=useGet(); if(!u||!u.length) return "모두 보기"; return USE_OPTS.filter(o=>u.includes(o[0])).map(o=>o[2]).join(" · "); }
+function useBody(){ const u=useGet()||[]; return `<p class="hint" style="margin:0 0 8px">고르신 쓰임에 맞춰 관계없는 단추를 숨겨요. 아무것도 고르지 않으면 모두 보여요(이 기기만).</p><div class="usegrid">${USE_OPTS.map(([k,ic,t,d])=>`<button type="button" class="useopt ${u.includes(k)?"on":""}" aria-pressed="${u.includes(k)}" onclick="useToggle('${k}')"><span class="ui">${ic}</span><span class="ut"><b>${t}</b><small>${d}</small></span><span class="uc" aria-hidden="true">${u.includes(k)?"✓":""}</span></button>`).join("")}</div>`; }
+function useToggle(k){ const u=useGet()||[]; const n=u.includes(k)?u.filter(x=>x!==k):[...u,k]; useSet(n); toast(n.length?`「${useSum()}」에 맞춰 보여 드려요`:"모든 단추를 보여 드려요"); if(tab==="settings") render(); }
+function useOpen(then){ $("#useview")?.remove(); const pick=new Set(useGet()||[]); const ov=document.createElement("div"); ov.id="useview"; ov.className="newsview useview";
+  const paint=()=>{ ov.querySelectorAll(".useopt").forEach(b=>{ const on=pick.has(b.dataset.k); b.classList.toggle("on",on); b.setAttribute("aria-pressed",on); b.querySelector(".uc").textContent=on?"✓":""; }); };
+  ov.innerHTML=`<article class="newscard usecard" role="dialog" aria-modal="true" aria-labelledby="useh"><p class="newsk">반가워요</p><h3 class="mant" id="useh">아침 서재를 어떻게 쓰실 건가요?</h3><p class="mansub">여러 개 골라도 돼요. 고르신 쓰임에 맞춰 화면을 단정하게 보여 드려요. 설정 → 아침 「나의 쓰임」에서 언제든 바꿔요.</p>
+    <div class="usegrid">${USE_OPTS.map(([k,ic,t,d])=>`<button type="button" class="useopt" data-k="${k}" aria-pressed="false"><span class="ui">${ic}</span><span class="ut"><b>${t}</b><small>${d}</small></span><span class="uc" aria-hidden="true"></span></button>`).join("")}</div>
+    <div class="manacts"><button type="button" class="btn ghost" data-skip>나중에</button><button type="button" class="btn ink" data-go>시작하기</button></div></article>`;
+  document.body.appendChild(ov);
+  const done=save=>{ if(save) useSet([...pick]); else try{ localStorage.setItem("seojae-open.use",""); }catch(_){} ov.remove(); if(save&&pick.size) toast(`「${useSum()}」에 맞춰 보여 드려요`); if(typeof then==="function") setTimeout(then,250); };
+  ov.querySelectorAll(".useopt").forEach(b=>b.onclick=()=>{ pick.has(b.dataset.k)?pick.delete(b.dataset.k):pick.add(b.dataset.k); paint(); });
+  ov.querySelector("[data-go]").onclick=()=>done(true); ov.querySelector("[data-skip]").onclick=()=>done(false);
+  ov.addEventListener("keydown",e=>{ if(e.key==="Escape"){ e.preventDefault(); e.stopPropagation(); done(false); } }); ov.onclick=e=>{ if(e.target===ov) done(false); };
+  setTimeout(()=>ov.querySelector(".useopt")?.focus(),60); }
+useApply();
+// ───────── 휴대폰 머리 줄(2026-11-23 별도 제안): 화면 위에 붙어 있다가 내려 읽으면 숨고, 조금이라도 올리면 다시 나옴 — 글을 쓰는 동안(글 칸에 커서)엔 숨김
+(()=>{ const mq=matchMedia("(max-width:700px)"); let y0=scrollY, raf=0;
+  const h=()=>{ const e=document.querySelector("body>header"); if(e) document.documentElement.style.setProperty("--hdr-h",e.offsetHeight+"px"); };
+  const typing=()=>{ const a=document.activeElement; return !!a&&(a.isContentEditable||/^(TEXTAREA|W-ED)$/.test(a.tagName)||(a.tagName==="INPUT"&&!/^(checkbox|radio|button|range)$/.test(a.type))); };
+  const tick=()=>{ raf=0; const c=document.documentElement.classList, y=scrollY; if(!mq.matches||document.body.classList.contains("focus")){ c.remove("hdr-hide"); y0=y; return; }
+    if(y<70){ c.remove("hdr-hide"); } else if(y>y0+8){ c.add("hdr-hide"); } else if(y<y0-8&&!typing()){ c.remove("hdr-hide"); } if(Math.abs(y-y0)>8) y0=y; };
+  addEventListener("scroll",()=>{ if(!raf) raf=requestAnimationFrame(tick); },{passive:true});
+  addEventListener("resize",h); addEventListener("load",h); setTimeout(h,300);
+  document.addEventListener("focusin",()=>{ if(mq.matches&&typing()&&scrollY>70) document.documentElement.classList.add("hdr-hide"); });
+})();
 function sjOverlay(){ const b=document.body.classList;
   if(document.querySelector(".askview,.newsview,#vspop,#tippop,#dictpop,#rfcard,#sugcard,#qksheet")) return "esc";
   if($("#bsview")) return "bs";
@@ -2517,7 +2556,7 @@ function render0(){
   // 같은 쓰기 화면을 다시 그릴 때(말씀/책 바꾸기, 합친 뒤 등) 쓰던 제목·본문을 그대로 지켜 줍니다
   const keep=!NAV&&tab==="write"&&$("#wbody")?{e:editId,t:$("#wtitle").value,b:$("#wbody").value,p:$("#wpassage")?.value}:null;
   const gb=$("#gearbtn"); if(gb){ if(!gb.firstChild) gb.innerHTML=gearSvg(); gb.classList.toggle("on",tab==="settings"); }
-  $("#nav").innerHTML=TABS.map(([k,n])=>`<button class="${k==="write"?"navroom ":k==="today"?"navhome ":k==="drawer"?"navdrawer ":""}${(k==="qt"?tab==="write"&&track==="bible":k==="write"?tab==="room"||(tab==="write"&&track!=="bible"):k===tab)?"on":""}" onclick="${k==="qt"?"go('write',{track:'bible'})":k==="write"?"go('room')":`go('${k}')`}">${k==="write"?`${ICO.pen}<span>${n}</span>`:NAV_ICO[k]?`<svg class="nvi" viewBox="0 0 24 24" aria-hidden="true">${NAV_ICO[k]}</svg><span class="nvt">${n}</span>`:n}</button>`).join("")+`<button class="navai ${AI_MODE==="research"&&$("#aipanel")?"on":""}" onclick="rsToggle()" title="AI 조사 도우미 — 오른쪽 창에서 대화하며 자료를 찾습니다">✦<span>AI</span></button>`; qkFab();
+  $("#nav").innerHTML=TABS.map(([k,n])=>`<button class="${k==="write"?"navroom ":k==="today"?"navhome ":k==="drawer"?"navdrawer ":""}${(k==="qt"?tab==="write"&&track==="bible":k==="write"?tab==="room"||(tab==="write"&&track!=="bible"):k===tab)?"on":""}" onclick="${k==="qt"?"go('write',{track:'bible'})":k==="write"?"go('room')":`go('${k}')`}">${k==="write"?`${ICO.pen}<span>${n}</span>`:NAV_ICO[k]?`<svg class="nvi" viewBox="0 0 24 24" aria-hidden="true">${NAV_ICO[k]}</svg><span class="nvt">${n}</span>`:n}</button>`).join("")+`<button class="navai ${AI_MODE==="research"&&$("#aipanel")?"on":""}" onclick="rsToggle()" title="AI 조사 도우미 — 오른쪽 창에서 대화하며 자료를 찾습니다">✦<span>AI</span></button>`; qkFab(); $("#hdrdrawer")?.classList.toggle("on",tab==="drawer");
   paintStreak();
   if(NEED_CONNECT||AUTH_FAIL){ $("#main").innerHTML=connectView(); return; }
   $("#main").innerHTML=(DRV_NEED?`<div class="notice">구글 드라이브와 잠시 떨어져 이 기기의 사본을 보여 드립니다. 쓰는 글은 이 기기에 남아 있다가, 이으면 드라이브로 갑니다. <button class="btn small ink" onclick="drvStart(this)">구글 드라이브에 잇기</button></div>`:SERVER?"":GAS?`<div class="notice">구글 서버에 아직 닿지 못해 이 기기의 사본을 보여 드립니다. 인터넷을 확인한 뒤 <a href="#" onclick="fetchFresh(false);return false">다시 시도</a></div>`:location.protocol==="file:"?`<div class="notice">파일로 직접 연 상태라 저장이 되지 않습니다. 아침 서재 주소(인터넷)로 열어 주세요.</div>`:"")+locNudge()+VIEWS[tab]();
