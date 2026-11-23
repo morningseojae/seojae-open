@@ -2718,3 +2718,13 @@ html.bson .askview{z-index:160}
 .sunav .fsbtn{min-width:34px;height:34px;color:var(--ink)}
 @media (pointer:coarse){ .sucard .btn.small,.sucard .vergrp .verlink,.sunav .fsbtn{min-height:40px} .sunav .fsbtn{height:40px} .sucard .btn.ink{min-height:44px} }
 @media (max-width:440px){ .sucard .links .btn.ink{flex:1 1 100%;justify-content:center} .sucard .vergrp{flex:1 1 100%} .sucard .vergrp .verlink{flex:1;justify-content:center;padding:0 4px} .sucard .vergrp .vgk{padding:0 2px 0 9px} }
+/* 묵상 틀 길이 「짧게 | 천천히」·오늘의 질문 하나씩(2026-11-23) */
+.qtmode{display:inline-flex;border:1px solid color-mix(in srgb,var(--sepia) 40%,var(--edge));border-radius:999px;overflow:hidden;vertical-align:middle;margin-left:4px}
+.qtmode button{border:0;background:var(--paper);color:var(--ink-soft);font:600 12.5px/1 var(--ui-font);padding:7px 11px;cursor:pointer;min-height:30px} .qtmode button+button{border-left:1px solid var(--edge)}
+.qtmode button.on{background:var(--sepia);color:var(--paper)}
+@media (pointer:coarse){ .qtmode button{min-height:40px;padding:0 13px} }
+.sucard .qone{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:10px 0 2px;font-family:var(--ui-font)}
+.sucard .qone .qk{font-size:12px;font-weight:700;color:var(--bible);background:var(--bible-wash);border-radius:999px;padding:3px 9px;flex:none}
+.sucard .qone .qq{flex:1 1 220px;min-width:min(220px,100%);font-size:15px;line-height:1.5;color:var(--ink)}
+/* 틀 제목 줄 = 인쇄된 글(고칠 수 없음, 2026-11-23) — 거울 층에 옅은 띠 */
+#hmirror i.tplh,.mirror i.tplh{font-style:normal;background:color-mix(in srgb,var(--sepia) 9%,transparent);border-radius:3px;box-decoration-break:clone;-webkit-box-decoration-break:clone;padding:1px 0}

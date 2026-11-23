@@ -21,9 +21,14 @@ const ICO=(()=>{ const w=d=>`<svg class="ico" viewBox="0 0 24 24" aria-hidden="t
 // ───────── 기본 자료 ─────────
 const BIBLE=[["창세기",50],["출애굽기",40],["레위기",27],["민수기",36],["신명기",34],["여호수아",24],["사사기",21],["룻기",4],["사무엘상",31],["사무엘하",24],["열왕기상",22],["열왕기하",25],["역대상",29],["역대하",36],["에스라",10],["느헤미야",13],["에스더",10],["욥기",42],["시편",150],["잠언",31],["전도서",12],["아가",8],["이사야",66],["예레미야",52],["예레미야애가",5],["에스겔",48],["다니엘",12],["호세아",14],["요엘",3],["아모스",9],["오바댜",1],["요나",4],["미가",7],["나훔",3],["하박국",3],["스바냐",3],["학개",2],["스가랴",14],["말라기",4],["마태복음",28],["마가복음",16],["누가복음",24],["요한복음",21],["사도행전",28],["로마서",16],["고린도전서",16],["고린도후서",13],["갈라디아서",6],["에베소서",6],["빌립보서",4],["골로새서",4],["데살로니가전서",5],["데살로니가후서",3],["디모데전서",6],["디모데후서",4],["디도서",3],["빌레몬서",1],["히브리서",13],["야고보서",5],["베드로전서",5],["베드로후서",3],["요한1서",5],["요한2서",1],["요한3서",1],["유다서",1],["요한계시록",22]];
 const SERMON="중심 메시지(한 문장): \n\n■ 본문 주해 — 처음 독자에게 이 말씀은 무엇이었나\n\n■ 신학 — 하나님은 어떤 분이시고, 복음은 어디에 있나\n\n■ 서론 — 듣는 이의 삶에서 시작하기\n\n■ 1대지\n\n■ 2대지\n\n■ 3대지\n\n■ 적용 — 오늘 우리 교회, 이번 주의 한 걸음\n\n■ 결론과 결단\n";
+// 묵상 틀 두 가지(2026-11-23 팀장님 「매일 실제로 묵상하는 사람 — 잠시 짬을 내어 하는 분이 더 많다」): 하나님이 주어인 칸을 「나」보다 앞에, 은혜 → 응답 → 기도
+const QT_SHORT="■ 말씀 — 마음에 머문 한 구절 (몇 절인지도)\n\n■ 하나님 — 이 말씀에서 하나님은 무엇을 하시나요?\n\n■ 응답 — 받은 은혜 앞에서 오늘 나의 한 걸음\n\n■ 기도 — 받은 말씀을 한 줄로, 떠오르는 한 사람의 이름도 함께\n";
+const QT_SLOW="■ 본문 — 마음에 머문 구절\n\n■ 관찰 — 누가, 무엇을, 어떻게? 본문에 쓰인 그대로\n\n■ 하나님은 어떤 분이신가 — 오늘 본문에서 만난 하나님\n\n■ 깨달음 — 이 말씀이 오늘 나에게 하시는 말씀\n\n■ 적용 — 오늘 내가 해 볼 한 가지\n\n■ 기도 — 짧게 한 줄이라도\n\n■ 나눔 씨앗 — 가족·소그룹과 나누고 싶은 한 줄 (있으면)\n";
+const QT_PREV=["■ 본문 — 마음에 머문 구절\n\n■ 관찰 — 누가, 무엇을, 어떻게? 본문에 쓰인 그대로\n\n■ 하나님은 어떤 분이신가 — 오늘 본문에서 만난 하나님\n\n■ 깨달음 — 이 말씀이 오늘 나에게 하시는 말씀\n\n■ 적용 — 오늘 내가 해 볼 한 가지\n\n■ 기도 — 짧게 한 줄이라도\n\n■ 나눔 씨앗 — 가족·소그룹과 나누고 싶은 한 줄\n","■ 본문 — 마음에 머문 구절\n\n■ 관찰 — 무엇이 쓰여 있는가\n\n■ 하나님은 어떤 분이신가\n\n■ 해석 — 처음 독자에게 무슨 뜻이었나, 그리스도와 복음으로 어떻게 이어지나\n\n■ 적용 — 오늘 나의 삶에서\n\n■ 기도\n\n■ 설교 씨앗 — 언젠가 전하고 싶은 한 줄\n"];   // 예전 틀 줄(틀 빼기·안 쓴 글 판단용)
+const qtMode=()=>{ try{ const v=localStorage.getItem("seojae-open.qtTpl"); return v==="slow"||v==="none"?v:"short"; }catch(_){ return "short"; } };   // short(기본) · slow · none(틀 없이 — 새 묵상이 빈 종이로)
 const TYPES={
   bible:{   // 묵상 탭은 두 가지만: 묵상 · 설교초안 (주일·새벽 설교는 노션의 설교초안을 바탕으로 설교작성 프로젝트에서 씁니다). 옛 종류는 LEGACY_TYPES
-    "묵상":"■ 본문 — 마음에 머문 구절\n\n■ 관찰 — 누가, 무엇을, 어떻게? 본문에 쓰인 그대로\n\n■ 하나님은 어떤 분이신가 — 오늘 본문에서 만난 하나님\n\n■ 깨달음 — 이 말씀이 오늘 나에게 하시는 말씀\n\n■ 적용 — 오늘 내가 해 볼 한 가지\n\n■ 기도 — 짧게 한 줄이라도\n\n■ 나눔 씨앗 — 가족·소그룹과 나누고 싶은 한 줄\n",
+    get "묵상"(){ return qtMode()==="slow"?QT_SLOW:QT_SHORT; },   // 공개판: 짬 묵상(짧게) 기본 · 천천히(일곱 칸) — 2026-11-23 묵상·성경·신학 전문가 검토
     "설교초안":"■ 중심 메시지 (한 문장)\n\n■ 본문의 흐름 — 앞뒤 문맥과 구조\n\n■ 본문에서 붙잡은 것\n\n■ 듣는 이 — 누구에게, 어떤 마음으로\n\n■ 뼈대 메모 — 대지 후보\n\n■ 예화·자료 후보\n\n■ 적용 후보 — 이번 주의 한 걸음\n\n■ 결단·초청 (한 문장)\n\n■ 더 살펴볼 것 (원어·배경·주석)\n"},
   book:{
     "자기계발 글":"■ 오늘의 한 문장\n\n■ 장면 하나 — 내가 겪은 일 (가정·일터·교회)\n\n■ 이 문장이 그 장면에 말해 준 것\n\n■ 독자에게 건네는 통찰\n\n■ 오늘 바로 해볼 한 가지\n",
@@ -52,15 +57,24 @@ const SLEN=[["긴설교","주일·특별 예배처럼 30분 안팎"],["짧은설
 const TOPICS=["믿음","순종","소명·부르심","두려움·용기","시험·고난","위로·회복","은혜","회개","용서·화해","기도","예배","말씀","우상·세속","정체성·자존감","교회·공동체","가정·관계","지도자·리더십","다음세대","정의·공의","물질·돈","섬김·사랑","부활·소망","성령","십자가·복음","감사·찬양","언약","하나님의 동행","인도하심","겸손·교만","분열·연합","헌신","거룩·성결","죄·심판","하나님 나라","재림·종말","선교·전도","성찬·세례"];
 const QUESTIONS={
   bible:{
-    "관찰":["본문에서 되풀이되는 낱말이나 눈에 띄는 표현은 무엇인가요?","누가, 언제, 어디서, 무엇을 했나요? 장면을 그려 본다면?","하나님(예수님)이 하신 말씀이나 일은 무엇인가요?","이 본문 바로 앞뒤에는 어떤 이야기가 있나요?"],
-    "깨달음":["오늘 본문에서 만난 하나님은 어떤 분인가요?","등장인물 가운데 나와 닮은 사람은 누구인가요? 어떤 점이 닮았나요?","이 말씀이 오늘 나에게 주는 위로나 도전은 무엇인가요?","이 말씀에서 예수님의 사랑이 보이는 곳은 어디인가요?"],
-    "적용":["오늘 하루 이 말씀대로 해 볼 작은 한 가지는?","이 말씀을 오늘 만날 한 사람에게 건넨다면 어떻게 말할까요?","가정·일터·학교에서 이 말씀이 필요한 자리는 어디인가요?","오늘 내려놓거나 고치고 싶은 습관 하나는?"]},
+    "관찰":["오늘 본문에서 한 낱말만 고른다면?","몇 절에서 마음이 멈췄나요? 그 까닭은요?","이 본문에서 하나님(예수님)이 하신 말씀이나 일은 무엇인가요?","앞뒤 몇 절을 한 번 더 읽으면 새로 보이는 것은?"],
+    "깨달음":["하나님이 오늘 내게 건네시는 말은 무엇일까요?","이 사람은 하나님께 어떻게 응답했나요? 나는요?","이 말씀이 비추어 준 내 모습 하나는?","이 말씀은 예수님 안에서 어떻게 이루어지나요? (잘 보이지 않으면 넘어가도 좋아요)"],
+    "적용":["오늘 해 볼 아주 작은 한 가지는?","이 말씀 때문에 오늘 하나님께 맡기고 싶은 한 가지는?","오늘 이 말씀이 위로가 될 사람은 누구일까요?","이 말씀을 읽은 지금, 내 마음은 어때요?"]},
   book:{
     "이해":["저자가 이 장에서 가장 말하고 싶은 한 문장은?","밑줄 친 문장을 내 말로 다시 쓴다면?","저자는 어떤 근거와 사례로 주장을 받치고 있는가?"],
     "비평":["저자의 주장 중 동의하기 어려운 부분은 어디인가?","이 내용을 성경의 관점에서 보면 무엇이 보이는가?","밑줄 친 문장 가운데 내 경험으로 증명할 수 있는 것은?"],
     "적용":["이 원칙을 오늘 만나는 사람들(가정·일터·공동체)에게 적용한다면?","독자가 오늘 바로 실천할 수 있는 한 가지는?","이 내용을 내 책의 한 꼭지 제목으로 만든다면?","이 문장을 내가 실패했던 순간에 비추어 보면 무엇이 보이는가?"]}
 };
 // 날마다 갈래마다 하나씩 (관찰 → 깨달음 → 적용) — 공개판은 평신도 눈높이(2026-11-23 팀장님)
+// 본문 성격에 따라 맨 먼저 묻는 「하나님」 질문(성경학자 검토 — 책 이름으로 대표 갈래만)
+const QT_GENRE_Q={story:"무슨 일이 일어났고, 그 속에서 하나님은 무엇을 하셨나요?",poem:"시인은 어떤 마음으로 하나님께 고백하나요? 그 구절로 내 기도를 해 보세요.",letter:"「그러므로·왜냐하면」을 찾아 보세요. 무엇을 하라고 하고, 그 까닭은 무엇인가요?",prophecy:"처음 들은 백성에게 무엇을 경고하고 무엇을 약속했나요?",law:"이 말씀 뒤에 있는 하나님의 마음은 무엇인가요?"};
+function qtGenre(book){ const i=BIBLE.findIndex(x=>x[0]===book); if(i<0) return "story"; if(i===2||i===4) return "law"; if((i>=17&&i<=21)||i===24) return "poem"; if(i===22||i===23||i===25||(i>=27&&i<=38)||i===65) return "prophecy"; if(i>=44&&i<=64) return "letter"; return "story"; }
+let QT_QI=0;
+function qtQs(){ const P=SU&&suPassage(SU), d=suDate()||today(), g=QT_GENRE_Q[qtGenre(P?.book||SU?.book||"")];
+  const pool=Object.values(QUESTIONS.bible).flat(), h=[...d].reduce((a,c)=>(a*31+c.charCodeAt(0))>>>0,7), start=h%pool.length;
+  return [g,...pool.slice(start),...pool.slice(0,start)]; }
+function qtQHtml(){ const L=qtQs(); return `<div class="qone"><span class="qk">오늘의 질문</span><span class="qq" id="qq">${esc(L[QT_QI%L.length])}</span><button type="button" class="btn small ghost" onclick="qtQNext()" title="다른 질문을 봅니다">다른 질문 ↻</button></div>`; }
+function qtQNext(){ QT_QI++; const L=qtQs(), e=$("#qq"); if(e) e.textContent=L[QT_QI%L.length]; }
 const pickQ=(tr,seed)=>Object.entries(QUESTIONS[tr]).map(([k,L])=>`${k} · ${pick(L,1,seed+k)[0]}`);
 const INKS=[["먹","#2e2721"],["청색","#24427a"],["세피아","#7a4a22"],["녹색","#2f5d4e"]];
 
@@ -1276,6 +1290,11 @@ const MANUALS=[["quick","간단 매뉴얼","읽자마자 바로 써 보는 한 �
 // ───────── 새 소식 (공개판, 2026-10-31 팀장님): 중요한 고침은 앱을 열 때 한 번만 쉬운 말로 알림 ─────────
 // 새 소식을 더할 때: NEWS 맨 앞에 넣고 id 는 날짜(같은 날 둘째는 2026-11-02b 처럼 — 글자 순서로 새것이 뒤). 본 소식 id 는 이 기기에만(seojae-open.newsSeen)
 const NEWS=[
+ {id:"2026-11-23c",date:"2026년 11월 23일",title:"짬 묵상 틀",items:[
+  ["🌱","새 묵상에 틀이 처음부터","「짧게」(기본)는 말씀 → 하나님 → 응답 → 기도 네 칸이에요. 한 칸만 써도 오늘 묵상이에요.","여유 있는 날은 「천천히」(일곱 칸), 빈 종이가 좋으면 「틀 없이」를 고르세요."],
+  ["📖","틀 제목은 인쇄된 글처럼","틀의 제목 줄은 지워지거나 고쳐지지 않아요. 빼고 싶으면 「틀 빼기」나 「틀 없이」를 누르세요.",""],
+  ["❓","오늘의 질문은 하나씩","본문에 맞춘 질문 하나가 먼저 나오고, 「다른 질문 ↻」로 바꿀 수 있어요.",""],
+  ["📅","생명의 삶 한 주 미리","일요일 새벽 3시에 그 주 묵상 길잡이를 미리 만들어요. 날짜 ›로 내일 본문도 미리 볼 수 있어요.",""]]},
  {id:"2026-11-23b",date:"2026년 11월 23일",title:"생명의 삶 묵상 길잡이 · 또렷해진 단추",items:[
   ["🔘","누르는 곳이 또렷해졌어요","묵상 카드의 단추 줄을 옅은 띠로 나누고, 단추마다 테두리를 달았어요. 번역은 「번역 | 개역개정 ↗ …」 한 묶음, 「위에 띄우기」는 「본문 작은 창」이 되었어요.","해설·길잡이를 열면 그 단추가 색으로 채워져요."],
   ["🌿","날마다 새벽 3시에","묵상지를 생명의 삶으로 고르면 묵상 카드에 「묵상 길잡이」가 생겨요. 그날 본문의 흐름·배경·본문이 보여 주는 하나님을 짚고, 묵상 질문으로 맺어요.","컴퓨터에서는 오른쪽 창으로, 휴대폰에서는 카드 아래에 펼쳐져요."],
@@ -1733,7 +1752,7 @@ function llLinks(date){ return `<button class="btn small ghost" id="subtn" oncli
 let SU=null, SUT=null, SUERR="";
 async function suInfo(date){
   const kb=qbK(), pre="seojae-open."+(kb==="ll"?"ll2.":"su2.");   // su2·ll2: 해설 음성 주소를 되살린 뒤의 사본(예전 su. 사본에는 음성이 빠져 있음)
-  try{ const c=JSON.parse(localStorage.getItem(pre+date)||"null"); if(c){ c.src=kb; return c; } }catch(_){}
+  try{ const c=JSON.parse(localStorage.getItem(pre+date)||"null"); if(c&&!(c.sched&&date<=today())){ c.src=kb; return c; } }catch(_){}
   if(!GAS) throw new Error("구글 서버에 연결되어 있어야 합니다");
   const r=await gcall(QB[kb].fn,date); r.src=kb;
   try{ localStorage.setItem(pre+date,JSON.stringify(r));
@@ -1823,11 +1842,11 @@ async function paintSu(){
   // 새 묵상이면 본문 칸을 매일성경으로 (설정에서 '통독표 따라'를 고르면 그대로 둠)
   const f=$("#wpassage"); if(f&&!fromNote&&!fromWriting&&S.settings.qtSource!=="plan"&&$("#wtype")?.value==="묵상"&&(editId?cur?.date===date&&cmtBare(f.value):f.value===f.defaultValue)){ f.value=P.label; }   // 본문 칸이 빈 그날 묵상에는 저절로
   box.innerHTML=`${nav}
-    <div class="sut"><b>${esc(SU.title)}</b> · ${esc(P.label)}${SU.hymn?` · <span class="muted hymnbox" id="hymnbox">찬송가 ${esc(SU.hymn)}장${hymnCtl()}</span>`:""}</div>
+    <div class="sut">${SU.title?`<b>${esc(SU.title)}</b> · `:""}${esc(P.label)}${SU.sched?` <small class="muted" title="두란노 공지의 월별 본문표로 미리 보는 본문입니다 — 제목·찬송가는 그날 아침에 나옵니다">· 미리 보기</small>`:""}${SU.hymn?` · <span class="muted hymnbox" id="hymnbox">찬송가 ${esc(SU.hymn)}장${hymnCtl()}</span>`:""}</div>
     <div class="links"><button class="btn small ink" onclick="suUse()">이 본문으로 쓰기</button>
       <span class="vergrp" role="group" aria-label="다른 번역으로 열기 (새 창)"><span class="vgk">번역</span><a class="verlink" href="${esc(suOfficial(P,"NKRV"))}" target="_blank" rel="noopener" onclick="return popBible(this.href)" title="개역개정은 저작권 때문에 앱 안에 넣을 수 없어 대한성서공회 사이트에서 같은 구절을 엽니다">개역개정</a><a class="verlink" href="${esc(suOfficial(P,"NKT"))}" target="_blank" rel="noopener" onclick="return popBible(this.href)">새한글</a><a class="verlink" href="${esc(suOfficial(P,"RNKSV"))}" target="_blank" rel="noopener" onclick="return popBible(this.href)">새번역</a><a class="verlink" href="${esc(suNiv(P))}" target="_blank" rel="noopener" onclick="return popBible(this.href)">NIV</a></span><button class="btn small ghost pconly" onclick="sideTip()" title="성경 창을 띄워 둔 채 쓰는 법">ⓘ</button><button class="btn small ghost pconly" onclick="pipBible()" title="오늘 본문(개역한글·영어)을 다른 창보다 늘 위에 떠 있는 작은 창으로 띄웁니다 (크롬·엣지)">${ICO.closed}본문 작은 창</button>
       ${SU.src==="ll"?llLinks(date):`${SU.audio?`<button class="btn small ghost" onclick="suListen()" title="매일성경 해설(본문 낭독과 해설)을 앱 안 작은 재생기로 듣습니다. 다른 메뉴로 옮겨도 계속 들립니다">${ICO.audio}해설 듣기</button>`:""}<button class="btn small ghost" id="subtn" onclick="suNoteToggle()" title="매일성경 해설을 봅니다 — 컴퓨터에서는 오른쪽 해설 창으로, 휴대폰에서는 카드 아래에">${ICO.book}${$("#sunpanel")?"해설 창 닫기":"해설 보기"}</button>`}</div>
-    <details class="more"><summary>말씀 앞에서 묻기 <small class="hint" style="display:inline">· 오늘의 질문</small></summary><ol class="q" style="margin:4px 0 0">${pickQ("bible",today()+"b").map(q=>`<li>${esc(q)}</li>`).join("")}</ol></details>
+    ${qtQHtml()}
     <div id="sunote"></div>
     ${open?`<div class="row" style="gap:6px;margin-top:10px;flex-wrap:wrap"><span class="muted" style="font-size:12.5px">보기</span><span class="pills">${SU_VIEWS.map(([k,n,tip])=>`<button class="pill ${suView()===k?"on":""}" style="padding:3px 10px;font-size:13px" data-tip="${tip}" onclick="lookSet('suview','${k}');paintSuText()">${n}</button>`).join("")}</span><span class="spacer"></span><span class="row" style="gap:4px" title="매일성경 글자 크기 (이 기기만)"><button class="fsbtn" onclick="suFont(-1)">가−</button><button class="fsbtn" onclick="suFont(1)">가＋</button></span><button class="fsbtn" onclick="lookSet('sutall',applyLook().sutall?'':1);paintSuText()" title="본문 칸을 다 펼쳐 스크롤 없이 봅니다">${applyLook().sutall?"칸 줄이기":"다 펼치기"}</button><button class="fsbtn sufold" onclick="suToggle()" title="성경 본문 칸을 완전히 접습니다 (이 기기에 기억)">접기 ▴</button></div>
       <div class="sutext" id="sutext"><span class="muted">본문을 불러오는 중…</span></div>`:`<button type="button" class="suopenbar" onclick="suToggle()" title="접어 둔 성경 본문 칸을 다시 폅니다"><span>▾ 성경 본문 펼치기</span><small>개역한글 · 영어</small></button>`}`;   // 접으면 그 자리에 펴는 띠(2026-11-02 팀장님 「성경 보기 창을 완전히 접도록」)
@@ -3269,7 +3288,7 @@ write0(){
   const dtype=w?.type||(fw?"설교초안":NEW_TYPE||null);
   const defBook=w?w.bookId:(fn?.bookId??(SEL_MS?null:S.settings.currentBook)), defPage=w?.page??fn?.page??"";   // 원고 꼭지는 「지금 읽는 책」을 저절로 고르지 않음 (참고 문헌에 쓰지 않은 책이 섞이지 않게)
   const hasMore=!!(w&&(w.summary||(w.topics||[]).length||(w.situations||[]).length||msOf(w).length));
-  const seed=fw?sermonSeed(fws):fn?`「${fn.text}」 (${noteSrc(fn)})\n${fn.thought?fn.thought+"\n":""}\n`:(NEW_TPL||"");
+  const seed=fw?sermonSeed(fws):fn?`「${fn.text}」 (${noteSrc(fn)})\n${fn.thought?fn.thought+"\n":""}\n`:(NEW_TPL||(!w&&track==="bible"&&(dtype||"묵상")==="묵상"&&qtMode()!=="none"?typeTpl("bible","묵상"):""));
   const types=Object.keys(TYPES[track]); if(dtype&&!types.includes(dtype)) types.push(dtype);   // 옛 종류의 글은 그 종류를 그대로 보여 줌
   const notes=S.notes.filter(n=>n.track===track).slice(-14).reverse();
   const ink=S.settings.ink, paper=S.settings.paper;
@@ -3285,7 +3304,7 @@ write0(){
       ?`<select id="wtype" hidden><option selected>${esc(dtype||"묵상")}</option></select>${dtype&&dtype!=="묵상"?`<span class="chip on" style="cursor:default">${esc(dtype)}</span>`:""}`
       :["novel","poem","paper"].includes(wMsNow(w)?.genre)?`<select id="wtype" hidden><option selected>${esc(dtype||"자유 글")}</option></select><span class="chip on" style="cursor:default">${esc(G(wMsNow(w)).n)}</span>`
       :`<select id="wtype" style="width:auto">${types.map(t=>`<option ${dtype===t?"selected":""}>${t}</option>`).join("")}</select>`}
-    <button class="btn small tplbtn" onclick="tplToggle()">${tplIn(w?.body??seed)?"틀 빼기":"틀 넣기"}</button>
+    <button class="btn small tplbtn" onclick="tplToggle()">${tplIn(w?.body??seed)?"틀 빼기":"틀 넣기"}</button>${track==="bible"&&(dtype||"묵상")==="묵상"?qtModeHtml():""}
     ${w&&w.track==="bible"&&w.type==="묵상"?`<button class="btn small ink" onclick="draftPick('${w.id}')" title="이 묵상(과 같은 본문의 다른 묵상)에서 씨앗을 이어받아 설교초안을 새로 씁니다. 묵상은 그대로 남습니다">${ICO.cross}설교초안 만들기</button>`:""}
     ${!w&&fws.length?`<span class="chip on" style="cursor:default">묵상 ${fws.length}편의 씨앗을 이어받은 초안</span>`:""}
     <span class="spacer"></span>
@@ -3946,8 +3965,8 @@ function edBind(ed){
       if(e.data==="-"&&z===s&&pv==="-"){ e.preventDefault(); edEdit(ed,"—",s-1,s,"입력","insertText"); return; } } if(e.inputType==="insertParagraph"){ e.preventDefault(); histMark(ed,"줄 바꿈"); document.execCommand("insertLineBreak"); } });   // 브라우저 기본 굵게·밑줄(⌘B·⌘U 등)은 쓰지 않음 — 앱의 꾸밈으로
   ed.addEventListener("pointerdown",()=>{ ed._ptr=1; setTimeout(()=>ed._ptr=0,400); },true);
   ed.addEventListener("focus",()=>{ if(!ed._ptr) ed._apply(); });   // 프로그램이 focus() 하면 전에 고른 자리로 (글자 칸처럼)
-  ed.addEventListener("paste",e=>{ e.preventDefault(); const cd=e.clipboardData||window.clipboardData; const pl=cd?.getData("text/plain")||"", xs=cd?.getData("application/x-seojae")||"", sq=x=>String(x).replace(/\s+/g,""); const inApp=xs&&sq(stripMk(xs))===sq(pl); let t=(inApp?xs:mkEsc(pl)).replace(/\r\n?/g,"\n"); /* 앱 안 복사는 꾸밈째, 바깥 글은 기호도 글자 그대로 */ const {s,e:z}=ed._getSel(); edEdit(ed,t,s,z,"붙여넣기","insertFromPaste"); });
-  const cp=(e,cut)=>{ const {s,e:z}=ed._getSel(); if(z<=s) return; e.preventDefault(); const src=ed.value.slice(s,z); try{ e.clipboardData.setData("text/plain",stripMk(src)); e.clipboardData.setData("text/html",richHtml(src).replace(/\n/g,"<br>")); e.clipboardData.setData("application/x-seojae",src); }catch(_){} if(cut) edEdit(ed,"",s,z,"잘라내기","deleteByCut"); };   // 밖으로는 기호 없는 글자·서식, 앱 안에서는 꾸밈째
+  ed.addEventListener("paste",e=>{ e.preventDefault(); const cd=e.clipboardData||window.clipboardData; const pl=cd?.getData("text/plain")||"", xs=cd?.getData("application/x-seojae")||"", sq=x=>String(x).replace(/\s+/g,""); const inApp=xs&&sq(stripMk(xs))===sq(pl); let t=(inApp?xs:mkEsc(pl)).replace(/\r\n?/g,"\n"); /* 앱 안 복사는 꾸밈째, 바깥 글은 기호도 글자 그대로 */ const {s,e:z}=ed._getSel(); if(tplGuard(ed)&&z>s&&tplHitRange(ed,s,z)) return tplBlocked(); edEdit(ed,t,s,z,"붙여넣기","insertFromPaste"); });
+  const cp=(e,cut)=>{ const {s,e:z}=ed._getSel(); if(z<=s) return; e.preventDefault(); if(cut&&tplGuard(ed)&&tplHitRange(ed,s,z)){ cut=false; tplBlocked(); } const src=ed.value.slice(s,z); try{ e.clipboardData.setData("text/plain",stripMk(src)); e.clipboardData.setData("text/html",richHtml(src).replace(/\n/g,"<br>")); e.clipboardData.setData("application/x-seojae",src); }catch(_){} if(cut) edEdit(ed,"",s,z,"잘라내기","deleteByCut"); };   // 밖으로는 기호 없는 글자·서식, 앱 안에서는 꾸밈째
   ed.addEventListener("copy",e=>cp(e,false)); ed.addEventListener("cut",e=>cp(e,true));
   ed.addEventListener("dragstart",e=>e.preventDefault()); ed.addEventListener("drop",e=>e.preventDefault());
   ed.addEventListener("click",e=>{ const f=e.target.closest?.("sup.wfn"); if(!f||ed.id!=="wbody") return; const n=[...ed.querySelectorAll("sup.wfn")].indexOf(f); if(n>=0) setTimeout(()=>fnBox(0,n,""),0); });   // 각주 번호를 누르면 고치기 (이 클릭이 끝난 뒤에 열어야 「바깥 클릭」으로 닫히지 않음)
@@ -3961,13 +3980,38 @@ document.addEventListener("selectionchange",()=>{ const ed=document.activeElemen
   const atS=!pre.toString().replace(ED_ZW,"").length, atE=!post.toString().replace(ED_ZW,"").length; if(!atS&&!atE) return;
   const z=document.createTextNode(ED_Z); if(atE) el.after(z); else el.before(z); const c=document.createRange(); c.setStart(z,atE?1:0); c.collapse(true); sel.removeAllRanges(); sel.addRange(c); ed._sk=null; });
 customElements.define("w-ed",WEd);
+// ───────── 틀 제목은 인쇄된 책처럼(2026-11-23 팀장님 「지우기로 지워지기보다 인쇄된 책이라 생각되도록」) ─────────
+// 쓰기 칸(#wbody)의 틀 ■ 제목 줄(틀 줄과 똑같은 줄)은 손으로 지우거나 고치거나 그 줄에 이어 쓸 수 없음 — 「틀 빼기」·「틀 없이」(프로그램 고침)로만 뺌.
+// 제목 줄 앞뒤 줄바꿈도 지키고(제목이 다른 줄과 붙지 않게), 커서가 제목 안·끝에 오면 아랫줄로 옮김(한글 입력은 막을 수 없어서). 글 전체를 골라 지우는 것은 그대로 됨.
+function tplHeadRanges(v){ const tl=tplLineSet(), R=[]; let q=0; for(const l of String(v).split("\n")){ const x=l.trim(); if(x.startsWith("■")&&tl.has(x)) R.push([q,q+l.length]); q+=l.length+1; } return R; }
+const tplGuard=b=>b?.id==="wbody"&&!READVIEW;
+function tplHitRange(b,s,e){ const v=b.value; if(s<=0&&e>=v.length) return false; return tplHeadRanges(v).some(([a,z])=>s<z+1&&e>a-1&&s<e); }
+function tplBlocked(){ toast("틀 제목은 인쇄된 글처럼 고정되어 있어요 — 빼려면 「틀 빼기」나 「틀 없이」를 누르세요"); }
+document.addEventListener("beforeinput",e=>{ const b=e.target; if(b?.tagName!=="W-ED"||!tplGuard(b)||e.isComposing) return; const it=e.inputType;
+  if(it==="historyUndo"||it==="historyRedo"||/^format/.test(it)) return;
+  const v=b.value, s=b.selectionStart, en=b.selectionEnd, R=tplHeadRanges(v); if(!R.length) return;
+  let a=s, z=en; if(s===en){ if(/^delete.*Backward$/.test(it)) a=Math.max(0,s-1); else if(/^delete.*Forward$/.test(it)) z=Math.min(v.length,s+1); }
+  if(a<z){ if(tplHitRange(b,a,z)){ e.preventDefault(); e.stopImmediatePropagation(); tplBlocked(); } return; }
+  if(!/^insert/.test(it)||it==="insertLineBreak"||it==="insertParagraph") return;
+  const h=R.find(([x,y])=>s>=x&&s<=y); if(!h) return;
+  e.preventDefault(); e.stopImmediatePropagation(); const txt=e.data||e.dataTransfer?.getData("text/plain")||""; if(!txt) return;
+  if(s===h[0]&&h[0]>0) edEdit(b,txt+"\n",s,s,"입력","insertText");   // 제목 줄 맨 앞 → 제목 위 새 줄에
+  else { const nx=h[1]+1, empty=v[h[1]]==="\n"&&(v[nx]==="\n"||nx>=v.length); if(empty) edEdit(b,txt,nx,nx,"입력","insertText"); else edEdit(b,"\n"+txt,h[1],h[1],"입력","insertText"); }   // 제목 끝·안 → 아랫줄에
+},true);
+document.addEventListener("selectionchange",()=>{ const b=document.activeElement; if(b?.tagName!=="W-ED"||!tplGuard(b)||b._comp) return;
+  const s=b.selectionStart, e=b.selectionEnd; if(s!==e){ b._tp=e; return; }
+  const v=b.value, h=tplHeadRanges(v).find(([x,y])=>s>=x&&s<=y&&!(s===x&&s===y));
+  if(!h){ b._tp=s; return; }
+  const up=(b._tp??-1)>h[1]&&h[0]>0, to=up?h[0]-1:h[1]+1;
+  if(!up&&v[h[1]]!=="\n"){ edEdit(b,"\n",v.length,v.length,"입력","insertText"); }   // 맨 끝 제목이면 아랫줄을 하나 만들어
+  try{ b.setSelectionRange(to,to); }catch(_){} b._tp=to; });
 // 거울 층(맞춤법·AI 표시·소제목 굵게·네 자리)을 글 칸과 같은 모양으로: 글 칸의 글자 목록에 표시를 얹어 같은 HTML 로 그림
-function edMirrorHtml(t,errs,RG,OZ){ const v=t.value, L=v.split("\n"), lines=edLines(t._items), fc={f:0,e:0}, O=new Map(); let off=0;
+function edMirrorHtml(t,errs,RG,OZ){ const v=t.value, L=v.split("\n"), lines=edLines(t._items), fc={f:0,e:0}, O=new Map(), TL=tplGuard(t)?tplLineSet():null; let off=0;
   const h=lines.map((xs,i)=>{ const st=off, l=L[i]||""; off+=l.length+1; const head=HEAD_RE.test(l);
     const hit=RG.filter(r=>r.s<st+l.length+1&&r.e>st), E=hit.length?[]:(errs[i]||[]);
     const ov=(k,o)=>{ if(!O.has(k)) O.set(k,o); return O.get(k); };
     const ys=xs.map(x=>{ const r=hit.find(r=>x.s>=r.s&&x.s<r.e); if(r) return {...x,ov:ov(r,{c:r.c})}; const q=E.find(q=>x.s-st>=q.s&&x.s-st<q.e); if(q) return {...x,ov:ov(q,{c:"sp "+q.src,a:` data-l="${i}" data-s="${q.s}" data-e="${q.e}" title="${esc(q.to)}${q.why?" — "+esc(q.why):""}"`})}; return x; });
-    const hh=edLineHtml(ys,fc,true,head); return OZ.has(i)?`<i class="ownl">${hh}</i>`:hh; }).join("\n");
+    const hh=edLineHtml(ys,fc,true,head); return OZ.has(i)?`<i class="ownl">${hh}</i>`:TL&&head&&TL.has(l.trim())?`<i class="tplh">${hh}</i>`:hh; }).join("\n");
   return h+(v.endsWith("\n")?"<br>":""); }
 // ───────── AI 사용 표시 (원칙 9장 — 2026-10-30 팀장님 결정): 글마다 AI 가 넣은 곳을 기억, 그대로 남은 곳만 셈 · 켜면 옅게 보임 ─────────
 let AIU_ON=false;
@@ -4184,12 +4228,12 @@ function sermonSeed(ms){
   const many=ms.length>1, tag=m=>many?`(${m.date.slice(5).replace("-",".")}) `:"";
   const keep=t=>biStrip(stripWrap(t));   // 형광펜·밑줄만 벗기고 각주(출처)는 그대로 (2026-10-30)
   const pick=re=>ms.flatMap(m=>medSections(m).filter(x=>re.test(x.h)).map(x=>({m,t:keep(x.t)})));
-  const KNOWN=/^(본문|관찰|하나님은|해석|깨달음|적용|설교 씨앗|나눔 씨앗|기도|묵상 기도)/, other=ms.flatMap(m=>medSections(m).filter(x=>x.h&&!KNOWN.test(x.h)&&keep(x.t).trim()).map(x=>({m,t:`[${x.h.replace(/^■\s*/,"")}] `+keep(x.t)})));   // 틀에 없는 소제목도 빠뜨리지 않음
+  const KNOWN=/^(본문|말씀|관찰|하나님|해석|깨달음|적용|응답|설교 씨앗|나눔 씨앗|기도|묵상 기도)/, other=ms.flatMap(m=>medSections(m).filter(x=>x.h&&!KNOWN.test(x.h)&&keep(x.t).trim()).map(x=>({m,t:`[${x.h.replace(/^■\s*/,"")}] `+keep(x.t)})));   // 틀에 없는 소제목도 빠뜨리지 않음
   const hls=ms.flatMap(m=>[...mkMask(m.body||"").matchAll(MK_RE)].filter(x=>x[2]!=null).map(x=>({m,t:"「"+stripMk(mkUnmask(x[2])).trim()+"」"})));   // 형광펜 친 문장 → 붙잡은 구절 후보
   const list=arr=>arr.map(x=>x.t.split("\n").map(l=>l.trim()).filter(Boolean).map((l,i)=>"· "+(i?"":tag(x.m))+l).join("\n")).filter(Boolean).join("\n");
   const seedL=pick(/(설교|나눔) 씨앗/).map(x=>x.t.replace(/\s+/g," ").trim()).filter(Boolean);
   const notes=ms.flatMap(m=>String(m.body||"").split("\n").map(l=>l.trim()).filter(l=>MEMO_START.test(l)).map(l=>"· "+tag(m)+l.replace(/^※\s*/,"").replace(/\s*\(.*$/,"")+" — 바탕 묵상에 정리해 둔 요약"));
-  return `■ 중심 메시지 (한 문장)\n${seedL.join(" / ")}\n\n■ 본문의 흐름 — 앞뒤 문맥과 구조\n\n\n■ 본문에서 붙잡은 것\n${list([...hls,...pick(/^(본문|관찰|하나님은|해석|깨달음)/)])}\n\n${other.length?`■ 그 밖의 묵상\n${list(other)}\n\n`:""}■ 듣는 이 — 누구에게, 어떤 마음으로\n\n\n■ 뼈대 메모 — 대지 후보\n\n\n■ 예화·자료 후보\n\n\n■ 적용 후보 — 이번 주의 한 걸음\n${list(pick(/^적용/))}\n\n■ 결단·초청 (한 문장)\n\n\n■ 더 살펴볼 것 (원어·배경·주석)\n${notes.join("\n")}\n`;
+  return `■ 중심 메시지 (한 문장)\n${seedL.join(" / ")}\n\n■ 본문의 흐름 — 앞뒤 문맥과 구조\n\n\n■ 본문에서 붙잡은 것\n${list([...hls,...pick(/^(본문|말씀|관찰|하나님|해석|깨달음)/)])}\n\n${other.length?`■ 그 밖의 묵상\n${list(other)}\n\n`:""}■ 듣는 이 — 누구에게, 어떤 마음으로\n\n\n■ 뼈대 메모 — 대지 후보\n\n\n■ 예화·자료 후보\n\n\n■ 적용 후보 — 이번 주의 한 걸음\n${list(pick(/^(적용|응답)/))}\n\n■ 결단·초청 (한 문장)\n\n\n■ 더 살펴볼 것 (원어·배경·주석)\n${notes.join("\n")}\n`;
 }
 // 쓰기 화면 옆 칸: 바탕이 된 묵상 — 소제목마다 「넣기」로 필요한 부분만 가져옵니다
 function srcCard(w,fws){ const srcs=w?srcOf(w):(fws||[]); if(!srcs.length) return "";
@@ -4279,7 +4323,7 @@ function wGuide(w){ const m=wMsNow(w), d=m?pieceDef(w,$("#wtitle")?.value):null;
 function wTplNow(){ const w=editId&&S.writings.find(x=>x.id===editId), m=wMsNow(w); const d=m?pieceDef(w,$("#wtitle")?.value):null; if(d?.tpl) return {tpl:d.tpl,name:d.n}; if(m) return {tpl:gTpl(G(m)),name:G(m).n};
   const t=$("#wtype")?.value||w?.type||NEW_TYPE||(track==="bible"?"묵상":"자유 글"); return {tpl:typeTpl(track,t),name:t}; }   // 쓰기 화면을 처음 그릴 때는 글 종류 상자가 아직 없음 → 글·새 글 종류로
 function insertTemplate(){ const b=$("#wbody"); if(!b) return; const {tpl,name}=wTplNow(); if(!tpl) return toast(`${name}에는 틀이 없습니다. 마음 가는 대로 쓰세요`);
-  if(!b.value.trim()){ tInsert(b,tpl,0,b.value.length); b.selectionStart=b.selectionEnd=tpl.indexOf("\n")>0?tpl.indexOf("\n"):tpl.length; return; }
+  if(!b.value.trim()){ tInsert(b,tpl,0,b.value.length); b.selectionStart=b.selectionEnd=tpl.indexOf("\n")>0?tpl.indexOf("\n")+1:tpl.length; return; }
   const {e}=caretAt(b), pre=b.value.slice(0,e); tInsert(b,(pre&&!pre.endsWith("\n")?"\n":"")+tpl,e,e); toast("커서 자리에 틀을 넣었습니다 ("+undoHint()+")"); }   // 쓰던 글이면 맨 앞이 아니라 커서 자리에
 // 틀 빼기 (2026-11-05 팀장님: 깨끗한 문서에 쓰고 싶은 분도 있으니): 틀 줄과 똑같은 줄만 뺌 — 쓴 글·고쳐 쓴 소제목·「중심 메시지: 내 글」처럼 내용이 붙은 줄은 그대로. 빈 줄은 정리
 function tplLineSet(){ return new Set([...String(wTplNow().tpl||"").split("\n"),...GENRE_TPL_LINES].map(l=>l.trim()).filter(Boolean)); }
@@ -4287,6 +4331,12 @@ function tplIn(body){ const tl=tplLineSet(); return String(body||"").split("\n")
 function tplPaint(){ const b=$("#wbody"); if(!b) return; const on=tplIn(b.value); document.querySelectorAll(".tplbtn").forEach(x=>{ const t=on?"틀 빼기":"틀 넣기"; if(x.textContent!==t) x.textContent=t; }); }
 function tplRemove(){ const b=$("#wbody"); if(!b) return; const tl=tplLineSet(), out=b.value.split("\n").filter(l=>!tl.has(l.trim())).join("\n").replace(/\n{3,}/g,"\n\n").replace(/^\s*\n/,"").replace(/\s+$/,""), kept=!!out.trim();
   tInsert(b,kept?out+"\n":"",0,b.value.length); if(!kept){ b.selectionStart=b.selectionEnd=0; } tplPaint(); toast(`틀을 뺐습니다${kept?" — 쓴 글은 그대로입니다":""} (${undoHint()})`); }
+function qtModeHtml(){ const m=qtMode(); return `<span class="qtmode" role="group" aria-label="묵상 틀 길이">${[["short","짧게","바쁜 날 네 칸 — 말씀·하나님·응답·기도"],["slow","천천히","쉬는 날 일곱 칸 — 본문·관찰·하나님·깨달음·적용·기도·나눔 씨앗"],["none","틀 없이","새 묵상을 빈 종이로 시작합니다 — 필요하면 「틀 넣기」로 언제든"]].map(([k,n,tip])=>`<button type="button" class="${m===k?"on":""}" aria-pressed="${m===k}" title="${tip}" onclick="qtModeSet('${k}')">${n}</button>`).join("")}</span>${tipHtml("짧게: 바쁜 날 네 칸(말씀 → 하나님 → 응답 → 기도). 한 칸만 써도 오늘 묵상입니다. 응답은 내 힘으로 해낼 숙제가 아니라, 받은 은혜에 드리는 작은 응답이에요. 천천히: 여유 있는 날 일곱 칸. 틀 없이: 빈 종이에 마음대로. 새 묵상을 열면 고른 틀이 처음부터 들어가 있고, 이 기기에 기억합니다.")}`; }
+function qtModeSet(k){ if(qtMode()===k) return; const b=$("#wbody"), only=b&&b.value.trim()&&onlyTpl(b.value); try{ localStorage.setItem("seojae-open.qtTpl",k); }catch(_){}
+  if(only){ const nt=k==="none"?"":typeTpl("bible","묵상"); tInsert(b,nt,0,b.value.length); b.selectionStart=b.selectionEnd=nt.indexOf("\n")>0?nt.indexOf("\n"):0; }
+  else if(k!=="none"&&b&&!b.value.trim()){ const nt=typeTpl("bible","묵상"); tInsert(b,nt,0,0); b.selectionStart=b.selectionEnd=nt.indexOf("\n"); }
+  document.querySelectorAll(".qtmode button").forEach(x=>{ const on=x.textContent===({slow:"천천히",none:"틀 없이"}[k]||"짧게"); x.classList.toggle("on",on); x.setAttribute("aria-pressed",on); }); tplPaint();
+  toast(k==="none"?"틀 없이 — 새 묵상이 빈 종이로 시작합니다":(k==="slow"?"천천히 묵상 — 일곱 칸 틀":"짧게 묵상 — 네 칸 틀 (말씀·하나님·응답·기도)")+(only||k==="none"||!b?.value.trim()?"":" · 지금 쓰던 글은 그대로, 다음 새 묵상부터")); }
 function tplToggle(){ const b=$("#wbody"); if(!b) return; if(tplIn(b.value)) tplRemove(); else { insertTemplate(); tplPaint(); } }
 function insertNote(id){ const n=S.notes.find(x=>x.id===id), b=$("#wbody"); const txt=`「${n.text}」 (${noteSrc(n)})\n`; tInsert(b,txt); }
 // 간직하기: 봉인(또는 ⌘S)을 누르면 바로, 아니어도 글을 25초 쉬면 저절로 간직됩니다(자동 간직 — 화면은 건드리지 않고 조용히).
@@ -5086,7 +5136,7 @@ sup.fnref{font-size:.6em} ol.fn{font-size:.7em;line-height:1.5;clear:both}
 `; }
 // 강단용 본문: 노션 설교문 짜임 그대로 — 🎬 슬라이드 줄(+그림, 오른쪽), 🎙️ 전달 큐(노란 상자, 읽지 않음), > 성경 낭독(파랑 굵게), 🙏 기도, 📖 머리 상자, 【설교자의 자리】(주황)
 let TPL_HEADS=null;   // 앱 틀의 소제목 줄(「 — 안내말」을 지울 것) — 노션 설교문의 「도입 — 말의 무게」 같은 제목은 그대로
-function tplHeads(){ if(TPL_HEADS) return TPL_HEADS; TPL_HEADS=new Set(); [TYPES.bible,TYPES.book,typeof LEGACY_TYPES==="object"?LEGACY_TYPES:{}].forEach(T=>Object.values(T||{}).forEach(v=>String(v||"").split("\n").forEach(x=>{ if(x.trim().startsWith("■")) TPL_HEADS.add(x.trim()); }))); Object.values(GENRES).forEach(g=>String((g.tpl||"")+"\n"+(g.oldTpl||"")).split("\n").forEach(x=>{ if(x.trim().startsWith("■")) TPL_HEADS.add(x.trim()); })); [...Object.values(PAPER_TPL),...Object.values(ROLE_TPL).flatMap(o=>Object.values(o))].forEach(x=>(x.tpl||"").split("\n").forEach(l=>{ if(l.trim().startsWith("■")) TPL_HEADS.add(l.trim()); })); return TPL_HEADS; }
+function tplHeads(){ if(TPL_HEADS) return TPL_HEADS; TPL_HEADS=new Set(); [TYPES.bible,TYPES.book,typeof LEGACY_TYPES==="object"?LEGACY_TYPES:{},{a:QT_SHORT,b:QT_SLOW,c:QT_PREV.join("\n")}].forEach(T=>Object.values(T||{}).forEach(v=>String(v||"").split("\n").forEach(x=>{ if(x.trim().startsWith("■")) TPL_HEADS.add(x.trim()); }))); Object.values(GENRES).forEach(g=>String((g.tpl||"")+"\n"+(g.oldTpl||"")).split("\n").forEach(x=>{ if(x.trim().startsWith("■")) TPL_HEADS.add(x.trim()); })); [...Object.values(PAPER_TPL),...Object.values(ROLE_TPL).flatMap(o=>Object.values(o))].forEach(x=>(x.tpl||"").split("\n").forEach(l=>{ if(l.trim().startsWith("■")) TPL_HEADS.add(l.trim()); })); return TPL_HEADS; }
 const pulpitTags=()=>{ try{ return localStorage.getItem("seojae-open.pulpitTags")==="1"; }catch(_){ return false; } };
 // 강단에서 읽을 원고: (확인함)·(추론)·(확인 못 함) 꼬리표와 ■ 부록 — 검증표 칸은 작성자용이라 기본으로 뺌
 function pulpitClean(body){ if(pulpitTags()) return body; let skip=false; return String(body||"").split("\n").filter(l=>{ if(/^\s*■/.test(l)) skip=/부록\s*—\s*검증표/.test(l); return !skip; }).map(l=>l.replace(/\s*[(（](확인함|추론|확인 못 함)[)）]/g,"")).join("\n"); }
@@ -5436,6 +5486,7 @@ function serBtns(){ const w=editId&&S.writings.find(x=>x.id===editId), m=w&&wMs(
   return `<button class="btn small nofocus" onclick="serCopy('${w.id}')" title="「N화 제목」과 본문을 플랫폼에 붙여 넣기 좋게 복사">⧉ ${epNo(m,w.id)}화 복사</button><button class="btn small nofocus ${pub?"ink":""}" onclick="serPub('${w.id}')" title="플랫폼에 올렸으면 표시 — 비축분 셈에서 빠집니다">${pub?"✓ 올림 "+esc(pub.slice(5)):"올림 표시"}</button>${pub?"":`<button class="btn small nofocus ${wMeta(w,"rsv")?"ink":""}" onclick="serRsv('${w.id}')" title="플랫폼에 예약 발행을 걸어 두었으면 그 날짜 — 다음 비는 연재일·비축 셈에 반영">${wMeta(w,"rsv")?"⏱ 예약 "+esc(wMeta(w,"rsv").slice(5)):"예약"}</button>`}`; }
 const gTpl=g=>g.tplFrom?(TYPES.bible[g.tplFrom]??TYPES.book[g.tplFrom]??""):(g.tpl||"");
 const GENRE_TPL_LINES=new Set(Object.values(GENRES).map(g=>gTpl(g)+"\n"+(g===GENRES.paper?Object.values(PAPER_TPL).map(x=>x.tpl).join("\n"):"")+"\n"+Object.values(ROLE_TPL).flatMap(o=>Object.values(o).map(x=>x.tpl)).join("\n")+"\n"+(g.oldTpl||"")+"\n"+(g.tplFrom==="설교초안"||g===GENRES.sermon?TYPES.bible["설교초안"]||"":"")).join("\n").split("\n").map(l=>l.trim()).filter(Boolean));   // 틀만 있는 글은 자동 간직·미리보기에서 빼려고
+[QT_SHORT,QT_SLOW,...QT_PREV].join("\n").split("\n").map(l=>l.trim()).filter(Boolean).forEach(l=>GENRE_TPL_LINES.add(l));   // 짧게·천천히·예전 묵상 틀 줄
 function msAmount(m){ const u=G(m).unit; return u==="편"?msList(m).length:u==="자"?msChars(m):msPages(m); }
 const unitFmt=(n,u)=>u==="자"?n.toLocaleString()+"자":n+u;
 function setMsGenre(mid,g){ const m=S.manuscripts.find(x=>x.id===mid); if(!m||!GENRES[g]) return; const prev=GENRES[m.genre]?m.genre:"free"; if(prev===g) return; m.genre=g; save(); roomBase(); render();
@@ -7060,7 +7111,7 @@ const ownF=w=>{ const k=cardKindOf(w); return k?.sermon?OWN_F:k?.kind==="essay"?
 // 묵상·설교초안에 이미 사람이 쓴 것 → 카드 칸 칩 (누르면 들어감, 원칙 1-3)
 function secLines(body,re,n){ const L=stripMemo(body||"").split("\n"); let on=false; const out=[]; for(const l of L){ if(/^\s*■/.test(l)){ on=re.test(l); continue; } if(on&&l.trim()&&!/^\s*〔/.test(l)) out.push(l.trim().replace(/^[-·•\d.)\s]+/,"")); if(out.length>=n) break; } return out.filter(Boolean); }
 function seedChips(w,k){ if(!cardKindOf(w)?.sermon) return ""; const B=[w.body||"",...srcOf(w).map(x=>x.body||"")], v=k==="c1"?wMeta(w,"c1"):wMeta(w,"c3");
-  const got=k==="c1"?[...new Set(B.flatMap(b=>secLines(b,/중심 메시지|떠오른 메시지/,1)))].slice(0,3):[...new Set(B.flatMap(b=>secLines(b,/붙잡은|관찰|하나님은|받은 것/,3)))].slice(0,3);
+  const got=k==="c1"?[...new Set(B.flatMap(b=>secLines(b,/중심 메시지|떠오른 메시지/,1)))].slice(0,3):[...new Set(B.flatMap(b=>secLines(b,/붙잡은|관찰|하나님|받은 것|^■?\s*말씀/,3)))].slice(0,3);
   if(!got.length) return ""; const val=k==="c1"?got:[got.join("\n")]; if(val.every(x=>x===v)) return "";
   return `<div class="cchips"><small class="muted" style="align-self:center">묵상·초안에서:</small>${val.map(x=>`<button type="button" class="cchip" onclick="cardPick('${k}',${jsArg(x).replace(/"/g,"&quot;")})" title="눌러야 들어갑니다">${esc(x.replace(/\n/g," / ").slice(0,80))}</button>`).join("")}</div>`; }
 let CARD_OPEN=new Set(), CARD_AI=null, CARD_ASKED=new Set();   // CARD_AI: 받은 후보 {id, ones, stories, func, target, path, budget, ask}
