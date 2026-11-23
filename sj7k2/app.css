@@ -3047,3 +3047,21 @@ html.use-nowriter #wcount{display:none!important}
 .useopt.on{border-color:color-mix(in srgb,var(--sepia) 55%,transparent);background:var(--accent-soft)}
 .useopt.on .uc{background:var(--sepia);border-color:var(--sepia)}
 .useopt:active{transform:scale(.99)}
+/* 화면 넘김을 빠르게(2026-11-23 팀장님 「페이드인 전환이 너무 느림」): 지난 화면 0.34초 사라진 뒤 0.5초 떠오르던 것(약 0.84초) → 겹쳐서 0.15초·0.2초 */
+.pgghost{transition:opacity .15s ease-out}
+#main.pgin{animation:pgin .2s cubic-bezier(.2,.7,.3,1) both}
+#main.pgin.pgwait{animation-delay:.04s}
+@keyframes pgin{from{opacity:0;transform:translateY(3px)}to{opacity:1;transform:none}}
+/* 「⋯ 더 보기」를 펼친 뒤 「▴ 접기」가 또렷하게(2026-11-23 팀장님 「접기가 눈에 띄지 않아 혼란」): 세피아로 채운 단추 */
+.tmore[aria-expanded="true"],.toolbar.qtmin .tmore[aria-expanded="true"]{background:var(--sepia)!important;color:var(--paper)!important;border-color:var(--sepia)!important;font-weight:700;box-shadow:0 3px 10px -5px color-mix(in srgb,var(--sepia) 80%,transparent)}
+.toolbar.open .tools2>*,.toolbar.qtmin.open .tools2>*{animation:fadein .18s both}
+/* 접은 폴드 화면·좁은 휴대폰(2026-11-23 팀장님 갤럭시 Z 폴드7 접은 화면): 후원 창 단추 — 토스·카카오페이 두 칸, 계좌번호 복사는 아래 한 줄 · 글자는 늘 한 줄 */
+#donateview .dnacts{grid-template-columns:repeat(2,minmax(0,1fr))}
+#donateview .dnacts>.dnbtn:nth-child(3):last-child{grid-column:1/-1}
+#donateview .dnbtn{white-space:nowrap;padding-left:8px;padding-right:8px;gap:6px;min-width:0}
+#donateview .dnamt{display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}
+#donateview .dnamt button{justify-content:center;white-space:nowrap;padding:6px 4px}
+@media (max-width:340px){ #donateview .dnacts{grid-template-columns:minmax(0,1fr)} #donateview .dnamt{grid-template-columns:repeat(2,minmax(0,1fr))} }
+/* 접은 폴드 화면(2026-11-23 전체 점검): 설정 「묵상지」 카드 글이 카드 밖으로 넘치지 않게 */
+.plancards{grid-template-columns:repeat(auto-fill,minmax(min(300px,100%),1fr))} .plancards.two{grid-template-columns:repeat(auto-fit,minmax(min(260px,100%),1fr))}
+.plancard{min-width:0} .plancard>*{min-width:0;flex-wrap:wrap;white-space:normal}

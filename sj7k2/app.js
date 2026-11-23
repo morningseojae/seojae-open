@@ -1292,6 +1292,11 @@ const MANUALS=[["quick","간단 매뉴얼","읽자마자 바로 써 보는 한 �
 // ───────── 새 소식 (공개판, 2026-10-31 팀장님): 중요한 고침은 앱을 열 때 한 번만 쉬운 말로 알림 ─────────
 // 새 소식을 더할 때: NEWS 맨 앞에 넣고 id 는 날짜(같은 날 둘째는 2026-11-02b 처럼 — 글자 순서로 새것이 뒤). 본 소식 id 는 이 기기에만(seojae-open.newsSeen)
 const NEWS=[
+ {id:"2026-11-23o",date:"2026년 11월 23일",title:"더 가볍고 또렷하게",items:[
+  ["🔄","휴대폰과 컴퓨터가 함께","「나의 쓰임」을 한 기기에서 고르면 다른 기기에도 똑같이 따라가요. 휴대폰에서 고르셨다면 컴퓨터에서 다시 고르지 않으셔도 돼요.",""],
+  ["⚡","메뉴를 누르면 바로","화면이 넘어갈 때 천천히 사라졌다 떠오르던 것을 짧고 가볍게 바꿨어요.",""],
+  ["▴","「접기」가 또렷하게","묵상을 쓸 때 「⋯ 더 보기」로 펼치면 그 자리에 세피아 빛 「▴ 접기」 단추가 보여요. 누르면 다시 접혀요.",""],
+  ["📱","접은 폴드 화면에서도","갤럭시 Z 폴드 접은 화면처럼 폭이 좁은 휴대폰에서 후원 창·설정의 묵상지 카드의 글자가 넘치던 곳을 고쳤어요.",""]]},
  {id:"2026-11-23n",date:"2026년 11월 23일",title:"휴대폰을 더 단정하게",items:[
   ["🧭","나에게 맞는 화면","처음 오시면 아침 서재를 어떻게 쓰실지(말씀 묵상·글쓰기·설교) 여쭤요. 고르신 쓰임에 맞춰 관계없는 단추는 숨겨 드려요.","설정 → 「나의 쓰임」에서 언제든 바꿀 수 있어요."],
   ["🗂️","아래 메뉴는 다섯 칸","휴대폰 아래 메뉴를 오늘·묵상·책장·일기·글방 다섯 칸으로 줄였어요. 「서랍」은 위쪽 머리 줄의 서랍 그림이에요.",""],
@@ -2472,15 +2477,18 @@ function qkSave(){ const i=$("#qkin"); const t=(i?.value||"").trim(); if(!t){ to
 function qkGo(k){ qkClose(); if(k==="qt") go('write',{track:'bible'}); else if(k==="diary") go('diary'); else if(k==="jots") stOpen('jots'); else if(k==="ai") rsToggle(); }
 addEventListener("keydown",e=>{ if(e.key==="Escape"&&$("#qksheet")&&!e.defaultPrevented){ qkClose(); } });
 // ───────── 나의 쓰임(2026-11-23 팀장님 「제안도 진행」 — 젊은 사용자 점검의 별도 제안): 처음 오신 분께 쓰임(묵상·글쓰기·설교)을 여쭙고, 관계없는 단추를 숨김
-//   이 기기에만(localStorage seojae-open.use — 기록 파일에 새 칸을 만들지 않음). 고른 적 없으면(기존 사용자) 아무것도 숨기지 않음. 설정 → 아침 「나의 쓰임」에서 바꿈
+//   기록 파일 설정 S.settings.use(쉼표로 이은 글자, ""=「나중에」·고른 것 없음, 없음=아직 안 여쭘) — 기기끼리 맞춤(2026-11-23 팀장님 허락, 설정은 칸마다 나중에 바꾼 쪽).
+//   1.2 때 이 기기에만 두던 localStorage seojae-open.use 는 기록을 받은 뒤 한 번 설정으로 옮기고 지움(useMigrate). 고른 적 없으면(기존 사용자) 아무것도 숨기지 않음. 설정 → 「나의 쓰임」에서 바꿈
 //   설교·목회를 고르지 않으면: 「설교초안 만들기」 숨김 · 글쓰기를 고르지 않으면: 글자 수·원고지 매수 줄 숨김 · 호칭 기본값도 쓰임 따라(설교 → 목사님, 그 밖 → 작가님)
 const USE_OPTS=[["qt","🌿","말씀 묵상·QT","매일성경·생명의 삶 본문으로 묵상을 써요"],["writer","✍️","글쓰기·책 원고","에세이·소설·자기계발서 원고를 써요"],["pastor","✝️","설교·목회","묵상을 설교초안으로, 강단 PDF까지"]];
-const useGet=()=>{ try{ const v=localStorage.getItem("seojae-open.use"); return v==null?null:v.split(",").filter(Boolean); }catch(_){ return null; } };
+const useLocal=()=>{ try{ return localStorage.getItem("seojae-open.use"); }catch(_){ return null; } };
+const useGet=()=>{ const v=S?.settings?.use; if(typeof v==="string") return v.split(",").filter(Boolean); const l=useLocal(); return l==null?null:l.split(",").filter(Boolean); };
+function useMigrate(){ const l=useLocal(); if(l==null||!READY||!S?.settings) return; if(typeof S.settings.use!=="string"){ S.settings.use=l; save(); } try{ localStorage.removeItem("seojae-open.use"); }catch(_){} }   // 받기 전에는 저장하지 않음(READY)
 const useHas=k=>{ const u=useGet(); return !u||!u.length||u.includes(k); };
-function useApply(){ const u=useGet(), on=!!(u&&u.length), c=document.documentElement.classList; c.toggle("use-nopastor",on&&!u.includes("pastor")); c.toggle("use-nowriter",on&&!u.includes("writer")); }
-function useSet(list){ try{ localStorage.setItem("seojae-open.use",list.join(",")); }catch(_){} useApply(); }
+function useApply(){ if(READY&&useLocal()!=null) setTimeout(useMigrate,0); const u=useGet(), on=!!(u&&u.length), c=document.documentElement.classList; c.toggle("use-nopastor",on&&!u.includes("pastor")); c.toggle("use-nowriter",on&&!u.includes("writer")); }
+function useSet(list){ const v=[...new Set(list)].filter(k=>USE_OPTS.some(o=>o[0]===k)).join(","); if(S?.settings&&S.settings.use!==v){ S.settings.use=v; save(); } try{ localStorage.removeItem("seojae-open.use"); }catch(_){} useApply(); }
 function useSum(){ const u=useGet(); if(!u||!u.length) return "모두 보기"; return USE_OPTS.filter(o=>u.includes(o[0])).map(o=>o[2]).join(" · "); }
-function useBody(){ const u=useGet()||[]; return `<p class="hint" style="margin:0 0 8px">고르신 쓰임에 맞춰 관계없는 단추를 숨겨요. 아무것도 고르지 않으면 모두 보여요(이 기기만).</p><div class="usegrid">${USE_OPTS.map(([k,ic,t,d])=>`<button type="button" class="useopt ${u.includes(k)?"on":""}" aria-pressed="${u.includes(k)}" onclick="useToggle('${k}')"><span class="ui">${ic}</span><span class="ut"><b>${t}</b><small>${d}</small></span><span class="uc" aria-hidden="true">${u.includes(k)?"✓":""}</span></button>`).join("")}</div>`; }
+function useBody(){ const u=useGet()||[]; return `<p class="hint" style="margin:0 0 8px">고르신 쓰임에 맞춰 관계없는 단추를 숨겨요. 아무것도 고르지 않으면 모두 보여요. 휴대폰과 컴퓨터가 함께 따라요.</p><div class="usegrid">${USE_OPTS.map(([k,ic,t,d])=>`<button type="button" class="useopt ${u.includes(k)?"on":""}" aria-pressed="${u.includes(k)}" onclick="useToggle('${k}')"><span class="ui">${ic}</span><span class="ut"><b>${t}</b><small>${d}</small></span><span class="uc" aria-hidden="true">${u.includes(k)?"✓":""}</span></button>`).join("")}</div>`; }
 function useToggle(k){ const u=useGet()||[]; const n=u.includes(k)?u.filter(x=>x!==k):[...u,k]; useSet(n); toast(n.length?`「${useSum()}」에 맞춰 보여 드려요`:"모든 단추를 보여 드려요"); if(tab==="settings") render(); }
 function useOpen(then){ $("#useview")?.remove(); const pick=new Set(useGet()||[]); const ov=document.createElement("div"); ov.id="useview"; ov.className="newsview useview";
   const paint=()=>{ ov.querySelectorAll(".useopt").forEach(b=>{ const on=pick.has(b.dataset.k); b.classList.toggle("on",on); b.setAttribute("aria-pressed",on); b.querySelector(".uc").textContent=on?"✓":""; }); };
@@ -2488,7 +2496,7 @@ function useOpen(then){ $("#useview")?.remove(); const pick=new Set(useGet()||[]
     <div class="usegrid">${USE_OPTS.map(([k,ic,t,d])=>`<button type="button" class="useopt" data-k="${k}" aria-pressed="false"><span class="ui">${ic}</span><span class="ut"><b>${t}</b><small>${d}</small></span><span class="uc" aria-hidden="true"></span></button>`).join("")}</div>
     <div class="manacts"><button type="button" class="btn ghost" data-skip>나중에</button><button type="button" class="btn ink" data-go>시작하기</button></div></article>`;
   document.body.appendChild(ov);
-  const done=save=>{ if(save) useSet([...pick]); else try{ localStorage.setItem("seojae-open.use",""); }catch(_){} ov.remove(); if(save&&pick.size) toast(`「${useSum()}」에 맞춰 보여 드려요`); if(typeof then==="function") setTimeout(then,250); };
+  const done=ok=>{ useSet(ok?[...pick]:[]); ov.remove(); if(ok&&pick.size) toast(`「${useSum()}」에 맞춰 보여 드려요`); if(typeof then==="function") setTimeout(then,250); };
   ov.querySelectorAll(".useopt").forEach(b=>b.onclick=()=>{ pick.has(b.dataset.k)?pick.delete(b.dataset.k):pick.add(b.dataset.k); paint(); });
   ov.querySelector("[data-go]").onclick=()=>done(true); ov.querySelector("[data-skip]").onclick=()=>done(false);
   ov.addEventListener("keydown",e=>{ if(e.key==="Escape"){ e.preventDefault(); e.stopPropagation(); done(false); } }); ov.onclick=e=>{ if(e.target===ov) done(false); };
@@ -2543,9 +2551,9 @@ function fadeGhost(){ const m=$("#main"); if(!m||!m.firstElementChild||document.
   c.querySelectorAll("w-ed").forEach(e=>{ const d=document.createElement("div"); d.className=e.className; d.innerHTML=e.innerHTML; e.replaceWith(d); });
   c.querySelectorAll("iframe,video,audio,canvas,[contenteditable]").forEach(e=>e.tagName==="CANVAS"||e.tagName==="IFRAME"||e.tagName==="VIDEO"||e.tagName==="AUDIO"?e.remove():e.removeAttribute("contenteditable"));
   c.style.cssText=`position:absolute;left:${r.left}px;top:${r.top}px;width:${r.width}px;margin:0;box-sizing:border-box`; g.appendChild(c); return g; }
-function fadeRun(g){ const m=$("#main"); if(!m) return; m.classList.remove("pgin","pgwait"); void m.offsetWidth; m.classList.add("pgin"); if(g) m.classList.add("pgwait"); clearTimeout(fadeRun.t); fadeRun.t=setTimeout(()=>m.classList.remove("pgin","pgwait"),g?900:560);
+function fadeRun(g){ const m=$("#main"); if(!m) return; m.classList.remove("pgin","pgwait"); void m.offsetWidth; m.classList.add("pgin"); if(g) m.classList.add("pgwait"); clearTimeout(fadeRun.t); fadeRun.t=setTimeout(()=>m.classList.remove("pgin","pgwait"),g?320:260);   /* 화면 넘김을 빠르게(2026-11-23 팀장님 「너무 느림」) — 겹쳐 사라지고 떠오름 0.2초 남짓 */
   document.querySelectorAll(".pgghost").forEach(x=>x.remove());
-  if(g){ document.body.appendChild(g); void g.offsetWidth; g.classList.add("out"); setTimeout(()=>g.remove(),380); } }
+  if(g){ document.body.appendChild(g); void g.offsetWidth; g.classList.add("out"); setTimeout(()=>g.remove(),180); } }
 function render(){
   if(PLAN_J){ PLAN_RENDER=true; return; }
   const fk=fadeKey(), fade=FADE_K!=null&&fk!==FADE_K&&!NEED_CONNECT&&!matchMedia("(prefers-reduced-motion:reduce)").matches; FADE_K=fk;
@@ -2556,7 +2564,7 @@ function render0(){
   // 같은 쓰기 화면을 다시 그릴 때(말씀/책 바꾸기, 합친 뒤 등) 쓰던 제목·본문을 그대로 지켜 줍니다
   const keep=!NAV&&tab==="write"&&$("#wbody")?{e:editId,t:$("#wtitle").value,b:$("#wbody").value,p:$("#wpassage")?.value}:null;
   const gb=$("#gearbtn"); if(gb){ if(!gb.firstChild) gb.innerHTML=gearSvg(); gb.classList.toggle("on",tab==="settings"); }
-  $("#nav").innerHTML=TABS.map(([k,n])=>`<button class="${k==="write"?"navroom ":k==="today"?"navhome ":k==="drawer"?"navdrawer ":""}${(k==="qt"?tab==="write"&&track==="bible":k==="write"?tab==="room"||(tab==="write"&&track!=="bible"):k===tab)?"on":""}" onclick="${k==="qt"?"go('write',{track:'bible'})":k==="write"?"go('room')":`go('${k}')`}">${k==="write"?`${ICO.pen}<span>${n}</span>`:NAV_ICO[k]?`<svg class="nvi" viewBox="0 0 24 24" aria-hidden="true">${NAV_ICO[k]}</svg><span class="nvt">${n}</span>`:n}</button>`).join("")+`<button class="navai ${AI_MODE==="research"&&$("#aipanel")?"on":""}" onclick="rsToggle()" title="AI 조사 도우미 — 오른쪽 창에서 대화하며 자료를 찾습니다">✦<span>AI</span></button>`; qkFab(); $("#hdrdrawer")?.classList.toggle("on",tab==="drawer");
+  $("#nav").innerHTML=TABS.map(([k,n])=>`<button class="${k==="write"?"navroom ":k==="today"?"navhome ":k==="drawer"?"navdrawer ":""}${(k==="qt"?tab==="write"&&track==="bible":k==="write"?tab==="room"||(tab==="write"&&track!=="bible"):k===tab)?"on":""}" onclick="${k==="qt"?"go('write',{track:'bible'})":k==="write"?"go('room')":`go('${k}')`}">${k==="write"?`${ICO.pen}<span>${n}</span>`:NAV_ICO[k]?`<svg class="nvi" viewBox="0 0 24 24" aria-hidden="true">${NAV_ICO[k]}</svg><span class="nvt">${n}</span>`:n}</button>`).join("")+`<button class="navai ${AI_MODE==="research"&&$("#aipanel")?"on":""}" onclick="rsToggle()" title="AI 조사 도우미 — 오른쪽 창에서 대화하며 자료를 찾습니다">✦<span>AI</span></button>`; qkFab(); useApply(); $("#hdrdrawer")?.classList.toggle("on",tab==="drawer");
   paintStreak();
   if(NEED_CONNECT||AUTH_FAIL){ $("#main").innerHTML=connectView(); return; }
   $("#main").innerHTML=(DRV_NEED?`<div class="notice">구글 드라이브와 잠시 떨어져 이 기기의 사본을 보여 드립니다. 쓰는 글은 이 기기에 남아 있다가, 이으면 드라이브로 갑니다. <button class="btn small ink" onclick="drvStart(this)">구글 드라이브에 잇기</button></div>`:SERVER?"":GAS?`<div class="notice">구글 서버에 아직 닿지 못해 이 기기의 사본을 보여 드립니다. 인터넷을 확인한 뒤 <a href="#" onclick="fetchFresh(false);return false">다시 시도</a></div>`:location.protocol==="file:"?`<div class="notice">파일로 직접 연 상태라 저장이 되지 않습니다. 아침 서재 주소(인터넷)로 열어 주세요.</div>`:"")+locNudge()+VIEWS[tab]();
@@ -3498,7 +3506,7 @@ write0(){
       <button class="btn small" onclick="toggleStk();tgClose()">${ICO.flower}스티커</button>
     </div></details>
 
-    <button type="button" class="btn small tmore nofocus" onclick="const t=this.closest('.toolbar');t.classList.toggle('open');this.setAttribute('aria-expanded',t.classList.contains('open'));if(t.classList.contains('qtmin'))this.textContent=t.classList.contains('open')?'⋯ 접기':'⋯ 더 보기'" aria-expanded="false" title="${track==="bible"&&(dtype||"묵상")==="묵상"?"쓰기·다듬기·각주·문서 모드·집중·읽기 모드·옆 칸·버리기를 펴거나 접습니다 — 묵상에는 꼭 필요한 것만 늘 보입니다":"각주·문서 모드·집중·읽기 모드를 펴거나 접습니다"}">${track==="bible"&&(dtype||"묵상")==="묵상"?"⋯ 더 보기":"⋯ 도구"}</button><span class="tools2 qx">
+    <button type="button" class="btn small tmore nofocus" onclick="const t=this.closest('.toolbar');t.classList.toggle('open');this.setAttribute('aria-expanded',t.classList.contains('open'));if(t.classList.contains('qtmin'))this.textContent=t.classList.contains('open')?'▴ 접기':'⋯ 더 보기'" aria-expanded="false" title="${track==="bible"&&(dtype||"묵상")==="묵상"?"쓰기·다듬기·각주·문서 모드·집중·읽기 모드·옆 칸·버리기를 펴거나 접습니다 — 묵상에는 꼭 필요한 것만 늘 보입니다":"각주·문서 모드·집중·읽기 모드를 펴거나 접습니다"}">${track==="bible"&&(dtype||"묵상")==="묵상"?"⋯ 더 보기":"⋯ 도구"}</button><span class="tools2 qx">
     <button class="btn small nofocus fnbtn" onmousedown="event.preventDefault()" onclick="fnHere()" title="각주 달기 — 고른 글 뒤에, 고르지 않았으면 커서 자리에 (⌘⇧F)"><b style="font-family:Georgia,serif">¹</b> 각주</button>
     <button class="btn small nofocus ${DOC_MODE?"on":""}" onclick="docToggle()" id="docbtn" title="워드처럼: 흰 쪽에 글꼴·크기·줄 간격·정렬·들여쓰기 (글은 그대로)">${DOC_MODE?"✎ 노트로":"📄 문서 모드"}</button>
     <button class="btn small nofocus" onclick="toggleFocus()" title="종이만 남기고 모두 숨깁니다 (나가기: Esc 또는 오른쪽 위 ✕)">⛶ 집중</button>
