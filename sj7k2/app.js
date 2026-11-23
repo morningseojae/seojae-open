@@ -308,7 +308,7 @@ function studioPaint(){ const ov=$("#studioview"); if(!ov) return; const D=STU.d
       <section class="stus"><h4>많이 쓰는 기능 <small>(${STU.days}일 · 횟수 / 쓴 기기 날 수)</small></h4>${bars(feats.map(f=>({l:FN[f.k],v:f.n,s:` · ${f.u}`,mx:fmx})))}</section>
       <section class="stus"><h4>기기·저장</h4>${grp("m.",{phone:"휴대폰",tablet:"태블릿",pc:"PC"})}<hr class="dash">${grp("s.",{drive:"구글 드라이브",local:"이 기기만"})}<hr class="dash">${grp("app.",{app:"앱으로",web:"브라우저로"})}</section>
       <section class="stus"><h4>얼마나 써 왔나 <small>(연 날 기준)</small></h4>${grp("age.",{new:"처음",d1:"1주 안",w1:"1주~1달",m1:"1~3달",m3:"3달 넘게"})}</section>
-      <section class="stus"><h4>판 번호</h4>${bars(vrows.map(([l,v])=>({l:"베타 "+l,v,mx:vmx})))}</section>
+      <section class="stus"><h4>판 번호</h4>${bars(vrows.map(([l,v])=>({l:"판 "+l,v,mx:vmx})))}</section>
       <section class="stus"><h4>창구가 대신 한 일 <small>(${STU.days}일)</small></h4>${grp("gw.",{aiShared:"함께 쓰는 AI",searchBooks:"책 찾기",musicFind:"찬송가·CCM 찾기"})}<p class="hint" style="margin-top:8px">AI 켠 기기 날 수 ${sum("aiOn").toLocaleString()} · 함께 읽기 쓰는 기기 날 수 ${sum("alsoOn").toLocaleString()}</p></section>
       <section class="stus"><h4>창구 열쇠</h4>${[["gemini","함께 쓰는 AI(제미나이)"],["youtube","찬송가·CCM(유튜브)"],["kakao","책 찾기(카카오)"],["nl","목차·쪽수(국립중앙도서관)"],["gClient","구글 자동 잇기"]].map(([k,l])=>`<p class="stukey ${K[k]?"on":""}"><i></i>${l} <b>${K[k]?"켜짐":"꺼짐"}</b></p>`).join("")}</section>
     </div>
@@ -395,7 +395,7 @@ function connectView(){
   return `<section class="sheet tape" style="max-width:640px;margin:20px auto">
     <p class="label">아침 서재 시작하기</p>
     <p class="sub">말씀과 책을 읽고 쓰는 아침의 다이어리입니다.</p>
-    <div class="betanote"><b>베타판입니다.</b> 아직 시험 중인 프로그램이라 기능이 바뀌거나 오류가 날 수 있습니다. 중요한 글은 따로 사본을 남겨 두세요.<br>주변에 함께 묵상할 분이 계시면 이 주소와 초대 암호를 편하게 나눠 주세요.</div>
+    <div class="betanote">주변에 함께 묵상할 분이 계시면 이 주소와 초대 암호를 편하게 나눠 주세요.</div>
     <div class="startpick">
       <div class="startcard rec"><span class="startbadge">권해 드려요</span>
         <button class="btn ink startbtn" onclick="drvStart(this)">구글로 시작하기</button>
@@ -409,7 +409,7 @@ function connectView(){
         <button class="btn startbtn" onclick="locStart(this)">구글 없이 이 기기에서 시작하기</button>
         <p class="sub">구글 계정이 없거나 나중에 하고 싶을 때. 글은 <b>이 기기에만</b> 간직됩니다. 날마다 이 기기 안에 사본을 남기고, 가끔 「백업 파일 받기」로 카카오톡 「나와의 채팅」이나 메일에 사본을 보내 두면 안전합니다. 나중에 언제든 구글로 이어 글을 옮길 수 있습니다.</p></div>
     </div>
-    <p class="madeby">아침 서재 베타판 · 아빠 <b>임요한 목사</b>(좋은나무교회 담임목사)와 딸 <b>임하은 작가</b>가 함께 만들었습니다. 임요한 목사는 매일성경 묵상을 나누는 YouTube <a href="https://www.youtube.com/@%EA%B5%BF%ED%8A%B8%EB%A6%AC%EC%94%A8" target="_blank" rel="noopener" title="YouTube 굿트리씨[매일성경묵상] 채널을 새 창으로 엽니다">「굿트리씨」 채널 ↗</a>을 운영합니다.</p>
+    <p class="madeby">아침 서재 · 아빠 <b>임요한 목사</b>(좋은나무교회 담임목사)와 딸 <b>임하은 작가</b>가 함께 만들었습니다. 임요한 목사는 매일성경 묵상을 나누는 YouTube <a href="https://www.youtube.com/@%EA%B5%BF%ED%8A%B8%EB%A6%AC%EC%94%A8" target="_blank" rel="noopener" title="YouTube 굿트리씨[매일성경묵상] 채널을 새 창으로 엽니다">「굿트리씨」 채널 ↗</a>을 운영합니다.</p>
   </section>`;
 }
 const ROUTES={"/api/notion/sync":"notionSync","/api/notion/note":"notionNote","/api/notion/book":"notionBook","/api/notion/trash":"notionTrash","/api/reminder":"setReminder","/api/config":"setConfig"};
@@ -1291,6 +1291,10 @@ const MANUALS=[["quick","간단 매뉴얼","읽자마자 바로 써 보는 한 �
 // ───────── 새 소식 (공개판, 2026-10-31 팀장님): 중요한 고침은 앱을 열 때 한 번만 쉬운 말로 알림 ─────────
 // 새 소식을 더할 때: NEWS 맨 앞에 넣고 id 는 날짜(같은 날 둘째는 2026-11-02b 처럼 — 글자 순서로 새것이 뒤). 본 소식 id 는 이 기기에만(seojae-open.newsSeen)
 const NEWS=[
+ {id:"2026-11-23l",date:"2026년 11월 23일",title:"아침 서재 정식 1.0",items:[
+  ["🎉","정식 1.0이 되었어요","「베타」 표시를 걷고, 화면 맨 아래 판 번호가 1.0부터 새로 시작해요.","쓰신 글과 기록은 모두 그대로예요."],
+  ["🌿","묵상이 한결 깊어졌어요","매일성경·생명의 삶 두 묵상지, 날마다 새벽에 올라오는 「묵상 길잡이」, 짬을 내어 쓰는 묵상 틀이 함께해요.",""],
+  ["🙏","함께 만들어 주셔서 고맙습니다","베타 동안 써 보시고 의견을 보내 주신 덕분이에요. 앞으로도 아침마다 곁에 있을게요.",""]]},
  {id:"2026-11-23k",date:"2026년 11월 23일",title:"꼼꼼히 점검한 길잡이",items:[
   ["🔎","올리기 전에 두 번 점검해요","묵상 길잡이는 올리기 전에 성경학자의 눈으로 인용·사실·신학을, 국어학자의 눈으로 맞춤법과 문장을 한 번씩 더 살펴 고친 뒤 올려 드려요.",""],
   ["✍️","「이 본문으로 쓰기」가 더 안전하게","이미 쓴 묵상이 열려 있을 때 누르면 새 묵상으로 열려요. 앞에 쓴 글은 그대로 있어요.",""],
@@ -1574,7 +1578,7 @@ function fbOpen(){ $("#fbview")?.remove(); const ov=document.createElement("div"
     <div class="dnamt" role="radiogroup" aria-label="어떤 이야기인가요">${FB_KIND.map(([k,ic,n])=>`<button type="button" role="radio" aria-checked="${FB_PICK===k}" class="${FB_PICK===k?"on":""}" data-k="${k}"><span aria-hidden="true">${ic}</span>${n}</button>`).join("")}</div>
     <textarea id="fbtext" class="fbtext" rows="5" maxlength="2000" placeholder="예) 일기장에서 날씨를 두 개 고르는 게 좋았어요 / 휴대폰에서 글자가 조금 작아요">${esc(d.t||"")}</textarea>
     <input id="fbcontact" class="fbcontact" type="text" maxlength="80" autocomplete="off" placeholder="답 받을 메일·카톡 아이디 (선택)" value="${esc(d.c||"")}">
-    <p class="hint fbwhat">함께 가는 것: 적으신 글 · 판 번호(베타 ${esc(typeof APP_VER==="string"?APP_VER:"")}) · 휴대폰/컴퓨터 · 지금 화면. 다른 기록은 보내지 않아요.</p>
+    <p class="hint fbwhat">함께 가는 것: 적으신 글 · 판 번호(${esc(typeof APP_VER==="string"?APP_VER:"")}) · 휴대폰/컴퓨터 · 지금 화면. 다른 기록은 보내지 않아요.</p>
     <div class="dnacts fbacts"><button class="btn ink dnbtn" id="fbsend">보내기</button>${FEEDBACK.chat?`<a class="btn dnbtn" href="${esc(safeUrl(FEEDBACK.chat))}" target="_blank" rel="noopener">오픈채팅방에서 이야기 나누기</a>`:""}</div>
     <div class="newsacts"><button class="btn newsok" data-x>닫기</button></div></article>`;
   document.body.appendChild(ov);
@@ -1640,7 +1644,7 @@ function newsSection(){ return `<section class="sheet tape c compact"><p class="
 function manualSection(){ return `<section class="sheet tape c compact"><p class="label">사용 설명서</p>
   <p class="sub">처음이라면 간단 매뉴얼부터, 더 깊이 알고 싶을 때 상세 매뉴얼을 펴 보세요. 둘 다 새 창으로 열립니다.</p>
   <div class="mancards">${MANUALS.map(([k,n,d])=>`<div class="mancard"><b>${n}</b><span>${d}</span><div class="row" style="gap:6px;flex-wrap:wrap"><a class="btn small ink" href="manual/${k}.html" target="_blank" rel="noopener" title="${n}을 웹 페이지로 엽니다 (차례·검색·밝게/어둡게)">웹으로 보기 ↗</a><a class="btn small" href="manual/${k}.pdf" target="_blank" rel="noopener" download title="${n}을 PDF 책으로 받습니다 (인쇄용)">PDF 받기</a></div></div>`).join("")}</div>
-  <p class="hint">프로그램이 바뀌면 설명서도 함께 고쳐집니다. 단추 위에 마우스를 올리면 뜨는 도움말(설정 → 화면·기기 → 화면 꾸미기 → 도움말 모드)도 함께 쓰세요.</p><div class="betanote"><b>베타판입니다.</b> 아직 시험 중인 프로그램이라 기능이 바뀌거나 오류가 날 수 있습니다. 중요한 글은 따로 사본을 남겨 두세요.<br>주변에 함께 묵상할 분이 계시면 이 주소를 편하게 나눠 주세요.</div><p class="madeby">아침 서재 베타판 · 아빠 <b>임요한 목사</b>(좋은나무교회 담임목사)와 딸 <b>임하은 작가</b>가 함께 만들었습니다. 임요한 목사는 매일성경 묵상을 나누는 YouTube <a href="https://www.youtube.com/@%EA%B5%BF%ED%8A%B8%EB%A6%AC%EC%94%A8" target="_blank" rel="noopener" title="YouTube 굿트리씨[매일성경묵상] 채널을 새 창으로 엽니다">「굿트리씨」 채널 ↗</a>을 운영합니다.</p></section>`; }
+  <p class="hint">프로그램이 바뀌면 설명서도 함께 고쳐집니다. 단추 위에 마우스를 올리면 뜨는 도움말(설정 → 화면·기기 → 화면 꾸미기 → 도움말 모드)도 함께 쓰세요.</p><div class="betanote">주변에 함께 묵상할 분이 계시면 이 주소를 편하게 나눠 주세요.</div><p class="madeby">아침 서재 · 아빠 <b>임요한 목사</b>(좋은나무교회 담임목사)와 딸 <b>임하은 작가</b>가 함께 만들었습니다. 임요한 목사는 매일성경 묵상을 나누는 YouTube <a href="https://www.youtube.com/@%EA%B5%BF%ED%8A%B8%EB%A6%AC%EC%94%A8" target="_blank" rel="noopener" title="YouTube 굿트리씨[매일성경묵상] 채널을 새 창으로 엽니다">「굿트리씨」 채널 ↗</a>을 운영합니다.</p></section>`; }
 // ───────── 자동 백업: 구글 드라이브 「아침 서재/백업」(모든 기기, 서버가 날마다) + 이 PC 폴더(설정한 PC만, 휴대폰은 구글만) ─────────
 // PC 백업은 크롬·엣지의 「폴더 고르기」로 고른 폴더에 아침서재-백업-날짜.json 을 씁니다. 같은 날은 30분마다 그날 파일을 새로 고치고, 최근 30일 + 달마다 첫 파일을 남깁니다.
 // 고른 폴더(손잡이)는 이 기기 큰 저장소(IndexedDB lbDir)에만, 켜기·마지막 시각은 seojae.localBackup 에만 — 기록 파일(구글)에는 넣지 않음
