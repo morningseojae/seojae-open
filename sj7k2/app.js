@@ -1293,6 +1293,10 @@ const MANUALS=[["quick","간단 매뉴얼","읽자마자 바로 써 보는 한 �
 // 새 소식을 더할 때: NEWS 맨 앞에 넣고 id 는 날짜(같은 날 둘째는 2026-11-02b 처럼 — 글자 순서로 새것이 뒤). 본 소식 id 는 이 기기에만(seojae-open.newsSeen)
 // 새 소식 — 후원하기는 무엇을 바꿔도 여기에 넣지 않음(2026-11-24 팀장님 「팝업 알림으로 가지 않도록」)
 const NEWS=[
+ {id:"2026-11-24b",date:"2026년 11월 24일",title:"계절과 교회 절기를 따라",items:[
+  ["🕯️","오늘 화면에 절기가 보여요","날짜 아래 작은 꼬리표에 대림절·성탄절·사순절·부활절 같은 교회 절기가 떠요. 절기가 아닌 날엔 「늦가을」처럼 계절을 알려 드려요.",""],
+  ["⭐","인사와 한 줄도 그날에 맞게","성탄절·부활주일 같은 큰 날엔 인사가 바뀌고, 한 줄과 작은 그림도 그 절기에 어울리게 바뀌어요. 시간대(아침·저녁·밤)와는 여전히 어긋나지 않아요.",""],
+  ["🍂","교회마다 다른 주일은 부드럽게","추수감사주일처럼 교회마다 날짜가 다를 수 있는 주일은 「많은 교회가 지키는 날」로만 알려 드려요. 꼬리표에 손가락(마우스)을 대면 그날의 뜻이 보여요.",""]]},
  {id:"2026-11-24",date:"2026년 11월 24일",title:"때에 맞는 한 줄",items:[
   ["🌙","새벽·아침·한낮·저녁·밤에 맞게","오늘 화면 인사 아래 한 줄과 그림이 지금 시간에 맞게 바뀌어요. 밤에 아침 햇살 이야기가 나오던 것을 고쳤어요.",""],
   ["✍️","글방 인사도 같은 때로","글방 첫 화면 인사도 오늘 화면과 같은 다섯 때를 따라요.",""],
@@ -1809,7 +1813,7 @@ function llLinks(date){ return `<button class="btn small ghost" id="subtn" oncli
 // ───────── 이달의 표지 (2026-11-23 팀장님 「생명의 삶·매일성경처럼 매월 계절과 본문 분위기의 표지 — 월별 다짐이 새로워지게」, 북디자이너·UI 디자이너 검토) ─────────
 // 묵상 화면 본문 카드 위 띠 하나와 카드 왼쪽 선만 그 달 색(--mo, [data-mo]) — 전역 색·단추·본문·쓰기 종이는 그대로. 카드 날짜의 달을 따름(‹ ›로 지난달이면 지난달 호).
 // 계절과 한 마디는 직접 지은 말(묵상지 표지·문구를 따라 하지 않음), 무늬는 선 그림 SVG. 절기(사순절·고난 주간·부활·대림·성탄)에는 무늬만 바꿈. 그달 처음 열 때 한 번 크게, 접기는 이 기기에.
-const MO=[null,["한겨울","첫 마음을 세우는 달"],["늦겨울","언 땅 아래 기다리는 달"],["이른 봄","묻혀 다시 심기는 달"],["봄","다시 살아 일어서는 달"],["늦봄","가지로 붙어 있는 달"],["초여름","뿌리 내리는 달"],["한여름","쉬며 깊어지는 달"],["늦여름","무르익기를 기다리는 달"],["초가을","거둘 것을 헤아리는 달"],["가을","말씀으로 다시 고쳐지는 달"],["늦가을","거두며 감사하는 달"],["초겨울","기다림으로 빛을 맞는 달"]];
+const MO=[null,["한겨울","첫 마음을 세우는 달"],["늦겨울","언 땅 아래 기다리는 달"],["초봄","묻혀 다시 심기는 달"],["봄","다시 살아 일어서는 달"],["늦봄","가지로 붙어 있는 달"],["초여름","뿌리 내리는 달"],["한여름","쉬며 깊어지는 달"],["늦여름","무르익기를 기다리는 달"],["초가을","거둘 것을 헤아리는 달"],["가을","말씀으로 다시 고쳐지는 달"],["늦가을","거두며 감사하는 달"],["초겨울","기다림으로 빛을 맞는 달"]];
 const MO_ART={
   1:'<path d="M88 8v48M67 20l42 24M67 44l42-24M88 15l-6-6M88 15l6-6M88 49l-6 6M88 49l6 6M73 23l-8 1M73 23l-3-7M103 41l8-1M103 41l3 7M73 41l-3 7M73 41l-8-1M103 23l3-7M103 23l8 1"/><circle cx="88" cy="32" r="4"/>',
   2:'<path d="M60 56h56M88 56c0-12 1-20 3-28M91 28c-7-4-7-15 0-21 7 6 7 17 0 21zM89 40c-6-1-10-5-11-10 6 0 10 4 11 10z"/><circle cx="70" cy="18" r="1.4"/><circle cx="108" cy="24" r="1.4"/><circle cx="100" cy="10" r="1.4"/>',
@@ -3415,9 +3419,9 @@ today(){
   const ly=new Date(); ly.setFullYear(ly.getFullYear()-1); const old=live().filter(w=>w.date===dkey(ly));
   return `
   <header class="tgreet" data-part="${tgPart()}">
-    <div class="tg-date"><small><span class="tgm">${d.getMonth()+1}월 · </span>${"일월화수목금토"[d.getDay()]}요일</small><b>${d.getDate()}</b></div>
-    <div class="tg-main"><p class="tg-hi">${esc(TG_HI[tgPart()])}, ${esc(callName())}</p><p class="tg-line"><span id="wkline">${esc(dlCached()?.t||dlFallLine())}</span><span class="tg-dood" id="wkdood" aria-hidden="true">${DOODLE[dlIcon()]}</span></p></div>
-    <span class="tg-art" aria-hidden="true">${TG_ART[tgPart()]}</span>
+    <div class="tg-date"><small><span class="tgm">${d.getMonth()+1}월 · </span>${"일월화수목금토"[d.getDay()]}요일</small><b>${d.getDate()}</b>${(()=>{ const C=tgCal(); return `<span class="tg-cal ${C.F?"feast"+(C.F.conv?" conv":""):""}" title="${esc(C.desc)}">${esc(C.chip)}</span>`; })()}</div>
+    <div class="tg-main"><p class="tg-hi">${esc((tgCal().F?.hi||{})[tgPart()]||TG_HI[tgPart()])}, ${esc(callName())}</p><p class="tg-line"><span id="wkline">${esc(dlCached()?.t||dlFallLine())}</span><span class="tg-dood" id="wkdood" aria-hidden="true">${DOODLE[dlIcon()]}</span></p></div>
+    <span class="tg-art" aria-hidden="true">${(()=>{ const a=tgCal().F?.art; return a&&MO_ART[a]&&!(a==="holy"&&!["dawn","morning"].includes(tgPart()))?`<svg viewBox="52 0 72 64" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">${MO_ART[a]}</svg>`:TG_ART[tgPart()]; })()}</span>
     ${tgClockHtml()}
   </header>
   <div class="tgpomo" id="tgpomo" ${TG_POMO?"":"hidden"}><section class="sheet pomocard" id="pomocard" data-sz="${innerWidth<=700?92:128}">${TG_POMO?pomoCardHtml(innerWidth<=700?92:128):""}</section></div>
@@ -3942,10 +3946,17 @@ const DOODLE={   // 잉크 선으로 그린 작은 그림 (색은 currentColor)
   fog:`<svg viewBox="0 0 64 56" aria-hidden="true"><path d="M8 18h40M14 28h44M6 38h38M16 48h34" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-dasharray="1 5 18 4" opacity=".8"/></svg>`,
   storm:`<svg viewBox="0 0 64 56" aria-hidden="true"><path d="M14 32h34a9 9 0 0 0 0-18 13 13 0 0 0-25-3 9 9 0 0 0-9 21z" fill="var(--paper)" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M33 34l-6 10h7l-4 9" fill="none" stroke="color-mix(in srgb,#d4a017 85%,currentColor)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
   sun:`<svg viewBox="0 0 64 48" aria-hidden="true"><path d="M14 40a18 18 0 0 1 36 0" fill="color-mix(in srgb,var(--sepia) 14%,transparent)" stroke="currentColor" stroke-width="1.6"/><path d="M32 12v6M14 20l4 4M50 20l-4 4M6 34h6M52 34h6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M4 42h56" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>`,
-  moon:`<svg viewBox="0 0 64 48" aria-hidden="true"><path d="M36 8a16 16 0 1 0 16 24 13 13 0 0 1-16-24z" fill="color-mix(in srgb,var(--sepia) 12%,transparent)" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M14 12l1.4 2.8 3 .4-2.2 2 .5 3-2.7-1.4-2.7 1.4.5-3-2.2-2 3-.4zM54 38v4M52 40h4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>`};
+  moon:`<svg viewBox="0 0 64 48" aria-hidden="true"><path d="M36 8a16 16 0 1 0 16 24 13 13 0 0 1-16-24z" fill="color-mix(in srgb,var(--sepia) 12%,transparent)" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M14 12l1.4 2.8 3 .4-2.2 2 .5 3-2.7-1.4-2.7 1.4.5-3-2.2-2 3-.4zM54 38v4M52 40h4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+  candle:`<svg viewBox="0 0 64 48" aria-hidden="true"><path d="M26 44V22h12v22" fill="color-mix(in srgb,var(--sepia) 10%,transparent)" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M32 22v-4M32 18c-3-3-3-7 0-11 3 4 3 8 0 11z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="color-mix(in srgb,#e8a25a 30%,transparent)"/><path d="M18 44h28" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>`,
+  star:`<svg viewBox="0 0 64 48" aria-hidden="true"><path d="M32 6l4.6 10.4 11.4 1.1-8.6 7.5 2.6 11.2L32 30.4l-10 5.8 2.6-11.2-8.6-7.5 11.4-1.1z" fill="color-mix(in srgb,#e8b04a 22%,transparent)" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M12 40h4M48 40h4M14 38v4M50 38v4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>`,
+  cross:`<svg viewBox="0 0 64 48" aria-hidden="true"><path d="M32 6v36M22 16h20" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M18 44c6-3 22-3 28 0" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>`,
+  lily:`<svg viewBox="0 0 64 48" aria-hidden="true"><path d="M32 44V24" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M32 24c-6-2-10-8-9-16 5 2 8 6 9 10 1-4 4-8 9-10 1 8-3 14-9 16z" fill="color-mix(in srgb,var(--paper) 70%,transparent)" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M32 34c-5 0-9-3-11-7M32 38c5 0 8-3 10-6" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>`,
+  dove:`<svg viewBox="0 0 64 48" aria-hidden="true"><path d="M10 26c8-2 14-8 18-16 2 6 2 10 0 14 6-4 14-4 22-2-4 2-6 4-8 8-6 6-18 8-28 4" fill="color-mix(in srgb,var(--paper) 70%,transparent)" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"/><circle cx="46" cy="24" r="1" fill="currentColor"/><path d="M50 26l5 1" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M20 40c4 2 8 2 12 0" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" opacity=".6"/></svg>`,
+  leaf:`<svg viewBox="0 0 64 48" aria-hidden="true"><path d="M16 40C14 24 26 10 48 8c2 22-12 34-32 32z" fill="color-mix(in srgb,#c8643c 14%,transparent)" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M16 40c8-10 16-18 28-28M26 30l-1-8M33 23l7-1" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>`,
+  blossom:`<svg viewBox="0 0 64 48" aria-hidden="true"><g transform="translate(32 22)" fill="color-mix(in srgb,#e89ab0 18%,transparent)" stroke="currentColor" stroke-width="1.4"><ellipse cx="0" cy="-8" rx="5" ry="7"/><ellipse cx="0" cy="-8" rx="5" ry="7" transform="rotate(72)"/><ellipse cx="0" cy="-8" rx="5" ry="7" transform="rotate(144)"/><ellipse cx="0" cy="-8" rx="5" ry="7" transform="rotate(216)"/><ellipse cx="0" cy="-8" rx="5" ry="7" transform="rotate(288)"/></g><circle cx="32" cy="22" r="2.4" fill="currentColor"/><path d="M14 44h36" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" opacity=".6"/></svg>`};
 // ───────── 홈 「아침 인사 띠」·작은 집중 시계·빈 자리 그림 (2026-11-23 팀장님 「덩그러니 빈 화면이 안 예쁘다 — 들어갈 때부터 새로운 마음」, 모바일 UI·편집 디자이너 검토) ─────────
 function tgPart(){ const m=kstMinutes(); return m<4*60+30?"dawn":m<11*60?"morning":m<17*60?"noon":m<21*60?"evening":"night"; }   // 함수 선언 — 앞에서 불러도 되게(2026-11-24)
-const TG_HI={dawn:"고요한 새벽이에요",morning:"좋은 아침이에요",noon:"한낮에도 잠깐 숨 돌려요",evening:"수고한 하루, 저녁이 왔어요",night:"하루를 조용히 덮는 밤이에요"};
+const TG_HI={dawn:"고요한 새벽이에요",morning:"좋은 아침이에요",noon:"한낮에도 잠깐 숨 돌려요",evening:"오늘 하루 애쓰셨어요",night:"하루를 조용히 덮는 밤이에요"};
 const TG_ART={dawn:'<svg viewBox="0 0 72 48"><path d="M44 10a12 12 0 1 0 10 18 10 10 0 0 1-10-18z" fill="color-mix(in srgb,var(--sepia) 14%,transparent)" stroke="currentColor" stroke-width="1.5"/><path d="M18 14v6M15 17h6M26 30v4M24 32h4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><path d="M6 44h60" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>',
   morning:'<svg viewBox="0 0 72 48"><path d="M18 40a18 18 0 0 1 36 0" fill="color-mix(in srgb,#e8b04a 22%,transparent)" stroke="currentColor" stroke-width="1.6"/><path d="M36 12v6M18 20l4 4M54 20l-4 4M8 34h6M58 34h6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M4 42h64" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>',
   noon:'<svg viewBox="0 0 72 48"><circle cx="36" cy="22" r="10" fill="color-mix(in srgb,#e8b04a 26%,transparent)" stroke="currentColor" stroke-width="1.6"/><path d="M36 4v5M36 35v5M18 22h5M49 22h5M23 9l3 3M46 32l3 3M49 9l-3 3M26 32l-3 3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M6 44h60" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" opacity=".6"/></svg>',
@@ -3971,26 +3982,71 @@ function weekCard(){ const t=today(), d0=new Date(t+"T00:00"), back=(d0.getDay()
     ${n?"":`<div class="row" style="margin-top:10px"><button class="btn small" onclick="rtGoBible()">${ICO.book}말씀 펴기</button></div>`}</section>`; }
 // 오늘의 한 줄 (2026-10-31 팀장님: 「그날그날 랜덤으로 한 문장」 — 날씨·위치는 쓰지 않음)
 // AI(서버 coWrite mode dayline)가 날마다 다른 주제로 한 문장 + 어울리는 그림 하나를 고름 → 이 기기에 그날 하루 기억. AI가 없으면 날짜로 고른 손글씨 문장과 그림
-const DL_ICONS=["cup","sun2","partly","cloud","rain","snow","fog","pot","pencil","sun","moon"];
+const DL_ICONS=["cup","sun2","partly","cloud","rain","snow","fog","pot","pencil","sun","moon","candle","star","cross","lily","dove","leaf","blossom"];
+// ── 교회력·계절(2026-11-24 팀장님 「시간대에 따른 글과 그림을 계절·기독교 절기에 따른 글과 그림으로도」) ──
+// 그날의 「때」를 tgCal 하나가 정함 — 순서: 큰 날 → 절기 → 한국 장로교·성결교 관례 주일 → 계절. 부활절·대림절 셈은 이달의 표지(moEaster·moFeast)와 같은 방식.
+// 절기 글(fall)과 그림(dood)은 시간대와 상관없는 말로만 — 큰 날의 인사(hi)만 시간대마다 따로. 관례 주일(conv)은 꼬리표만, 「많은 교회가 지키는」 말로.
+const TG_CAL={
+  advent:{chip:"대림절",desc:"성탄을 기다리며, 다시 오실 주님도 함께 기다리는 때",dood:"candle",art:"advent",fall:["촛불 하나씩, 기다림이 자라요","오실 주님을 기다리며 한 줄 적어요","기다림도 믿음의 한 모양이에요"]},
+  xmaseve:{chip:"성탄 전야",chipDay:"성탄 전날",desc:"성탄절을 하루 앞둔 날",dood:"star",art:"xmas",hi:{dawn:"성탄을 기다리는 새벽이에요",morning:"성탄을 하루 앞둔 아침이에요",noon:"성탄을 하루 앞둔 한낮이에요",evening:"성탄을 하루 앞둔 저녁이에요",night:"성탄을 기다리는 고요한 밤이에요"},fall:["오실 아기 예수님을 기다려요","가장 낮은 곳에 오시는 주님을 기다려요"]},
+  xmas:{chip:"성탄절",desc:"말씀이 육신이 되어 우리 가운데 오신 날",dood:"star",art:"xmas",hi:{dawn:"고요한 성탄의 새벽이에요",morning:"기쁜 성탄의 아침이에요",noon:"성탄의 기쁨이 머무는 한낮이에요",evening:"성탄의 기쁨을 나누는 저녁이에요",night:"거룩한 성탄의 밤이에요"},fall:["임마누엘, 하나님께서 우리와 함께 계세요","말씀이 우리 가운데 오셨어요","구유에 누이신 사랑을 묵상해요"]},
+  xmastide:{chip:"성탄절기",desc:"오신 주님을 기뻐하는 성탄절기",dood:"star",art:"xmas",fall:["성탄의 기쁨을 조금 더 머금어요","오신 주님과 함께 걷는 날들이에요"]},
+  newyear:{chip:"새해 첫날",desc:"한 해를 주님께 올려 드리며 시작하는 날",dood:"pencil",hi:{dawn:"새해 첫 새벽이에요",morning:"새해 첫 아침이에요",noon:"새해 첫날 한낮이에요",evening:"새해 첫날 저녁이에요",night:"새해 첫날 밤이에요"},fall:["새해 첫 장에 말씀 한 줄을 적어요","한 해를 주님께 맡기며 시작해요"]},
+  epiphany:{chip:"주현절",desc:"그리스도께서 온 세상에 드러나신 날",dood:"star",art:"xmas",fall:["별을 따라 주님께 나아가요","온 세상의 빛으로 오신 주님을 바라봐요"]},
+  ash:{chip:"재의 수요일",desc:"사순절이 시작되는 날. 회개와 겸손으로 주님께 돌아가요",dood:"cross",art:"lent",solemn:1,fall:["낮은 마음으로 사순절을 시작해요","주님께 돌아가는 걸음을 내디뎌요"]},
+  lent:{chip:"사순절",desc:"주님의 고난을 묵상하며 부활을 준비하는 40일(주일은 세지 않아요)",dood:"cross",art:"lent",fall:["주님의 고난을 천천히 묵상해요","십자가 앞에 한 줄을 내려놓아요","비운 자리에 주님을 모셔요"]},
+  palm:{chip:"종려주일",desc:"예루살렘에 들어가신 주님을 맞는 날, 고난주간의 시작",dood:"leaf",art:"lent",fall:["호산나, 겸손히 오시는 왕을 맞아요","나귀 타고 오신 주님을 따라가요"]},
+  holyweek:{chip:"고난주간",desc:"주님의 마지막 한 주, 십자가의 길을 따라가는 때",dood:"cross",art:"lent",solemn:1,fall:["주님의 마지막 한 주를 따라 걸어요","십자가의 길을 조용히 묵상해요"]},
+  maundy:{chip:"성목요일",desc:"주님께서 제자들의 발을 씻기시고 마지막 만찬을 나누신 날",dood:"cross",art:"lent",solemn:1,fall:["섬기시는 주님의 사랑을 묵상해요","주님의 마지막 만찬을 기억해요"]},
+  goodfri:{chip:"성금요일",desc:"주님께서 우리를 위해 십자가에서 죽으신 날",dood:"cross",art:"lent",solemn:1,hi:{dawn:"십자가를 기억하는 새벽이에요",morning:"십자가를 기억하는 아침이에요",noon:"주님의 고난을 기억하는 한낮이에요",evening:"십자가를 기억하는 저녁이에요",night:"십자가를 기억하는 밤이에요"},fall:["다 이루었다 하신 사랑을 묵상해요","십자가 앞에 잠잠히 머물러요"]},
+  easter:{chip:"부활주일",desc:"죽음을 이기고 다시 사신 주님을 기뻐하는 날",dood:"lily",art:"holy",hi:{dawn:"부활의 새벽이에요",morning:"부활의 아침이에요",noon:"부활의 기쁨이 가득한 한낮이에요",evening:"부활의 기쁨을 나누는 저녁이에요",night:"부활의 기쁨이 머무는 밤이에요"},fall:["주님께서 다시 살아나셨어요","죽음을 이기신 생명을 기뻐해요","빈 무덤 앞에서 소망을 새겨요"]},
+  eastertide:{chip:"부활절기",desc:"다시 사신 주님과 함께 걷는 50일",dood:"lily",art:"holy",fall:["다시 사신 주님과 함께 걸어요","부활의 소망을 한 줄에 담아요"]},
+  ascension:{chip:"승천일",desc:"부활하신 주님께서 하늘에 오르신 날(부활 후 40일째)",dood:"cloud",fall:["하늘에 오르신 주님을 바라봐요","다시 오실 주님을 기다려요"]},
+  pentecost:{chip:"성령강림주일",desc:"약속하신 성령께서 오신 날",dood:"dove",hi:{dawn:"성령께서 오신 날의 새벽이에요",morning:"성령께서 오신 날의 아침이에요",noon:"성령께서 오신 날의 한낮이에요",evening:"성령께서 오신 날의 저녁이에요",night:"성령께서 오신 날의 밤이에요"},fall:["보혜사 성령께서 우리와 함께 계세요","성령의 바람을 따라 한 줄 써요"]},
+  thanks:{chip:"추수감사주일",desc:"많은 교회가 한 해의 열매에 감사하는 주일 — 교회마다 날짜가 다를 수 있어요",dood:"leaf",conv:1},
+  thanks7:{chip:"맥추감사주일",desc:"많은 교회가 한 해의 절반에 거둔 첫 열매에 감사하는 주일 — 교회마다 날짜가 다를 수 있어요",dood:"pot",conv:1},
+  reform:{chip:"종교개혁주일",desc:"많은 교회가 오직 성경·오직 은혜·오직 믿음을 되새기는 주일",dood:"pencil",conv:1},
+  biblesun:{chip:"성서주일",desc:"많은 교회가 성경을 주신 은혜에 감사하는 주일",dood:"pencil",conv:1},
+  child:{chip:"어린이주일",desc:"많은 교회가 어린이를 축복하는 주일",dood:"pot",conv:1},
+  yearend:{chip:"한 해의 끝날",desc:"많은 교회가 송구영신 예배로 한 해를 맺는 날",dood:"pencil",conv:1,fall:["지켜 주신 한 해를 감사로 맺어요","한 해를 돌아보며 감사를 적어요"]},
+  parent:{chip:"어버이주일",desc:"많은 교회가 부모님께 감사하는 주일",dood:"blossom",conv:1}};
+const TG_SEASON_DOOD={1:"snow",2:"snow",3:"blossom",4:"blossom",5:"blossom",6:"leaf",7:"leaf",8:"leaf",9:"leaf",10:"leaf",11:"leaf",12:"snow"};
+const TG_ORD=["첫째","둘째","셋째","넷째","다섯째"];
+function tgCal(dk){ dk=dk||today(); const d=new Date(dk+"T12:00"), y=d.getFullYear(), m=d.getMonth()+1, day=d.getDate(), dow=d.getDay(), D=x=>Math.round((d-x)/864e5);
+  const E=moEaster(y); E.setHours(12); const ed=D(E), xm=new Date(y,11,25,12), adv=new Date(y,11,25-(xm.getDay()||7)-21,12), ad=D(adv);
+  const nthSun=(M,n)=>{ const f=new Date(y,M-1,1,12); return 1+(7-f.getDay())%7+7*(n-1); }, lastSun=M=>{ const l=new Date(y,M,0,12); return l.getDate()-l.getDay(); };
+  let k=null, w=0;
+  if(m===12&&day===25) k="xmas"; else if(m===12&&day===24) k="xmaseve"; else if(m===12&&day===31) k="yearend"; else if(m===1&&day===1) k="newyear"; else if(m===1&&day===6) k="epiphany";
+  else if(ed===0) k="easter"; else if(ed===-2) k="goodfri"; else if(ed===-3) k="maundy"; else if(ed===-7) k="palm"; else if(ed>-7&&ed<0) k="holyweek"; else if(ed===-46) k="ash"; else if(ed>-46&&ed<-7) k="lent";
+  else if(ed===49) k="pentecost"; else if(ed===39) k="ascension"; else if(ed>0&&ed<49) k="eastertide";
+  else if(ad>=0&&m===12&&day<24||ad>=0&&m===11) { k="advent"; w=Math.floor(ad/7)+1; }
+  else if((m===12&&day>=26)||(m===1&&day<=5)) k="xmastide";
+  // 한국 장로교·성결교 관례 주일 — 대림절·부활절기 안에 들면(성서주일·어린이주일·어버이주일) 꼬리표는 관례 주일, 그림·한 줄은 절기 것(전문가 점검 2026-11-24)
+  let cv=null; if(dow===0){ if(m===11&&day===nthSun(11,3)) cv="thanks"; else if(m===7&&day===nthSun(7,1)) cv="thanks7"; else if(m===10&&day===lastSun(10)) cv="reform"; else if(m===12&&day===nthSun(12,2)) cv="biblesun"; else if(m===5&&day===nthSun(5,1)) cv="child"; else if(m===5&&day===nthSun(5,2)) cv="parent"; }
+  if(cv&&(!k||k==="advent"||k==="eastertide")){ if(!k) k=cv; else { const S=TG_CAL[k], V=TG_CAL[cv]; const sc=k==="advent"?`대림절 ${TG_ORD[w-1]||""} 주`:S.chip;
+      return { k:cv, F:Object.assign({},S,{chip:V.chip,desc:V.desc+" · "+sc,conv:1}), chip:V.chip, desc:V.desc+" · "+sc, season:MO[m][0], m, sdood:TG_SEASON_DOOD[m] }; } }
+  const F=k?TG_CAL[k]:null, pt=tgPart(), day2=F&&F.chipDay&&!["evening","night"].includes(pt);
+  return { k, F, chip:F?(k==="advent"?`대림절 ${TG_ORD[w-1]||""} 주`:day2?F.chipDay:F.chip):MO[m][0], desc:F?F.desc:MO[m][1], season:MO[m][0], m, sdood:TG_SEASON_DOOD[m] }; }
 // 오늘의 한 줄은 시간대(tgPart — 인사 띠와 같은 다섯 때)마다 따로 만들고 따로 기억(2026-11-24 팀장님 「날짜 옆은 밤인데 그 아래 문장은 아침 — 어긋나지 않게」)
 const DL_SUNNY=["sun","sun2","partly"], DL_OK={dawn:["cup","pot","pencil","fog","moon"],morning:DL_ICONS.filter(x=>x!=="moon"),noon:["cup","sun2","partly","cloud","rain","snow","pot","pencil"],evening:["cup","pot","pencil","cloud","rain","snow"],night:["cup","pencil","pot","moon","cloud","rain","snow"]};
 const DL_FALL={dawn:["고요한 새벽, 한 줄이면 충분해요","잠든 집 안에서 말씀 한 줄과 함께","새벽의 기도는 서두르지 않아도 돼요"],
   morning:["말씀 한 줄, 커피 한 잔","천천히, 그러나 날마다","한 문장이면 충분한 아침","오늘의 한 줄이 내일의 한 장"],
   noon:["바쁜 한낮에도 잠깐 숨 돌려요","읽은 만큼 깊어지고, 쓴 만큼 자랍니다","서두르지 않아도 괜찮아요"],
-  evening:["수고한 하루, 한 줄로 내려놓아요","오늘 받은 은혜를 한 줄로 남겨요","오늘도 이 자리에서"],
+  evening:["애쓰신 하루, 한 줄로 내려놓아요","오늘 받은 은혜를 한 줄로 남겨요","오늘도 이 자리에서"],
   night:["오늘 하루를 한 줄로 덮어요","고요한 밤, 마음을 내려놓아요","내일 아침을 위해 편히 쉬어요"]};
 const dlKey=()=>"seojae-open.dayline."+today()+"."+tgPart();
 const seasonOf=d=>{ const m=d.getMonth()+1; return m>=3&&m<=5?"봄":m>=6&&m<=8?"여름":m>=9&&m<=11?"가을":"겨울"; };
 const dlCached=()=>{ try{ return JSON.parse(localStorage.getItem(dlKey())||"null"); }catch(_){ return null; } };
-const dlFallLine=()=>pick(DL_FALL[tgPart()]||DL_FALL.morning,1,today()+tgPart())[0];
-const dlIcon=()=>{ const c=dlCached(), ok=DL_OK[tgPart()]||DL_ICONS; return c&&ok.includes(c.icon)?c.icon:pick(ok.filter(x=>!["rain","snow","cloud","fog"].includes(x)),1,today()+tgPart()+"i")[0]; };
+const dlFallLine=()=>{ const C=tgCal(); return C.F&&C.F.fall?pick(C.F.fall,1,today()+C.k)[0]:pick(DL_FALL[tgPart()]||DL_FALL.morning,1,today()+tgPart())[0]; };   // 절기면 절기 문장(시간대와 상관없는 말), 아니면 시간대 문장
+const dlOk=()=>{ const C=tgCal(), ok=[...(DL_OK[tgPart()]||DL_ICONS)]; if(C.F&&C.F.dood&&!ok.includes(C.F.dood)) ok.push(C.F.dood); if(!C.F&&C.sdood&&!ok.includes(C.sdood)&&!DL_SUNNY.includes(C.sdood)) ok.push(C.sdood); return ok; };
+const dlIcon=()=>{ const c=dlCached(), ok=dlOk(), C=tgCal(); if(c&&ok.includes(c.icon)) return c.icon; if(C.F&&C.F.dood) return C.F.dood; return pick(ok.filter(x=>!["rain","snow","cloud","fog"].includes(x)),1,today()+tgPart()+"i")[0]; };
 function dlAiOk(){ if(typeof aiMode==="function"){ const m=aiMode(); if(m==="own") return true; if(m==="shared"){ try{ return localStorage.getItem("seojae-open.aiShareOk")==="1"; }catch(_){ return false; } } return false; } return !!(GAS&&SERVER&&CONF.ai); }   // 공개판: 함께 쓰는 AI는 동의한 기기에서만(저절로 동의 창을 띄우지 않게)
 async function dayLinePaint(){ if(tab!=="today"||!$("#wkline")) return; const c=dlCached();
   if(c){ $("#wkline").textContent=c.t; $("#wkline").classList.toggle("ai",!!c.ai); const d=$("#wkdood"); if(d) d.innerHTML=DOODLE[dlIcon()]; return; }
   if(!dlAiOk()||dayLinePaint.busy) return; dayLinePaint.busy=true;
   let avoid=""; try{ const y=new Date(); y.setDate(y.getDate()-1); avoid=(JSON.parse(localStorage.getItem("seojae-open.dayline.prev")||"null")||{}).t||""; }catch(_){}
-  const part=tgPart(); try{ const r=await gcall("coWrite",{mode:"dayline",date:today(),part,season:seasonOf(new Date()),avoid,callName:callName()});
-    if(r&&r.line&&part===tgPart()){ const v={t:r.line,icon:(DL_OK[part]||DL_ICONS).includes(r.icon)?r.icon:"cup",ai:1}; try{ localStorage.setItem(dlKey(),JSON.stringify(v)); localStorage.setItem("seojae-open.dayline.prev",JSON.stringify(v));
+  const part=tgPart(), C=tgCal(); try{ const r=await gcall("coWrite",{mode:"dayline",date:today(),part,season:seasonOf(new Date()),seasonWord:C.season,feast:C.F?C.chip:"",feastDesc:C.F?C.F.desc:"",feastConv:C.F&&C.F.conv?1:0,feastSolemn:C.F&&C.F.solemn?1:0,feastIcon:C.F?C.F.dood:"",seasonIcon:C.sdood,avoid,callName:callName()});
+    if(r&&r.line&&part===tgPart()){ const v={t:r.line,icon:dlOk().includes(r.icon)?r.icon:(C.F&&C.F.dood)||"cup",ai:1}; try{ localStorage.setItem(dlKey(),JSON.stringify(v)); localStorage.setItem("seojae-open.dayline.prev",JSON.stringify(v));
         for(let i=localStorage.length-1;i>=0;i--){ const k=localStorage.key(i); if(/^seojae-open\.(wx|dayline)\.\d{4}-/.test(k||"")&&k!==dlKey()&&!k.endsWith(today())) localStorage.removeItem(k); } }catch(_){}
       const l=$("#wkline"), d=$("#wkdood"); if(l){ l.textContent=r.line; l.classList.add("ai"); } if(d) d.innerHTML=DOODLE[v.icon]; } }catch(_){}
   finally{ dayLinePaint.busy=false; } }

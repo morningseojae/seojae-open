@@ -423,21 +423,31 @@ function alts_(body) {
   });
 }
 
+const DAYLINE_ICONS_ = ["cup", "sun2", "partly", "cloud", "rain", "snow", "fog", "pot", "pencil", "sun", "moon", "candle", "star", "cross", "lily", "dove", "leaf", "blossom"];
+
 const DAYLINE_PART_ = { dawn: ["새벽", "아직 어두운 새벽(밤 12시~새벽 4시 반) — 잠이 깨어 일찍 말씀 앞에 앉았거나 잠 못 이루는 사람", ["고요", "기도", "등불", "기다림", "숨 고르기", "물 한 잔"], ["cup", "pot", "pencil", "fog", "moon"]], morning: ["아침", "하루를 여는 아침(새벽 4시 반~오전 11시)", ["아침 빛", "따뜻한 차", "창밖 바람", "첫 문장", "새소리", "한 걸음", "씨앗"], ["cup", "sun2", "partly", "sun", "pot", "pencil", "cloud", "rain", "snow", "fog"]], noon: ["한낮", "일하다 잠깐 숨 돌리는 한낮(오전 11시~오후 5시)", ["쉼", "천천히 걷기", "작은 감사", "펼친 책", "물 한 잔", "그늘"], ["cup", "sun2", "partly", "cloud", "rain", "snow", "pot", "pencil"]], evening: ["저녁", "하루 일을 마치고 돌아오는 저녁(오후 5시~9시)", ["노을", "돌아오는 길", "따뜻한 밥", "작은 감사", "편지", "고요"], ["cup", "pot", "pencil", "cloud", "rain", "snow"]], night: ["밤", "하루를 덮고 잠자리에 드는 밤(밤 9시~12시)", ["고요", "등불", "하루 돌아보기", "기도", "쉼", "내일"], ["cup", "pencil", "pot", "moon", "cloud", "rain", "snow"]] };
 
 function dayLine_(body) {
   return safe_(() => {
     const d = body || {}, clip = (x, n) => String(x == null ? "" : x).replace(/[\r\n<>]/g, " ").slice(0, n);
     const seed = String(d.date || "").replace(/\D/g, "");
-    const P = DAYLINE_PART_[d.part] || DAYLINE_PART_.morning, topics = P[2], icons = P[3];
+    const P = DAYLINE_PART_[d.part] || DAYLINE_PART_.morning, topics = P[2], icons = P[3].slice();
+    // 교회력·계절(2026-11-24): 앱이 정한 그날의 절기(feast — 관례 주일이면 feastConv)·계절 말(seasonWord)·그 그림만 더해 받음
+    const feast = clip(d.feast, 12), fdesc = clip(d.feastDesc, 60), sw = clip(d.seasonWord, 6);
+    [d.feastIcon, feast ? "" : d.seasonIcon].forEach(x => { x = String(x || ""); if (x && DAYLINE_ICONS_.indexOf(x) >= 0 && icons.indexOf(x) < 0) icons.push(x); });
     const hint = topics[(+seed.slice(-3) || 0) % topics.length];
     const prompt = "말씀을 읽고 묵상과 글을 쓰는 사람의 다이어리 앱입니다. 오늘 화면 맨 위 인사 아래에 손글씨로 적힐 한 문장을 씁니다."
       + "\n오늘: " + clip(d.date, 10) + " (" + clip(d.season, 4) + ") · 지금은 " + P[1] + " · 오늘의 주제 씨앗: " + hint + " (꼭 이 낱말을 쓰지 않아도 됨)"
       + "\n가장 중요: 지금 시간대(" + P[0] + ")에 읽는 사람에게 어울리는 문장. 지금과 다른 때를 가리키는 말(" + Object.keys(DAYLINE_PART_).filter(k => DAYLINE_PART_[k] !== P).map(k => DAYLINE_PART_[k][0]).join("·") + " — 또 그때에만 어울리는 햇살·노을 같은 말)은 쓰지 않습니다."
+      + (sw ? "\n계절: " + sw + " — 계절감은 은은하게만(날씨를 단정하지 않음)." : "")
+      + (feast ? "\n교회력: 오늘은 " + feast + (fdesc ? "(" + fdesc + ")" : "") + "입니다. 이 절기의 뜻이 문장에 은은히 스미게 쓰되, 설교·교리 설명은 하지 않습니다."
+          + (+d.feastConv ? " 이 날은 교회마다 지키는 날짜가 다를 수 있으니 「오늘 ○○주일을 지키시죠」처럼 그 사람의 교회 일정을 단정하지 말고, 감사·말씀 같은 그날의 마음만 담습니다." : "")
+          + (+d.feastSolemn ? " 오늘은 주님의 고난을 기억하는 엄숙한 날이니 기쁨·축하·설렘의 말은 쓰지 말고 잠잠하고 경건하게 씁니다." : " 절기의 결을 따릅니다 — 성탄·부활은 기쁘게, 대림절은 기다림으로.")
+          + " 절기 이름을 꼭 넣을 필요는 없습니다. 그래도 지금 시간대에 어긋나는 말은 쓰지 않습니다." : "")
       + (d.avoid ? "\n어제 문장과 겹치지 않게: " + clip(d.avoid, 60) : "")
-      + "\n\n조건: 말씀 앞에 앉거나 한 줄을 쓰려는 사람에게 건네는 따뜻한 한 문장. 18~30자, 존댓말(~요/~세요/~입니다), 한국어."
+      + "\n\n조건: 말씀 앞에 앉거나 한 줄을 쓰려는 사람에게 건네는 따뜻한 한 문장. 18~30자, 해요체(~요)로 끝맺음 — 「~을」로 끊거나 명사로 끝내지 않음, 「~하세요」 같은 권유보다 곁에서 건네는 말. 호칭(목사님·성도님 등)은 넣지 않음(인사에 이미 붙음). 한국어."
       + " 성경 구절·인용·사람 이름·숫자는 넣지 않습니다. 이모지·따옴표 없이. 설교하지 말고 다정하게. 날마다 다른 느낌으로."
-      + "\n그리고 문장에 어울리는 그림 하나를 이 가운데서 고릅니다(지금 시간대에 맞는 것만): " + icons.join(", ") + " (cup=찻잔, sun2=해, partly=해와 구름, cloud=구름, rain=비, snow=눈, fog=안개, pot=새싹 화분, pencil=연필, sun=떠오르는 해, moon=달)"
+      + "\n그리고 문장에 어울리는 그림 하나를 이 가운데서 고릅니다(지금 시간대에 맞는 것만): " + icons.join(", ") + " (cup=찻잔, sun2=해, partly=해와 구름, cloud=구름, rain=비, snow=눈, fog=안개, pot=새싹 화분, pencil=연필, sun=떠오르는 해, moon=달, candle=촛불, star=별, cross=십자가, lily=백합, dove=비둘기, leaf=잎, blossom=꽃)"
       + '\n답은 JSON 하나만: {"line":"문장","icon":"그림 이름"}';
     const r = aiText_(prompt, { json: true, maxTokens: 300, temperature: 1.0, kind: "오늘의 한 줄" });
     let t = "", ic = ""; try { const o = jsonOf_(r.text, "{", "}"); t = String(o.line || ""); ic = String(o.icon || ""); } catch (e) { t = String(r.text || ""); }
