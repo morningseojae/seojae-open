@@ -294,7 +294,7 @@ function studioPaint(){ const ov=$("#studioview"); if(!ov) return; const D=STU.d
       <section class="stus"><h4>많이 쓰는 기능 <small>(${STU.days}일 · 횟수 / 쓴 기기 날 수)</small></h4>${bars(feats.map(f=>({l:FN[f.k],v:f.n,s:` · ${f.u}`,mx:fmx})))}</section>
       <section class="stus"><h4>기기·저장</h4>${grp("m.",{phone:"휴대폰",tablet:"태블릿",pc:"PC"})}<hr class="dash">${grp("s.",{drive:"구글 드라이브",local:"이 기기만"})}<hr class="dash">${grp("app.",{app:"앱으로",web:"브라우저로"})}</section>
       <section class="stus"><h4>얼마나 써 왔나 <small>(연 날 기준)</small></h4>${grp("age.",{new:"처음",d1:"1주 안",w1:"1주~1달",m1:"1~3달",m3:"3달 넘게"})}</section>
-      <section class="stus"><h4>판 번호</h4>${bars(vrows.map(([l,v])=>({l:"판 "+l,v,mx:vmx})))}</section>
+      <section class="stus"><h4>판 번호</h4>${bars(vrows.map(([l,v])=>({l:"베타 "+l,v,mx:vmx})))}</section>
       <section class="stus"><h4>창구가 대신 한 일 <small>(${STU.days}일)</small></h4>${grp("gw.",{aiShared:"함께 쓰는 AI",searchBooks:"책 찾기",musicFind:"찬송가·CCM 찾기"})}<p class="hint" style="margin-top:8px">AI 켠 기기 날 수 ${sum("aiOn").toLocaleString()} · 함께 읽기 쓰는 기기 날 수 ${sum("alsoOn").toLocaleString()}</p></section>
       <section class="stus"><h4>창구 열쇠</h4>${[["gemini","함께 쓰는 AI(제미나이)"],["youtube","찬송가·CCM(유튜브)"],["kakao","책 찾기(카카오)"],["nl","목차·쪽수(국립중앙도서관)"],["gClient","구글 자동 잇기"]].map(([k,l])=>`<p class="stukey ${K[k]?"on":""}"><i></i>${l} <b>${K[k]?"켜짐":"꺼짐"}</b></p>`).join("")}</section>
     </div>
@@ -381,7 +381,7 @@ function connectView(){
   return `<section class="sheet tape" style="max-width:640px;margin:20px auto">
     <p class="label">아침 서재 시작하기</p>
     <p class="sub">말씀과 책을 읽고 쓰는 아침의 다이어리입니다.</p>
-    <div class="betanote">주변에 함께 묵상할 분이 계시면 이 주소와 초대 암호를 편하게 나눠 주세요.</div>
+    <div class="betanote"><b>베타판입니다.</b> 아직 시험 중인 프로그램이라 기능이 바뀌거나 오류가 날 수 있습니다. 중요한 글은 따로 사본을 남겨 두세요.<br>주변에 함께 묵상할 분이 계시면 이 주소와 초대 암호를 편하게 나눠 주세요.</div>
     <div class="startpick">
       <div class="startcard rec"><span class="startbadge">권해 드려요</span>
         <button class="btn ink startbtn" onclick="drvStart(this)">구글로 시작하기</button>
@@ -394,7 +394,7 @@ function connectView(){
         <button class="btn startbtn" onclick="locStart(this)">구글 없이 이 기기에서 시작하기</button>
         <p class="sub">구글 계정이 없거나 나중에 하고 싶을 때. 글은 <b>이 기기에만</b> 간직됩니다. 날마다 이 기기 안에 사본을 남기고, 가끔 「백업 파일 받기」로 카카오톡 「나와의 채팅」이나 메일에 사본을 보내 두면 안전합니다. 나중에 언제든 구글로 이어 글을 옮길 수 있습니다.</p></div>
     </div>
-    <p class="madeby">아침 서재 · 아빠 <b>임요한 목사</b>(좋은나무교회 담임목사)와 딸 <b>임하은 작가</b>가 함께 만들었습니다. 임요한 목사는 매일성경 묵상을 나누는 YouTube <a href="https://www.youtube.com/@%EA%B5%BF%ED%8A%B8%EB%A6%AC%EC%94%A8" target="_blank" rel="noopener" title="YouTube 굿트리씨[매일성경묵상] 채널을 새 창으로 엽니다">「굿트리씨」 채널 ↗</a>을 운영합니다.</p>
+    <p class="madeby">아침 서재 베타판 · 아빠 <b>임요한 목사</b>(좋은나무교회 담임목사)와 딸 <b>임하은 작가</b>가 함께 만들었습니다. 임요한 목사는 매일성경 묵상을 나누는 YouTube <a href="https://www.youtube.com/@%EA%B5%BF%ED%8A%B8%EB%A6%AC%EC%94%A8" target="_blank" rel="noopener" title="YouTube 굿트리씨[매일성경묵상] 채널을 새 창으로 엽니다">「굿트리씨」 채널 ↗</a>을 운영합니다.</p>
   </section>`;
 }
 const ROUTES={"/api/notion/sync":"notionSync","/api/notion/note":"notionNote","/api/notion/book":"notionBook","/api/notion/trash":"notionTrash","/api/reminder":"setReminder","/api/config":"setConfig"};
@@ -945,7 +945,7 @@ function sideTip(){ if(document.querySelector(".sidetip")) return; const mac=/Ma
   ov.innerHTML=`<section class="sheet" style="max-width:560px;margin:50px auto;display:grid;gap:10px"><p class="label" style="margin:0">성경 창을 띄워 둔 채 쓰려면</p>
     <p class="sub" style="margin:0">새한글·새번역·개역개정·NIV는 저작권 때문에 대한성서공회·성경 사이트에서만 볼 수 있고, 그 사이트가 다른 프로그램 안에 넣는 것을 막아 두어 앱 위에 고정할 수 없습니다. 대신 <b>화면을 반씩 나눠</b> 두면 앱을 눌러도 성경 창이 사라지지 않습니다.</p>
     <ul style="margin:0;padding-left:1.2em;line-height:1.8">${touch?"":`<li><b>나란히 놓기</b>: 성경 창을 열면 성경 창은 화면 오른쪽 끝에 세로로, 아침 서재는 그 왼쪽으로 저절로 놓입니다(설치한 앱은 창 크기가, 브라우저 탭은 화면이 좁혀짐). 전체 화면이거나 창이 좁으면 되지 않으니 창을 보통 크기로 두세요. 성경 창을 닫으면 원래대로 돌아옵니다(설정 → 아침 → 「성경 통독」의 「성경 창」에서 끄기).</li>`}${touch?`<li><b>갤럭시</b>: 최근 앱 단추(▢ 또는 |||) → 아침 서재 아이콘을 누름 → 「분할 화면으로 열기」 → 아래쪽에 크롬(성경 창)을 고르기</li>`:`<li><b>${mac?"맥":"컴퓨터"}</b>: ${mac?"성경 창 왼쪽 위 <b>초록 단추</b>에 마우스를 올리면 나오는 메뉴에서 「오른쪽에 배치」를 고르고, 아침 서재 창을 왼쪽에 둡니다 (단축키: fn + control + → / ←)":"성경 창을 화면 오른쪽 끝으로 끌어 붙이고(⊞ + →), 아침 서재 창을 왼쪽에 둡니다 (⊞ + ←)"}</li>`}
-      <li><b>개역한글·영어 본문</b>은 「위에 띄우기」로 앱 위에 늘 떠 있는 작은 창으로 볼 수 있습니다.</li></ul>
+      <li><b>개역한글·영어 본문</b>은 「본문 작은 창」으로 앱 위에 늘 떠 있는 작은 창으로 볼 수 있습니다.</li></ul>
     <div class="row" style="gap:6px"><button class="btn ink" data-ok>알겠습니다</button><button class="btn ghost" data-x>닫기</button></div></section>`;
   document.body.appendChild(ov); const done=()=>{ try{ localStorage.setItem("seojae-open.sideTip","1"); }catch(_){} ov.remove(); };
   ov.querySelector("[data-ok]").onclick=done; ov.querySelector("[data-x]").onclick=done; ov.onclick=e=>{ if(e.target===ov) done(); }; }
@@ -1276,11 +1276,11 @@ const MANUALS=[["quick","간단 매뉴얼","읽자마자 바로 써 보는 한 �
 // ───────── 새 소식 (공개판, 2026-10-31 팀장님): 중요한 고침은 앱을 열 때 한 번만 쉬운 말로 알림 ─────────
 // 새 소식을 더할 때: NEWS 맨 앞에 넣고 id 는 날짜(같은 날 둘째는 2026-11-02b 처럼 — 글자 순서로 새것이 뒤). 본 소식 id 는 이 기기에만(seojae-open.newsSeen)
 const NEWS=[
- {id:"2026-11-23b",date:"2026년 11월 23일",title:"생명의 삶 묵상 길잡이",items:[
+ {id:"2026-11-23b",date:"2026년 11월 23일",title:"생명의 삶 묵상 길잡이 · 또렷해진 단추",items:[
+  ["🔘","누르는 곳이 또렷해졌어요","묵상 카드의 단추 줄을 옅은 띠로 나누고, 단추마다 테두리를 달았어요. 번역은 「번역 | 개역개정 ↗ …」 한 묶음, 「위에 띄우기」는 「본문 작은 창」이 되었어요.","해설·길잡이를 열면 그 단추가 색으로 채워져요."],
   ["🌿","날마다 새벽 3시에","묵상지를 생명의 삶으로 고르면 묵상 카드에 「묵상 길잡이」가 생겨요. 그날 본문의 흐름·배경·본문이 보여 주는 하나님을 짚고, 묵상 질문으로 맺어요.","컴퓨터에서는 오른쪽 창으로, 휴대폰에서는 카드 아래에 펼쳐져요."],
   ["🔎","AI가 정리한 글이에요","본문과 믿을 만한 자료로 정리해요. 지어내지 않고, 결론이나 기도는 대신 쓰지 않아요.","틀린 곳이 있을 수 있으니 본문과 견주어 읽고, 답은 묵상 노트에 직접 적어 보세요."]]},
- {id:"2026-11-23",date:"2026년 11월 23일",title:"아침 서재 1.0 — 정식으로 함께해요",items:[
-  ["🎉","정식 1.0이 되었어요","시험하던 「베타」 표시를 걷고, 화면 맨 아래 판 번호가 1.0부터 새로 시작해요.","글과 기록은 그대로예요."],
+ {id:"2026-11-23",date:"2026년 11월 23일",title:"묵상 틀이 쉬워지고, 해설은 오른쪽 창에",items:[
   ["🌱","묵상 틀이 쉬워졌어요","「틀 넣기」를 누르면 본문 → 관찰 → 하나님 → 깨달음 → 적용 → 기도 → 나눔 씨앗 차례로 칸이 들어와요. 「말씀 앞에서 묻기」의 오늘의 질문도 우리 삶의 말로 바꿨어요.","마지막 칸 「나눔 씨앗」에 가족·소그룹과 나누고 싶은 한 줄을 적어 두면 「쓰기 ▾ → 나눔 씨앗 모음」에 모여요."],
   ["📖","해설은 오른쪽 창에","컴퓨터에서 묵상 카드의 「해설 보기」를 누르면 해설이 화면 오른쪽 창으로 떠요. 보던 화면은 왼쪽에 나란히 놓이고, 「✕」로 닫으면 원래 폭으로 돌아와요.","휴대폰에서는 지금처럼 카드 아래에 펼쳐져요."],
   ["☺","부르는 이름","설정 → 쓰기 → 「나를 부르는 호칭」에서 작가님·성도님·선생님 가운데 고르거나 직접 적을 수 있어요.",""]]},
@@ -1522,7 +1522,7 @@ function fbOpen(){ $("#fbview")?.remove(); const ov=document.createElement("div"
     <div class="dnamt" role="radiogroup" aria-label="어떤 이야기인가요">${FB_KIND.map(([k,ic,n])=>`<button type="button" role="radio" aria-checked="${FB_PICK===k}" class="${FB_PICK===k?"on":""}" data-k="${k}"><span aria-hidden="true">${ic}</span>${n}</button>`).join("")}</div>
     <textarea id="fbtext" class="fbtext" rows="5" maxlength="2000" placeholder="예) 일기장에서 날씨를 두 개 고르는 게 좋았어요 / 휴대폰에서 글자가 조금 작아요">${esc(d.t||"")}</textarea>
     <input id="fbcontact" class="fbcontact" type="text" maxlength="80" autocomplete="off" placeholder="답 받을 메일·카톡 아이디 (선택)" value="${esc(d.c||"")}">
-    <p class="hint fbwhat">함께 가는 것: 적으신 글 · 판 번호(${esc(typeof APP_VER==="string"?APP_VER:"")}) · 휴대폰/컴퓨터 · 지금 화면. 다른 기록은 보내지 않아요.</p>
+    <p class="hint fbwhat">함께 가는 것: 적으신 글 · 판 번호(베타 ${esc(typeof APP_VER==="string"?APP_VER:"")}) · 휴대폰/컴퓨터 · 지금 화면. 다른 기록은 보내지 않아요.</p>
     <div class="dnacts fbacts"><button class="btn ink dnbtn" id="fbsend">보내기</button>${FEEDBACK.chat?`<a class="btn dnbtn" href="${esc(safeUrl(FEEDBACK.chat))}" target="_blank" rel="noopener">오픈채팅방에서 이야기 나누기</a>`:""}</div>
     <div class="newsacts"><button class="btn newsok" data-x>닫기</button></div></article>`;
   document.body.appendChild(ov);
@@ -1585,7 +1585,7 @@ function newsSection(){ return `<section class="sheet tape c compact"><p class="
 function manualSection(){ return `<section class="sheet tape c compact"><p class="label">사용 설명서</p>
   <p class="sub">처음이라면 간단 매뉴얼부터, 더 깊이 알고 싶을 때 상세 매뉴얼을 펴 보세요. 둘 다 새 창으로 열립니다.</p>
   <div class="mancards">${MANUALS.map(([k,n,d])=>`<div class="mancard"><b>${n}</b><span>${d}</span><div class="row" style="gap:6px;flex-wrap:wrap"><a class="btn small ink" href="manual/${k}.html" target="_blank" rel="noopener" title="${n}을 웹 페이지로 엽니다 (차례·검색·밝게/어둡게)">웹으로 보기 ↗</a><a class="btn small" href="manual/${k}.pdf" target="_blank" rel="noopener" download title="${n}을 PDF 책으로 받습니다 (인쇄용)">PDF 받기</a></div></div>`).join("")}</div>
-  <p class="hint">프로그램이 바뀌면 설명서도 함께 고쳐집니다. 단추 위에 마우스를 올리면 뜨는 도움말(설정 → 화면·기기 → 화면 꾸미기 → 도움말 모드)도 함께 쓰세요.</p><p class="madeby">아침 서재 · 아빠 <b>임요한 목사</b>(좋은나무교회 담임목사)와 딸 <b>임하은 작가</b>가 함께 만들었습니다. 임요한 목사는 매일성경 묵상을 나누는 YouTube <a href="https://www.youtube.com/@%EA%B5%BF%ED%8A%B8%EB%A6%AC%EC%94%A8" target="_blank" rel="noopener" title="YouTube 굿트리씨[매일성경묵상] 채널을 새 창으로 엽니다">「굿트리씨」 채널 ↗</a>을 운영합니다.</p></section>`; }
+  <p class="hint">프로그램이 바뀌면 설명서도 함께 고쳐집니다. 단추 위에 마우스를 올리면 뜨는 도움말(설정 → 화면·기기 → 화면 꾸미기 → 도움말 모드)도 함께 쓰세요.</p><div class="betanote"><b>베타판입니다.</b> 아직 시험 중인 프로그램이라 기능이 바뀌거나 오류가 날 수 있습니다. 중요한 글은 따로 사본을 남겨 두세요.<br>주변에 함께 묵상할 분이 계시면 이 주소를 편하게 나눠 주세요.</div><p class="madeby">아침 서재 베타판 · 아빠 <b>임요한 목사</b>(좋은나무교회 담임목사)와 딸 <b>임하은 작가</b>가 함께 만들었습니다. 임요한 목사는 매일성경 묵상을 나누는 YouTube <a href="https://www.youtube.com/@%EA%B5%BF%ED%8A%B8%EB%A6%AC%EC%94%A8" target="_blank" rel="noopener" title="YouTube 굿트리씨[매일성경묵상] 채널을 새 창으로 엽니다">「굿트리씨」 채널 ↗</a>을 운영합니다.</p></section>`; }
 // ───────── 자동 백업: 구글 드라이브 「아침 서재/백업」(모든 기기, 서버가 날마다) + 이 PC 폴더(설정한 PC만, 휴대폰은 구글만) ─────────
 // PC 백업은 크롬·엣지의 「폴더 고르기」로 고른 폴더에 아침서재-백업-날짜.json 을 씁니다. 같은 날은 30분마다 그날 파일을 새로 고치고, 최근 30일 + 달마다 첫 파일을 남깁니다.
 // 고른 폴더(손잡이)는 이 기기 큰 저장소(IndexedDB lbDir)에만, 켜기·마지막 시각은 seojae.localBackup 에만 — 기록 파일(구글)에는 넣지 않음
@@ -1729,7 +1729,7 @@ function qbSet(k){ if(!QB[k]||qbK()===k) return; const pl=suPassage(SU)?.label, 
   S.settings.qtBook=k; save(); SU=null; SUT=null; SUN=null; if($("#sunpanel")) sunClose(); $("#sunote")&&($("#sunote").innerHTML=""); if($("#sucard")) paintSu(); else render(); toast(`오늘의 묵상 본문을 「${QB[k].n}」에서 받아 옵니다`); }
 function qbMenu(ev){ const r=ev.currentTarget.getBoundingClientRect(); ctxOpen(r.left,r.bottom+4,"묵상지 고르기",Object.entries(QB).map(([k,q])=>({t:(qbK()===k?"✓ ":"")+q.n+" · "+q.org,ic:k==="su"?"📘":"🌿",fn:()=>qbSet(k)})),isTouch()&&innerWidth<=700,"고른 묵상지의 오늘 본문·제목·찬송가가 이 칸에 옵니다"); }
 // 생명의 삶: 해설·영상은 두란노 구독자 화면으로 (앱 안에 넣지 않음 — 로그인이 필요한 유료 저작물)
-function llLinks(date){ return `<button class="btn small ghost" id="subtn" onclick="suNoteToggle()" title="그날 생명의 삶 본문으로 새벽 3시에 만들어 둔 묵상 길잡이(AI 정리)를 봅니다 — 컴퓨터에서는 오른쪽 창으로, 휴대폰에서는 카드 아래에">${ICO.book}${$("#sunpanel")?"길잡이 닫기":"묵상 길잡이"}</button><a class="btn small ghost" href="${esc(QB.ll.home(date))}" target="_blank" rel="noopener" onclick="return popBible(this.href)" title="두란노 「오늘의 QT」 화면을 오른쪽 성경 창으로 엽니다 — 본문 해설·묵상 에세이는 생명의삶 구독(로그인)으로 볼 수 있습니다">${ICO.book}해설은 두란노에서 ↗</a><a class="btn small ghost pconly" href="https://www.duranno.com/qt/view/video.asp?qtDate=${esc(date||today())}" target="_blank" rel="noopener" onclick="return popBible(this.href)" title="CGN 「영상 QT」 — 두란노 누리집에서 오늘 것은 컴퓨터로 볼 수 있고, 지난 날은 로그인이 필요합니다">🎬 영상 QT ↗</a>`; }
+function llLinks(date){ return `<button class="btn small ghost" id="subtn" onclick="suNoteToggle()" title="그날 생명의 삶 본문(장절)에 맞춰 아침 서재가 새벽 3시에 AI로 정리해 둔 묵상 길잡이를 봅니다 — 두란노 「생명의 삶」이 제공한 해설이 아닙니다 — 컴퓨터에서는 오른쪽 창으로, 휴대폰에서는 카드 아래에">${ICO.book}${$("#sunpanel")?"길잡이 닫기":"묵상 길잡이"}</button><a class="btn small ghost" href="${esc(QB.ll.home(date))}" target="_blank" rel="noopener" onclick="return popBible(this.href)" title="두란노 「오늘의 QT」 화면을 오른쪽 성경 창으로 엽니다 — 본문 해설·묵상 에세이는 생명의삶 구독(로그인)으로 볼 수 있습니다">${ICO.book}해설은 두란노에서 ↗</a><a class="btn small ghost pconly" href="https://www.duranno.com/qt/view/video.asp?qtDate=${esc(date||today())}" target="_blank" rel="noopener" onclick="return popBible(this.href)" title="CGN 「영상 QT」 — 두란노 누리집에서 오늘 것은 컴퓨터로 볼 수 있고, 지난 날은 로그인이 필요합니다">🎬 영상 QT ↗</a>`; }
 let SU=null, SUT=null, SUERR="";
 async function suInfo(date){
   const kb=qbK(), pre="seojae-open."+(kb==="ll"?"ll2.":"su2.");   // su2·ll2: 해설 음성 주소를 되살린 뒤의 사본(예전 su. 사본에는 음성이 빠져 있음)
@@ -1764,13 +1764,14 @@ const sunW=()=>Math.round(Math.min(480,Math.max(340,innerWidth*.34)));
 const sunWide=()=>innerWidth-sunW()>=640&&matchMedia("(pointer:fine)").matches;
 const llGuideHtml=()=>{ const G=SUN; if(G.pending) return `<p class="muted" style="margin:0 0 10px">${esc(G.note||"묵상 길잡이를 준비하는 중입니다")}</p>${G.none?"":`<button class="btn small" onclick="suNoteReload()">다시 불러오기</button>`}`;
   const body=String(G.text||"").split("\n").map(x=>x.trim()).filter(Boolean).map(x=>/^■/.test(x)?`<div class="suhead" style="margin-top:10px">${esc(x.replace(/^■\s*/,""))}</div>`:`<p style="margin:0 0 6px">${esc(x)}</p>`).join("");
-  return `${G.partial?`<p class="hint" style="margin:0 0 8px">주석을 읽은 길잡이는 아직 만드는 중이라, 먼저 본문·검색으로 만든 길잡이를 보여 드립니다.</p>`:""}${body}
-    <p class="hint" style="margin-top:10px">${/claude/i.test(G.ai||"")?"AI(클로드)":/gemini/i.test(G.ai||"")?"AI(제미나이)":"AI"}가 ${G.sources?.length?`주석 ${G.sources.length}권(${esc(G.sources.join(" · "))})의 발췌를 읽고`:"본문과 검색 자료로"} 정리한 길잡이입니다. 날마다 새벽 3시에 올라옵니다. 틀린 곳이 있을 수 있으니 본문과 견주어 읽어 주세요 · 두란노 생명의 삶 해설은 「해설은 두란노에서 ↗」로.</p>`; };
+  const notLL=`<p class="llnot">이 길잡이는 두란노 「생명의 삶」이 제공한 해설이 아닙니다. 「생명의 삶」 본문(장절)에 맞춰 아침 서재가 AI로 따로 정리한 글입니다.</p>`;
+  return `${notLL}${G.partial?`<p class="hint" style="margin:0 0 8px">주석을 읽은 길잡이는 아직 만드는 중이라, 먼저 본문·검색으로 만든 길잡이를 보여 드립니다.</p>`:""}${body}
+    <p class="hint" style="margin-top:10px">${/claude/i.test(G.ai||"")?"AI(클로드)":/gemini/i.test(G.ai||"")?"AI(제미나이)":"AI"}가 ${G.sources?.length?`주석 ${G.sources.length}권(${esc(G.sources.join(" · "))})의 발췌를 읽고`:"본문과 검색 자료로"} 정리한 길잡이입니다. 날마다 새벽 3시에 올라옵니다. 두란노 「생명의 삶」의 해설이 아니며, 틀린 곳이 있을 수 있으니 본문과 견주어 읽어 주세요 · 두란노의 본문 해설은 「해설은 두란노에서 ↗」(구독자 화면)로.</p>`; };
 const suNoteHtml=()=>{ if(SUN?.ll) return llGuideHtml(); const para=t=>String(t||"").split(/<br\s*\/?>|\n/).map(x=>x.trim()).filter(Boolean).map(x=>`<p style="margin:0 0 6px">${esc(x)}</p>`).join("");
   return `${SUN.brief?`<p class="sub" style="margin:0 0 10px">${esc(SUN.brief)}</p>`:""}
     ${SUN.sections.map(x=>`<div class="suhead" style="margin-top:8px">${esc(x.label)}</div>${para(x.text)}`).join("")}
     <p class="hint" style="margin-top:8px">매일성경 해설 © 성서유니온선교회 · 개인 묵상용으로만 보여 드리며 기록에는 남기지 않습니다. <a href="https://sum.su.or.kr:8888/bible/today#bibleTab" target="_blank" rel="noopener" onclick="return popBible(this.href)">성서유니온에서 보기 ↗</a></p>`; };
-function suBtnLabel(){ const b=$("#subtn"), ll=SU?.src==="ll"; if(b) b.innerHTML=ICO.book+($("#sunpanel")?(ll?"길잡이 닫기":"해설 창 닫기"):$("#sunote")?.innerHTML?(ll?"길잡이 접기":"해설 접기"):(ll?"묵상 길잡이":"해설 보기")); }
+function suBtnLabel(){ const b=$("#subtn"), ll=SU?.src==="ll"; if(b){ const o=!!($("#sunpanel")||$("#sunote")?.innerHTML); b.classList.toggle("on",o); b.setAttribute("aria-expanded",o); } if(b) b.innerHTML=ICO.book+($("#sunpanel")?(ll?"길잡이 닫기":"해설 창 닫기"):$("#sunote")?.innerHTML?(ll?"길잡이 접기":"해설 접기"):(ll?"묵상 길잡이":"해설 보기")); }
 // 생명의 삶 묵상 길잡이(2026-11-23): 서버가 새벽 3시에 만들어 둔 글 — 매일성경 해설과 같은 칸·창(SUN.ll)
 const suNoteGet=d=>SU?.src==="ll"?gcall("llGuide",d).then(r=>({...r,ll:true})):gcall("dailyBibleNote",d);
 function suNoteReload(){ SUN=null; if($("#sunpanel")) return sunSync(); const box=$("#sunote"); if(box) box.innerHTML=""; suNoteToggle(); }
@@ -1787,7 +1788,7 @@ function sunOpen(){ let p=$("#sunpanel"); if(!p){ p=document.createElement("asid
   NSIDE=sunW(); p.style.width=NSIDE+"px"; sideGapPaint(); sunPaint(); suBtnLabel();
   let seen=false; try{ seen=localStorage.getItem("seojae-open.sunTip")==="1"; localStorage.setItem("seojae-open.sunTip","1"); }catch(_){} if(!seen) toast("해설을 오른쪽 창에 띄웠습니다 · 지금 화면은 왼쪽에 그대로 · ✕로 닫으면 원래 폭으로"); }
 function sunPaint(){ const p=$("#sunpanel"); if(!p||!SUN) return; const d=SUN.date, lb=`${+d.slice(5,7)}월 ${+d.slice(8,10)}일`, same=SU&&SU.date===d;
-  p.innerHTML=`<div class="sunphead"><b>${ICO.book}${SUN.ll?"생명의 삶 묵상 길잡이":"매일성경 해설"}</b><span class="muted" title="${esc(same&&SU.title?SU.title:"")}">${lb}${same&&SU.title?" · "+esc(SU.title):""}</span><span class="spacer"></span>${same&&SU.audio&&!SUN.ll?`<button class="btn small ghost" onclick="suListen()" title="본문 낭독과 해설을 앱 안 작은 재생기로 듣습니다">${ICO.audio}듣기</button>`:""}<button class="btn small ghost sunx" onclick="sunClose()" title="해설 창 닫기 — 화면이 원래 폭으로 돌아갑니다" aria-label="해설 창 닫기">✕</button></div>
+  p.innerHTML=`<div class="sunphead"><b>${ICO.book}${SUN.ll?"묵상 길잡이 (아침 서재 AI)":"매일성경 해설"}</b><span class="muted" title="${esc(same&&SU.title?SU.title:"")}">${lb}${same&&SU.title?" · "+esc(SU.title):""}</span><span class="spacer"></span>${same&&SU.audio&&!SUN.ll?`<button class="btn small ghost" onclick="suListen()" title="본문 낭독과 해설을 앱 안 작은 재생기로 듣습니다">${ICO.audio}듣기</button>`:""}<button class="btn small ghost sunx" onclick="sunClose()" title="해설 창 닫기 — 화면이 원래 폭으로 돌아갑니다" aria-label="해설 창 닫기">✕</button></div>
     <div class="sunpbody sunote">${suNoteHtml()}</div>`; }
 function sunClose(){ $("#sunpanel")?.remove(); NSIDE=0; sideGapPaint(); suBtnLabel(); }
 // 묵상 카드를 다시 그린 뒤: 해설 창이 열려 있으면 그 날짜·묵상지에 맞춤
@@ -1824,7 +1825,7 @@ async function paintSu(){
   box.innerHTML=`${nav}
     <div class="sut"><b>${esc(SU.title)}</b> · ${esc(P.label)}${SU.hymn?` · <span class="muted hymnbox" id="hymnbox">찬송가 ${esc(SU.hymn)}장${hymnCtl()}</span>`:""}</div>
     <div class="links"><button class="btn small ink" onclick="suUse()">이 본문으로 쓰기</button>
-      <a class="verlink" href="${esc(suOfficial(P,"NKRV"))}" target="_blank" rel="noopener" onclick="return popBible(this.href)" title="개역개정은 저작권 때문에 앱 안에 넣을 수 없어 대한성서공회 사이트에서 같은 구절을 엽니다">개역개정</a><a class="verlink" href="${esc(suOfficial(P,"NKT"))}" target="_blank" rel="noopener" onclick="return popBible(this.href)">새한글</a><a class="verlink" href="${esc(suOfficial(P,"RNKSV"))}" target="_blank" rel="noopener" onclick="return popBible(this.href)">새번역</a><a class="verlink" href="${esc(suNiv(P))}" target="_blank" rel="noopener" onclick="return popBible(this.href)">NIV</a><button class="btn small ghost pconly" onclick="sideTip()" title="성경 창을 띄워 둔 채 쓰는 법">ⓘ</button><button class="btn small ghost pconly" onclick="pipBible()" title="오늘 본문(개역한글·영어)을 다른 창보다 늘 위에 떠 있는 작은 창으로 띄웁니다 (크롬·엣지)">${ICO.closed}위에 띄우기</button>
+      <span class="vergrp" role="group" aria-label="다른 번역으로 열기 (새 창)"><span class="vgk">번역</span><a class="verlink" href="${esc(suOfficial(P,"NKRV"))}" target="_blank" rel="noopener" onclick="return popBible(this.href)" title="개역개정은 저작권 때문에 앱 안에 넣을 수 없어 대한성서공회 사이트에서 같은 구절을 엽니다">개역개정</a><a class="verlink" href="${esc(suOfficial(P,"NKT"))}" target="_blank" rel="noopener" onclick="return popBible(this.href)">새한글</a><a class="verlink" href="${esc(suOfficial(P,"RNKSV"))}" target="_blank" rel="noopener" onclick="return popBible(this.href)">새번역</a><a class="verlink" href="${esc(suNiv(P))}" target="_blank" rel="noopener" onclick="return popBible(this.href)">NIV</a></span><button class="btn small ghost pconly" onclick="sideTip()" title="성경 창을 띄워 둔 채 쓰는 법">ⓘ</button><button class="btn small ghost pconly" onclick="pipBible()" title="오늘 본문(개역한글·영어)을 다른 창보다 늘 위에 떠 있는 작은 창으로 띄웁니다 (크롬·엣지)">${ICO.closed}본문 작은 창</button>
       ${SU.src==="ll"?llLinks(date):`${SU.audio?`<button class="btn small ghost" onclick="suListen()" title="매일성경 해설(본문 낭독과 해설)을 앱 안 작은 재생기로 듣습니다. 다른 메뉴로 옮겨도 계속 들립니다">${ICO.audio}해설 듣기</button>`:""}<button class="btn small ghost" id="subtn" onclick="suNoteToggle()" title="매일성경 해설을 봅니다 — 컴퓨터에서는 오른쪽 해설 창으로, 휴대폰에서는 카드 아래에">${ICO.book}${$("#sunpanel")?"해설 창 닫기":"해설 보기"}</button>`}</div>
     <details class="more"><summary>말씀 앞에서 묻기 <small class="hint" style="display:inline">· 오늘의 질문</small></summary><ol class="q" style="margin:4px 0 0">${pickQ("bible",today()+"b").map(q=>`<li>${esc(q)}</li>`).join("")}</ol></details>
     <div id="sunote"></div>
