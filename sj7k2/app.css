@@ -2841,3 +2841,178 @@ html.bson .askview{z-index:160}
 }
 .dnamt button.on{border-width:2px;border-color:#c98a3a;font-weight:800;box-shadow:0 0 0 2px color-mix(in srgb,#f2c066 35%,transparent)} .dnamt button.on::before{content:"✓";margin-right:2px;color:#a66a1f}   /* 고른 금액이 또렷하게(2026-11-23 사용자 점검) */
 .dncard .dnnote{margin:8px 0 0;font-size:12px;line-height:1.55;color:var(--ink-soft);font-family:var(--ui-font)}
+
+/* ═════════ 새 디자인 층 (2026-11-23 팀장님 「주 사용자는 젊은 층 — 트렌디하고 직관적으로, 아날로그 감성은 유지」 · 전문가 4인 검토 기록 `기록/2026-11-23_젊은사용자_모바일디자인.md`) ═════════
+   원칙: ① 단추·메뉴·안내 = 고딕(--ui-font), 읽고 쓰는 글 = 지금 명조·손글씨 그대로 ② 단추는 가벼운 면(옅은 바탕·가는 선), 화면마다 진한 단추는 하나
+   ③ 카드 모서리 14~16·부드러운 그림자 ④ 휴대폰 아래 메뉴 = 떠 있는 유리 막대, 켜진 메뉴만 세피아 ⑤ 종이 결·테이프·손글씨 제목·크레파스 형광펜은 그대로
+   이 층은 파일 끝에 두어 순서로 이김(@layer 쓰지 말 것). --paper·--ink·--edge 값은 바꾸지 않음(종이·PDF·글방이 그대로) — 새 토큰만 더함 */
+:root{
+  --ui-font:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Pretendard Variable","Pretendard","Noto Sans KR","Malgun Gothic",sans-serif;
+  --fill:rgba(60,40,20,.055); --fill-2:rgba(60,40,20,.09); --line:rgba(60,40,20,.10); --line-strong:rgba(60,40,20,.18);
+  --accent-soft:color-mix(in srgb,var(--sepia) 13%,var(--paper));
+  --r-sm:10px; --r-md:12px; --r-lg:16px; --r-xl:22px;
+  --sh-1:0 1px 2px rgba(60,40,20,.06);
+  --sh-2:0 1px 2px rgba(60,40,20,.05),0 10px 26px -14px rgba(60,40,20,.24);
+  --sh-float:0 12px 34px -12px rgba(40,28,16,.34),0 0 0 .5px rgba(60,40,20,.14);
+  --glass-bar:rgba(251,247,238,.78);
+}
+:root[data-theme="dark"]{
+  --fill:rgba(255,240,220,.06); --fill-2:rgba(255,240,220,.10); --line:rgba(255,240,220,.08); --line-strong:rgba(255,240,220,.16);
+  --sh-1:0 1px 2px rgba(0,0,0,.3); --sh-2:0 1px 2px rgba(0,0,0,.3),0 12px 28px -14px rgba(0,0,0,.7); --sh-float:0 14px 36px -12px rgba(0,0,0,.75),0 0 0 .5px rgba(255,240,220,.10);
+  --glass-bar:rgba(41,35,29,.80);
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --fill:rgba(255,240,220,.06); --fill-2:rgba(255,240,220,.10); --line:rgba(255,240,220,.08); --line-strong:rgba(255,240,220,.16);
+  --sh-1:0 1px 2px rgba(0,0,0,.3); --sh-2:0 1px 2px rgba(0,0,0,.3),0 12px 28px -14px rgba(0,0,0,.7); --sh-float:0 14px 36px -12px rgba(0,0,0,.75),0 0 0 .5px rgba(255,240,220,.10);
+  --glass-bar:rgba(41,35,29,.80); } }
+
+/* ── 단추·알약 (PC·휴대폰 함께): 고딕, 가는 선의 면 단추 ── */
+.btn{font-family:var(--ui-font);font-weight:500;letter-spacing:-.005em;border:1px solid var(--line-strong);background:color-mix(in srgb,var(--paper) 70%,transparent);border-radius:var(--r-md);transition:background .15s,border-color .15s,transform .12s,box-shadow .15s}
+.btn:hover{background:var(--fill)}
+.btn:active{transform:scale(.98)}
+.btn.ink{background:var(--ink);color:var(--paper);border-color:var(--ink);font-weight:600;box-shadow:var(--sh-1)}
+.btn.ink:hover{background:var(--ink);opacity:.92}
+.btn.ghost{background:transparent;border-color:transparent}
+.btn.ghost:hover{background:var(--fill)}
+.btn.danger{background:transparent}
+.pill{font-family:var(--ui-font);font-weight:500;font-size:13.5px;border-color:var(--line-strong);background:color-mix(in srgb,var(--paper) 60%,transparent)}
+.pill.on{font-weight:600}
+.muted,.hint,.sub{font-family:var(--ui-font)}
+.portion .ptext,.big{letter-spacing:-.01em}
+/* 카드: 종이 결은 그대로, 모서리·그림자만 부드럽게 (글방 「창작의 자리」·문서 모드 종이는 제외) */
+html:not(:has(#main .studio)) .sheet{border-radius:var(--r-lg);border-color:var(--line);box-shadow:var(--sh-2)}
+.sucard,.mocover{border-radius:var(--r-lg);border-color:var(--line);box-shadow:var(--sh-2)}
+.tgreet{border-radius:var(--r-lg);border-color:var(--line);box-shadow:var(--sh-2)}
+.tg-clock{border-radius:14px;border-color:var(--line-strong);box-shadow:var(--sh-1)}
+.calcard{border-radius:var(--r-lg)}
+/* 오늘 할 일 네 칸: 알약 → 둥근 네모 카드, 고딕 */
+.routine button{font-family:var(--ui-font);font-weight:500;border-color:var(--line);background:color-mix(in srgb,var(--paper) 55%,transparent);border-radius:var(--r-md)}
+.routine button.on{color:var(--ink);background:var(--paper);border-color:color-mix(in srgb,var(--sepia) 30%,var(--line));box-shadow:var(--sh-1)}
+/* 읽기 줄 「읽기」 단추: 작고 가벼운 면 단추 */
+.portion .plink{box-shadow:none!important;border:1px solid var(--line)!important;background:var(--fill)!important}
+
+/* ═══ 휴대폰 (700px 이하) ═══ */
+@media (max-width:700px){
+  body{padding-bottom:calc(96px + env(safe-area-inset-bottom))}
+  main.wrap{padding:14px 16px 28px}
+  .grid{gap:16px}
+  .sheet{padding:18px 16px 16px}
+  h2{font-size:19px} .big{font-size:17px}
+  /* 머리 줄: 얇고 가볍게 — 로고는 손글씨 그대로 작게, 이어진 날은 칩, 「가가」·톱니는 옅은 동그라미 */
+  header{padding-top:calc(8px + env(safe-area-inset-top))}
+  header .top{align-items:center;min-height:48px}
+  .brand{font-size:29px} .brand small{display:none}
+  .topright{gap:6px;padding-bottom:0}
+  .top .streak{margin-right:0}
+  header .streak{flex-direction:row;align-items:center;gap:3px;height:30px;padding:0 11px 0 9px;border-radius:999px;background:var(--accent-soft);color:var(--sepia);font-family:var(--ui-font)}
+  header .streak .n{font-family:var(--ui-font);font-size:15px;font-weight:700;color:var(--sepia);letter-spacing:0}
+  header .streak .n~span{display:none}
+  header .streak .n::after{content:"일째";font-size:12px;margin-left:1px;font-family:var(--ui-font);font-weight:600}
+  header .streak::before{content:"";width:14px;height:14px;flex:none;background:currentColor;-webkit-mask:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M12 2c1.4 3.6 5 5.6 5 10.2A5 5 0 0 1 7 12.5c0-1.6.6-3 1.6-4 .2 1.8 1.2 3 2.4 3.4C10.6 8.5 11 5 12 2z' fill='black'/></svg>") center/contain no-repeat;mask:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M12 2c1.4 3.6 5 5.6 5 10.2A5 5 0 0 1 7 12.5c0-1.6.6-3 1.6-4 .2 1.8 1.2 3 2.4 3.4C10.6 8.5 11 5 12 2z' fill='black'/></svg>") center/contain no-repeat}
+  header .streak:empty{display:none}
+  header .streak .rest{font-size:10.5px;padding:0 6px;margin:0 2px 0 0;border-color:var(--line-strong)}
+  .vsbtn{width:38px;height:38px;border-radius:50%;border:0;background:var(--fill);color:var(--ink-soft);box-shadow:none}
+  .vsbtn .vsico{width:22px;height:17px}
+  html[data-vsize]:not([data-vsize="l"]) .vsbtn,html[data-vsize="l"] .vsbtn{background:var(--accent-soft);color:var(--sepia);border:0}   /* 처음(보통)에서 바꿨으면 세피아 빛 */
+  html:not([data-vsize]) .vsbtn{background:var(--fill);color:var(--ink-soft);border:0}
+  .gearbtn{width:38px;height:38px;padding:6px;border-radius:50%;background:var(--fill)}
+  .gearbtn svg{filter:none}
+  .gearbtn:hover{transform:none}
+  /* 아래 메뉴: 떠 있는 유리 막대 · 모양 하나(켜진 메뉴만 세피아 알약) · AI는 「＋」 판으로 */
+  nav{left:10px;right:10px;bottom:calc(8px + env(safe-area-inset-bottom));padding:6px;border:0;border-radius:var(--r-xl);
+    background:var(--glass-bar);-webkit-backdrop-filter:blur(18px) saturate(1.5);backdrop-filter:blur(18px) saturate(1.5);box-shadow:var(--sh-float)}
+  nav button:not(.navroom):not(.navai),nav button.navroom{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:2px 0;min-height:52px;
+    font-family:var(--ui-font);font-size:11px;font-weight:600;color:var(--ink-soft);background:transparent;box-shadow:none;border-radius:16px;letter-spacing:0}
+  nav .nvi,nav button.navroom .ico{width:22px;height:22px;padding:4px 14px;box-sizing:content-box;border-radius:999px;background:transparent;box-shadow:none;stroke:currentColor}
+  nav button.navhome:not(.on) .nvi,nav button.navdrawer:not(.on) .nvi{background:transparent;box-shadow:none;stroke:currentColor}
+  nav button.navdrawer .nvi{border-radius:999px}
+  nav button.on:not(.navroom):not(.navai),nav button.navhome.on:not(.navroom){color:var(--sepia);font-weight:700}
+  nav button.on .nvi,nav button.navhome.on .nvi{background:var(--accent-soft);stroke:var(--sepia);box-shadow:none}
+  nav button.navroom{margin-left:0;flex:1;color:#3d4d6c}
+  nav button.navroom .ico{stroke:currentColor}
+  nav button.navroom.on{background:transparent;color:#2c3852;box-shadow:none}
+  nav button.navroom.on .ico{background:#2f3b52;stroke:#e8c98a;box-shadow:0 4px 10px -5px rgba(20,25,40,.6)}
+  nav button.navroom.on::before{display:none}
+  nav button.navai{display:none}
+  nav button:not(.on):active .nvi,nav button.navroom:not(.on):active .ico{background:var(--fill-2);transform:scale(.94)}
+  :root[data-theme="dark"] nav button.navroom{color:#aebbd6} :root[data-theme="dark"] nav button.navroom.on{color:#dfe6f3}
+  /* 오늘 화면 */
+  .tgreet{padding:14px 14px;gap:12px}
+  .tg-hi{font-size:15.5px}
+  .routine{gap:8px}
+  .routine button{min-height:44px;font-size:14px;padding:5px 12px 5px 8px}
+  .portion{padding:10px 2px}
+  .portion .ptext{font-size:16.5px}
+  .portion .plab{font-size:12px}
+  .portion .plink{min-height:34px!important;padding:0 11px!important}
+  .label{font-size:20px}
+  .btn{padding:9px 16px;font-size:14.5px}
+  .btn.small{font-size:13.5px;padding:7px 13px}
+  /* 쓰는 화면 도구 줄: 한 단계 작고 가볍게 */
+  .toolbar{gap:6px}
+  .toolbar .btn.small,.toolbar .undobtn{min-height:36px}
+  .toolbar .btn.small{padding:5px 12px;font-size:13px}
+  /* 묵상 카드: 진한 단추는 「이 본문으로 쓰기」 하나 — 쓰는 화면 「＋ 설교초안 만들기」는 옅은 단추로 */
+  .toolbar.qtmin>.btn.ink:not(:last-child){background:transparent;color:var(--ink);border-color:var(--line-strong);box-shadow:none}
+  .sucard{padding:14px 14px}
+}
+
+/* ── 「＋」 빠른 메모 단추·판 (휴대폰만) ── */
+.qkfab{display:none}
+@media (max-width:700px){
+  .qkfab{display:grid;place-items:center;position:fixed;z-index:41;right:16px;bottom:calc(84px + env(safe-area-inset-bottom));width:52px;height:52px;border-radius:18px;border:0;padding:0;cursor:pointer;
+    background:var(--ink);color:var(--paper);box-shadow:0 10px 24px -10px rgba(30,20,10,.6),0 2px 6px -2px rgba(30,20,10,.3);transition:transform .15s}
+  .qkfab[hidden]{display:none}
+  .qkfab svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round}
+  .qkfab:active{transform:scale(.94)}
+  body.focus .qkfab,body.dfull .qkfab,body:has(#aipanel) .qkfab,body:has(.askview) .qkfab,body:has(.newsview) .qkfab{display:none}
+}
+.qksheet{position:fixed;inset:0;z-index:130}
+.qk-back{position:absolute;inset:0;background:rgba(30,22,14,.32);opacity:0;transition:opacity .22s}
+.qk-card{position:absolute;left:0;right:0;bottom:0;max-width:560px;margin:0 auto;padding:8px 18px calc(18px + env(safe-area-inset-bottom));border-radius:24px 24px 0 0;
+  background:var(--paper) var(--grain);color:var(--ink);box-shadow:0 -14px 40px -16px rgba(30,20,10,.45);font-family:var(--ui-font);transform:translateY(105%);transition:transform .24s cubic-bezier(.2,.8,.2,1)}
+.qksheet.on .qk-back{opacity:1} .qksheet.on .qk-card{transform:none}
+.qk-grip{display:block;width:40px;height:5px;border-radius:3px;background:var(--line-strong);margin:2px auto 10px}
+.qk-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.qk-h{margin:0;font-family:"Gamja Flower";font-size:22px;color:var(--sepia);line-height:1}
+.qk-x{width:36px;height:36px;border-radius:50%;border:0;background:var(--fill);color:var(--ink-soft);font-size:14px;cursor:pointer}
+#qkin{width:100%;min-height:92px;resize:none;border:1px solid var(--line-strong);border-radius:14px;background:var(--paper-2);color:var(--ink);padding:12px 14px;font:16px/1.6 "Gowun Batang",serif;outline:none}
+#qkin:focus{border-color:color-mix(in srgb,var(--sepia) 55%,transparent);box-shadow:0 0 0 3px color-mix(in srgb,var(--sepia) 18%,transparent)}
+.qk-save{display:flex;align-items:center;justify-content:flex-end;gap:10px;margin:10px 0 14px}
+.qk-k{font-size:12px;color:var(--faint)}
+@media (pointer:coarse){ .qk-k{display:none} }
+.qk-save .btn{min-height:44px;padding:0 20px}
+.qk-go{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;border-top:1px solid var(--line);padding-top:14px}
+.qk-go button{display:flex;flex-direction:column;align-items:center;gap:6px;border:0;background:transparent;color:var(--ink);font:500 12px/1.2 var(--ui-font);cursor:pointer;padding:4px 0;border-radius:12px}
+.qk-go button svg,.qk-go button b{display:grid;place-items:center;width:46px;height:46px;box-sizing:border-box;padding:12px;border-radius:15px;background:var(--fill);fill:none;stroke:var(--ink);stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.qk-go button b{padding:0;font-size:19px;color:#6b4a9a;background:color-mix(in srgb,#6b4a9a 12%,transparent)}
+:root[data-theme="dark"] .qk-go button b{color:#c9b3ea}
+.qk-go button:active svg,.qk-go button:active b{transform:scale(.94)}
+@media (prefers-reduced-motion:reduce){ .qk-card,.qk-back{transition:none} }
+/* 크게 보기(폭 340px 이하)에서도 머리 줄·떠 있는 메뉴가 넘치지 않게 */
+@media (max-width:340px){
+  nav{left:6px;right:6px} nav .nvi,nav button.navroom .ico{padding:4px 8px;width:20px;height:20px}
+  header .streak{padding:0 8px 0 7px} header .streak::before{display:none}
+  .brand{font-size:25px}
+}
+
+/* 다듬기 2 (같은 날): 읽기표 단추·PC 위 탭·일기 스티커 단추 */
+.rtbtn{font-weight:600;border:1px solid color-mix(in srgb,var(--bible) 30%,var(--line));box-shadow:none;background:color-mix(in srgb,var(--bible) 5%,var(--paper))}
+@media (min-width:701px){ nav button{font-family:var(--ui-font);font-size:14.5px;font-weight:500} nav button.on{font-weight:700} nav button.navroom{font-family:"Gamja Flower"} }
+@media (max-width:700px){
+  .btn.small.ink[onclick="toggleStk()"]{background:transparent;color:var(--ink);border-color:var(--line-strong);box-shadow:none}   /* 일기 첫 화면에서 가장 진한 단추가 스티커가 아니게 */
+  .tg-clock{padding:5px 6px 4px}
+}
+/* 다듬기 3 (같은 날, 사용자 패널 재점검): 떠 있는 메뉴 아래 틈 채우기 · 글방 칸은 켜졌을 때만 남빛 · 어두운 화면 AI 글자 · 「＋」가 끝 내용을 가리지 않게 */
+@media (max-width:700px){
+  body::after{content:"";position:fixed;left:0;right:0;bottom:0;height:calc(44px + env(safe-area-inset-bottom));z-index:39;pointer-events:none;
+    background:linear-gradient(to bottom,color-mix(in srgb,var(--desk) 0%,transparent),var(--desk) 62%)}
+  body.focus::after,body.dfull::after{display:none}
+  nav{z-index:40}
+  nav button.navroom:not(.on){color:var(--ink-soft)}
+  :root[data-theme="dark"] nav button.navroom{background:transparent;border-color:transparent} :root[data-theme="dark"] nav button.navroom:not(.on){color:var(--ink-soft)}
+  :root[data-theme="dark"] nav button.navroom.on .ico{background:#3d4d6c}
+  body:has(#qkfab:not([hidden])) main.wrap{padding-bottom:84px}
+  .qkfab{width:50px;height:50px;border-radius:17px}
+}
+:root[data-theme="dark"] .aibtn{border-color:#a78bd0!important;color:#cdb8ee!important}

@@ -1291,6 +1291,10 @@ const MANUALS=[["quick","간단 매뉴얼","읽자마자 바로 써 보는 한 �
 // ───────── 새 소식 (공개판, 2026-10-31 팀장님): 중요한 고침은 앱을 열 때 한 번만 쉬운 말로 알림 ─────────
 // 새 소식을 더할 때: NEWS 맨 앞에 넣고 id 는 날짜(같은 날 둘째는 2026-11-02b 처럼 — 글자 순서로 새것이 뒤). 본 소식 id 는 이 기기에만(seojae-open.newsSeen)
 const NEWS=[
+ {id:"2026-11-23m",date:"2026년 11월 23일",title:"휴대폰 화면이 새 옷을 입었어요",items:[
+  ["📱","가볍고 산뜻하게","휴대폰은 처음 크기를 「보통」으로 바꾸고, 단추와 메뉴 글씨를 또렷한 고딕으로 정리했어요. 읽고 쓰는 글은 그대로 정갈한 명조예요.","더 크게 보고 싶으시면 위쪽 「가가」에서 「크게 보기」를 고르세요. 전에 고르신 크기는 그대로예요."],
+  ["🫧","떠 있는 아래 메뉴","화면 아래 메뉴가 살짝 떠 있는 유리 막대가 되었어요. 지금 있는 곳만 또렷하게 보여요.",""],
+  ["✍️","엄지 자리 「＋」 빠른 메모","휴대폰 오른쪽 아래 「＋」를 누르면 떠오른 한 줄을 바로 끄적여 둘 수 있어요. 오늘 묵상·일기 쓰기·AI에게 묻기도 여기서 한 번에 가요.","아래 메뉴에 있던 「AI」는 이 「＋」 안으로 옮겼어요."]]},
  {id:"2026-11-23l",date:"2026년 11월 23일",title:"아침 서재 정식 1.0",items:[
   ["🎉","정식 1.0이 되었어요","「베타」 표시를 걷고, 화면 맨 아래 판 번호가 1.0부터 새로 시작해요.","쓰신 글과 기록은 모두 그대로예요."],
   ["🌿","묵상이 한결 깊어졌어요","매일성경·생명의 삶 두 묵상지, 날마다 새벽에 올라오는 「묵상 길잡이」, 짬을 내어 쓰는 묵상 틀이 함께해요.",""],
@@ -2431,17 +2435,47 @@ function sjPush(t,o){ if(BACKNAV) return; sjRoot(); if(t==="room"&&!(o&&o.st)) o
   try{ history.pushState(st,""); SJ_CUR=st; }catch(_){} }
 function sjRoot(){ if(history.state&&(history.state.sj||history.state.sjRoot)) return; try{ history.replaceState({sjRoot:1},""); const st={sj:++SJ,tab,o:{}}; history.pushState(st,""); SJ_CUR=st; }catch(_){} }
 ["pointerdown","keydown"].forEach(ev=>addEventListener(ev,()=>sjRoot(),{once:true,capture:true}));
+// ───────── 빠른 메모 「＋」(2026-11-23 팀장님 「주 사용자(젊은 층)에 맞춰 모바일 디자인」 — 전문가 4인 검토): 휴대폰 엄지 자리 둥근 단추 → 아래에서 올라오는 판
+//   떠오른 한 줄을 바로 끄적이기에 · 오늘 묵상·일기·끄적이기 판·AI로 한 번에. 휴대폰 아래 메뉴에서 뺀 「AI」도 여기로. 쓰는 화면(글·묵상)과 설정에서는 숨김. 새 저장 칸 없음(끄적임 S.jots 그대로)
+function qkFab(){ let b=$("#qkfab"); if(!b){ b=document.createElement("button"); b.id="qkfab"; b.className="qkfab"; b.type="button"; b.setAttribute("aria-label","빠른 메모 · AI"); b.title="빠른 메모 — 떠오른 한 줄을 바로 끄적여 둡니다 · AI에게 묻기";
+    b.innerHTML=`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5.5v13M5.5 12h13"/></svg>`; b.onclick=qkOpen; document.body.appendChild(b); }
+  b.hidden=tab==="write"||tab==="settings"||tab==="diary"; }   // 일기는 쪽 가장자리를 눌러 넘기므로 가리지 않게
+function qkOpen(){ if($("#qksheet")) return qkClose();
+  const ic=p=>`<svg viewBox="0 0 24 24" aria-hidden="true">${p}</svg>`;
+  const d=document.createElement("div"); d.id="qksheet"; d.className="qksheet";
+  d.innerHTML=`<div class="qk-back" onclick="qkClose()"></div><div class="qk-card" role="dialog" aria-modal="true" aria-label="빠른 메모"><span class="qk-grip" aria-hidden="true"></span>
+    <div class="qk-top"><p class="qk-h">떠오른 한 줄</p><button class="qk-x" onclick="qkClose()" aria-label="닫기">✕</button></div>
+    <textarea id="qkin" rows="3" placeholder="생각·글감·말씀 한 구절 — 끄적이기에 모아 둡니다"></textarea>
+    <div class="qk-save"><span class="qk-k">⌘↩ 끄적여 두기</span><button class="btn ink" onclick="qkSave()">끄적여 두기</button></div>
+    <div class="qk-go">
+      <button onclick="qkGo('qt')">${ic(NAV_ICO.qt)}<span>오늘 묵상</span></button>
+      <button onclick="qkGo('diary')">${ic(NAV_ICO.diary)}<span>일기 쓰기</span></button>
+      <button onclick="qkGo('jots')">${ic('<path d="M5 4.5h10.5l3.5 3.5v11.5H5zM15.5 4.5V8H19M8.5 11.5h7M8.5 15h5"/>')}<span>끄적이기 판</span></button>
+      <button class="qk-ai" onclick="qkGo('ai')"><b aria-hidden="true">✦</b><span>AI에게 묻기</span></button>
+    </div></div>`;
+  document.body.appendChild(d); requestAnimationFrame(()=>d.classList.add("on"));
+  const t=$("#qkin"); t.addEventListener("keydown",e=>{ if(e.key==="Enter"&&(e.metaKey||e.ctrlKey)){ e.preventDefault(); qkSave(); } else if(e.key==="Escape"){ e.preventDefault(); e.stopPropagation(); qkClose(); } });
+  let y0=null; const card=d.querySelector(".qk-card");   // 손잡이를 아래로 끌면 닫힘
+  card.addEventListener("touchstart",e=>{ y0=e.target.closest("textarea")?null:e.touches[0].clientY; },{passive:true});
+  card.addEventListener("touchmove",e=>{ if(y0==null) return; const dy=e.touches[0].clientY-y0; if(dy>0) card.style.transform=`translateY(${dy}px)`; },{passive:true});
+  card.addEventListener("touchend",e=>{ if(y0==null) return; const dy=(e.changedTouches[0]?.clientY||y0)-y0; y0=null; card.style.transform=""; if(dy>80) qkClose(); });
+  setTimeout(()=>{ try{ t.focus({preventScroll:true}); }catch(_){} },matchMedia("(pointer:coarse)").matches?260:60); }
+function qkClose(){ const d=$("#qksheet"); if(!d) return; const t=($("#qkin")?.value||"").trim(); if(t){ (S.jots=S.jots||[]).push(jotNew(t)); save(); toast("쓰던 한 줄은 끄적이기에 두었습니다"); if(tab==="today") render(); }
+  d.classList.remove("on"); setTimeout(()=>d.remove(),matchMedia("(prefers-reduced-motion:reduce)").matches?0:220); }
+function qkSave(){ const i=$("#qkin"); const t=(i?.value||"").trim(); if(!t){ toast("적을 것을 먼저 써 주세요"); i?.focus(); return; } (S.jots=S.jots||[]).push(jotNew(t)); save(); i.value=""; toast("끄적여 두었습니다 ✓"); qkClose(); if(tab==="today"||$("#jotlist")) render(); }
+function qkGo(k){ qkClose(); if(k==="qt") go('write',{track:'bible'}); else if(k==="diary") go('diary'); else if(k==="jots") stOpen('jots'); else if(k==="ai") rsToggle(); }
+addEventListener("keydown",e=>{ if(e.key==="Escape"&&$("#qksheet")&&!e.defaultPrevented){ qkClose(); } });
 function sjOverlay(){ const b=document.body.classList;
-  if(document.querySelector(".askview,.newsview,#vspop,#tippop,#dictpop,#rfcard,#sugcard")) return "esc";
+  if(document.querySelector(".askview,.newsview,#vspop,#tippop,#dictpop,#rfcard,#sugcard,#qksheet")) return "esc";
   if($("#bsview")) return "bs";
   if(b.contains("focus")) return "focus"; if(b.contains("dfull")) return "dfull"; if($("#aipanel")) return "ai"; if(document.querySelector("details.tgrp[open],details.stmore[open],details.stmenu[open]")) return "menu"; return null; }
 function sjCloseOverlay(k){
   if(k==="bs"){ try{ bsBack(); }catch(_){} return; }
   if(k==="focus"){ try{ toggleFocus(); }catch(_){} return; } if(k==="dfull"){ try{ dFull(false); }catch(_){} return; } if(k==="ai"){ try{ aiClose(); }catch(_){} return; }
   if(k==="menu"){ document.querySelectorAll("details.tgrp[open],details.stmore[open],details.stmenu[open]").forEach(d=>d.open=false); return; }
-  const top=[...document.querySelectorAll(".askview,.newsview,#vspop,#tippop,#dictpop,#rfcard,#sugcard")].pop();
+  const top=[...document.querySelectorAll(".askview,.newsview,#vspop,#tippop,#dictpop,#rfcard,#sugcard,#qksheet")].pop();
   document.dispatchEvent(new KeyboardEvent("keydown",{key:"Escape",bubbles:true,cancelable:true}));   // 창마다 Esc 로 닫히는 길을 그대로
-  setTimeout(()=>{ if(top&&top.isConnected&&top.matches(".newsview,#vspop,#tippop,#dictpop")) top.remove(); },60); }
+  setTimeout(()=>{ if(top&&top.isConnected&&top.matches(".newsview,#vspop,#tippop,#dictpop,#qksheet")) top.remove(); },60); }
 addEventListener("popstate",e=>{ const st=e.state, ov=sjOverlay();
   if(ov){ sjCloseOverlay(ov); try{ history.pushState(SJ_CUR||{sj:++SJ,tab,o:{}},""); }catch(_){} return; }   // 창만 닫고 제자리(기록 칸을 되돌려 놓음)
   if(st&&st.sj){ BACKNAV=true; try{ if(st.tab==="room"&&st.o&&st.o.st) stOpen(st.o.st); else go(st.tab,st.o||{}); }finally{ BACKNAV=false; } SJ_CUR=st; return; }
@@ -2483,7 +2517,7 @@ function render0(){
   // 같은 쓰기 화면을 다시 그릴 때(말씀/책 바꾸기, 합친 뒤 등) 쓰던 제목·본문을 그대로 지켜 줍니다
   const keep=!NAV&&tab==="write"&&$("#wbody")?{e:editId,t:$("#wtitle").value,b:$("#wbody").value,p:$("#wpassage")?.value}:null;
   const gb=$("#gearbtn"); if(gb){ if(!gb.firstChild) gb.innerHTML=gearSvg(); gb.classList.toggle("on",tab==="settings"); }
-  $("#nav").innerHTML=TABS.map(([k,n])=>`<button class="${k==="write"?"navroom ":k==="today"?"navhome ":k==="drawer"?"navdrawer ":""}${(k==="qt"?tab==="write"&&track==="bible":k==="write"?tab==="room"||(tab==="write"&&track!=="bible"):k===tab)?"on":""}" onclick="${k==="qt"?"go('write',{track:'bible'})":k==="write"?"go('room')":`go('${k}')`}">${k==="write"?`${ICO.pen}<span>${n}</span>`:NAV_ICO[k]?`<svg class="nvi" viewBox="0 0 24 24" aria-hidden="true">${NAV_ICO[k]}</svg><span class="nvt">${n}</span>`:n}</button>`).join("")+`<button class="navai ${AI_MODE==="research"&&$("#aipanel")?"on":""}" onclick="rsToggle()" title="AI 조사 도우미 — 오른쪽 창에서 대화하며 자료를 찾습니다">✦<span>AI</span></button>`;
+  $("#nav").innerHTML=TABS.map(([k,n])=>`<button class="${k==="write"?"navroom ":k==="today"?"navhome ":k==="drawer"?"navdrawer ":""}${(k==="qt"?tab==="write"&&track==="bible":k==="write"?tab==="room"||(tab==="write"&&track!=="bible"):k===tab)?"on":""}" onclick="${k==="qt"?"go('write',{track:'bible'})":k==="write"?"go('room')":`go('${k}')`}">${k==="write"?`${ICO.pen}<span>${n}</span>`:NAV_ICO[k]?`<svg class="nvi" viewBox="0 0 24 24" aria-hidden="true">${NAV_ICO[k]}</svg><span class="nvt">${n}</span>`:n}</button>`).join("")+`<button class="navai ${AI_MODE==="research"&&$("#aipanel")?"on":""}" onclick="rsToggle()" title="AI 조사 도우미 — 오른쪽 창에서 대화하며 자료를 찾습니다">✦<span>AI</span></button>`; qkFab();
   paintStreak();
   if(NEED_CONNECT||AUTH_FAIL){ $("#main").innerHTML=connectView(); return; }
   $("#main").innerHTML=(DRV_NEED?`<div class="notice">구글 드라이브와 잠시 떨어져 이 기기의 사본을 보여 드립니다. 쓰는 글은 이 기기에 남아 있다가, 이으면 드라이브로 갑니다. <button class="btn small ink" onclick="drvStart(this)">구글 드라이브에 잇기</button></div>`:SERVER?"":GAS?`<div class="notice">구글 서버에 아직 닿지 못해 이 기기의 사본을 보여 드립니다. 인터넷을 확인한 뒤 <a href="#" onclick="fetchFresh(false);return false">다시 시도</a></div>`:location.protocol==="file:"?`<div class="notice">파일로 직접 연 상태라 저장이 되지 않습니다. 아침 서재 주소(인터넷)로 열어 주세요.</div>`:"")+locNudge()+VIEWS[tab]();
@@ -3873,7 +3907,7 @@ const TG_ART={dawn:'<svg viewBox="0 0 72 48"><path d="M44 10a12 12 0 1 0 10 18 1
 const TG_EMPTY={shelf:'<svg class="te-pic" viewBox="0 0 120 72" aria-hidden="true"><path d="M6 60h108M16 60v8M104 60v8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="M20 60V34h6v26" fill="var(--paper)" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M20 34h14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="M44 60V30M52 60V26" stroke="currentColor" stroke-width="1.2" stroke-dasharray="3 4" opacity=".55"/><path d="M60 60L66 22l6 2-6 36" fill="color-mix(in srgb,var(--sepia) 16%,transparent)" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M66 22l2 7 4-5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/><path d="M90 60h14l-2-12H92z" fill="var(--paper)" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M97 48V36M97 42c-5 0-7-3-7-7 5 0 7 3 7 7zM97 39c4 0 6-3 6-6-4 0-6 2-6 6z" fill="none" stroke="var(--book)" stroke-width="1.4" stroke-linecap="round"/></svg>',
   note:'<svg class="te-pic" viewBox="0 0 120 72" aria-hidden="true"><path d="M10 18c14-4 28-4 44 2v44c-16-6-30-6-44-2z" fill="var(--paper)" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M54 20c16-6 30-6 44-2v44c-14-4-28-4-44 2z" fill="var(--paper)" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M62 32c10-3 20-3 28-1M62 42c10-3 20-3 28-1M62 52c8-2 14-2 20-1" stroke="currentColor" stroke-width="1.2" stroke-dasharray="2 4" stroke-linecap="round" opacity=".6"/><path d="M20 54l24-24 4 4-24 24h-4z" fill="color-mix(in srgb,var(--sepia) 16%,transparent)" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M104 54h10v6a5 5 0 0 1-10 0z" fill="var(--paper)" stroke="currentColor" stroke-width="1.4"/><path d="M107 48c0-2 2-3 2-5M111 48c0-2 2-3 2-5" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" opacity=".6"/></svg>'};
 let TG_POMO=false;
-const tgClockSz=()=>innerWidth<=360?52:innerWidth<=700?60:72;
+const tgClockSz=()=>innerWidth<=360?46:innerWidth<=700?50:72;
 function tgClockHtml(){ const act=pomoActive(); return `<button type="button" class="tg-clock ${act?"on "+P.phase:""}" id="tgclock" onclick="tgPomo()" aria-expanded="${TG_POMO}" aria-controls="tgpomo" title="집중 시간 — 눌러서 시간 고르기·시작"><span class="tgc-dial">${pomoClock(tgClockSz())}</span><span class="tgc-t">${act?(P.waiting?"준비":mmss(pomoLeft())):"집중"}</span></button>`; }
 function tgClockPaint(){ const b=$("#tgclock"); if(!b) return; const act=pomoActive(); b.className="tg-clock"+(act?" on "+P.phase:""); b.querySelector(".tgc-dial").innerHTML=pomoClock(tgClockSz()); b.querySelector(".tgc-t").textContent=act?(P.waiting?"준비":mmss(pomoLeft())):"집중"; b.setAttribute("aria-expanded",TG_POMO); }
 function tgPomo(force){ TG_POMO=force===undefined?!TG_POMO:!!force; const box=$("#tgpomo"); if(box){ box.hidden=!TG_POMO; if(TG_POMO){ const c=$("#pomocard"), z=innerWidth<=700?92:128; if(c){ c.dataset.sz=z; c.innerHTML=pomoCardHtml(z); } } } tgClockPaint(); pomoMini(); }
@@ -4248,7 +4282,7 @@ const PAPERS=[["","기본(밝기 따라)",""],["#fbf7ee","크림","#2e2721"],["#
 const stColor=()=>{ try{ const v=localStorage.getItem("seojae-open.stColor")||""; return ["forest","white"].includes(v)?v:""; }catch(_){ return ""; } };
 function stColorSet(v){ try{ localStorage.setItem("seojae-open.stColor",v); }catch(_){} if(v) document.documentElement.dataset.stc=v; else delete document.documentElement.dataset.stc; toast(v?"글방 둘레 색을 바꿨습니다 — 글방에 들어가 보세요":"글방 둘레를 「새벽 남빛」으로"); render(); }
 // ───────── 보기 크기(2026-10-30): 휴대폰 화면 전체(글자·단추·그림)를 함께 키우고 줄임 — 이 기기만(look.vs). 눈이 어두운 분도 쓰기 쉽게, 이름은 「크게 보기」처럼 ─────────
-const VS_ZOOM={s:.9,m:1,l:1.15,xl:1.3}, VS_OPTS=[["s","작게 보기","글자와 단추를 조금 작게 — 한 화면에 더 많이"],["m","보통","원래 크기 — 컴퓨터 화면과 같은 비율"],["l","크게 보기","휴대폰 처음 크기 — 글자와 단추를 한 단계 크게"],["xl","아주 크게 보기","가장 크게 — 글자가 또렷하고 누르기 쉽게"]];
+const VS_ZOOM={s:.9,m:1,l:1.15,xl:1.3}, VS_OPTS=[["s","작게 보기","글자와 단추를 조금 작게 — 한 화면에 더 많이"],["m","보통","처음 크기 — 한 화면에 알맞게"],["l","크게 보기","글자와 단추를 한 단계 크게"],["xl","아주 크게 보기","가장 크게 — 글자가 또렷하고 누르기 쉽게"]];
 const vsNow=()=>vsEff(applyLook().vs);
 function vsSet(v){ const vp0=document.getElementById("vpmeta")?.content; lookSet("vs",v);
   if(document.getElementById("vpmeta")?.content!==vp0){ try{ if(typeof writingUnsaved==="function"&&writingUnsaved()) saveDraft(); }catch(_){} toast("화면 크기를 맞춥니다…"); setTimeout(()=>{ const u=new URL(location.href); u.searchParams.set("vsz",Date.now().toString(36)); location.replace(u.href); },350); return; }   // 배율은 페이지를 새로 열어야 확실히 맞음(그냥 다시 읽으면 브라우저가 예전 확대를 되살림)
