@@ -4556,7 +4556,8 @@ function purgeOldTrash(){ const lim=new Date(Date.now()-TRASH_DAYS*864e5).toISOS
 // 목록 미리보기: 틀 줄(■ 관찰 — … 같은 빈 소제목)은 빼고 쓴 내용만
 // 틀만 있고 내 글이 없는 글 — 「안 씀」으로 셈(캘린더·오늘 체크·쓴 날 도장·이어진 날·노션 모두, 2026-11-01)
 const wEmpty=w=>!pv(w,1);
-function pv(w,n){ const tl=new Set([...(typeTpl(w.track,w.type)||"").split("\n").map(x=>x.trim()).filter(Boolean),...GENRE_TPL_LINES]); return stripMk((w.body||"").split("\n").filter(x=>!tl.has(x.trim())).join("\n")).replace(/\s+/g," ").trim().slice(0,n); }
+// 짬 묵상 틀은 「짧게·천천히·예전 틀」 줄을 모두 틀로 봄(틀을 바꿔도 틀만 있으면 안 쓴 글, 2026-11-23)
+function pv(w,n){ const tl=new Set([...[typeTpl(w.track,w.type)||"",...(w.track==="bible"?[QT_SHORT,QT_SLOW,...QT_PREV]:[])].join("\n").split("\n").map(x=>x.trim()).filter(Boolean),...GENRE_TPL_LINES]); return stripMk((w.body||"").split("\n").filter(x=>!tl.has(x.trim())).join("\n")).replace(/\s+/g," ").trim().slice(0,n); }
 function trashView(){
   const T=trashed();
   const left=w=>Math.max(0,TRASH_DAYS-Math.floor((Date.now()-new Date(w.trashed).getTime())/864e5));
