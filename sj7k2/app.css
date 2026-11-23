@@ -2756,3 +2756,41 @@ html.bson .askview{z-index:160}
 @media (max-width:700px){ .mocover{min-height:72px;padding:10px 14px 10px 16px} .mocover .moc-n{font-size:28px} .mocover .moc-w{font-size:18px} .mocover.first{min-height:112px} .mocover .moc-art{right:44px;width:min(46%,170px)} }
 @container (max-width:340px){ .mocover .moc-w{display:none} .mocover .moc-art{opacity:.22;right:6px} .mocover .moc-t{padding-right:56px} }
 @media print{ .mocover{display:none} }
+/* 홈 「아침 인사 띠」·작은 집중 시계·빈 자리(2026-11-23) — 시간대 색은 띠 바탕에만 아주 옅게 */
+.tgreet{--tgc:#e8a25a;display:grid;grid-template-columns:auto minmax(0,1fr) auto auto;align-items:center;gap:16px;margin:0 0 12px;padding:16px 20px;border:1px solid var(--edge);border-radius:8px;background:linear-gradient(100deg,var(--paper) 35%,color-mix(in srgb,var(--tgc) 9%,var(--paper))) ;box-shadow:var(--shadow)}
+.tgreet[data-part="dawn"]{--tgc:#6d6a92} .tgreet[data-part="noon"]{--tgc:#c9a227} .tgreet[data-part="evening"]{--tgc:#c0643f} .tgreet[data-part="night"]{--tgc:#3d5a80}
+.tg-date{display:grid;justify-items:center;line-height:1;padding-right:14px;border-right:1px solid var(--edge)}
+.tg-date small{font:600 12px var(--ui-font);letter-spacing:.08em;color:var(--ink-soft);margin-bottom:4px;white-space:nowrap}
+.tg-date b{font-family:"Nanum Myeongjo",serif;font-weight:800;font-size:44px;letter-spacing:-.02em}
+.tg-main{min-width:0}
+.tg-hi{margin:0;font-family:"Nanum Myeongjo",serif;font-size:19px;font-weight:700;color:var(--ink)}
+.tg-line{margin:6px 0 0;display:flex;align-items:flex-end;gap:8px;font-family:"Gamja Flower",var(--ui-font);font-size:21px;line-height:1.25;color:var(--sepia)}
+.tg-line #wkline{min-width:0} .tg-dood{flex:none;width:30px;color:var(--deco)} .tg-dood svg{width:100%;height:auto;display:block}
+.tg-art{width:76px;color:var(--deco);opacity:.85} .tg-art svg{width:100%;height:auto;display:block}
+.tg-clock{display:grid;justify-items:center;gap:3px;padding:6px 8px 5px;border:1px solid color-mix(in srgb,var(--sepia) 35%,var(--edge));border-radius:16px;background:var(--paper);box-shadow:0 2px 0 color-mix(in srgb,var(--ink) 12%,transparent);cursor:pointer;color:var(--ink)}
+.tg-clock:hover{border-color:var(--sepia)} .tg-clock:active{transform:translateY(1px);box-shadow:none} .tg-clock:focus-visible{outline:2px solid var(--sepia);outline-offset:2px}
+.tg-clock[aria-expanded="true"]{border-color:var(--sepia);background:color-mix(in srgb,var(--sepia) 8%,var(--paper))}
+.tg-clock.on{border-color:var(--bible)} .tg-clock .tgc-dial svg{display:block}
+.tgc-t{font:700 12px/1 var(--ui-font);font-variant-numeric:tabular-nums;color:var(--ink-soft)} .tg-clock.on .tgc-t{color:var(--ink)}
+.tgpomo{margin:0 0 14px;display:flex;justify-content:flex-end} .tgpomo[hidden]{display:none} .tgpomo .pomocard{width:min(460px,100%);margin:0}
+.troute{display:flex;justify-content:flex-end;margin:0 0 22px} .troute .routine{margin-left:0}
+.tempty{display:flex;align-items:center;gap:16px;margin:10px 0 4px}
+.tempty .te-pic{flex:none;width:120px;height:auto;color:var(--ink-soft)}
+.tempty .te-say{margin:0 0 10px;font-size:15px;line-height:1.6;color:var(--ink)}
+.tempty .te-hint{margin:8px 0 0;font:12.5px var(--ui-font);color:var(--faint)}
+.tempty.sm{margin:12px 0 2px} .tempty.sm .te-pic{width:96px} .tempty.sm .te-say{margin:0}
+@media (min-width:1000px){ .tgrid1>.sheet.isempty{align-self:start} }
+@media (max-width:700px){
+  .tgreet{grid-template-columns:auto minmax(0,1fr) auto;gap:12px;padding:12px 14px}
+  .tg-art{display:none} .tg-date{padding-right:10px} .tg-date b{font-size:34px} .tg-date small{font-size:11px}
+  .tg-hi{font-size:16px} .tg-line{font-size:18px} .tg-dood{width:24px}
+  .troute{justify-content:stretch;margin-bottom:16px} .troute .routine{width:100%}
+  .tgpomo{justify-content:stretch}
+  .tempty{gap:12px} .tempty .te-pic{width:96px}
+}
+@media (max-width:360px){ .tg-date .tgm{display:none} .tg-line{font-size:17px} .tg-hi{font-size:15px} .tg-line .tg-dood{display:none} .tempty{flex-direction:column;align-items:flex-start} }
+.qbpick{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(220px,100%),1fr));gap:10px} .qbpick .plancard{text-align:left}
+/* 홈 집중 판: 작게 — 시계와 조작을 나란히 */
+.tgpomo .pomocard{padding:14px 16px} .tgpomo .pomobody2{display:flex!important;flex-direction:row!important;align-items:center;gap:16px;margin-top:8px} .tgpomo .pdialbtn{flex:none} .tgpomo .pomoside{align-items:flex-start;text-align:left;gap:6px} .tgpomo .pomoside b{font-size:30px!important;line-height:1} .tgpomo .plen{flex-wrap:wrap;gap:6px} .tgpomo .plen .pill{padding:4px 10px;font-size:13px} .tgpomo .pomotip{display:none}
+.tgpomo .pomoside{min-width:0;justify-items:start!important;text-align:left!important} .tgpomo .pomobody2{flex-wrap:nowrap;justify-content:flex-start!important}
+@media (min-width:1000px){ .tgrid1>.tweek{align-self:start} }

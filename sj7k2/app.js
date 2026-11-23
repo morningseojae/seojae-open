@@ -1263,6 +1263,7 @@ function setGroups(){ const R=S.reminder||{}, rOn=!!(R.on&&R.clock!==false), p=S
      {k:"stat",ic:"◔",t:"익명 사용 통계",st:statOn()?"ok":"off",pill:statOn()?"보냄":"보내지 않음",sum:"하루 한 번 숫자만 — 글·이름·메일은 보내지 않음",body:statSection()},
      ...(isAdmin()?[{k:"studio",ic:"▤",t:"관리 스튜디오",st:"",sum:"관리자만 — 방문 기기·기능 사용·판 번호를 한눈에",body:`<section class="sheet tape c compact"><p class="label">관리 스튜디오</p><p class="sub">공개판을 쓰는 기기들이 보낸 익명 합계를 유튜브 스튜디오처럼 한눈에 봅니다. 관리자(${ST_ADMIN})로 이은 때만 보입니다.</p><div class="row" style="margin-top:8px"><button class="btn ink" onclick="studioOpen()">관리 스튜디오 열기</button></div></section>`}]:[])]},
    {id:"morning",t:"아침",ic:"☀︎",acc:"var(--bible)",rows:[
+     {k:"qtbook",ic:"❧",t:"묵상지",st:"ok",pill:qbN(),sum:`${esc(qbN())} · ${esc(QB[qbK()].org)} — 묵상 화면이 늘 이 묵상지로 열립니다`,body:qtBookSection()},
      {k:"plan",ic:"✚",t:"성경 통독",st:"",sum:`${esc(cur.name)}${plansAlso().length?` + ${plansAlso().map(x=>esc(planName(x.id))).join(" + ")}`:""} · ${p.mode==="date"?"달력대로":"이어 읽기"} · ${(p.day||0)+1}일째`,body:planSettings()},
      {k:"devo",ic:"❦",t:"오늘의 묵상 자료",st:"",sum:`${esc(devoSrc().name)} · 갈아 끼울 수 있음`,body:devoSection()},
      ...(PUB?[]:[{k:"remind",ic:"✉",t:"아침 알림",st:GAS?(rOn?"ok":"off"):"",pill:rOn?"켜짐":"꺼짐",sum:rOn?`날마다 오전 ${R.hour||6}시 · 메일`:R.on&&R.clock===false?"알림 시계 설치가 필요합니다":"꺼짐 — 켜면 오늘 분량을 메일로",body:reminderSection()}]),
@@ -1290,6 +1291,11 @@ const MANUALS=[["quick","간단 매뉴얼","읽자마자 바로 써 보는 한 �
 // ───────── 새 소식 (공개판, 2026-10-31 팀장님): 중요한 고침은 앱을 열 때 한 번만 쉬운 말로 알림 ─────────
 // 새 소식을 더할 때: NEWS 맨 앞에 넣고 id 는 날짜(같은 날 둘째는 2026-11-02b 처럼 — 글자 순서로 새것이 뒤). 본 소식 id 는 이 기기에만(seojae-open.newsSeen)
 const NEWS=[
+ {id:"2026-11-23e",date:"2026년 11월 23일",title:"새 홈 — 아침 인사부터",items:[
+  ["☀️","아침 인사 띠","「오늘」 맨 위에 날짜와 시간대 인사(「좋은 아침이에요」·「고요한 새벽이에요」…), 오늘의 한 줄이 놓였어요.",""],
+  ["⏱️","작은 집중 시계","집중 시간은 인사 띠 오른쪽 작은 시계가 되었어요. 누르면 집중 판이 펼쳐지고, 도는 동안 남은 시간이 보여요.",""],
+  ["📚","빈자리도 예쁘게","읽는 책이 없으면 빈 책꽂이, 기록이 없으면 하얀 쪽 그림과 한 줄이 기다려요.",""],
+  ["❧","묵상지는 설정에도","설정 → 아침 → 「묵상지」에서 매일성경·생명의 삶을 고르면 묵상 화면이 늘 그 묵상지로 열려요.",""]]},
  {id:"2026-11-23d",date:"2026년 11월 23일",title:"이달의 표지",items:[
   ["🍂","묵상 화면에 이달의 표지","묵상을 열면 본문 카드 위에 「11월호 · 늦가을 — 거두며 감사하는 달」처럼 그달의 표지가 보여요. 색과 무늬가 달마다 바뀌어요.","그달 처음 열 때 한 번 크게 펼쳐지고, 「접기 ▴」로 한 줄로 둘 수 있어요."],
   ["🕯️","절기에는 절기 무늬","사순절·고난 주간·부활의 아침·대림절·성탄에는 무늬가 바뀌어요. 생명의 삶이면 「이달의 본문」도 함께 보여요.",""]]},
@@ -1749,6 +1755,9 @@ const QB={su:{n:"매일성경",org:"성서유니온",fn:"dailyBible",home:()=>"h
 const qbK=()=>S.settings.qtBook==="ll"?"ll":"su", qbN=()=>QB[qbK()].n;
 function qbSet(k){ if(!QB[k]||qbK()===k) return; const pl=suPassage(SU)?.label, f=$("#wpassage"); if(f&&pl&&f.value===pl) f.value=f.defaultValue;   // 아직 손대지 않은 본문 칸이면 새 묵상지 본문으로 다시 채움
   S.settings.qtBook=k; save(); SU=null; SUT=null; SUN=null; if($("#sunpanel")) sunClose(); $("#sunote")&&($("#sunote").innerHTML=""); if($("#sucard")) paintSu(); else render(); toast(`오늘의 묵상 본문을 「${QB[k].n}」에서 받아 옵니다`); }
+// 설정 → 아침 → 「묵상지」(2026-11-23 팀장님 「선택과 고정을 설정에도」): 고른 묵상지는 설정(S.settings.qtBook)에 남아 다음에도·다른 기기에서도 그 묵상지로 열림
+function qtBookSection(){ const k=qbK(); return `<p class="sub" style="margin:0 0 10px">고른 묵상지로 묵상 화면이 늘 열립니다. 묵상 카드 맨 위 「${esc(qbN())} ▾」에서 바꿔도 여기와 같이 바뀌고, 다른 기기에도 따라갑니다.</p>
+  <div class="qbpick">${Object.entries(QB).map(([kk,q])=>`<button type="button" class="plancard ${k===kk?"on":""}" aria-pressed="${k===kk}" onclick="qbSet('${kk}');if(tab==='settings')render()"><div class="pc-head"><b>${kk==="su"?"📘":"🌿"} ${esc(q.n)}</b><span class="muted">${esc(q.org)}</span>${k===kk?`<span class="stamp ok" style="margin-left:auto">고정됨</span>`:""}</div><div class="pc-how">${kk==="su"?"오늘 본문·제목·찬송가 · 해설 보기·해설 듣기를 앱 안에서":"오늘 본문·제목·찬송가 · 아침 서재가 정리한 묵상 길잡이(새벽 3시) · 두란노 해설은 링크로"}</div></button>`).join("")}</div>`; }
 function qbMenu(ev){ const r=ev.currentTarget.getBoundingClientRect(); ctxOpen(r.left,r.bottom+4,"묵상지 고르기",Object.entries(QB).map(([k,q])=>({t:(qbK()===k?"✓ ":"")+q.n+" · "+q.org,ic:k==="su"?"📘":"🌿",fn:()=>qbSet(k)})),isTouch()&&innerWidth<=700,"고른 묵상지의 오늘 본문·제목·찬송가가 이 칸에 옵니다"); }
 // 생명의 삶: 해설·영상은 두란노 구독자 화면으로 (앱 안에 넣지 않음 — 로그인이 필요한 유료 저작물)
 function llLinks(date){ return `<button class="btn small ghost" id="subtn" onclick="suNoteToggle()" title="그날 생명의 삶 본문(장절)에 맞춰 아침 서재가 새벽 3시에 AI로 정리해 둔 묵상 길잡이를 봅니다 — 두란노 「생명의 삶」이 제공한 해설이 아닙니다 — 컴퓨터에서는 오른쪽 창으로, 휴대폰에서는 카드 아래에">${ICO.book}${$("#sunpanel")?"길잡이 닫기":"묵상 길잡이"}</button><a class="btn small ghost" href="${esc(QB.ll.home(date))}" target="_blank" rel="noopener" onclick="return popBible(this.href)" title="두란노 「오늘의 QT」 화면을 오른쪽 성경 창으로 엽니다 — 본문 해설·묵상 에세이는 생명의삶 구독(로그인)으로 볼 수 있습니다">${ICO.book}해설은 두란노에서 ↗</a><a class="btn small ghost pconly" href="https://www.duranno.com/qt/view/video.asp?qtDate=${esc(date||today())}" target="_blank" rel="noopener" onclick="return popBible(this.href)" title="CGN 「영상 QT」 — 두란노 누리집에서 오늘 것은 컴퓨터로 볼 수 있고, 지난 날은 로그인이 필요합니다">🎬 영상 QT ↗</a>`; }
@@ -3282,12 +3291,18 @@ today(){
   const tn=S.notes.filter(n=>n.date===t), tw=live().filter(w=>w.date===t);
   const ly=new Date(); ly.setFullYear(ly.getFullYear()-1); const old=live().filter(w=>w.date===dkey(ly));
   return `
-  <div class="dateline"><span class="d">${d.getMonth()+1}.${String(d.getDate()).padStart(2,"0")}</span><span class="w">${"일월화수목금토"[d.getDay()]}요일 ${dayPart()}, 말씀과 책 앞에서</span>
-    ${(()=>{ const L=S.log[t]||{}; const PC=plansAlso().length?planDoneCount():null, items=[[PC&&PC.n&&PC.n<PC.all?`성경 읽기 ${PC.n}/${PC.all}`:"성경 읽기",PC?PC.n===PC.all:!!(L.read||(L.bible||[]).length),"rtGoBible()","오늘의 말씀으로"],["묵상",tw.some(w=>w.track==="bible"&&!wEmpty(w)),"go('write',{track:'bible'})","묵상 쓰기로"],["책 읽기",!!(L.book||Object.keys(L.books||{}).length),"go('shelf')","책장으로"],["일기",!!(S.diary?.[t]?.line||"").trim(),"diaryDate=today();go('diary')","오늘 일기로"]];
+  <header class="tgreet" data-part="${tgPart()}">
+    <div class="tg-date"><small><span class="tgm">${d.getMonth()+1}월 · </span>${"일월화수목금토"[d.getDay()]}요일</small><b>${d.getDate()}</b></div>
+    <div class="tg-main"><p class="tg-hi">${esc(TG_HI[tgPart()])}, ${esc(callName())}</p><p class="tg-line"><span id="wkline">${esc(dlCached()?.t||pick(DAY_LINES,1,t+"w")[0])}</span><span class="tg-dood" id="wkdood" aria-hidden="true">${DOODLE[dlIcon()]}</span></p></div>
+    <span class="tg-art" aria-hidden="true">${TG_ART[tgPart()]}</span>
+    ${tgClockHtml()}
+  </header>
+  <div class="tgpomo" id="tgpomo" ${TG_POMO?"":"hidden"}><section class="sheet pomocard" id="pomocard" data-sz="${innerWidth<=700?92:128}">${TG_POMO?pomoCardHtml(innerWidth<=700?92:128):""}</section></div>
+  <div class="troute">${(()=>{ const L=S.log[t]||{}; const PC=plansAlso().length?planDoneCount():null, items=[[PC&&PC.n&&PC.n<PC.all?`성경 읽기 ${PC.n}/${PC.all}`:"성경 읽기",PC?PC.n===PC.all:!!(L.read||(L.bible||[]).length),"rtGoBible()","오늘의 말씀으로"],["묵상",tw.some(w=>w.track==="bible"&&!wEmpty(w)),"go('write',{track:'bible'})","묵상 쓰기로"],["책 읽기",!!(L.book||Object.keys(L.books||{}).length),"go('shelf')","책장으로"],["일기",!!(S.diary?.[t]?.line||"").trim(),"diaryDate=today();go('diary')","오늘 일기로"]];
       return `<span class="routine">${items.map(([n,on,fn,dest])=>`<button type="button" class="${on?"on":""}" onclick="${fn}" title="${on?"오늘 했습니다":"아직입니다"} — 누르면 ${dest}" aria-label="${n} ${on?"했음":"아직"} — ${dest} 가기">${tickSvg(on)}${n}<span class="rt-go" aria-hidden="true">›</span></button>`).join("")}</span>`; })()}</div>
   <div class="grid tgrid1">
     ${todayBibleCard()}
-    <section class="sheet tape b">
+    <section class="sheet tape b ${b?"":"isempty"}">
       <p class="label book">읽고 있는 책</p>
       ${b?`<div class="nowbook"><div class="book3d" onclick="book3dTap(this)" title="${esc(b.title)}"><div class="b3in">${coverHtml(b)}<i class="b3pg" aria-hidden="true"></i><i class="b3bk" aria-hidden="true"></i></div></div><div style="flex:1;min-width:0">
         <div class="big" style="font-size:19px">${esc(b.title)}</div><div class="sub">${esc((b.authors||[]).join(", "))}</div>
@@ -3297,21 +3312,20 @@ today(){
       ${(()=>{ const o=S.books.filter(x=>x.status!=="완료"&&x.id!==b.id); return o.length?`<div class="otherbooks"><span class="muted" style="font-size:13px">함께 읽는 책 · 누르면 그 책으로</span>${o.map(x=>`<button class="minibook" onclick="pickBook('${x.id}')" title="이 책으로 바꾸기">${coverHtml(x,"cover mini")}<span>${esc(x.title)}</span></button>`).join("")}</div>`:""; })()}
       <div class="row" style="margin-top:12px"><button class="btn" onclick="toggleNoteForm('book')">${ICO.pen}밑줄 남기기</button><button class="btn ghost pfocus" onclick="pomoStageOpen({ctx:${jsArg("『"+b.title+"』 · "+pgText(b,b.page)+"부터")},start:true})" title="집중 시간을 시작하고 시계만 크게 띄웁니다">${pomoFocusIco()}집중해서 읽기</button><button class="btn ghost" onclick="go('shelf')">책장 보기</button></div>
       ${noteOpen==="book"?noteForm("book"):""}${todayNotes("book")}`
-      :`<p class="sub" style="margin:10px 0 14px">책장에 읽을 책을 꽂아 주세요. 제목이나 ISBN만 넣으면 표지를 찾아 드립니다.</p><button class="btn ink" onclick="go('shelf')">책 꽂기</button>`}
+      :`<div class="tempty">${TG_EMPTY.shelf}<div><p class="te-say">책꽂이 한 칸이 비어 있어요. 요즘 곁에 둔 책이 있으면 꽂아 두세요.</p><button class="btn ink" onclick="go('shelf')">＋ 책 한 권 꽂기</button><p class="te-hint">제목만 적어도 표지를 찾아 드려요</p></div></div>`}
     </section>
-    <section class="sheet pomocard" id="pomocard">${pomoCardHtml()}</section>
+    ${weekCard()}
   </div>
   <div class="grid tgrid2" style="margin-top:30px">
-    <section class="sheet trec">
+    <section class="sheet trec ${tn.length||tw.length?"":"isempty"}">
       <p class="label">오늘의 기록</p>
       
-      <div class="sub" style="margin-top:12px">오늘 밑줄 ${tn.length}개 · 글 ${tw.length}편 · ${tw.reduce((a,w)=>a+chars(w.body),0).toLocaleString()}자</div>
+      ${tn.length||tw.length?`<div class="sub" style="margin-top:12px">오늘 밑줄 ${tn.length}개 · 글 ${tw.length}편 · ${tw.reduce((a,w)=>a+chars(w.body),0).toLocaleString()}자</div>`:`<div class="tempty sm">${TG_EMPTY.note}<p class="te-say">아직 하얀 쪽이에요. 한 줄이면 충분해요.</p></div>`}
       ${tw.length?`<div style="margin-top:6px">${tw.map(w=>`<div class="row" style="gap:8px;padding:3px 0"><span class="label ${w.track}" style="margin:0;font-size:17px">[${esc(wTag(w))}]</span><a href="#" class="myeongjo" style="color:var(--ink)" onclick="go('write',{edit:'${w.id}'});return false"><b>${esc(w.title||w.passage||"(제목 없음)")}</b></a>${nState(w)}</div>`).join("")}</div>`:""}
-      <div class="row" style="margin-top:12px;gap:8px"><input id="jotin" style="font-family:var(--memo-font)" placeholder="끄적이기" title="떠오른 생각을 한 줄 적어 두면 글방 「끄적이기」에 모입니다" style="flex:1;min-width:200px;font-size:21px" onkeydown="if(event.key==='Enter'&&!event.isComposing){event.preventDefault();jotAdd()}"><button class="btn small" onclick="jotAdd()">끄적여 두기</button></div>
+      <div class="row" style="margin-top:12px;gap:8px"><input id="jotin" style="font-family:var(--memo-font)" placeholder="떠오른 한 문장을 적어 보세요" title="떠오른 생각을 한 줄 적어 두면 글방 「끄적이기」에 모입니다" style="flex:1;min-width:200px;font-size:21px" onkeydown="if(event.key==='Enter'&&!event.isComposing){event.preventDefault();jotAdd()}"><button class="btn small" onclick="jotAdd()">끄적여 두기</button></div>
       <div class="row" style="margin-top:14px"><button class="btn ink" onclick="go('write',{track:'bible'})">묵상 쓰기</button><button class="btn ink" onclick="go('room')">글방으로</button></div>
       <div class="row" style="margin-top:10px"><button class="btn" onclick="diaryDate=today();go('diary')">${ICO.diary}오늘의 독서 일기 꾸미기</button></div>
     </section>
-    ${weekCard()}
     ${(()=>{ const past=S.notes.filter(n=>n.date&&daysBetween(n.date,t)>=7); if(!past.length) return ""; const n=pick(past,1,t+"n")[0];
       return `<section class="sheet tape c"><p class="label ${n.track}">다시 만나는 밑줄</p><div class="quote ${n.track}">${esc(n.text)}</div><div class="muted" style="margin-top:6px">${esc(noteSrc(n))} · ${n.date}</div>
         ${grownFrom(n.id).length?"":`<div class="row" style="margin-top:10px"><button class="btn small" onclick="growNote('${n.id}')">${ICO.pen}오늘 이 문장으로 쓰기</button></div>`}</section>`; })()}
@@ -3804,6 +3818,22 @@ const DOODLE={   // 잉크 선으로 그린 작은 그림 (색은 currentColor)
   fog:`<svg viewBox="0 0 64 56" aria-hidden="true"><path d="M8 18h40M14 28h44M6 38h38M16 48h34" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-dasharray="1 5 18 4" opacity=".8"/></svg>`,
   storm:`<svg viewBox="0 0 64 56" aria-hidden="true"><path d="M14 32h34a9 9 0 0 0 0-18 13 13 0 0 0-25-3 9 9 0 0 0-9 21z" fill="var(--paper)" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M33 34l-6 10h7l-4 9" fill="none" stroke="color-mix(in srgb,#d4a017 85%,currentColor)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
   sun:`<svg viewBox="0 0 64 48" aria-hidden="true"><path d="M14 40a18 18 0 0 1 36 0" fill="color-mix(in srgb,var(--sepia) 14%,transparent)" stroke="currentColor" stroke-width="1.6"/><path d="M32 12v6M14 20l4 4M50 20l-4 4M6 34h6M52 34h6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M4 42h56" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>`};
+// ───────── 홈 「아침 인사 띠」·작은 집중 시계·빈 자리 그림 (2026-11-23 팀장님 「덩그러니 빈 화면이 안 예쁘다 — 들어갈 때부터 새로운 마음」, 모바일 UI·편집 디자이너 검토) ─────────
+const tgPart=()=>{ const m=kstMinutes(); return m<4*60+30?"dawn":m<11*60?"morning":m<17*60?"noon":m<21*60?"evening":"night"; };
+const TG_HI={dawn:"고요한 새벽이에요",morning:"좋은 아침이에요",noon:"한낮에도 잠깐 숨 돌려요",evening:"수고한 하루, 저녁이 왔어요",night:"하루를 조용히 덮는 밤이에요"};
+const TG_ART={dawn:'<svg viewBox="0 0 72 48"><path d="M44 10a12 12 0 1 0 10 18 10 10 0 0 1-10-18z" fill="color-mix(in srgb,var(--sepia) 14%,transparent)" stroke="currentColor" stroke-width="1.5"/><path d="M18 14v6M15 17h6M26 30v4M24 32h4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><path d="M6 44h60" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>',
+  morning:'<svg viewBox="0 0 72 48"><path d="M18 40a18 18 0 0 1 36 0" fill="color-mix(in srgb,#e8b04a 22%,transparent)" stroke="currentColor" stroke-width="1.6"/><path d="M36 12v6M18 20l4 4M54 20l-4 4M8 34h6M58 34h6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M4 42h64" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>',
+  noon:'<svg viewBox="0 0 72 48"><circle cx="36" cy="22" r="10" fill="color-mix(in srgb,#e8b04a 26%,transparent)" stroke="currentColor" stroke-width="1.6"/><path d="M36 4v5M36 35v5M18 22h5M49 22h5M23 9l3 3M46 32l3 3M49 9l-3 3M26 32l-3 3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M6 44h60" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" opacity=".6"/></svg>',
+  evening:'<svg viewBox="0 0 72 48"><path d="M22 42a14 14 0 0 1 28 0" fill="color-mix(in srgb,#c8643c 18%,transparent)" stroke="currentColor" stroke-width="1.6"/><path d="M4 42h64M14 46h44" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M54 14c4-2 8-2 10 0M8 20c4-2 8-2 10 0" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" opacity=".7"/></svg>',
+  night:'<svg viewBox="0 0 72 48"><path d="M40 8a14 14 0 1 0 14 22 12 12 0 0 1-14-22z" fill="color-mix(in srgb,var(--sepia) 12%,transparent)" stroke="currentColor" stroke-width="1.5"/><path d="M16 12l1.5 3 3 .5-2.2 2 .6 3-2.9-1.5-2.9 1.5.6-3-2.2-2 3-.5zM60 32v4M58 34h4" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round" stroke-linecap="round"/></svg>'};
+const TG_EMPTY={shelf:'<svg class="te-pic" viewBox="0 0 120 72" aria-hidden="true"><path d="M6 60h108M16 60v8M104 60v8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="M20 60V34h6v26" fill="var(--paper)" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M20 34h14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="M44 60V30M52 60V26" stroke="currentColor" stroke-width="1.2" stroke-dasharray="3 4" opacity=".55"/><path d="M60 60L66 22l6 2-6 36" fill="color-mix(in srgb,var(--sepia) 16%,transparent)" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M66 22l2 7 4-5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/><path d="M90 60h14l-2-12H92z" fill="var(--paper)" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M97 48V36M97 42c-5 0-7-3-7-7 5 0 7 3 7 7zM97 39c4 0 6-3 6-6-4 0-6 2-6 6z" fill="none" stroke="var(--book)" stroke-width="1.4" stroke-linecap="round"/></svg>',
+  note:'<svg class="te-pic" viewBox="0 0 120 72" aria-hidden="true"><path d="M10 18c14-4 28-4 44 2v44c-16-6-30-6-44-2z" fill="var(--paper)" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M54 20c16-6 30-6 44-2v44c-14-4-28-4-44 2z" fill="var(--paper)" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M62 32c10-3 20-3 28-1M62 42c10-3 20-3 28-1M62 52c8-2 14-2 20-1" stroke="currentColor" stroke-width="1.2" stroke-dasharray="2 4" stroke-linecap="round" opacity=".6"/><path d="M20 54l24-24 4 4-24 24h-4z" fill="color-mix(in srgb,var(--sepia) 16%,transparent)" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M104 54h10v6a5 5 0 0 1-10 0z" fill="var(--paper)" stroke="currentColor" stroke-width="1.4"/><path d="M107 48c0-2 2-3 2-5M111 48c0-2 2-3 2-5" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" opacity=".6"/></svg>'};
+let TG_POMO=false;
+const tgClockSz=()=>innerWidth<=360?52:innerWidth<=700?60:72;
+function tgClockHtml(){ const act=pomoActive(); return `<button type="button" class="tg-clock ${act?"on "+P.phase:""}" id="tgclock" onclick="tgPomo()" aria-expanded="${TG_POMO}" aria-controls="tgpomo" title="집중 시간 — 눌러서 시간 고르기·시작"><span class="tgc-dial">${pomoClock(tgClockSz())}</span><span class="tgc-t">${act?(P.waiting?"준비":mmss(pomoLeft())):"집중"}</span></button>`; }
+function tgClockPaint(){ const b=$("#tgclock"); if(!b) return; const act=pomoActive(); b.className="tg-clock"+(act?" on "+P.phase:""); b.querySelector(".tgc-dial").innerHTML=pomoClock(tgClockSz()); b.querySelector(".tgc-t").textContent=act?(P.waiting?"준비":mmss(pomoLeft())):"집중"; b.setAttribute("aria-expanded",TG_POMO); }
+function tgPomo(force){ TG_POMO=force===undefined?!TG_POMO:!!force; const box=$("#tgpomo"); if(box){ box.hidden=!TG_POMO; if(TG_POMO){ const c=$("#pomocard"), z=innerWidth<=700?92:128; if(c){ c.dataset.sz=z; c.innerHTML=pomoCardHtml(z); } } } tgClockPaint(); pomoMini(); }
+document.addEventListener("keydown",e=>{ if(e.key==="Escape"&&TG_POMO&&tab==="today"&&!STAGE){ tgPomo(false); } });
 const DAY_LINES=["천천히, 그러나 날마다","오늘의 한 줄이 내일의 한 장","말씀 한 줄, 커피 한 잔","쓰는 사람은 앉는 사람","작은 아침이 쌓여 한 권이 됩니다","읽은 만큼 깊어지고, 쓴 만큼 자랍니다","오늘도 이 자리에서","서두르지 않아도 괜찮아요","한 문장이면 충분한 아침"];
 function weekCard(){ const t=today(), d0=new Date(t+"T00:00"), back=(d0.getDay()+6)%7; d0.setDate(d0.getDate()-back);   // 월요일부터
   const act=k=>{ const l=S.log[k]; return !!(l&&(l.read||l.book||l.note||l.write)); };
@@ -3812,8 +3842,8 @@ function weekCard(){ const t=today(), d0=new Date(t+"T00:00"), back=(d0.getDay()
   return `<section class="sheet tweek" aria-label="이번 주의 아침"><p class="label">이번 주의 아침</p>
     <div class="wkrow">${days.map(k=>{ const dd=new Date(k+"T00:00"), on=act(k), fut=k>t, rest=!isReadDay(k)&&!on;
       return `<span class="wkd ${on?"on":""} ${k===t?"now":""} ${fut?"fut":""} ${rest?"rest":""}" title="${dd.getMonth()+1}월 ${dd.getDate()}일${on?" — 아침을 열었습니다":fut?"":rest?" — 쉬는 날":""}"><i>${WEEK[dd.getDay()]}</i><b>${on?tickSvg(true):k===t?"오늘":rest?"쉼":""}</b></span>`; }).join("")}</div>
-    <p class="wkn">이번 주 <b>${n}</b>번의 아침${n>=5?" — 잘하고 계세요":n?"":" — 오늘 첫 도장을 찍어 보세요"}</p>
-    <div class="wkfoot"><span class="wkline" id="wkline">${esc(dlCached()?.t||line)}</span><span class="wkdood" id="wkdood" aria-hidden="true">${DOODLE[dlIcon()]}</span></div></section>`; }
+    <p class="wkn">이번 주 <b>${n}</b>번의 아침${n>=5?" — 잘하고 계세요":n?"":" — 새 주가 열렸어요. 오늘이 첫 칸이에요"}</p>
+    ${n?"":`<div class="row" style="margin-top:10px"><button class="btn small" onclick="rtGoBible()">${ICO.book}말씀 펴기</button></div>`}</section>`; }
 // 오늘의 한 줄 (2026-10-31 팀장님: 「그날그날 랜덤으로 한 문장」 — 날씨·위치는 쓰지 않음)
 // AI(서버 coWrite mode dayline)가 날마다 다른 주제로 한 문장 + 어울리는 그림 하나를 고름 → 이 기기에 그날 하루 기억. AI가 없으면 날짜로 고른 손글씨 문장과 그림
 const DL_ICONS=["cup","sun2","partly","cloud","rain","snow","fog","pot","pencil","sun"];
@@ -3830,7 +3860,7 @@ async function dayLinePaint(){ if(tab!=="today"||!$("#wkline")) return; const c=
         for(let i=localStorage.length-1;i>=0;i--){ const k=localStorage.key(i); if(/^seojae-open\.(wx|dayline)\.\d{4}-/.test(k||"")&&!k.endsWith(today())) localStorage.removeItem(k); } }catch(_){}
       const l=$("#wkline"), d=$("#wkdood"); if(l){ l.textContent=r.line; l.classList.add("ai"); } if(d) d.innerHTML=DOODLE[v.icon]; } }catch(_){}
   finally{ dayLinePaint.busy=false; } }
-function todayDeco(){ if(tab!=="today") return; document.querySelectorAll(".tdood").forEach(x=>x.remove()); if(innerWidth<1000) return;
+function todayDeco(){ document.querySelectorAll(".tdood").forEach(x=>x.remove()); return; document.querySelectorAll(".tdood").forEach(x=>x.remove()); if(innerWidth<1000) return;
   const cards=[...document.querySelectorAll(".tgrid1>.sheet")], pics=["pot","sun","pencil"];
   cards.forEach((c,i)=>{ const kids=[...c.children].filter(x=>!x.classList.contains("tdood")); const last=kids.reduce((m,x)=>Math.max(m,x.getBoundingClientRect().bottom),0), free=c.getBoundingClientRect().bottom-last;
     if(free<66) return; const d=document.createElement("span"); d.className="tdood"; d.setAttribute("aria-hidden","true"); d.innerHTML=DOODLE[pics[i%3]]; c.appendChild(d); }); }
@@ -9207,10 +9237,10 @@ const pomoPlayBtn=(cls="")=>P.on?`<button class="pplay ${cls}" onclick="pomoPaus
   :`<button class="pplay ${cls}" onclick="pomoStart()" title="${P.waiting?(P.phase==="focus"?"다음 집중 시작":"쉬기 시작"):pomoActive()?"이어서":"집중 시작"}" aria-label="시작"><svg viewBox="0 0 24 24"><path d="M8 5.5v13a1 1 0 0 0 1.5.86l10.4-6.5a1 1 0 0 0 0-1.72L9.5 4.64A1 1 0 0 0 8 5.5z"/></svg></button>`;
 const pomoIcoBtn=(fn,t,svg)=>`<button class="pico" onclick="${fn}" title="${t}" aria-label="${t}"><svg viewBox="0 0 24 24">${svg}</svg></button>`;
 const PI_SKIP='<path d="M6 6l8 6-8 6z"/><rect x="16" y="6" width="2.6" height="12" rx="1"/>', PI_STOP='<rect x="6.5" y="6.5" width="11" height="11" rx="2"/>', PI_FULL='<path d="M4 9V5a1 1 0 0 1 1-1h4M15 4h4a1 1 0 0 1 1 1v4M20 15v4a1 1 0 0 1-1 1h-4M9 20H5a1 1 0 0 1-1-1v-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>';
-function pomoCardHtml(){
+function pomoCardHtml(sz=188){
   const c=pomoSet(), left=pomoLeft(), d=pomoDay(), act=pomoActive(), lens=[15,25,45,50];
   return `<div class="pomohead"><p class="label" style="margin:0">집중 시간</p><span class="muted pomoday">${d.n?`오늘 ${d.n}번 · ${d.min}분`:"오늘 아직 시작 전"}</span></div>
-    <div class="pomobody2"><button class="pdialbtn" onclick="pomoStageOpen()" title="집중 화면으로 크게 보기">${pomoClock(188)}</button>
+    <div class="pomobody2"><button class="pdialbtn" onclick="pomoStageOpen()" title="집중 화면으로 크게 보기">${pomoClock(sz)}</button>
       <div class="pomoside"><span class="pph ${P.phase}">${PH_LBL()}</span><b id="pomotime">${mmss(left)}</b><span class="prounds">${pomoRounds()}</span>
         <div class="pctl">${pomoPlayBtn()}${act?pomoIcoBtn("pomoSkip()","건너뛰기",PI_SKIP)+pomoIcoBtn("pomoStop()","그만",PI_STOP):""}${pomoIcoBtn("pomoStageOpen()","집중 화면 (화면 가득)",PI_FULL)}</div>
         ${!act?`<div class="pills plen">${lens.map(n=>`<button class="pill ${c.focus===n?"on":""}" onclick="pomoSetSave('focus',${n})">${n}분</button>`).join("")}</div>`:""}
@@ -9221,7 +9251,7 @@ function pomoCardHtml(){
 let PI=null, PI_OPEN=false;
 function piToggle(e){ e?.stopPropagation(); PI_OPEN=!PI_OPEN; if(PI) PI.dataset.k=""; pomoMini(); }
 document.addEventListener("click",e=>{ if(PI_OPEN&&PI&&!PI.contains(e.target)){ PI_OPEN=false; PI.dataset.k=""; pomoMini(); } });
-function pomoCardInView(){ const c=$("#pomocard"); if(!c||tab!=="today") return false; const r=c.getBoundingClientRect(); return r.bottom>60&&r.top<innerHeight-60; }
+function pomoCardInView(){ const c=$("#tgclock"); if(!c||tab!=="today") return false; const r=c.getBoundingClientRect(); return r.bottom>60&&r.top<innerHeight-60; }
 function pomoMini(){ const act=pomoActive(), old=$("#pomomini"); if(old){ old.hidden=true; old.innerHTML=""; }
   if(!PI){ PI=document.createElement("div"); PI.id="pisle"; PI.className="pisle"; document.body.appendChild(PI); }
   const show=act&&!STAGE&&!pomoCardInView(); PI.hidden=!show; if(!show){ PI.dataset.k=""; return; }
@@ -9268,8 +9298,9 @@ document.addEventListener("keydown",e=>{ if(!STAGE) return; if(e.key==="Escape")
 // 가만히 두면 집중 화면 (설정 「가만히 두면 집중 화면」, 1분 · 쓰는 화면·글방에서는 열지 않음)
 function stageIdleCheck(){ const c=pomoSet(); if(!c.idle||STAGE||!P.on||tab==="write"||tab==="room"||document.visibilityState!=="visible") return; if(document.activeElement?.matches?.("textarea,input,select")) return; if(Date.now()-LAST_IN>60000) pomoStageOpen({idle:true}); }
 function pomoPaint(full){ pomoMini(); if(STAGE){ if(full) stageBuild(); else stagePaint(); } const card=$("#pomocard"); if(!card) return;
-  if(full||!$("#pomotime")) card.innerHTML=pomoCardHtml();
-  else { $("#pomotime").textContent=mmss(pomoLeft()); const d=card.querySelector(".pdialbtn"); if(d) d.innerHTML=pomoClock(188); }
+  const sz=+(card.dataset.sz||188); tgClockPaint();
+  if(full||!$("#pomotime")) card.innerHTML=pomoCardHtml(sz);
+  else { $("#pomotime").textContent=mmss(pomoLeft()); const d=card.querySelector(".pdialbtn"); if(d) d.innerHTML=pomoClock(sz); }
   document.title=P.on?`${mmss(pomoLeft())} ${PH_NAME[P.phase]} · 아침 서재`:"아침 서재"; }
 setTimeout(()=>{ if(P.on&&Date.now()>=P.endsAt) pomoEnd(false); pomoPaint(true); if(pomoActive()) pomoTick(); },0);
 
