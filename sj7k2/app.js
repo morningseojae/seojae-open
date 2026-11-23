@@ -1257,7 +1257,7 @@ function setGroups(){ const R=S.reminder||{}, rOn=!!(R.on&&R.clock!==false), p=S
   return [
    {id:"help",t:"도움",ic:"?",acc:"var(--sepia)",rows:[
      {k:"feedback",ic:"💬",t:"의견 보내기",st:"",sum:"좋았던 점·불편한 점·바라는 기능을 만든 사람에게",body:fbSection()},
-     {k:"donate",ic:"☕",t:"후원하기",st:"",sum:"원하실 때만 · 토스·카카오페이·계좌",body:donateSection()},
+     {k:"donate",ic:"☕",t:"후원하기",st:"",sum:"아침 서재는 후원으로 운영돼요 · 토스·카카오페이·계좌",body:donateSection()},
      {k:"news",ic:"✉",t:"새 소식",st:"",sum:NEWS[0]?`${esc(NEWS[0].date)} · ${esc(NEWS[0].title)}`:"아직 없음",body:newsSection()},
      {k:"app",ic:"▢",t:"앱으로 설치하기",st:isApp()?"ok":"off",pill:isApp()?"설치됨":"선택",sum:isApp()?"이 기기는 앱으로 쓰는 중 · PC·안드로이드·아이폰 설치법":"PC·크롬·안드로이드·아이폰 사파리 — 기기마다 설치하는 법",body:appSection()},
      {k:"manual",ic:"❧",t:"사용 설명서",st:"",sum:"간단 매뉴얼 · 상세 매뉴얼 — 웹으로 보기 · PDF 받기",body:manualSection()},
@@ -1292,6 +1292,8 @@ const MANUALS=[["quick","간단 매뉴얼","읽자마자 바로 써 보는 한 �
 // ───────── 새 소식 (공개판, 2026-10-31 팀장님): 중요한 고침은 앱을 열 때 한 번만 쉬운 말로 알림 ─────────
 // 새 소식을 더할 때: NEWS 맨 앞에 넣고 id 는 날짜(같은 날 둘째는 2026-11-02b 처럼 — 글자 순서로 새것이 뒤). 본 소식 id 는 이 기기에만(seojae-open.newsSeen)
 const NEWS=[
+ {id:"2026-11-23i",date:"2026년 11월 23일",title:"후원으로 지켜 가는 아침 서재",items:[
+  ["☕","아침 서재는 후원으로 운영돼요","광고 없이, 누구나 끝까지 무료로 쓰시도록 서버·AI 비용과 새 기능을 여러분의 후원으로 이어 가고 있어요.","설정 맨 위 「후원하기」에서 토스·카카오페이·계좌로 보내실 수 있어요. 원하실 때, 원하시는 만큼이면 충분해요."]]},
  {id:"2026-11-23h",date:"2026년 11월 23일",title:"믿을 수 있는 길잡이",items:[
   ["📚","검증된 주석으로","길잡이는 복음주의(장로교·감리교·성결교)에서 검증된 주석으로 써요. 성경 각 권마다 권위 있게 꼽히는 주석을 살펴요.",""],
   ["🔖","출처는 맨 끝에","어떤 주석을 살폈는지 길잡이 맨 끝에 한 줄로 알려 드려요.",""],
@@ -1602,8 +1604,8 @@ function donateGoToss(){ const u=donateToss(DONATE_PICK);
   setTimeout(()=>{ document.removeEventListener("visibilitychange",vis); if(!left&&!DONATE.tossId) toast("토스 앱이 열리지 않으면 「계좌번호 복사」로 쓰시는 은행 앱에서 보내 주세요"); },1800);
   location.href=u; }
 function donateBody(){ const a=DONATE_PICK;
-  return `<h3 class="newst">☕ 응원하고 싶으실 때</h3>
-  <p class="dnlead">아침 서재는 누구나 끝까지 무료로 쓰실 수 있어요. 그래도 커피 한 잔 값쯤 보태고 싶은 마음이 드시면, 원하실 때 원하시는 만큼만요.</p>
+  return `<h3 class="newst">☕ 아침 서재를 함께 지켜 주세요</h3>
+  <p class="dnlead">아침 서재는 광고 없이 여러분의 후원으로 운영돼요. 누구나 끝까지 무료로 쓰실 수 있고, 보내 주신 마음은 서버·AI 비용과 새 기능에 써요. 원하실 때, 원하시는 만큼이면 충분해요.</p>
   <div class="dnamt" role="radiogroup" aria-label="후원 금액">${DONATE_AMT.map(([v,ic,n])=>`<button type="button" role="radio" aria-checked="${a===v}" class="${a===v?"on":""}" onclick="DONATE_PICK=DONATE_PICK===${v}?0:${v};donatePaint()" title="${n}${v?" "+v.toLocaleString()+"원":""}"><span aria-hidden="true">${ic}</span>${v.toLocaleString()}원</button>`).join("")}</div>
   <div class="dnacts">
     <button class="btn dnbtn dntoss" onclick="donateGoToss()"><span class="dnlogo" aria-hidden="true">toss</span>토스로${a?` ${a.toLocaleString()}원`:""}</button>
@@ -1619,8 +1621,10 @@ function donateOpen(){ $("#donateview")?.remove(); const ov=document.createEleme
   ov.innerHTML=`<article class="newscard dncard" role="dialog" aria-modal="true" aria-label="후원하기"></article>`; document.body.appendChild(ov); donatePaint();
   const close=()=>{ ov.remove(); removeEventListener("keydown",k,true); }, k=e=>{ if(e.key==="Escape"){ e.preventDefault(); e.stopImmediatePropagation(); close(); } };
   ov.onclick=e=>{ if(e.target===ov||e.target.closest("[data-x]")) close(); }; addEventListener("keydown",k,true); }
-function donateSection(){ return `<section class="sheet tape c compact"><p class="label">후원하기</p><p class="sub">아침 서재는 누구나 끝까지 무료로 쓰실 수 있어요. 응원하고 싶은 마음이 드실 때만 커피 한 잔 값쯤 보태 주시면, 서버·AI 비용과 새 기능에 씁니다.</p>
-  <div class="row" style="gap:6px;flex-wrap:wrap;margin-top:6px"><button class="btn small" onclick="donateOpen()">☕ 응원하기</button><button class="btn small ghost" onclick="donateCopy()">계좌번호 복사</button></div>
+// 설정 맨 위 후원 띠(2026-11-23 팀장님 「후원으로 운영된다는 것을 자연스럽게, 설정에서 부각해 후원 유도」) — 설정에 들어왔을 때만 보임, 앱을 열 때 띄우는 창은 만들지 않음
+function donateBand(){ return `<div class="dnband" role="note"><span class="dnband-ic" aria-hidden="true">☕</span><div class="dnband-t"><b>아침 서재는 여러분의 후원으로 운영돼요</b><span>광고 없이, 누구나 끝까지 무료로 쓰시도록 서버·AI 비용과 새 기능을 후원으로 이어 가고 있어요. 커피 한 잔의 마음이 누군가의 아침 묵상을 함께 지켜요.</span></div><div class="dnband-b"><button class="btn small ink" onclick="donateOpen()">후원하기</button><button class="btn small ghost" onclick="donateCopy()">계좌 복사</button></div></div>`; }
+function donateSection(){ return `<section class="sheet tape c compact"><p class="label">후원하기</p><p class="sub">아침 서재는 광고 없이 <b>여러분의 후원으로 운영돼요</b>. 누구나 끝까지 무료로 쓰실 수 있고, 보내 주신 마음은 서버·AI 비용과 새 기능에 씁니다. 원하실 때, 원하시는 만큼이면 충분해요.</p>
+  <div class="row" style="gap:6px;flex-wrap:wrap;margin-top:6px"><button class="btn small ink" onclick="donateOpen()">☕ 후원하기</button><button class="btn small ghost" onclick="donateCopy()">계좌번호 복사</button></div>
   <p class="hint">${esc(DONATE.bank)} ${esc(DONATE.acct)} · 예금주 ${esc(DONATE.name)}</p></section>`; }
 function newsSection(){ return `<section class="sheet tape c compact"><p class="label">새 소식</p><p class="sub">중요한 고침이 올라가면 앱을 열 때 한 번 알려 드립니다. 지난 소식도 여기서 다시 봅니다.</p>
   <div class="row" style="margin:6px 0 10px"><button class="btn small ink" onclick="newsOpen(NEWS)">새 소식 모두 보기</button></div>
@@ -3527,6 +3531,7 @@ drawer(){
 },
 settings(){ const g=setGroups(), need=g.flatMap(x=>x.rows).filter(r=>r.st==="need"&&r.body);
   return `<div class="setpage"><div class="sethead"><h2>설정</h2><span class="spacer"></span>${need.length?`<a href="#" class="setneed" onclick="setJump('${need[0].k}');return false">설정 필요 ${need.length}곳 →</a>`:""}<button class="setall" onclick="setAll()">${g.flatMap(x=>x.rows).filter(r=>r.body).some(r=>!(r.k in SET_OPEN?SET_OPEN[r.k]:r.st==="need"))?"모두 펼치기":"모두 접기"}</button></div>
+  ${donateBand()}
   <div class="setlay"><nav class="setnav" aria-label="설정 갈래">${g.map(x=>`<a href="#setg-${x.id}" data-g="${x.id}" style="--acc:${x.acc}" onclick="setGo('${x.id}');return false"><span>${x.ic}</span>${x.t}</a>`).join("")}</nav>
   <div class="setlist">${g.map(x=>{ const rows=x.rows.map(r=>setItem(r)).join(""); return rows?`<section class="setgrp" id="setg-${x.id}" style="--acc:${x.acc}"><h3>${x.t}</h3><div class="setpanel">${rows}</div></section>`:""; }).join("")}</div></div></div>`;
 }
