@@ -3094,3 +3094,38 @@ html.use-nowriter #wcount{display:none!important}
 .bkband-lk{color:var(--ink-soft);font:500 13px/1.2 var(--ui-font);padding:6px 2px;text-decoration:underline;text-underline-offset:3px;text-decoration-color:color-mix(in srgb,currentColor 35%,transparent);white-space:nowrap}
 .bkband-go:focus-visible,.bkband-lk:focus-visible{outline:2px solid var(--sepia);outline-offset:2px}
 @media (max-width:400px){ .bkband{gap:11px;padding:12px 13px} .bkband-cv{width:58px;height:82px} .bkband-t b{font-size:16px} }
+
+/* ── 묵상 카드 머리 다듬기(2026-11-24 팀장님 「우리 프로그램의 얼굴」) ──
+   위계: ① 제목(명조 굵게) → ② 본문 장절 → ③ 날짜·묵상지(작은 고딕) → ④ 찬송가 줄(가장 작게).
+   묵상지 고르기는 튀지 않는 글자 단추, 날짜 넘김은 작은 원, 「찬송가|CCM」은 회색 바탕의 고르기(세그먼트), 「듣기」는 세피아 빛 재생 단추 — 서로 다른 일이라 모양도 다르게 */
+.sucard .sunav{gap:8px 10px!important;align-items:center;min-height:30px}
+.sucard .sunav .label.bible{display:inline-flex;align-items:center;gap:2px;font:600 13px/1.2 var(--ui-font);letter-spacing:0;color:var(--ink-soft)}
+.sucard .sunav .su-today{font:inherit;color:inherit}
+.sucard .qbname{border:0!important;background:none!important;padding:3px 6px!important;margin:0 0 0 -2px!important;border-radius:8px;font:700 13px/1.2 var(--ui-font);color:var(--bible,var(--sepia));gap:3px;box-shadow:none}
+.sucard .qbname i{font-size:10.5px;opacity:.8;transform:translateY(0)}
+.sucard .qbname:hover{background:color-mix(in srgb,var(--bible,var(--sepia)) 9%,transparent)!important}
+.sunav .sunavd{gap:0}
+.sunav .sunavd .fsbtn[aria-label]{min-width:26px!important;width:26px;height:26px!important;min-height:26px!important;padding:0;border:0;border-radius:50%;background:transparent;color:var(--ink-soft);font:400 17px/1 var(--ui-font);box-shadow:none;display:inline-grid;place-items:center}
+.sunav .sunavd .fsbtn[aria-label]:hover{background:color-mix(in srgb,var(--ink) 7%,transparent);color:var(--ink)}
+.sunav .sudate{font:600 13px/1 var(--ui-font);color:var(--ink-soft);font-variant-numeric:tabular-nums;padding:0 3px}
+@media (pointer:coarse){ .sunav .sunavd .fsbtn[aria-label]{width:34px;min-width:34px!important;height:34px!important;min-height:34px!important} }   /* 손가락 자리는 넉넉히, 모양은 그대로 옅게 */
+.sucard .sut{display:flex;flex-wrap:wrap;align-items:baseline;column-gap:10px;row-gap:2px;margin:10px 0 4px!important;font:inherit}
+.sucard .sut .sutt{font:800 22px/1.35 "Nanum Myeongjo",serif;color:var(--ink);letter-spacing:-.01em;word-break:keep-all}
+.sucard .sut .supl{font:400 16px/1.35 "Nanum Myeongjo",serif;color:var(--ink-soft);white-space:nowrap}
+.sucard .sut small{font:500 12px/1 var(--ui-font)}
+.suhymn{display:flex;flex-wrap:wrap;align-items:center;gap:6px 8px;margin:4px 0 12px;font:500 12.5px/1.2 var(--ui-font);color:var(--ink-soft)}
+.suhymn .suhn{display:inline-flex;align-items:center;gap:5px;margin-right:2px;white-space:nowrap}
+.suhymn .suhn i{font-style:normal;color:var(--sepia);font-size:12px}
+.suhymn .hkind{display:inline-flex;margin:0!important;padding:2px;gap:0;border:0!important;border-radius:999px;background:color-mix(in srgb,var(--ink) 7%,transparent);overflow:visible}
+.suhymn .hkind button{border:0!important;border-radius:999px;padding:4px 11px;background:transparent;color:var(--ink-soft);font:600 11.5px/1.1 var(--ui-font);cursor:pointer;transition:background .15s,color .15s}
+.suhymn .hkind button.on{background:var(--paper);color:var(--ink);box-shadow:0 1px 2px rgba(40,25,10,.16),0 0 0 .5px rgba(40,25,10,.06)}
+.suhymn .hb[data-hb]{display:inline-flex;align-items:center;gap:5px;margin:0;border:0!important;border-radius:999px;padding:5px 12px 5px 10px;background:color-mix(in srgb,var(--sepia) 15%,var(--paper));color:var(--sepia);font:700 12px/1.1 var(--ui-font);opacity:1;cursor:pointer;transition:background .15s}
+.suhymn .hb[data-hb]::after{content:"듣기";font-size:12px}
+.suhymn .hb[data-hb].on::after{content:"멈춤"}
+.suhymn .hb[data-hb]:hover{background:color-mix(in srgb,var(--sepia) 24%,var(--paper));color:var(--sepia)}
+.suhymn .hb:not([data-hb]){padding:3px 6px;font-size:12px}
+.suhymn .hb:focus-visible,.suhymn .hkind button:focus-visible{outline:2px solid var(--sepia);outline-offset:2px}
+@media (pointer:coarse){ .suhymn .hkind button{padding:7px 13px} .suhymn .hb[data-hb]{padding:7px 14px 7px 12px} }
+@media (max-width:440px){ .sucard .sut .sutt{font-size:20px} .sucard .sut .supl{font-size:15px} }
+@media (prefers-color-scheme:dark){ :root:not([data-theme="light"]) .suhymn .hkind button.on{background:color-mix(in srgb,var(--ink) 18%,var(--paper));box-shadow:none} }
+:root[data-theme="dark"] .suhymn .hkind button.on{background:color-mix(in srgb,var(--ink) 18%,var(--paper));box-shadow:none}

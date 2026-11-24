@@ -1018,7 +1018,8 @@ function hymnCtl(){ const n=hymnNo(); if(!n) return "";
 function hymnKind(k){ if(k===(MUSIC.view==="ccm"?"ccm":"hymn")) return; const el=$("#mplayer"); if(el&&!el.hidden) return mpKind(k).then(paintHymnCtl);
   const other=k==="ccm"?MUSIC.slot==="hymn":MUSIC.slot.startsWith("ccm:"); if(other&&MUSIC.playing){ try{ MP?.pauseVideo(); }catch(_){} MUSIC.playing=false; }
   MUSIC.view=k; paintHymnCtl(); }
-function paintHymnCtl(){ const b=$("#hymnbox"); if(!b||!SU?.hymn) return; b.innerHTML=`찬송가 ${esc(SU.hymn)}장${hymnCtl()}`; }
+function paintHymnCtl(){ const b=$("#hymnbox"); if(!b||!SU?.hymn) return; b.innerHTML=hymnInner(); }
+const hymnInner=()=>`<span class="suhn"><i aria-hidden="true">♪</i>찬송가 ${esc(SU.hymn)}장</span>${hymnCtl()}`;   // 묵상 카드 둘째 줄(2026-11-24 — 제목·본문과 나눠 작게)
 async function musicCall(body){ if(GAS) return gcall("musicFind",body); const r=await fetch("/api/music",{method:"POST",body:JSON.stringify(body)}); const j=await r.json(); if(j&&j.ok===false) throw new Error(j.error||"서버 오류"); return j; }
 function ytLoad(){ if(window.YT?.Player) return Promise.resolve(); return YT_P||(YT_P=new Promise((ok,no)=>{ const prev=window.onYouTubeIframeAPIReady; window.onYouTubeIframeAPIReady=()=>{ try{ prev?.(); }catch(_){} ok(); };
   const sc=document.createElement("script"); sc.src="https://www.youtube.com/iframe_api"; sc.onerror=()=>{ YT_P=null; no(new Error("유튜브를 불러오지 못했습니다 — 인터넷 연결을 확인해 주세요")); }; document.head.appendChild(sc); })); }
@@ -1294,6 +1295,9 @@ const MANUALS=[["quick","간단 매뉴얼","읽자마자 바로 써 보는 한 �
 // 새 소식을 더할 때: NEWS 맨 앞에 넣고 id 는 날짜(같은 날 둘째는 2026-11-02b 처럼 — 글자 순서로 새것이 뒤). 본 소식 id 는 이 기기에만(seojae-open.newsSeen)
 // 새 소식 — 후원하기는 무엇을 바꿔도 여기에 넣지 않음(2026-11-24 팀장님 「팝업 알림으로 가지 않도록」)
 const NEWS=[
+ {id:"2026-11-24e",date:"2026년 11월 24일",title:"묵상 카드를 단정하게",items:[
+  ["📖","제목과 본문이 먼저 보여요","묵상 화면 맨 위 카드에서 오늘 본문의 제목과 장절을 또렷하게, 날짜 넘김·묵상지 고르기는 작고 차분하게 바꿨어요.",""],
+  ["♪","찬송가는 한 줄 아래 작게","찬송가는 제목 아래 한 줄로 옮겼어요. 「찬송가 | CCM」은 고르는 칸, 「▶ 듣기」는 누르면 바로 나오는 단추예요.",""]]},
  {id:"2026-11-24d",date:"2026년 11월 24일",title:"책에 예문과 연습이 늘었어요",items:[
   ["✍️","글쓰기 수업이 더 풍성하게","상세 매뉴얼 4부에 장면과 요약, 첫 문장 네 가지, 한 문단을 네 번 보는 퇴고, 고백을 꾸미지 않는 신앙 에세이 같은 예문을 더했어요.",""],
   ["🌿","묵상을 실제로 써 본 한 편","「짧게」 틀로 쓴 묵상 한 편, 묵상 길잡이를 곁에 두는 법, 쓰기 싫은 아침에 건네는 말을 담았어요.",""],
@@ -1974,7 +1978,7 @@ async function paintSu(){
   // 새 묵상이면 본문 칸을 매일성경으로 (설정에서 '통독표 따라'를 고르면 그대로 둠)
   const f=$("#wpassage"); if(f&&!fromNote&&!fromWriting&&S.settings.qtSource!=="plan"&&$("#wtype")?.value==="묵상"&&(editId?cur?.date===date&&cmtBare(f.value):f.value===f.defaultValue)){ f.value=P.label; }   // 본문 칸이 빈 그날 묵상에는 저절로
   box.innerHTML=`${nav}
-    <div class="sut">${SU.title?`<b>${esc(SU.title)}</b> · `:""}${esc(P.label)}${SU.sched?` <small class="muted" title="두란노 공지의 월별 본문표로 미리 보는 본문입니다 — 제목·찬송가는 그날 아침에 나옵니다">· 미리 보기</small>`:""}${SU.hymn?` · <span class="muted hymnbox" id="hymnbox">찬송가 ${esc(SU.hymn)}장${hymnCtl()}</span>`:""}</div>
+    <div class="sut">${SU.title?`<b class="sutt">${esc(SU.title)}</b>`:""}<span class="supl">${esc(P.label)}</span>${SU.sched?`<small class="muted" title="두란노 공지의 월별 본문표로 미리 보는 본문입니다 — 제목·찬송가는 그날 아침에 나옵니다">미리 보기</small>`:""}</div>${SU.hymn?`<div class="suhymn" id="hymnbox">${hymnInner()}</div>`:""}
     <div class="links"><button class="btn small ink" onclick="suUse()">이 본문으로 쓰기</button>
       <span class="vergrp" role="group" aria-label="다른 번역으로 열기 (새 창)"><span class="vgk">번역</span><a class="verlink" href="${esc(suOfficial(P,"NKRV"))}" target="_blank" rel="noopener" onclick="return popBible(this.href)" title="개역개정은 저작권 때문에 앱 안에 넣을 수 없어 대한성서공회 사이트에서 같은 구절을 엽니다">개역개정</a><a class="verlink" href="${esc(suOfficial(P,"NKT"))}" target="_blank" rel="noopener" onclick="return popBible(this.href)">새한글</a><a class="verlink" href="${esc(suOfficial(P,"RNKSV"))}" target="_blank" rel="noopener" onclick="return popBible(this.href)">새번역</a><a class="verlink" href="${esc(suNiv(P))}" target="_blank" rel="noopener" onclick="return popBible(this.href)">NIV</a></span><button class="btn small ghost pconly" onclick="sideTip()" title="성경 창을 띄워 둔 채 쓰는 법">ⓘ</button><button class="btn small ghost pconly" onclick="pipBible()" title="오늘 본문(개역한글·영어)을 다른 창보다 늘 위에 떠 있는 작은 창으로 띄웁니다 (크롬·엣지)">${ICO.closed}본문 작은 창</button>
       ${SU.src==="ll"?llLinks(date):`${SU.audio?`<button class="btn small ghost" onclick="suListen()" title="매일성경 해설(본문 낭독과 해설)을 앱 안 작은 재생기로 듣습니다. 다른 메뉴로 옮겨도 계속 들립니다">${ICO.audio}해설 듣기</button>`:""}<button class="btn small ghost" id="subtn" onclick="suNoteToggle()" title="그날 매일성경 본문(장절)에 맞춰 아침 서재에서 새벽 3시에 정리해 둔 묵상 길잡이를 봅니다 — 컴퓨터에서는 오른쪽 창으로, 휴대폰에서는 카드 아래에">${ICO.book}${$("#sunpanel")?"길잡이 창 닫기":"묵상 길잡이(해설)"}</button>`}</div>
