@@ -1295,6 +1295,9 @@ const MANUALS=[["quick","간단 매뉴얼","읽자마자 바로 써 보는 한 �
 // 새 소식을 더할 때: NEWS 맨 앞에 넣고 id 는 날짜(같은 날 둘째는 2026-11-02b 처럼 — 글자 순서로 새것이 뒤). 본 소식 id 는 이 기기에만(seojae-open.newsSeen)
 // 새 소식 — 후원하기는 무엇을 바꿔도 여기에 넣지 않음(2026-11-24 팀장님 「팝업 알림으로 가지 않도록」)
 const NEWS=[
+ {id:"2026-11-24g",date:"2026년 11월 24일",title:"새 묵상은 늘 깨끗한 쪽에서",items:[
+  ["🌅","오늘 묵상에 어제 글이 붙지 않아요","지난날 쓰다 만 묵상(넣어 둔 주석 요약도)이 오늘 새 묵상 칸에 따라 나오던 것을 고쳤어요. 쓰다 만 글은 그 날짜에 두니, 묵상 카드에서 ‹ 로 그날에 가면 이어 쓸 수 있어요.",""],
+  ["✅","간직은 저절로","쓰는 글은 몇 초 뒤 저절로 간직돼요. 이제 주석 요약만 넣어 둔 묵상도 저절로 간직돼요.",""]]},
  {id:"2026-11-24e",date:"2026년 11월 24일",title:"묵상 카드를 단정하게",items:[
   ["📖","제목과 본문이 먼저 보여요","묵상 화면 맨 위 카드에서 오늘 본문의 제목과 장절을 또렷하게, 날짜 넘김·묵상지 고르기는 작고 차분하게 바꿨어요.",""],
   ["♪","찬송가는 한 줄 아래 작게","찬송가는 제목 아래 한 줄로 옮겼어요. 「찬송가 | CCM」은 고르는 칸, 「▶ 듣기」는 누르면 바로 나오는 단추예요.",""]]},
@@ -2615,7 +2618,7 @@ function saveDraft(){
   if(tab!=="write"||!$("#wbody")) return;
   if(!writingUnsaved()){ try{ localStorage.removeItem(draftKey()); }catch(_){} const k=cloudKey(); if(S.drafts?.[k]){ delete S.drafts[k]; tomb("draft:"+k); save(); } return; }   // 저장본과 같아졌으면(또는 다 지웠으면) 묵은 초안도 지움 — 구글 사본까지
   const d={editId,fromNote,fromWriting,track,type:$("#wtype")?.value,title:$("#wtitle").value,body:$("#wbody").value,passage:$("#wpassage")?.value??null,
-    summary:$("#wsummary")?.value??null,topics:[...selTopics],sits:[...selSits],status:$("#wstatus")?.value??null,len:selLen??null,froms:FROMS,place:SEL_PLACE??null,stk:editId?null:wStk,ms:editId?null:SEL_MS||null,t:Date.now()};
+    summary:$("#wsummary")?.value??null,topics:[...selTopics],sits:[...selSits],status:$("#wstatus")?.value??null,len:selLen??null,froms:FROMS,place:SEL_PLACE??null,stk:editId?null:wStk,ms:editId?null:SEL_MS||null,day:!editId&&!fromWriting&&track==="bible"?(NEW_DATE||today()):null,t:Date.now()};
   try{ localStorage.setItem(draftKey(),JSON.stringify(d)); }catch(_){}
   if(cloudKey()==="new.book") dropOldBookDraft();
   DRAFT_DIRTY=true; DRAFT_AT=d.t; paintDraftStamp("이 기기에 임시 보관");
@@ -2643,11 +2646,16 @@ function bookDraft(){ let d=null; try{ d=JSON.parse(localStorage.getItem(DKEY+".
   if(!d||d.editId||d.fromWriting) return null; const own=String(d.body||"").split("\n").filter(l=>l.trim()&&!/^■/.test(l.trim())).join("")+String(d.title||""); return own.trim()?d:null; }
 function dropBookDraft(){ try{ localStorage.removeItem(DKEY+".new.book"); }catch(_){} if(S.drafts?.["new.book"]){ delete S.drafts["new.book"]; tomb("draft:new.book"); } dropOldBookDraft(); save(); }
 function draftInput(){ clearTimeout(draftT); draftT=setTimeout(saveDraft,600); }
+function draftToDay(d,dd){ const k="new@"+dd; let cur=null; try{ cur=JSON.parse(localStorage.getItem(DKEY+"."+k)||"null"); }catch(_){} const c=(S.drafts||{})[k]; if(c&&(!cur||(c.t||0)>(cur.t||0))) cur=c;
+  const nd={...d,day:dd}; if(!cur||(cur.t||0)<(nd.t||0)){ try{ localStorage.setItem(DKEY+"."+k,JSON.stringify(nd)); }catch(_){} (S.drafts=S.drafts||{})[k]=nd; }
+  try{ localStorage.removeItem(DKEY+".new"); }catch(_){} if(S.drafts?.new&&S.drafts.new.track!=="book"){ delete S.drafts.new; tomb("draft:new"); } save();
+  const own=String(d.body||"").split("\n").filter(l=>l.trim()&&!/^■/.test(l.trim())).join("").trim(); if(own) setTimeout(()=>toast(`${+dd.slice(5,7)}월 ${+dd.slice(8)}일에 쓰다 만 묵상은 그 날짜에 두었습니다 (‹ 로 그날에 가면 이어 씁니다)`),120); }
 function restoreDraft(){
   let d=null; try{ d=JSON.parse(localStorage.getItem(draftKey())||localStorage.getItem(DKEY)||"null"); }catch(_){}   // 옛 한 칸짜리 보관도 한 번은 읽음
   const c=(S.drafts||{})[cloudKey()]; if(c&&(!d||(c.t||0)>(d.t||0))) d=c;   // 다른 기기에서 더 나중에 쓰다 만 글이 있으면 그것을
   if(cloudKey()==="new.book"){ const o=oldBookDraft(); if(o&&(!d||(o.t||0)>(d.t||0))) d=o; if(d&&d.track!=="book") d=null; }   // 칸을 나누기 전에 남은 글방 새 글도 이어받음
   if(!d||(d.editId||null)!==(editId||null)) return;
+  if(!editId&&!fromWriting&&track==="bible"&&d.track==="bible"&&!d.fromWriting){ const dd=d.day||(!NEW_DATE&&d.t?dkey(new Date(d.t)):null); if(dd&&dd!==(NEW_DATE||today())){ if(!NEW_DATE) draftToDay(d,dd); return; } }   // 다른 날 쓰다 만 새 묵상은 그 날짜 칸으로 (오늘 새 묵상에 어제 글·주석 요약이 붙지 않게)
   if(editId){ const w=S.writings.find(x=>x.id===editId); if(w&&w.updated&&(d.t||0)<Date.parse(w.updated)){ try{ localStorage.removeItem(draftKey()); }catch(_){} return; } }   // 간직된 판보다 오래된 임시 보관본은 버림
   if(!editId&&d.body){ const norm=t=>String(t||"").replace(/\s+/g," ").trim(); const same=live().find(x=>norm(x.body)===norm(d.body)); if(same){ clearDraft(); save(); NAV=true; try{ goInner("write",{edit:same.id}); }finally{ NAV=false; } return; } }   // 이미 간직된 글의 임시 보관본이면 그 글을 엶 (같은 글이 둘 생기지 않게)
   if(!editId&&fromNote&&d.fromNote!==fromNote) return;          // 다른 밑줄로 새 글을 시작한 경우는 건드리지 않음
@@ -4656,8 +4664,8 @@ function keepWriting(auto){
   if(!body.trim()){ const ew=editId&&!(S.deleted||{})[editId]&&S.writings.find(x=>x.id===editId), tt=($("#wtitle")?.value||"").trim();   // 본문은 아직 비었어도 이미 있는 글(새 꼭지·장면)의 제목은 간직 — 안 그러면 떠날 때 「(제목 없음)」이 됨
     if(ew&&tt!==(ew.title||"")){ ew.title=tt; ew.updated=new Date().toISOString(); save(); EDIT_BASE=ew.updated; if(FRESH[ew.id]!=null&&tt) delete FRESH[ew.id]; if(auto){ $("#wtitle").defaultValue=tt; paintDraftStamp("간직됨"); } else toast("제목을 간직했습니다"); return ew; }
     if(!auto) toast("아직 빈 페이지입니다"); return null; }
-  { const tl=new Set([...typeTpl(track,$("#wtype")?.value).split("\n").map(l=>l.trim()).filter(Boolean),...GENRE_TPL_LINES]); const own=stripMemo(body).split("\n").filter(l=>!tl.has(l.trim())).join("");
-    if(auto&&((!editId&&chars(own)<15)||!writingUnsaved())) return null;   // 틀만 넣고 아직 안 쓴 새 글은 간직하지 않음 (이미 있는 글은 몇 자를 고쳐도 간직)
+  { const tl=new Set([...typeTpl(track,$("#wtype")?.value).split("\n").map(l=>l.trim()).filter(Boolean),...GENRE_TPL_LINES]); const own=body.split("\n").filter(l=>!tl.has(l.trim())).join("");   // 주석 요약(※)도 쓴 것으로 셈 — 요약만 넣어 둔 새 글도 저절로 간직 (팀장님 2026-11-24)
+    if(auto&&((!editId&&own.replace(/\s+/g,"").length<15)||!writingUnsaved())) return null;   // 틀만 넣고 아직 안 쓴 새 글은 간직하지 않음 (이미 있는 글은 몇 자를 고쳐도 간직)
     if(!auto&&!editId&&!own.trim()){ toast("아직 틀만 있습니다 — 한 줄이라도 쓰면 간직됩니다"); return null; } }   // 틀만 넣고 아직 안 쓴 새 글은 간직하지 않음 (이미 있는 글은 몇 자를 고쳐도 간직)
   clearDraft();   // 임시 보관 칸(이 기기·구글)을 비움 — 새 글은 번호가 정해지기 전(칸 이름이 new 일 때) 비워야 합니다
   const data={type:$("#wtype").value,title:$("#wtitle").value.trim(),body,summary:$("#wsummary").value.trim(),topics:[...selTopics],status:$("#wstatus")?.value||"초고",updated:new Date().toISOString()};
