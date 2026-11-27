@@ -3129,3 +3129,7 @@ html.use-nowriter #wcount{display:none!important}
 @media (max-width:440px){ .sucard .sut .sutt{font-size:20px} .sucard .sut .supl{font-size:15px} }
 @media (prefers-color-scheme:dark){ :root:not([data-theme="light"]) .suhymn .hkind button.on{background:color-mix(in srgb,var(--ink) 18%,var(--paper));box-shadow:none} }
 :root[data-theme="dark"] .suhymn .hkind button.on{background:color-mix(in srgb,var(--ink) 18%,var(--paper));box-shadow:none}
+/* 여러 날 치가 모인 날(기간에 맞춰 읽기, 2026-11-27): 원래 날마다 한 줄, 앞에 작은 「7일 치」 */
+.portions-flow .pgrp{display:block}
+.portions-flow .pgrp+.pgrp{margin-top:4px}
+.portions-flow .pday{font:500 12px/1 var(--ui-font,sans-serif);font-style:normal;color:var(--ink-soft);background:var(--fill,var(--paper-2));border:1px solid var(--line,var(--edge));border-radius:999px;padding:3px 8px;margin-right:8px;vertical-align:2px;white-space:nowrap}

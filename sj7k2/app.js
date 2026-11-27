@@ -1295,6 +1295,9 @@ const MANUALS=[["quick","간단 매뉴얼","읽자마자 바로 써 보는 한 �
 // 새 소식을 더할 때: NEWS 맨 앞에 넣고 id 는 날짜(같은 날 둘째는 2026-11-02b 처럼 — 글자 순서로 새것이 뒤). 본 소식 id 는 이 기기에만(seojae-open.newsSeen)
 // 새 소식 — 후원하기는 무엇을 바꿔도 여기에 넣지 않음(2026-11-24 팀장님 「팝업 알림으로 가지 않도록」)
 const NEWS=[
+ {id:"2026-11-27",date:"2026년 11월 27일",title:"이틀 치인 날을 알려 드려요",items:[
+  ["📖","「이틀 치」 표시","성경 통독에서 기간(1년 등)을 골라 읽기표를 다시 나누면, 몇 날은 이틀 치가 함께 나와요. 이제 그날은 「오늘의 말씀」에 「이틀 치」 표시가 붙고, 「7일 치」·「8일 치」로 줄을 나눠 보여 드려요. 밀린 분량이 아니에요.",""],
+  ["🌱","못 읽은 날은 그 자리에서","기간을 고르지 않으면(「기본」) 하루에 하루 치씩 읽고, 못 읽은 날은 다음 날 그 분량부터 이어 읽어요. 설정 → 아침 → 「성경 통독」의 「기간」에서 바꿀 수 있어요.",""]]},
  {id:"2026-11-24g",date:"2026년 11월 24일",title:"새 묵상은 늘 깨끗한 쪽에서",items:[
   ["🌅","오늘 묵상에 어제 글이 붙지 않아요","지난날 쓰다 만 묵상(넣어 둔 주석 요약도)이 오늘 새 묵상 칸에 따라 나오던 것을 고쳤어요. 쓰다 만 글은 그 날짜에 두니, 묵상 카드에서 ‹ 로 그날에 가면 이어 쓸 수 있어요.",""],
   ["✅","간직은 저절로","쓰는 글은 몇 초 뒤 저절로 간직돼요. 이제 주석 요약만 넣어 둔 묵상도 저절로 간직돼요.",""]]},
@@ -2301,6 +2304,17 @@ function planDays(){
     _days={key:k,val:d}; }
   return _days.val;
 }
+// 기간에 맞춰 다시 나눈 읽기표: 하루에 원래 읽기표 며칠 치가 모였는지(맥체인 365일 → 313일이면 6일에 한 번쯤 이틀 치). 장을 다시 나누는 방법(fit)은 「날」이 없어 셈하지 않음
+function planMerge(i){ const p=S.settings.plan, pl=planObj(); if(!p.span||pl.fit) return null; const B=pl.days(), n=Math.min(p.span,B.length); if(n>=B.length) return null;
+  const a=Math.floor(i*B.length/n), b=Math.floor((i+1)*B.length/n); return b-a>1?{a,b,len:B.length,n,parts:B.slice(a,b).map(x=>x.length)}:null; }
+const mergeWord=k=>["","하루","이틀","사흘","나흘","닷새"][k]||k+"일";
+function mergeChip(i){ const m=planMerge(i); if(!m) return ""; const k=m.b-m.a, ds=[...Array(k).keys()].map(x=>m.a+x+1).join("·"), u=S.settings.plan.spanUntil;
+  const by=u?`${+u.slice(0,4)}년 ${+u.slice(5,7)}월 ${+u.slice(8,10)}일까지 마치도록`:"정한 기간 안에 마치도록";
+  const sm=(SPANS.find(x=>x[0]===S.settings.plan.spanM)||[])[1];
+  return tipHtml(`밀린 분량이 아니에요. 설정 → 성경 통독 → 기간에서 「${sm||"기간"}」을 고르셔서, ${by} 원래 ${m.len}일 읽기표를 읽는 날 ${m.n}일에 나누었어요. 그래서 몇 날은 ${mergeWord(k)} 치를 함께 읽어요(오늘은 원래 읽기표의 ${ds}일 치). 기간에서 「기본」을 고르면 하루에 하루 치씩, 못 읽은 날은 다음 날 그 분량부터 이어 읽어요.`,`${mergeWord(k)} 치`); }
+// 여러 날 치가 모인 날: 원래 날마다 한 줄씩, 앞에 「7일 치」 꼬리표
+function mergeFlow(i,portions,item){ const m=planMerge(i); if(!m) return portions.map(item).join("");
+  let k=0; return m.parts.map((c,x)=>`<div class="pgrp"><i class="pday">${m.a+x+1}일 치</i>${portions.slice(k,k+=c).map(item).join("")}</div>`).join(""); }
 // ───────── 기간에 맞춰 읽기: 남은 분량을 '읽는 요일'만 세어 하루 장 수를 계산 ─────────
 const SPANS=[[3,"3개월"],[6,"6개월"],[12,"1년"],[18,"1년 6개월"]];
 function addMonths(key,m){ const d=new Date(key+"T00:00"), day=d.getDate(); d.setDate(1); d.setMonth(d.getMonth()+m); d.setDate(Math.min(day,new Date(d.getFullYear(),d.getMonth()+1,0).getDate())); return dkey(d); }   // 11월 30일+3개월 → 2월 말일
@@ -2359,7 +2373,7 @@ function planDo(j,a,k){ withPlan(j,()=>{ if(a==="toggle") togglePortion(k); else
 // 오늘 화면: 주 방법 아래 「함께 읽는 통독」 칸
 function todayAlsoHtml(){ const A=plansAlso(); if(!A.length) return "";
   return `<div class="alsobox"><p class="alsok">함께 읽는 통독</p>${A.map((_,x)=>withPlan(x+1,()=>{ const j=x+1, pl=planObj(), days=planDays(), i=todayIdx(), por=days[i], done=doneToday(), p=S.settings.plan, pr=planProgress();
-    const head=`<div class="alsoh"><b>${esc(pl.name)}</b> <span class="muted">${por?`${i+1}일째 · `:""}${pr.pct}%</span><span class="spacer"></span><button type="button" class="rtbtn" onclick="rtOpen(${j})" title="이 방법의 성경읽기표">${ICO.book}읽기표</button></div>`;
+    const head=`<div class="alsoh"><b>${esc(pl.name)}</b> <span class="muted">${por?`${i+1}일째 · `:""}${pr.pct}%</span>${por?mergeChip(i):""}<span class="spacer"></span><button type="button" class="rtbtn" onclick="rtOpen(${j})" title="이 방법의 성경읽기표">${ICO.book}읽기표</button></div>`;
     if(!por) return `<div class="also done">${head}<p class="muted" style="margin:4px 0 0">다 읽었습니다 — 설정 → 성경 통독에서 그만두거나 다른 방법을 더할 수 있습니다.</p></div>`;
     return `<div class="also${done?" done":""}">${head}<div class="portions">${por.map((t,k)=>{ const on=done||(p.checks||[]).includes(k);
       return `<button class="portion ${on?"on":""}" onclick="planDo(${j},'toggle',${k})"><span class="tick">${tickSvg(on)}</span><span class="ptext">${esc(t).replace(/(\S*-\S*)/g,'<span class="nw">$1</span>')}</span><span class="plink" role="button" tabindex="0" title="${bibleVer()[1]}으로 읽기" onclick="event.stopPropagation();openBible(${jsArg(t)})">${bookSvg()}<span class="pl-t">읽기</span></span></button>`; }).join("")}</div>
@@ -3939,8 +3953,8 @@ function todayBibleCard(){
   const many=portions.length>5; // 연대기순처럼 조각이 많은 날은 하루 단위로만 표시
   return `<section class="sheet tape">
     <p class="label bible">오늘의 말씀</p>
-    <div class="planline"><b>${esc(plan.name)}</b> · ${i+1}일째 <span class="muted">/ ${days.length}일</span>${many?"":tipHtml("읽은 곳을 하나씩 눌러 표시하세요. 모두 표시하면 오늘 읽기가 끝납니다. 잘못 눌렀으면 한 번 더 누르면 풀립니다.")}${rtBtn()}</div>
-    ${many?`<div class="portions-flow ${done?"done":""}">${portions.map(x=>`<span class="pl" title="${bibleVer()[1]}으로 읽기" onclick="openBible(${jsArg(x)})">${esc(x)}</span>`).join("")}</div>`
+    <div class="planline"><b>${esc(plan.name)}</b> · ${i+1}일째 <span class="muted">/ ${days.length}일</span>${mergeChip(i)}${many||planMerge(i)?"":tipHtml("읽은 곳을 하나씩 눌러 표시하세요. 모두 표시하면 오늘 읽기가 끝납니다. 잘못 눌렀으면 한 번 더 누르면 풀립니다.")}${rtBtn()}</div>
+    ${many?`<div class="portions-flow ${done?"done":""}">${mergeFlow(i,portions,x=>`<span class="pl" title="${bibleVer()[1]}으로 읽기" onclick="openBible(${jsArg(x)})">${esc(x)}</span>`)}</div>`
       :`<div class="portions">${portions.map((x,k)=>{ const on=done||p.checks.includes(k);
         return `<button class="portion ${on?"on":""}" onclick="togglePortion(${k})"><span class="tick">${tickSvg(on)}</span>${plan.labels?`<span class="plab">${plan.labels[k]}</span>`:""}<span class="ptext">${esc(x).replace(/(\S*-\S*)/g,'<span class="nw">$1</span>')}</span><span class="plink" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();event.stopPropagation();this.click();}" title="${bibleVer()[1]}으로 읽기" onclick="event.stopPropagation();openBible(${jsArg(x)})">${bookSvg()}<span class="pl-t">읽기</span></span></button>`; }).join("")}</div>`}
     <div class="progress" style="margin-top:14px"><i style="width:${pr.pct}%;background:var(--bible)"></i></div>
